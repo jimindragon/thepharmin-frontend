@@ -1,10 +1,13 @@
 "use client";
 
 import { Bell, ChevronDown, Search } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { headerActions, navigationItems } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 
 export function Header() {
+  const pathname = usePathname();
+
   return (
     <header className="site-header h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
@@ -19,21 +22,25 @@ export function Header() {
         </a>
 
         <nav className="flex min-w-0 flex-1 items-center gap-6 text-[14px] font-bold text-white/72 max-[1120px]:hidden">
-          {navigationItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className={
-                item.highlight
-                  ? "text-white"
-                  : item.active
-                    ? "relative text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-white"
-                    : "hover:text-white"
-              }
-            >
-              {item.label}
-            </a>
-          ))}
+          {navigationItems.map((item) => {
+            const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
+
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                className={
+                  item.highlight
+                    ? "text-white"
+                    : isActive
+                      ? "relative text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-white"
+                      : "hover:text-white"
+                }
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2.5 max-[1120px]:hidden">
