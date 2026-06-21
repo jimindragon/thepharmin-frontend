@@ -9,7 +9,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="site-header h-[64px] border-b border-[#151515] bg-[#050505] text-white">
+    <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
         <a href="/" className="flex shrink-0 items-center" aria-label="더팜인 홈으로 이동">
           <img
@@ -21,9 +21,11 @@ export function Header() {
           />
         </a>
 
-        <nav className="flex min-w-0 flex-1 items-center gap-6 text-[14px] font-bold text-white/72 max-[1120px]:hidden">
+        <nav className="flex min-w-0 flex-1 items-center gap-6 text-[14px] max-[1120px]:hidden">
           {navigationItems.map((item) => {
-            const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
+            const isActive =
+              item.href !== "#" &&
+              ((pathname === "/" && item.href === "/jobs") || pathname === item.href || pathname.startsWith(`${item.href}/`));
 
             return (
               <a
@@ -31,10 +33,10 @@ export function Header() {
                 href={item.href}
                 className={
                   item.highlight
-                    ? "text-white"
+                    ? "font-semibold text-white hover:text-white"
                     : isActive
-                      ? "relative text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-white"
-                      : "hover:text-white"
+                      ? "relative font-black text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-[linear-gradient(90deg,#167b8e_0%,#2bb59d_100%)]"
+                      : "font-semibold text-white/62 hover:text-white"
                 }
               >
                 {item.label}
@@ -50,7 +52,7 @@ export function Header() {
               href={action.href}
               className={
                 action.tone === "brand"
-                  ? "border border-white/18 bg-[#202020] px-3.5 py-2 text-[12px] font-black text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)] hover:border-white/40 hover:bg-[#2b2b2b]"
+                  ? "overflow-hidden border border-[#1a817d] bg-[linear-gradient(90deg,#126f7e_0%,#1f8f83_100%)] px-3.5 py-2 text-[12px] font-black text-white shadow-none hover:border-[#269b91] hover:brightness-105"
                   : "border border-white/25 bg-transparent px-3.5 py-2 text-[12px] font-black text-white hover:border-white/55"
               }
             >

@@ -285,7 +285,14 @@ function jobCategoryMatches(job: Job, filters: JobFilters) {
   return filters.jobCategoryIds.some((id) => categoryIds.has(id));
 }
 
-export function useJobFilters(initialPreferenceApplied = false) {
+interface UseJobFiltersOptions {
+  syncUrl?: boolean;
+  basePath?: string;
+}
+
+export function useJobFilters(initialPreferenceApplied = false, options: UseJobFiltersOptions = {}) {
+  const syncUrl = options.syncUrl ?? true;
+  const basePath = options.basePath ?? "/jobs";
   const [filters, setFilters] = useState<JobFilters>(emptyJobFilters);
   const [keywordInput, setKeywordInput] = useState("");
   const [jobLimitMessage, setJobLimitMessage] = useState("");
@@ -300,11 +307,11 @@ export function useJobFilters(initialPreferenceApplied = false) {
   }, []);
 
   useEffect(() => {
-    if (!queryReady) return;
+    if (!queryReady || !syncUrl) return;
     const query = toQuery(filters);
-    const nextUrl = query ? `/jobs?${query}` : "/jobs";
+    const nextUrl = query ? `${basePath}?${query}` : basePath;
     window.history.replaceState(null, "", nextUrl);
-  }, [filters, queryReady]);
+  }, [basePath, filters, queryReady, syncUrl]);
 
   const appliedChips = useMemo(() => {
     const chips: AppliedFilterChip[] = [];
