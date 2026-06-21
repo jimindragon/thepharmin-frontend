@@ -1,0 +1,366 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand: #111111;
+  --color-brand-dark: #050505;
+  --color-brand-bright: #d7d7d7;
+  --color-brand-soft: #f3f3f3;
+  --color-accent: #333333;
+  --color-text: #171b20;
+  --color-muted: #6f767f;
+  --color-border: #e0e2e5;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-soft-bg: #f5f5f3;
+  --color-danger: #e14b2d;
+  --radius: 3px;
+  --shadow: 0 1px 0 rgba(18, 24, 30, 0.04);
+  --content-max-width: 1320px;
+  --sidebar-width: 260px;
+  --font-size-heading: 30px;
+  --font-size-body: 13px;
+  --control-height: 36px;
+  --card-padding: 14px;
+  --section-gap: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  font-family:
+    Pretendard,
+    "Noto Sans KR",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(17, 17, 17, 0.18);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  width: min(var(--content-max-width), calc(100vw - 96px));
+  margin: 0 auto;
+}
+
+.surface {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.subtle-button {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--color-text);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 120ms ease;
+}
+
+.subtle-button:hover {
+  border-color: rgba(17, 17, 17, 0.28);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.subtle-button:active {
+  transform: translateY(1px);
+}
+
+.jobs-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+  gap: 20px;
+  align-items: start;
+}
+
+.jobs-main {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .app-shell {
+    width: min(100% - 40px, var(--content-max-width));
+  }
+
+  .jobs-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(100% - 28px, var(--content-max-width));
+  }
+}
+
+.registration-page {
+  padding-top: 26px;
+  padding-bottom: 88px;
+}
+
+.registration-container {
+  width: min(1280px, calc(100vw - 80px));
+}
+
+.registration-page-title {
+  margin-top: 14px;
+  font-size: 32px;
+}
+
+.registration-page-subtitle {
+  margin-top: 7px;
+  font-size: 14px;
+}
+
+.registration-stepper {
+  margin-top: 24px;
+}
+
+.registration-step-circle {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+.registration-step-label {
+  font-size: 14px;
+}
+
+.registration-company-card {
+  margin-top: 18px;
+  padding: 16px 20px;
+}
+
+.registration-company-card > div > div:first-child {
+  width: 62px;
+  height: 62px;
+}
+
+.registration-company-title {
+  font-size: 19px;
+}
+
+.registration-layout {
+  grid-template-columns: minmax(0, 1fr) 286px;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.registration-main-stack {
+  row-gap: 16px;
+}
+
+.registration-sidebar {
+  top: 20px;
+  row-gap: 16px;
+}
+
+.registration-sidebar > .surface {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 18px;
+}
+
+.registration-sidebar h2 {
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.registration-sidebar h3 {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.registration-sidebar p,
+.registration-sidebar li {
+  font-size: 12px;
+}
+
+.registration-exposure-card .mt-6 {
+  margin-top: 16px;
+}
+
+.registration-exposure-card ul {
+  margin-top: 16px;
+}
+
+.registration-progress-list {
+  position: relative;
+  margin-top: 18px;
+  padding-left: 32px;
+}
+
+.registration-progress-list::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: #d7dee7;
+}
+
+.registration-progress-item {
+  position: relative;
+  padding-bottom: 22px;
+}
+
+.registration-progress-item:last-child {
+  padding-bottom: 0;
+}
+
+.registration-progress-marker {
+  position: absolute;
+  left: -33px;
+  top: 2px;
+  z-index: 1;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border-width: 2px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.registration-progress-card ul {
+  margin-top: 8px;
+}
+
+.registration-section-header {
+  gap: 14px;
+  padding: 15px 20px;
+}
+
+.registration-section-body {
+  padding: 18px 20px;
+}
+
+.registration-section-index {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.registration-section-title {
+  font-size: 17px;
+}
+
+.registration-section-description {
+  font-size: 12px;
+}
+
+.registration-status-pill {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+.registration-form-row {
+  grid-template-columns: 124px minmax(0, 1fr);
+  gap: 16px;
+  padding-block: 10px;
+}
+
+.registration-field-label {
+  padding-top: 7px;
+  font-size: 14px;
+}
+
+.registration-page .registration-control,
+.registration-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.registration-page select {
+  height: 46px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.registration-page textarea {
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.registration-page .h-10 {
+  height: 36px;
+}
+
+.registration-page .h-11 {
+  height: 40px;
+}
+
+.registration-page .h-12,
+.registration-page .h-\[52px\] {
+  height: 46px;
+}
+
+.registration-page .min-h-\[50px\] {
+  min-height: 44px;
+}
+
+.registration-page .min-h-\[94px\] {
+  min-height: 84px;
+}
+
+.registration-page .min-h-\[174px\] {
+  min-height: 150px;
+}
+
+.registration-page .h-\[190px\] {
+  height: 168px;
+}
+
+.registration-bottom-bar .app-shell {
+  height: 58px;
+}
+
+@media (max-width: 1180px) {
+  .registration-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .registration-container {
+    width: calc(100vw - 28px);
+  }
+
+  .registration-form-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
