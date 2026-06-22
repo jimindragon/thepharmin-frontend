@@ -15,7 +15,6 @@ import {
   ExternalLink,
   FileText,
   Heart,
-  Home,
   MapPin,
   Share2,
   ShieldCheck,
@@ -33,6 +32,7 @@ import type {
   Job,
   ReviewAccessState,
 } from "@/types/jobs";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 
 interface JobDetailClientProps {
   job: Job;
@@ -518,29 +518,33 @@ function CompanyNewsSection({ job }: { job: Job }) {
   return (
     <div>
       {!hasDirectCompanyNews ? (
-        <p className="mb-4 rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-bold leading-[1.6] text-[#7d8796]">
+        <p className="mb-4 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-bold leading-[1.6] text-[#7d8796]">
           아직 이 기업과 직접 관련된 기사가 없습니다. 대신 이 공고와 관련된 제약·바이오 산업 뉴스를 확인해 보세요.
         </p>
       ) : null}
       <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1">
         {articles.map((article) => (
-          <article key={article.id} className="rounded-[var(--radius)] border border-[#e0e6ee] bg-white p-4 transition hover:border-[#111111]">
-            <div className="flex items-center justify-between gap-2">
-              <span className="rounded-[var(--radius)] bg-[#f4f5f6] px-2.5 py-1 text-[11px] font-black text-[#4f5a66]">{article.label}</span>
-              <span className="text-[11px] font-bold text-[#9aa4b2]">{article.publishedAt}</span>
+          <article key={article.id} className="group overflow-hidden border border-[#e0e6ee] bg-white transition hover:border-[#111111]">
+            <div className="h-[122px] bg-[#eef1f4]">
+              <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#eef3f6_0%,#d7e3ea_42%,#f6f8fa_100%)] p-4">
+                <span className="bg-white/88 px-2.5 py-1 text-[11px] font-black text-[#4f5a66] ring-1 ring-[#dfe7ee]">{article.label}</span>
+              </div>
             </div>
-            <h3 className="mt-3 line-clamp-2 text-[15px] font-black leading-[1.45] text-[#252d39]">{article.title}</h3>
-            <p className="mt-2 line-clamp-2 text-[13px] font-semibold leading-[1.65] text-[#667181]">{article.summary}</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {article.keywords.slice(0, 3).map((keyword) => (
-                <span key={keyword} className="rounded-[var(--radius)] border border-[#e4e9ef] bg-[#fbfcfd] px-2 py-1 text-[11px] font-bold text-[#687382]">
-                  {keyword}
-                </span>
-              ))}
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-2 text-[12px] font-bold text-[#8a95a5]">
-              <span>출처: {article.source}</span>
-              <a href={article.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-black text-[#2f3845] hover:text-brand">
+            <div className="p-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-bold text-[#8a95a5]">{article.publishedAt}</p>
+                <p className="text-[11px] font-black text-[#00746c]">{article.source}</p>
+              </div>
+              <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[14px] font-black leading-[1.45] text-[#202733]">{article.title}</h3>
+              <p className="mt-2 line-clamp-2 text-[12px] font-semibold leading-[1.6] text-[#667181]">{article.summary}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {article.keywords.slice(0, 3).map((keyword) => (
+                  <span key={keyword} className="border border-[#e4e9ef] bg-[#fbfcfd] px-2 py-1 text-[11px] font-bold text-[#687382]">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+              <a href={article.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-[12px] font-black text-[#2f3845] hover:text-brand">
                 기사 보기
                 <ExternalLink size={13} />
               </a>
@@ -1108,16 +1112,9 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
 
   return (
     <>
-      <main className="bg-[#f5f5f3] pb-28 pt-6">
+      <main className="bg-[#f5f6f7] pb-28 pt-6">
         <div className="app-shell">
-          <nav className="flex items-center gap-2 text-[13px] font-bold text-[#8a95a5]" aria-label="breadcrumb">
-            <Home size={15} />
-            <Link href="/jobs" className="hover:text-brand">
-              채용공고
-            </Link>
-            <ChevronRight size={14} />
-            <span className="text-[#4e5968]">{job.role ?? job.jobCategory ?? "공고 상세"}</span>
-          </nav>
+          <PageBreadcrumb items={[{ label: "채용공고", href: "/jobs" }, { label: job.role ?? job.jobCategory ?? "공고 상세" }]} />
 
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">
             <div className="min-w-0 space-y-5">
@@ -1194,16 +1191,22 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 </div>
               </section>
 
-              <nav className="sticky top-[64px] z-30 -mx-1 overflow-x-auto rounded-[var(--radius)] border border-border bg-white/95 px-2 py-2 shadow-[0_5px_18px_rgba(20,32,46,0.06)] backdrop-blur" aria-label="공고 섹션 이동">
-                <div className="flex min-w-max gap-1">
+              <nav
+                data-job-detail-tabs="true"
+                className="sticky top-[64px] z-40 overflow-x-auto border-x border-b border-border bg-white/[0.98] backdrop-blur"
+                aria-label="공고 섹션 이동"
+              >
+                <div className="flex min-w-max">
                   {sections.map((section) => (
                     <button
                       key={section.id}
                       type="button"
                       onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
                       className={clsx(
-                        "h-10 rounded-[var(--radius)] px-3.5 text-[13px] font-black transition",
-                        activeSection === section.id ? "bg-brand-soft text-brand" : "text-[#6d7785] hover:bg-[#f4f4f4] hover:text-brand",
+                        "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-black transition",
+                        activeSection === section.id
+                          ? "text-brand shadow-[inset_0_-2px_0_#00746C]"
+                          : "text-[#4f5967] hover:bg-[#f7f8fa] hover:text-[#111111]",
                       )}
                     >
                       {section.label}

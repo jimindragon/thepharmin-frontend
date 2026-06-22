@@ -1,3 +1,4 @@
+import { companyExampleImages } from "@/config/companyImages";
 import type { RecommendedJob } from "@/types/jobs";
 
 export const recommendedJobs: RecommendedJob[] = [
@@ -10,7 +11,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["RA", "CTD", "글로벌 인허가"],
     dDay: "D-12",
     applyMethod: "기업 홈페이지 지원",
-    image: "/images/recommend-dna.svg",
+    image: companyExampleImages.workspace,
     track: "industry",
     postingSource: "direct",
   },
@@ -22,7 +23,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["RA", "허가 전략", "헤드헌팅"],
     dDay: "D-4",
     applyMethod: "간편 지원",
-    image: "/images/recommend-lab.svg",
+    image: companyExampleImages.hero,
     track: "industry",
     postingSource: "headhunting",
   },
@@ -34,7 +35,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["포닥", "면역학", "논문"],
     dDay: "D-14",
     applyMethod: "기업 홈페이지 지원",
-    image: "/images/recommend-microscope.svg",
+    image: companyExampleImages.culture,
     track: "research",
     postingSource: "direct",
   },
@@ -46,7 +47,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["근무약사", "파트타임", "처방조제"],
     dDay: "D-7",
     applyMethod: "간편 지원",
-    image: "/images/recommend-lab.svg",
+    image: companyExampleImages.primary,
     track: "pharmacy",
     postingSource: "direct",
   },
@@ -58,7 +59,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["임상약사", "상급종합병원", "헤드헌팅"],
     dDay: "D-16",
     applyMethod: "간편 지원",
-    image: "/images/recommend-dna.svg",
+    image: companyExampleImages.hero,
     track: "hospital",
     postingSource: "headhunting",
   },

@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronRight, Home } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { CategoryTabs } from "@/components/CategoryTabs";
 import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { Pagination } from "@/components/Pagination";
 import { RecommendedJobs } from "@/components/RecommendedJobs";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
@@ -102,11 +102,7 @@ export default function JobsPage() {
       <Header />
       <main className="pb-9 pt-[18px]">
         <div className="app-shell">
-          <div className="flex items-center gap-3 text-[13px] font-bold text-[#a0a9b7]">
-            <Home size={16} />
-            <ChevronRight size={15} />
-            <span>{siteConfig.breadcrumb}</span>
-          </div>
+          <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 
           <h1 className="mt-5 text-[30px] font-extrabold leading-none tracking-[0] text-[#242b36]">
             {siteConfig.pageTitle}
@@ -128,6 +124,7 @@ export default function JobsPage() {
                 onToggleJobSubcategory={filterState.toggleJobSubcategory}
                 onToggleMultiFilter={filterState.toggleMultiFilter}
                 onSetSingleFilter={filterState.setSingleFilter}
+                onSetSpecialFilter={filterState.setSpecialFilter}
                 onRemoveAppliedFilter={filterState.removeAppliedFilter}
                 onResetAll={filterState.resetFilters}
               />
@@ -140,9 +137,7 @@ export default function JobsPage() {
               <JobListToolbar
                 totalCount={filteredJobs.length}
                 sortOption={sortOption}
-                headhuntingOnly={filterState.filters.headhuntingOnly}
                 onSortChange={setSortOption}
-                onHeadhuntingOnlyChange={filterState.setHeadhuntingOnly}
               />
 
               {visibleJobs.length ? (

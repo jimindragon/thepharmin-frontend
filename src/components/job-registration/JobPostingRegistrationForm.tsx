@@ -4,7 +4,6 @@ import clsx from "clsx";
 import {
   AlertCircle,
   Bold,
-  Building2,
   ChevronDown,
   FileText,
   GripVertical,
@@ -34,8 +33,10 @@ import {
   useRef,
   useState,
 } from "react";
+import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import { deriveJobTrack } from "@/config/trackMapping";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import type { OrganizationType } from "@/types/jobs";
 
 type FormatMode = "paragraph" | "bullet" | "number";
@@ -108,6 +109,8 @@ const initialRequirements = ["관련 전공 학사 이상", "RA 유관 경력 3�
 const initialPreferredQualifications = ["약사 면허 보유자", "영어 커뮤니케이션 가능자", "글로벌 허가 경험 보유자"];
 
 const benefitOptions = ["4대 보험", "연차", "교육비 지원", "성과급", "식대 지원", "유연근무", "재택근무", "건강검진"];
+
+const companyDefaultImage = companyExampleImages.primary;
 
 const keywordAliases: Record<string, string> = {
   인허가: "규제기관 대응",
@@ -742,8 +745,8 @@ export function JobPostingRegistrationForm() {
   const [applicationGuide, setApplicationGuide] = useState("");
   const [deadlineMode, setDeadlineMode] = useState<"date" | "always">("date");
   const [keywordMessage, setKeywordMessage] = useState("");
-  const [imageMode, setImageMode] = useState<ImageMode>("upload");
-  const [imagePreview, setImagePreview] = useState("");
+  const [imageMode, setImageMode] = useState<ImageMode>("company");
+  const [imagePreview, setImagePreview] = useState<string>(companyDefaultImage);
   const [detailBlocks, setDetailBlocks] = useState<DetailBlock[]>([]);
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState("저장 전");
@@ -878,12 +881,7 @@ export function JobPostingRegistrationForm() {
       <div className="registration-container mx-auto">
         <div className="flex items-start justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 text-[13px] font-bold text-[#8a95a5]">
-              <Building2 size={15} />
-              기업 서비스
-              <span className="text-[#c4cbd5]">/</span>
-              공고 등록
-            </div>
+            <PageBreadcrumb items={[{ label: "기업 서비스" }, { label: "공고 등록" }]} />
             <h1 className="registration-page-title mt-5 text-[42px] font-black tracking-[0] text-[#111827]">공고 등록</h1>
             <p className="registration-page-subtitle mt-3 text-[18px] font-bold text-[#747f8f]">
               채용 공고를 손쉽게 등록하세요.
@@ -1072,7 +1070,7 @@ export function JobPostingRegistrationForm() {
                       type="button"
                       onClick={() => {
                         setImageMode(option.mode);
-                        setImagePreview(option.mode === "company" ? "/images/company-office.svg" : "");
+                        setImagePreview(option.mode === "company" ? companyDefaultImage : "");
                       }}
                       className={clsx(
                         "inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border px-3.5 text-[13px] font-black transition",

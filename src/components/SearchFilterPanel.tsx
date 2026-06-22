@@ -13,6 +13,7 @@ import type {
   FilterStateKey,
   JobCategoryOption,
   JobFilters,
+  SpecialJobFilterKey,
   JobTrack,
   SingleFilterStateKey,
   TrackFilterConfig,
@@ -30,9 +31,16 @@ interface SearchFilterPanelProps {
   onToggleJobSubcategory: (id: string) => void;
   onToggleMultiFilter: (key: FilterStateKey, id: string) => void;
   onSetSingleFilter: (key: SingleFilterStateKey, id: string | null) => void;
+  onSetSpecialFilter: (key: SpecialJobFilterKey, checked: boolean) => void;
   onRemoveAppliedFilter: (chip: AppliedFilterChip) => void;
   onResetAll: () => void;
 }
+
+const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string }> = [
+  { key: "leaderOnly", label: "리더급 공고" },
+  { key: "headhuntingOnly", label: "헤드헌팅 공고" },
+  { key: "quickApplyOnly", label: "간편지원 공고" },
+];
 
 function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
   return key.endsWith("Ids");
@@ -266,6 +274,7 @@ export function SearchFilterPanel({
   onToggleJobSubcategory,
   onToggleMultiFilter,
   onSetSingleFilter,
+  onSetSpecialFilter,
   onRemoveAppliedFilter,
   onResetAll,
 }: SearchFilterPanelProps) {
@@ -344,6 +353,23 @@ export function SearchFilterPanel({
             <RotateCcw size={15} />
             전체 초기화
           </button>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2 border-t border-[#e3e5e8] pt-3">
+          {specialFilterOptions.map((option) => (
+            <label
+              key={option.key}
+              className="inline-flex h-[34px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[12px] font-bold text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
+            >
+              <input
+                type="checkbox"
+                checked={filters[option.key]}
+                onChange={(event) => onSetSpecialFilter(option.key, event.target.checked)}
+                className="h-4 w-4 accent-[#111111]"
+              />
+              {option.label}
+            </label>
+          ))}
         </div>
 
         {openDefinition ? (

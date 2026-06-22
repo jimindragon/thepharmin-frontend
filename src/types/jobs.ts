@@ -106,7 +106,11 @@ export type FilterKind =
   | "schedule"
   | "hospitalType"
   | "shiftType"
+  | "leaderOnly"
+  | "quickApplyOnly"
   | "headhuntingOnly";
+
+export type SpecialJobFilterKey = "leaderOnly" | "headhuntingOnly" | "quickApplyOnly";
 
 export interface FilterOption {
   id: string;
@@ -216,7 +220,9 @@ export interface JobFilters {
   scheduleIds: string[];
   hospitalTypeIds: string[];
   shiftTypeIds: string[];
+  leaderOnly: boolean;
   headhuntingOnly: boolean;
+  quickApplyOnly: boolean;
 }
 
 export interface AppliedFilterChip {

@@ -1,3 +1,4 @@
+import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import { deriveJobTrack } from "@/config/trackMapping";
 import type { Job, JobTrack } from "@/types/jobs";
@@ -115,6 +116,10 @@ export const jobs: Job[] = [
     ],
     workConditions: ["근무형태: 정규직", "근무지: 서울 강남구 테헤란로 123, 8층", "근무시간: 주 5일, 09:00~18:00", "급여: 회사 내규에 따름"],
     additionalMaterials: {
+      images: [
+        { url: companyExampleImages.workspace, alt: "더팜인제약 업무 공간 예시", title: "업무 환경" },
+        { url: companyExampleImages.culture, alt: "더팜인제약 기업 분위기 예시", title: "회사 분위기" },
+      ],
       files: [
         { name: "채용 안내 자료.pdf", url: "/files/ra-specialist-guide.pdf", description: "지원 전 확인할 수 있는 채용 안내 자료" },
         { name: "복리후생 소개서.pdf", url: "/files/thepharmin-benefits.pdf", description: "더팜인제약 복리후생 요약 자료" },

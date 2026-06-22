@@ -157,7 +157,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
           전체보기 ›
         </Link>
       </div>
-      <div className="overflow-x-auto border border-[#dddddd] bg-white">
+      <div className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => (
             <Link
@@ -196,8 +196,8 @@ function RecruiterSolutionBanner() {
   return (
     <section className="mt-5 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
       <Link href="/company/jobs/new" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
-        <p className="text-[14px] font-bold text-[#666666]">공고를 올리거나 전문 인재를 찾는 채용 담당자이신가요?</p>
-        <span className="text-[13px] font-black text-[#146c83]">THE PHARMA 채용 솔루션 안내 ›</span>
+        <p className="text-[14px] font-bold text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
+        <span className="text-[13px] font-black text-[#146c83]">더파마 리크루트 채용 솔루션 알아보기 ›</span>
       </Link>
     </section>
   );
@@ -217,7 +217,7 @@ function ThemeCuration() {
           </button>
         </div>
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-1">
+      <div className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
         {themeCurationCards.map((card) => (
           <Link
             key={card.id}
@@ -380,6 +380,7 @@ function HomeJobsSection({
           onToggleJobSubcategory={filterState.toggleJobSubcategory}
           onToggleMultiFilter={filterState.toggleMultiFilter}
           onSetSingleFilter={filterState.setSingleFilter}
+          onSetSpecialFilter={filterState.setSpecialFilter}
           onRemoveAppliedFilter={filterState.removeAppliedFilter}
           onResetAll={filterState.resetFilters}
         />
@@ -392,9 +393,7 @@ function HomeJobsSection({
         <JobListToolbar
           totalCount={filteredJobs.length}
           sortOption={sortOption}
-          headhuntingOnly={filterState.filters.headhuntingOnly}
           onSortChange={setSortOption}
-          onHeadhuntingOnlyChange={filterState.setHeadhuntingOnly}
         />
 
         <div className="flex flex-col gap-1.5">

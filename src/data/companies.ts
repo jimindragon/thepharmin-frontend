@@ -1,3 +1,4 @@
+import { companyExampleImages } from "@/config/companyImages";
 import type { Company, CompanyReview, ReviewAccessState } from "@/types/jobs";
 
 export const companies: Company[] = [
@@ -7,7 +8,8 @@ export const companies: Company[] = [
     logoText: "더팜인제약",
     logoColor: "#111111",
     logoAccent: "#5a5a5a",
-    defaultImage: "/images/company-office.svg",
+    coverImage: companyExampleImages.hero,
+    defaultImage: companyExampleImages.primary,
     verified: true,
     description:
       "더팜인제약은 전문의약품과 바이오 의약품을 개발·제조하는 제약 기업입니다. 품질 중심의 연구개발 문화와 규제 대응 역량을 바탕으로 국내외 허가 전략을 고도화하고 있습니다.",

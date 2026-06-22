@@ -100,6 +100,30 @@ input:focus-visible {
   transform: translateY(1px);
 }
 
+.premium-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #b8bec7 transparent;
+  scrollbar-gutter: stable;
+}
+
+.premium-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #b8bec7;
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #8f98a5;
+}
+
 .jobs-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--sidebar-width);

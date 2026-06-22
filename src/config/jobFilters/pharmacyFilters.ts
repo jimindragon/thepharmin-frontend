@@ -29,11 +29,11 @@ export const pharmacyWorkTypeOptions: FilterOption[] = [
 ];
 
 export const hourlyPayRangeOptions: FilterOption[] = [
-  { id: "under-25000", label: "~2.5만원" },
-  { id: "25000-30000", label: "2.5~3만원" },
-  { id: "30000-35000", label: "3~3.5만원" },
-  { id: "35000-40000", label: "3.5~4만원" },
-  { id: "40000-plus", label: "4만원~" },
+  { id: "under-25000", label: "세후 ~2.5만원" },
+  { id: "25000-30000", label: "세후 2.5~3만원" },
+  { id: "30000-35000", label: "세후 3~3.5만원" },
+  { id: "35000-40000", label: "세후 3.5~4만원" },
+  { id: "40000-plus", label: "세후 4만원~" },
 ];
 
 export const pharmacyFeatureOptions: FilterOption[] = [
@@ -48,9 +48,6 @@ export const pharmacyFilterConfig: TrackFilterConfig = {
   track: "pharmacy",
   filters: [
     { id: "job", label: "모집 직군", kind: "job", categories: pharmacyJobCategoryOptions },
-    { id: "region", label: "지역", kind: "options", stateKey: "regionIds", selection: "multiple", options: domesticRegionOptions },
-    { id: "workType", label: "근무 형태", kind: "options", stateKey: "workTypeIds", selection: "multiple", options: pharmacyWorkTypeOptions },
-    { id: "hourlyPay", label: "시급", kind: "options", stateKey: "hourlyPayRangeId", selection: "single", options: hourlyPayRangeOptions },
     {
       id: "pharmacyFeature",
       label: "약국 특성",
@@ -59,6 +56,9 @@ export const pharmacyFilterConfig: TrackFilterConfig = {
       selection: "multiple",
       options: pharmacyFeatureOptions,
     },
+    { id: "region", label: "지역", kind: "options", stateKey: "regionIds", selection: "multiple", options: domesticRegionOptions },
+    { id: "workType", label: "근무 형태", kind: "options", stateKey: "workTypeIds", selection: "multiple", options: pharmacyWorkTypeOptions },
+    { id: "hourlyPay", label: "시급", kind: "options", stateKey: "hourlyPayRangeId", selection: "single", options: hourlyPayRangeOptions },
     {
       id: "additional",
       label: "추가 조건",

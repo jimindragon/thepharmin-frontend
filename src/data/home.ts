@@ -1,3 +1,4 @@
+import { companyExampleImages } from "@/config/companyImages";
 import type { JobTrack } from "@/types/jobs";
 
 export type HomeTrackFilter = "all" | JobTrack;
@@ -148,35 +149,35 @@ export const themeCurationCards: Array<{
     id: "core-biotech",
     title: "주목받는 혁신 바이오기업",
     subtitle: "성장하는 스타트업 모음",
-    image: "/images/recommend-dna.svg",
+    image: companyExampleImages.workspace,
     href: "/jobs?track=industry&companyType=biotech",
   },
   {
     id: "large-pharma",
     title: "누구나 아는 대형 제약사",
     subtitle: "대기업 계열 채용",
-    image: "/images/company-office.svg",
+    image: companyExampleImages.hero,
     href: "/jobs?track=industry&companyType=pharma",
   },
   {
     id: "long-reward",
     title: "장기근속 포상이 있는 기업",
     subtitle: "복지 좋은 곳",
-    image: "/images/job-cover-lab.svg",
+    image: companyExampleImages.culture,
     href: "/jobs?track=industry",
   },
   {
     id: "popular",
     title: "이번 주 지원 많은 공고",
     subtitle: "지금 인기 채용",
-    image: "/images/recommend-lab.svg",
+    image: companyExampleImages.primary,
     href: "/jobs?sort=popular",
   },
   {
     id: "urgent",
     title: "마감 임박 얼리버드 공고",
     subtitle: "빠른 지원 필요",
-    image: "/images/recommend-microscope.svg",
+    image: companyExampleImages.workspace,
     href: "/jobs?sort=deadline",
   },
 ];

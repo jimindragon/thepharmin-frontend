@@ -8,7 +8,6 @@ import {
   ChevronUp,
   Clock3,
   Filter,
-  Home,
   Lock,
   MailCheck,
   Pin,
@@ -21,6 +20,7 @@ import { hospitalTypeOptions } from "@/config/jobFilters/hospitalFilters";
 import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
@@ -807,11 +807,7 @@ export function RecruitmentCalendarClient() {
     <>
       <main className="min-h-screen bg-white pb-9 pt-[18px]">
         <div className="app-shell">
-          <div className="flex items-center gap-3 text-[13px] font-bold text-[#a0a9b7]">
-            <Home size={16} />
-            <ChevronRight size={15} />
-            <span>채용 캘린더</span>
-          </div>
+          <PageBreadcrumb items={[{ label: "채용 캘린더" }]} />
 
           <div className="mt-5">
             <h1 className="text-[30px] font-extrabold leading-none tracking-[0] text-[#242b36] max-[760px]:text-[26px]">채용 캘린더</h1>

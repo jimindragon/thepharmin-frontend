@@ -15,6 +15,7 @@ import type {
   FilterStateKey,
   Job,
   JobFilters,
+  SpecialJobFilterKey,
   JobTrack,
   SingleFilterStateKey,
   UserJobPreference,
@@ -103,7 +104,9 @@ export const emptyJobFilters: JobFilters = {
   scheduleIds: [],
   hospitalTypeIds: [],
   shiftTypeIds: [],
+  leaderOnly: false,
   headhuntingOnly: false,
+  quickApplyOnly: false,
 };
 
 function without<T>(items: T[], value: T) {
@@ -154,7 +157,9 @@ function parseFiltersFromQuery(): JobFilters {
     keyword: params.get("keyword") ?? "",
     jobCategoryIds: csv(params.get("jobCategory")),
     jobSubcategoryIds: csv(params.get("job")),
+    leaderOnly: params.get("leader") === "true",
     headhuntingOnly: params.get("headhunting") === "true",
+    quickApplyOnly: params.get("quickApply") === "true",
   };
 
   arrayFilterKeys.forEach((key) => {
@@ -178,7 +183,9 @@ export function preserveCommonFiltersForTrackChange(current: JobFilters, nextTra
     track: nextTrack,
     keyword: current.keyword,
     regionIds: normalizeRegionIdsForTrack(nextTrack, current.regionIds),
+    leaderOnly: current.leaderOnly,
     headhuntingOnly: current.headhuntingOnly,
+    quickApplyOnly: current.quickApplyOnly,
   };
 }
 
@@ -211,7 +218,9 @@ function hasActiveFilters(filters: JobFilters) {
     filters.scheduleIds.length > 0 ||
     filters.hospitalTypeIds.length > 0 ||
     filters.shiftTypeIds.length > 0 ||
-    filters.headhuntingOnly
+    filters.leaderOnly ||
+    filters.headhuntingOnly ||
+    filters.quickApplyOnly
   );
 }
 
@@ -222,7 +231,9 @@ function toQuery(filters: JobFilters) {
   if (filters.jobCategoryIds.length) params.set("jobCategory", filters.jobCategoryIds.join(","));
   if (filters.jobSubcategoryIds.length) params.set("job", filters.jobSubcategoryIds.join(","));
   if (filters.keyword.trim()) params.set("keyword", filters.keyword.trim());
+  if (filters.leaderOnly) params.set("leader", "true");
   if (filters.headhuntingOnly) params.set("headhunting", "true");
+  if (filters.quickApplyOnly) params.set("quickApply", "true");
 
   arrayFilterKeys.forEach((key) => {
     if (filters[key].length) params.set(queryKeys[key], filters[key].join(","));
@@ -335,8 +346,16 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
       chips.push(makeChip("keyword", filters.keyword.trim(), `검색어: ${filters.keyword.trim()}`));
     }
 
+    if (filters.leaderOnly) {
+      chips.push(makeChip("leaderOnly", "true", "리더급 공고"));
+    }
+
     if (filters.headhuntingOnly) {
       chips.push(makeChip("headhuntingOnly", "true", "헤드헌팅 공고"));
+    }
+
+    if (filters.quickApplyOnly) {
+      chips.push(makeChip("quickApplyOnly", "true", "간편지원 공고"));
     }
 
     return chips;
@@ -425,9 +444,9 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
   const toggleWorkMode = (id: string) => toggleMultiFilter("workModeIds", id);
   const toggleCompanyType = (id: string) => toggleMultiFilter("companyTypeIds", id);
 
-  const setHeadhuntingOnly = (checked: boolean) => {
+  const setSpecialFilter = (key: SpecialJobFilterKey, checked: boolean) => {
     markManualChange();
-    setFilters((current) => ({ ...current, headhuntingOnly: checked }));
+    setFilters((current) => ({ ...current, [key]: checked }));
   };
 
   const submitKeyword = () => {
@@ -445,6 +464,14 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
 
       if (chip.kind === "headhuntingOnly") {
         return { ...current, headhuntingOnly: false };
+      }
+
+      if (chip.kind === "leaderOnly") {
+        return { ...current, leaderOnly: false };
+      }
+
+      if (chip.kind === "quickApplyOnly") {
+        return { ...current, quickApplyOnly: false };
       }
 
       if (chip.kind === "jobCategory") {
@@ -531,7 +558,7 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     setSalary,
     toggleWorkMode,
     toggleCompanyType,
-    setHeadhuntingOnly,
+    setSpecialFilter,
     submitKeyword,
     removeAppliedFilter,
     resetFilters,
@@ -551,7 +578,9 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters) {
 
   return items.filter((job) => {
     if (job.track !== filters.track) return false;
+    if (filters.leaderOnly && (job.experienceMin ?? 0) < 5) return false;
     if (filters.headhuntingOnly && job.postingSource !== "headhunting") return false;
+    if (filters.quickApplyOnly && job.applyMethod !== "간편 지원" && job.applyMethod !== "더파마 간편지원") return false;
     if (!jobCategoryMatches(job, filters)) return false;
     if (filters.regionIds.length && !filters.regionIds.includes(job.regionId)) return false;
     if (filters.employmentTypeIds.length && !includesAny(jobEmploymentTypeIds(job), filters.employmentTypeIds)) return false;
