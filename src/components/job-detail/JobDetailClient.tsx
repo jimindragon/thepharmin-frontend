@@ -9,10 +9,11 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
-  CheckCircle2,
   ChevronRight,
   Copy,
+  Download,
   ExternalLink,
+  FileText,
   Heart,
   Home,
   MapPin,
@@ -25,11 +26,11 @@ import {
 } from "lucide-react";
 import type {
   Company,
+  CompanyNewsArticle,
   CompanyReview,
   CompanyReviewType,
   FormattedContent,
   Job,
-  JobDetailBlock,
   ReviewAccessState,
 } from "@/types/jobs";
 
@@ -76,8 +77,8 @@ function deadlineLabel(job: Job) {
     return "마감";
   }
 
-  if (job.closingStatus === "always") {
-    return "상시채용";
+  if (job.deadlineType === "untilHired" || job.closingStatus === "always") {
+    return "채용 시 마감";
   }
 
   if (!job.deadline) {
@@ -100,27 +101,131 @@ function deadlineLabel(job: Job) {
   return `D-${diff}`;
 }
 
+function deadlineDetail(job: Job) {
+  if (job.deadlineType === "untilHired" || job.closingStatus === "always") {
+    return "채용 시 마감";
+  }
+
+  return job.deadlineDate;
+}
+
 function applyButtonLabel(job: Job) {
-  if (job.applyMethod === "간편 지원") {
-    return "간편 지원하기";
+  if (job.applyMethod === "간편 지원" || job.applyMethod === "더파마 간편지원") {
+    return "더파마 리크루트로 지원하기";
   }
 
   if (job.applyMethod === "기업 홈페이지 지원") {
-    return "기업 홈페이지에서 지원";
+    return "기업 홈페이지에서 지원하기";
   }
 
-  return "지원 방법 확인하기";
+  if (job.applyMethod === "이메일 지원") {
+    return "이메일로 지원하기";
+  }
+
+  return "지원 안내 확인하기";
+}
+
+function applyNotice(job: Job) {
+  if (job.applyMethod === "기업 홈페이지 지원") {
+    return job.applicationNotice ?? "지원 시 기업 채용 페이지로 이동합니다. 지원 결과와 전형 진행은 해당 기업에서 관리됩니다.";
+  }
+
+  if (job.applyMethod === "간편 지원" || job.applyMethod === "더파마 간편지원") {
+    return "지원서 제출 후 마이페이지에서 지원 현황을 확인할 수 있습니다.";
+  }
+
+  if (job.applyMethod === "이메일 지원") {
+    return "이력서와 제출서류를 첨부해 지정된 이메일로 지원해 주세요.";
+  }
+
+  return job.applicationGuide ?? "공고 본문에 안내된 지원 방법을 확인해 주세요.";
+}
+
+function applyHref(job: Job) {
+  if (job.applyMethod === "기업 홈페이지 지원") {
+    return job.applicationUrl;
+  }
+
+  if (job.applyMethod === "이메일 지원" && job.applicationEmail) {
+    return `mailto:${job.applicationEmail}`;
+  }
+
+  if (job.applyMethod === "간편 지원" || job.applyMethod === "더파마 간편지원") {
+    return `/jobs/${job.slug ?? job.id}/apply`;
+  }
+
+  return undefined;
+}
+
+function getCoverImage(job: Job, company: Company | null) {
+  if (job.coverImageMode === "upload" && job.coverImageUrl) {
+    return job.coverImageUrl;
+  }
+
+  if (job.coverImageMode === "company") {
+    return company?.coverImage ?? company?.defaultImage ?? job.coverImage;
+  }
+
+  if (job.coverImageMode === "none") {
+    return undefined;
+  }
+
+  return job.coverImageUrl ?? job.coverImage ?? company?.coverImage ?? company?.defaultImage;
+}
+
+function getVisibleJobTags(job: Job) {
+  return [
+    job.role ?? job.jobCategory ?? job.tags[0],
+    job.industry ?? job.category,
+    careerLabel(job),
+    job.education,
+    job.employmentType,
+    job.location,
+  ].filter(Boolean).slice(0, 6);
+}
+
+function getCompanyNewsForJob(job: Job): CompanyNewsArticle[] {
+  if (job.companyNews?.length) {
+    return job.companyNews.slice(0, 3);
+  }
+
+  return [
+    {
+      id: "fallback-regulatory",
+      type: "regulatory",
+      label: "인허가 동향",
+      title: "RA 직무가 확인해야 할 허가 심사 자료 관리 기준",
+      publishedAt: "2026.06.04",
+      source: "더파마뉴스",
+      summary: "의약품 허가 심사와 CTD 제출 과정에서 확인해야 할 최신 규제 흐름을 정리했습니다.",
+      keywords: ["RA", "CTD", "허가심사"],
+      url: "https://www.thepharmanews.com/news/regulatory-guide",
+    },
+    {
+      id: "fallback-industry",
+      type: "industry",
+      label: "산업 뉴스",
+      title: "제약·바이오 기업, 글로벌 인허가 역량 강화 움직임",
+      publishedAt: "2026.05.28",
+      source: "더파마뉴스",
+      summary: "해외 허가와 파트너십 확대에 따라 RA, 품질, 사업개발 협업의 중요성이 커지고 있습니다.",
+      keywords: ["제약·바이오", "글로벌 인허가", job.role ?? job.jobCategory ?? "채용"],
+      url: "https://www.thepharmanews.com/news/global-ra",
+    },
+  ];
 }
 
 function CompanyLogo({
   name,
   logoText,
+  logoUrl,
   logoColor,
   logoAccent,
   size = "lg",
 }: {
   name: string;
   logoText: string;
+  logoUrl?: string;
   logoColor: string;
   logoAccent?: string;
   size?: "sm" | "lg";
@@ -137,23 +242,29 @@ function CompanyLogo({
       )}
       aria-label={`${name} 로고`}
     >
-      <div className={clsx("relative", size === "lg" ? "h-9 w-[52px]" : "h-6 w-9")}>
-        <span
-          className={clsx("absolute rounded-full opacity-90", shapeSize)}
-          style={{ backgroundColor: logoColor, left: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-        />
-        <span
-          className={clsx("absolute rounded-full opacity-80", shapeSize)}
-          style={{ backgroundColor: logoAccent ?? logoColor, right: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-        />
-        <span
-          className={clsx("absolute rounded-full opacity-70", shapeSize)}
-          style={{ backgroundColor: logoColor, left: size === "lg" ? 19 : 11, bottom: 0 }}
-        />
-      </div>
-      <span className={clsx("-mt-1 max-w-[58px] truncate font-black", textSize)} style={{ color: logoColor }}>
-        {logoText}
-      </span>
+      {logoUrl ? (
+        <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" />
+      ) : (
+        <>
+          <div className={clsx("relative", size === "lg" ? "h-9 w-[52px]" : "h-6 w-9")}>
+            <span
+              className={clsx("absolute rounded-full opacity-90", shapeSize)}
+              style={{ backgroundColor: logoColor, left: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
+            />
+            <span
+              className={clsx("absolute rounded-full opacity-80", shapeSize)}
+              style={{ backgroundColor: logoAccent ?? logoColor, right: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
+            />
+            <span
+              className={clsx("absolute rounded-full opacity-70", shapeSize)}
+              style={{ backgroundColor: logoColor, left: size === "lg" ? 19 : 11, bottom: 0 }}
+            />
+          </div>
+          <span className={clsx("-mt-1 max-w-[58px] truncate font-black", textSize)} style={{ color: logoColor }}>
+            {logoText}
+          </span>
+        </>
+      )}
     </div>
   );
 }
@@ -196,7 +307,7 @@ function ActionIconButton({
 
 function DefaultCover({ job }: { job: Job }) {
   return (
-    <div className="relative h-[318px] overflow-hidden border-t border-border bg-[#071115] max-[720px]:h-[220px]">
+    <div className="relative h-[286px] overflow-hidden border-t border-border bg-[#071115] max-[720px]:h-[210px]">
       <div
         className="absolute inset-0"
         style={{
@@ -215,14 +326,12 @@ function DefaultCover({ job }: { job: Job }) {
         />
         <div>
           <p className="text-[14px] font-black text-white">{job.company}</p>
-          <p className="mt-1 text-[12px] font-bold text-white/66">대표 이미지가 없어 기본 커버가 표시됩니다.</p>
+          <p className="mt-1 text-[12px] font-bold text-white/66">{job.industry ?? job.category} · {job.role ?? job.jobCategory ?? "채용"}</p>
         </div>
       </div>
       <div className="absolute bottom-8 left-8 right-8 max-w-[720px] max-[720px]:bottom-6 max-[720px]:left-5 max-[720px]:right-5">
-        <p className="text-[15px] font-black text-[var(--color-brand-bright)]">{job.industry ?? job.category}</p>
-        <h2 className="mt-2 text-[34px] font-black leading-[1.18] text-white max-[720px]:text-[24px]">
-          {job.title}
-        </h2>
+        <p className="text-[15px] font-black text-white/78">THE PHARMA Recruit</p>
+        <p className="mt-2 text-[28px] font-black leading-[1.25] text-white max-[720px]:text-[22px]">{job.company}</p>
       </div>
     </div>
   );
@@ -269,7 +378,7 @@ function FormattedContentView({ content, fallback }: { content?: FormattedConten
     <ListTag className={clsx("space-y-3 text-[15px] font-semibold leading-[1.75] text-[#3f4855]", normalized.format === "numbered" && "list-decimal pl-5")}>
       {normalized.items.map((item, index) => (
         <li key={`${item}-${index}`} className={normalized.format === "bullet" ? "flex gap-2.5" : undefined}>
-          {normalized.format === "bullet" ? <CheckCircle2 className="mt-1 shrink-0 text-brand" size={18} /> : null}
+          {normalized.format === "bullet" ? <span className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#111111]" /> : null}
           <span>{item}</span>
         </li>
       ))}
@@ -277,64 +386,55 @@ function FormattedContentView({ content, fallback }: { content?: FormattedConten
   );
 }
 
-function DetailMaterials({ blocks }: { blocks: JobDetailBlock[] }) {
+function AdditionalMaterials({ job }: { job: Job }) {
+  const legacyImages = (job.detailBlocks ?? [])
+    .filter((block) => block.type === "image" && block.url)
+    .map((block) => ({ url: block.url as string, alt: block.alt ?? block.title ?? "채용 소개 이미지", title: block.title }));
+  const legacyFiles = (job.detailBlocks ?? [])
+    .filter((block) => block.type === "file" && block.url)
+    .map((block) => ({ name: block.fileName ?? block.title ?? "첨부 자료", url: block.url as string, description: block.content }));
+  const images = [...(job.additionalMaterials?.images ?? []), ...legacyImages];
+  const files = [...(job.additionalMaterials?.files ?? []), ...legacyFiles];
+
+  if (!images.length && !files.length) {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
-      {blocks.map((block, index) => {
-        if (block.type === "divider") {
-          return <hr key={`divider-${index}`} className="border-[#e1e7ee]" />;
-        }
-
-        if (block.type === "image" && block.url) {
-          return (
-            <figure key={`${block.type}-${index}`} className="overflow-hidden rounded-[var(--radius)] border border-border">
-              <img src={block.url} alt={block.alt ?? block.title ?? "상세 소개 이미지"} className="h-auto w-full object-cover" />
-              {block.title ? <figcaption className="bg-[#fbfcfd] px-4 py-3 text-[13px] font-bold text-[#687382]">{block.title}</figcaption> : null}
+      {images.length ? (
+        <div className="grid grid-cols-2 gap-3 max-[720px]:grid-cols-1">
+          {images.map((image) => (
+            <figure key={image.url} className="overflow-hidden rounded-[var(--radius)] border border-border bg-[#fbfcfd]">
+              <img src={image.url} alt={image.alt} className="h-[180px] w-full object-cover" />
+              {image.title ? <figcaption className="px-4 py-3 text-[13px] font-bold text-[#687382]">{image.title}</figcaption> : null}
             </figure>
-          );
-        }
-
-        if (block.type === "table" && block.rows) {
-          return (
-            <div key={`${block.type}-${index}`} className="overflow-hidden rounded-[var(--radius)] border border-[#dde6ec]">
-              {block.title ? <h3 className="border-b border-[#e4ebf0] bg-[#fbfcfd] px-4 py-3 text-[15px] font-black text-[#2f3845]">{block.title}</h3> : null}
-              <dl>
-                {block.rows.map((row) => (
-                  <div key={row.label} className="grid grid-cols-[160px_1fr] border-b border-[#edf1f4] last:border-b-0 max-[640px]:grid-cols-1">
-                    <dt className="bg-[#f7f7f7] px-4 py-3 text-[13px] font-black text-[#687382]">{row.label}</dt>
-                    <dd className="px-4 py-3 text-[14px] font-semibold leading-[1.7] text-[#3f4855]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          );
-        }
-
-        if ((block.type === "benefit" || block.type === "process") && block.items?.length) {
-          return (
-            <div key={`${block.type}-${index}`} className="rounded-[var(--radius)] border border-[#dde6ec] bg-[#fbfcfd] p-4">
-              {block.title ? <h3 className="text-[15px] font-black text-[#2f3845]">{block.title}</h3> : null}
-              <div className="mt-3 flex flex-wrap gap-2">
-                {block.items.map((item) => (
-                  <span key={item} className="rounded-[var(--radius)] bg-white px-3 py-1.5 text-[13px] font-extrabold text-[#566171] ring-1 ring-[#e2e8ef]">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          );
-        }
-
-        return (
-          <div key={`${block.type}-${index}`} className="rounded-[var(--radius)] border border-[#dde6ec] bg-[#fbfcfd] p-5">
-            {block.title ? <h3 className="text-[17px] font-black text-[#2f3845]">{block.title}</h3> : null}
-            {block.content ? <p className="mt-2 text-[15px] font-semibold leading-[1.8] text-[#4b5665]">{block.content}</p> : null}
-          </div>
-        );
-      })}
-      <p className="text-[12px] font-bold leading-[1.6] text-[#8a95a5]">
-        상세 소개 자료는 보조 정보입니다. 주요업무, 자격요건, 근무조건, 지원 방법은 위 구조화 정보 기준으로 확인해 주세요.
-      </p>
+          ))}
+        </div>
+      ) : null}
+      {files.length ? (
+        <div className="grid gap-2">
+          {files.map((file) => (
+            <a
+              key={file.url}
+              href={file.url}
+              className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-[#dfe5ec] bg-white px-4 py-3 transition hover:border-[#111111]"
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius)] bg-[#f4f5f6] text-[#4f5a66]">
+                  <FileText size={17} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[14px] font-black text-[#2f3845]">{file.name}</span>
+                  {file.description ? <span className="mt-0.5 block truncate text-[12px] font-bold text-[#8a95a5]">{file.description}</span> : null}
+                </span>
+              </span>
+              <Download size={17} className="shrink-0 text-[#8a95a5]" />
+            </a>
+          ))}
+        </div>
+      ) : null}
+      <p className="text-[12px] font-bold leading-[1.6] text-[#8a95a5]">기업이 제공한 채용 소개 이미지와 첨부 자료입니다.</p>
     </div>
   );
 }
@@ -379,6 +479,12 @@ function WorkConditions({ job }: { job: Job }) {
           </div>
         </div>
       ) : null}
+      {job.workConditionDetail ? (
+        <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-white px-4 py-3.5">
+          <p className="text-[12px] font-black text-[#8893a2]">근무조건 상세</p>
+          <p className="mt-1.5 text-[14px] font-semibold leading-[1.7] text-[#3f4855]">{job.workConditionDetail}</p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -405,27 +511,73 @@ function HiringProcess({ steps }: { steps?: string[] }) {
   );
 }
 
-function MapPlaceholder({ job }: { job: Job }) {
+function CompanyNewsSection({ job }: { job: Job }) {
+  const articles = getCompanyNewsForJob(job);
+  const hasDirectCompanyNews = Boolean(job.companyNews?.some((article) => article.type === "company"));
+
+  return (
+    <div>
+      {!hasDirectCompanyNews ? (
+        <p className="mb-4 rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-bold leading-[1.6] text-[#7d8796]">
+          아직 이 기업과 직접 관련된 기사가 없습니다. 대신 이 공고와 관련된 제약·바이오 산업 뉴스를 확인해 보세요.
+        </p>
+      ) : null}
+      <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1">
+        {articles.map((article) => (
+          <article key={article.id} className="rounded-[var(--radius)] border border-[#e0e6ee] bg-white p-4 transition hover:border-[#111111]">
+            <div className="flex items-center justify-between gap-2">
+              <span className="rounded-[var(--radius)] bg-[#f4f5f6] px-2.5 py-1 text-[11px] font-black text-[#4f5a66]">{article.label}</span>
+              <span className="text-[11px] font-bold text-[#9aa4b2]">{article.publishedAt}</span>
+            </div>
+            <h3 className="mt-3 line-clamp-2 text-[15px] font-black leading-[1.45] text-[#252d39]">{article.title}</h3>
+            <p className="mt-2 line-clamp-2 text-[13px] font-semibold leading-[1.65] text-[#667181]">{article.summary}</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {article.keywords.slice(0, 3).map((keyword) => (
+                <span key={keyword} className="rounded-[var(--radius)] border border-[#e4e9ef] bg-[#fbfcfd] px-2 py-1 text-[11px] font-bold text-[#687382]">
+                  {keyword}
+                </span>
+              ))}
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-2 text-[12px] font-bold text-[#8a95a5]">
+              <span>출처: {article.source}</span>
+              <a href={article.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-black text-[#2f3845] hover:text-brand">
+                기사 보기
+                <ExternalLink size={13} />
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MapPlaceholder({ job, company }: { job: Job; company: Company | null }) {
   const detail = job.locationDetail;
+  const address = detail?.address ?? job.address ?? company?.address;
+  const addressLabel = detail?.address || job.address ? "주소" : "기업 대표 주소";
 
   return (
     <div className="grid gap-4">
-      <div className="relative grid h-[230px] place-items-center overflow-hidden rounded-[var(--radius)] border border-dashed border-[#cbd8df] bg-[#f3f3f3]">
-        <div
-          className="absolute inset-0 opacity-[0.22]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#dedede 1px, transparent 1px), linear-gradient(90deg, #dedede 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-        <div className="relative z-10 rounded-[var(--radius)] border border-brand/25 bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
-          <MapPin className="mx-auto text-brand" size={24} />
-          <p className="mt-1 text-[13px] font-black text-[#3f4855]">지도 placeholder</p>
+      {address ? (
+        <div className="relative grid h-[190px] place-items-center overflow-hidden rounded-[var(--radius)] border border-dashed border-[#cbd8df] bg-[#f3f3f3]">
+          <div
+            className="absolute inset-0 opacity-[0.22]"
+            style={{
+              backgroundImage:
+                "linear-gradient(#dedede 1px, transparent 1px), linear-gradient(90deg, #dedede 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="relative z-10 rounded-[var(--radius)] border border-[#d7dde5] bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
+            <MapPin className="mx-auto text-[#111111]" size={22} />
+            <p className="mt-1 text-[13px] font-black text-[#3f4855]">지도 영역</p>
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="grid grid-cols-2 gap-3 max-[720px]:grid-cols-1">
-        <OverviewCard label="주소" value={detail?.address ?? job.address ?? job.location} />
+        <OverviewCard label="근무지역" value={job.location} />
+        {address ? <OverviewCard label={addressLabel} value={address} /> : <OverviewCard label="상세 주소" value="상세 주소는 지원 과정에서 기업을 통해 확인해 주세요." />}
         {detail?.building ? <OverviewCard label="건물" value={detail.building} /> : null}
         {detail?.nearestStation ? <OverviewCard label="가까운 역" value={detail.nearestStation} /> : null}
         {detail?.walkingTime ? <OverviewCard label="도보" value={detail.walkingTime} /> : null}
@@ -605,10 +757,10 @@ function ReviewsSection({
   const [remainingPasses, setRemainingPasses] = useState(initialAccess.remainingPasses);
   const [modalOpen, setModalOpen] = useState(false);
   const canRead = initialAccess.canRead || remainingPasses > 0;
-  const visibleReviews = reviews.filter((review) => review.type === tab).slice(0, 3);
+  const visibleReviews = reviews.filter((review) => review.type === tab).slice(0, 2);
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_250px] gap-4 max-[900px]:grid-cols-1">
+    <div className="grid grid-cols-[minmax(0,1fr)_230px] items-start gap-4 max-[900px]:grid-cols-1">
       <div className="min-w-0">
         <div className="inline-flex rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f8fafb] p-1" role="tablist" aria-label="후기 유형">
           {[
@@ -631,7 +783,7 @@ function ReviewsSection({
           ))}
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-3 max-[1180px]:grid-cols-2 max-[720px]:flex max-[720px]:overflow-x-auto">
+        <div className="mt-4 grid grid-cols-2 gap-3 max-[720px]:flex max-[720px]:overflow-x-auto">
           {visibleReviews.map((review) => (
             <article key={review.id} className="min-w-0 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] p-4 max-[720px]:w-[280px] max-[720px]:shrink-0">
               <div className="flex items-center justify-between gap-2">
@@ -647,7 +799,7 @@ function ReviewsSection({
                   </span>
                 ))}
               </div>
-              <p className={clsx("mt-3 min-h-[72px] text-[13px] font-semibold leading-[1.7] text-[#3f4855]", !canRead && "blur-[3px] select-none")}>
+              <p className={clsx("mt-3 text-[13px] font-semibold leading-[1.7] text-[#3f4855]", !canRead && "blur-[3px] select-none")}>
                 {review.content}
               </p>
               <div className="mt-3 flex items-center justify-between text-[11px] font-bold text-[#8a95a5]">
@@ -672,13 +824,16 @@ function ReviewsSection({
         </Link>
       </div>
 
-      <aside className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] p-4">
+      <aside className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#fbfcfd] p-4">
         <h3 className="flex items-center gap-2 text-[16px] font-black text-[#202734]">
-          <WalletCards size={18} className="text-brand" />
+          <WalletCards size={17} className="text-[#4f5a66]" />
           후기 열람권
         </h3>
-        <p className="mt-3 text-[18px] font-black text-brand">후기 열람권 {remainingPasses}장 남음</p>
-        <p className="mt-2 text-[13px] font-semibold leading-[1.65] text-[#667181]">후기를 작성하면 추가 열람이 가능합니다.</p>
+        <p className="mt-3 text-[14px] font-bold text-[#667181]">
+          <span className="text-[24px] font-black text-[#111111]">{remainingPasses}</span>장 남음
+        </p>
+        <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#667181]">후기를 작성하면 열람권을 추가로 받을 수 있습니다.</p>
+        <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#8a95a5]">면접 후기와 회사 후기를 확인할 수 있습니다.</p>
         {!canRead ? (
           <p className="mt-3 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-bold text-danger">열람권이 없어 후기 일부만 표시됩니다.</p>
         ) : null}
@@ -686,7 +841,7 @@ function ReviewsSection({
           type="button"
           data-testid="review-pass-cta"
           onClick={() => setModalOpen(true)}
-          className="mt-4 h-11 w-full rounded-[var(--radius)] bg-brand text-[14px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.18)] transition hover:bg-[var(--color-brand-dark)]"
+          className="mt-4 h-10 w-full rounded-[var(--radius)] border border-[#111111] bg-white text-[13px] font-black text-[#111111] transition hover:bg-[#f4f4f4]"
         >
           후기 작성하고 열람권 받기
         </button>
@@ -706,7 +861,42 @@ function ReviewsSection({
   );
 }
 
-function SimilarJobs({ jobs, savedIds, onToggleSave }: { jobs: Job[]; savedIds: Set<number>; onToggleSave: (jobId: number) => void }) {
+function getSimilarJobReasons(baseJob: Job, similarJob: Job) {
+  const reasons: string[] = [];
+
+  if ((baseJob.role ?? baseJob.jobCategory) && (baseJob.role ?? baseJob.jobCategory) === (similarJob.role ?? similarJob.jobCategory)) {
+    reasons.push(`${baseJob.role ?? baseJob.jobCategory} 직무 일치`);
+  } else if (similarJob.jobSubcategoryIds.some((id) => baseJob.jobSubcategoryIds.includes(id))) {
+    reasons.push("직무 분류 유사");
+  }
+
+  const sharedKeyword = similarJob.tags.find((tag) => [...baseJob.tags, ...(baseJob.coreKeywords ?? [])].includes(tag));
+  if (sharedKeyword) {
+    reasons.push(`${sharedKeyword} 키워드 일치`);
+  }
+
+  if ((baseJob.industry ?? baseJob.category) === (similarJob.industry ?? similarJob.category)) {
+    reasons.push(`${baseJob.industry ?? baseJob.category} 산업`);
+  }
+
+  if (baseJob.regionId === similarJob.regionId) {
+    reasons.push(`${similarJob.location.split(" ")[0]}권 근무지`);
+  }
+
+  return reasons.slice(0, 2);
+}
+
+function SimilarCompanyLogo({ job }: { job: Job }) {
+  const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
+
+  return (
+    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-black text-[#2f3845]">
+      {job.logoUrl ? <img src={job.logoUrl} alt={`${job.company} 로고`} className="h-full w-full rounded-full object-contain p-1" /> : fallback}
+    </span>
+  );
+}
+
+function SimilarJobs({ baseJob, jobs, savedIds, onToggleSave }: { baseJob: Job; jobs: Job[]; savedIds: Set<number>; onToggleSave: (jobId: number) => void }) {
   if (!jobs.length) {
     return <p className="text-[14px] font-semibold text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>;
   }
@@ -714,10 +904,14 @@ function SimilarJobs({ jobs, savedIds, onToggleSave }: { jobs: Job[]; savedIds: 
   return (
     <div className="grid grid-cols-4 gap-3 max-[1180px]:grid-cols-2 max-[720px]:flex max-[720px]:overflow-x-auto">
       {jobs.slice(0, 4).map((similarJob) => {
+        const reasons = getSimilarJobReasons(baseJob, similarJob);
         const card = (
           <article className="group h-full rounded-[var(--radius)] border border-border bg-white p-4 transition hover:border-brand/45 hover:bg-[#fbfbfb] max-[720px]:w-[270px] max-[720px]:shrink-0">
             <div className="flex items-start justify-between gap-3">
-              <p className="min-w-0 truncate text-[12px] font-black text-[#7d8796]">{similarJob.company}</p>
+              <div className="flex min-w-0 items-center gap-2">
+                <SimilarCompanyLogo job={similarJob} />
+                <p className="min-w-0 truncate text-[12px] font-black text-[#596373]">{similarJob.company}</p>
+              </div>
               <button
                 type="button"
                 onClick={(event) => {
@@ -736,8 +930,13 @@ function SimilarJobs({ jobs, savedIds, onToggleSave }: { jobs: Job[]; savedIds: 
               {careerLabel(similarJob)} · {similarJob.employmentType} · {similarJob.location}
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {similarJob.tags.slice(0, 3).map((tag) => (
-                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-[#f7f9fb] px-2 py-1 text-[11px] font-bold text-[#777f8c]">
+              {reasons.map((reason) => (
+                <span key={reason} className="rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f4f5f6] px-2 py-1 text-[11px] font-black text-[#4f5a66]">
+                  {reason}
+                </span>
+              ))}
+              {similarJob.tags.slice(0, Math.max(0, 2 - reasons.length)).map((tag) => (
+                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-white px-2 py-1 text-[11px] font-bold text-[#777f8c]">
                   {tag}
                 </span>
               ))}
@@ -769,33 +968,43 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
 
   const saved = savedIds.has(job.id);
   const isClosed = job.isClosed || deadlineLabel(job) === "마감";
-  const hasApplyUrl = Boolean(job.applicationUrl);
-  const canApply = !isClosed && hasApplyUrl;
+  const applyUrl = applyHref(job);
+  const canApply = !isClosed && Boolean(applyUrl);
+  const coverImage = getCoverImage(job, company);
 
   const overview = useMemo(
     () => [
       { label: "경력", value: careerLabel(job) },
       { label: "학력", value: job.education },
-      { label: "고용 형태", value: job.employmentType },
+      { label: "모집인원", value: job.headcount ?? "1명" },
+      { label: "고용형태", value: job.employmentType },
       { label: "급여", value: job.salary },
-      { label: "근무지", value: job.location },
-      { label: "마감일", value: job.deadlineDate },
-      { label: "지원 방식", value: job.applyMethod },
+      { label: "근무지역", value: job.location },
+      { label: "접수마감", value: deadlineDetail(job) },
+      { label: "지원방법", value: job.applyMethod },
     ],
     [job],
   );
 
   const sections: SectionItem[] = [
     { id: "intro", label: "포지션 소개", visible: Boolean(job.introduction || job.oneLineIntro) },
-    { id: "responsibilities", label: "주요업무", visible: Boolean(job.responsibilitiesContent?.items.length || job.responsibilities?.length) },
-    { id: "requirements", label: "자격요건", visible: Boolean(job.requirementsContent?.items.length || job.requirements?.length) },
-    { id: "preferred", label: "우대사항", visible: Boolean(job.preferredContent?.items.length || job.preferredQualifications?.length) },
-    { id: "keywords", label: "핵심 역량", visible: Boolean(job.coreKeywords?.length || job.tags.length) },
-    { id: "detail-materials", label: "상세 자료", visible: Boolean(job.detailBlocks?.length) },
+    {
+      id: "qualifications",
+      label: "업무·자격",
+      visible: Boolean(
+        job.responsibilitiesContent?.items.length ||
+          job.responsibilities?.length ||
+          job.requirementsContent?.items.length ||
+          job.requirements?.length ||
+          job.preferredContent?.items.length ||
+          job.preferredQualifications?.length,
+      ),
+    },
+    { id: "keywords", label: "핵심 키워드", visible: Boolean(job.coreKeywords?.length || job.tags.length) },
     { id: "work", label: "근무조건", visible: Boolean(job.workConditionItems?.length || job.workConditions?.length) },
-    { id: "process", label: "채용절차", visible: Boolean(job.hiringProcess?.length) },
-    { id: "location", label: "근무지", visible: Boolean(job.locationDetail || job.address || job.location) },
     { id: "company", label: "기업정보", visible: true },
+    { id: "news", label: "기업뉴스", visible: true },
+    { id: "reviews", label: "후기·비슷한 공고", visible: true },
   ].filter((section) => section.visible);
 
   useEffect(() => {
@@ -879,27 +1088,23 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
       return;
     }
 
-    if (!job.applicationUrl) {
-      setApplyMessage("지원 방법을 확인할 수 없습니다.");
+    if (!applyUrl) {
+      setApplyMessage("지원 방법을 확인 중입니다.");
       return;
     }
 
-    const ok = window.confirm(job.applicationNotice ?? "지원 시 기업 채용 페이지로 이동합니다.");
-
-    if (ok) {
-      window.open(job.applicationUrl, "_blank", "noopener,noreferrer");
-    }
+    setApplyMessage(job.applyMethod === "기업 홈페이지 지원" ? "기업 채용 페이지를 새 탭으로 엽니다." : "지원 화면을 엽니다.");
+    window.open(applyUrl, "_blank", "noopener,noreferrer");
   };
 
-  const topTags = [
-    job.jobCategory ?? job.tags[0],
-    job.industry ?? job.category,
-    careerLabel(job),
-    job.education,
-    job.employmentType,
-    job.location,
-  ].filter(Boolean).slice(0, 6);
+  const topTags = getVisibleJobTags(job);
   const bodyKeywords = (job.coreKeywords?.length ? job.coreKeywords : job.tags).slice(0, 8);
+  const hasAdditionalMaterials = Boolean(
+    job.additionalMaterials?.images?.length ||
+      job.additionalMaterials?.files?.length ||
+      job.detailBlocks?.some((block) => (block.type === "image" || block.type === "file") && block.url),
+  );
+  const hasHiringProcess = Boolean(job.hiringProcess?.length);
 
   return (
     <>
@@ -911,7 +1116,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               채용공고
             </Link>
             <ChevronRight size={14} />
-            <span className="text-[#4e5968]">RA Specialist</span>
+            <span className="text-[#4e5968]">{job.role ?? job.jobCategory ?? "공고 상세"}</span>
           </nav>
 
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">
@@ -923,6 +1128,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       <CompanyLogo
                         name={company?.name ?? job.company}
                         logoText={company?.logoText ?? job.logoText}
+                        logoUrl={company?.logoUrl ?? job.logoUrl}
                         logoColor={company?.logoColor ?? job.logoColor}
                         logoAccent={company?.logoAccent ?? job.logoAccent}
                       />
@@ -946,6 +1152,9 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                         <h1 className="mt-3 text-[33px] font-black leading-[1.18] tracking-[0] text-[#1f2733] max-[720px]:text-[25px]">
                           {job.title}
                         </h1>
+                        {job.oneLineIntro ? (
+                          <p className="mt-3 max-w-[760px] text-[16px] font-semibold leading-[1.65] text-[#667181]">{job.oneLineIntro}</p>
+                        ) : null}
                         <div className="mt-4 flex flex-wrap gap-2">
                           {topTags.map((tag) => (
                             <HeaderTag key={tag}>{tag}</HeaderTag>
@@ -964,8 +1173,8 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   </div>
                 </div>
 
-                {job.coverImage ? (
-                  <img src={job.coverImage} alt={`${job.company} ${job.title} 대표 이미지`} className="h-[318px] w-full border-t border-border object-cover max-[720px]:h-[220px]" />
+                {coverImage ? (
+                  <img src={coverImage} alt={`${job.company} 대표 이미지`} className="h-[286px] w-full border-t border-border object-cover max-[720px]:h-[210px]" />
                 ) : (
                   <DefaultCover job={job} />
                 )}
@@ -985,7 +1194,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 </div>
               </section>
 
-              <nav className="sticky top-0 z-20 -mx-1 overflow-x-auto rounded-[var(--radius)] border border-border bg-white/95 px-2 py-2 shadow-[0_5px_18px_rgba(20,32,46,0.06)] backdrop-blur max-[720px]:top-0" aria-label="공고 섹션 이동">
+              <nav className="sticky top-[64px] z-30 -mx-1 overflow-x-auto rounded-[var(--radius)] border border-border bg-white/95 px-2 py-2 shadow-[0_5px_18px_rgba(20,32,46,0.06)] backdrop-blur" aria-label="공고 섹션 이동">
                 <div className="flex min-w-max gap-1">
                   {sections.map((section) => (
                     <button
@@ -1007,52 +1216,66 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 <p className="text-[16px] font-semibold leading-[1.85] text-[#3f4855]">{job.introduction ?? job.oneLineIntro}</p>
               </SectionShell>
 
-              <SectionShell id="responsibilities" title="주요업무">
-                <FormattedContentView content={job.responsibilitiesContent} fallback={job.responsibilities} />
+              <SectionShell id="qualifications" title="업무·자격">
+                <div className="space-y-7">
+                  <div>
+                    <h3 className="text-[17px] font-black text-[#2f3845]">주요업무</h3>
+                    <div className="mt-3">
+                      <FormattedContentView content={job.responsibilitiesContent} fallback={job.responsibilities} />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-[17px] font-black text-[#2f3845]">자격요건</h3>
+                    <div className="mt-3">
+                      <FormattedContentView content={job.requirementsContent} fallback={job.requirements} />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-[17px] font-black text-[#2f3845]">우대사항</h3>
+                    <div className="mt-3">
+                      <FormattedContentView content={job.preferredContent} fallback={job.preferredQualifications} />
+                    </div>
+                  </div>
+                </div>
               </SectionShell>
 
-              <SectionShell id="requirements" title="자격요건">
-                <FormattedContentView content={job.requirementsContent} fallback={job.requirements} />
-              </SectionShell>
-
-              <SectionShell id="preferred" title="우대사항">
-                <FormattedContentView content={job.preferredContent} fallback={job.preferredQualifications} />
-              </SectionShell>
-
-              <SectionShell id="keywords" title="핵심 역량 및 전문분야">
+              <SectionShell id="keywords" title="핵심 키워드">
                 <div className="flex flex-wrap gap-2">
                   {bodyKeywords.map((keyword) => (
-                    <span key={keyword} className="rounded-[var(--radius)] border border-[#dddddd] bg-brand-soft px-3.5 py-2 text-[13px] font-black text-brand">
+                    <span key={keyword} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-black text-[#2f3845]">
                       {keyword}
                     </span>
                   ))}
                 </div>
-                <p className="mt-3 text-[12px] font-bold text-[#8a95a5]">나머지 키워드는 검색과 추천, 유사 공고 매칭에 활용됩니다.</p>
+                <p className="mt-3 text-[12px] font-bold text-[#8a95a5]">선택된 키워드를 기준으로 유사 공고와 맞춤 추천이 제공됩니다.</p>
               </SectionShell>
 
-              {job.detailBlocks?.length ? (
-                <SectionShell id="detail-materials" title="상세 소개 자료">
-                  <DetailMaterials blocks={job.detailBlocks} />
+              {hasAdditionalMaterials ? (
+                <SectionShell id="detail-materials" title="기업 추가 자료">
+                  <AdditionalMaterials job={job} />
                 </SectionShell>
               ) : null}
 
               <SectionShell id="work" title="근무조건">
                 <WorkConditions job={job} />
+                <div className="mt-6 border-t border-[#edf1f4] pt-6">
+                  <h3 className="mb-4 text-[17px] font-black text-[#2f3845]">근무지</h3>
+                  <MapPlaceholder job={job} company={company} />
+                </div>
               </SectionShell>
 
-              <SectionShell id="process" title="채용 절차">
-                <HiringProcess steps={job.hiringProcess} />
-              </SectionShell>
-
-              <SectionShell id="location" title="근무지">
-                <MapPlaceholder job={job} />
-              </SectionShell>
+              {hasHiringProcess ? (
+                <SectionShell id="process" title="채용 절차">
+                  <HiringProcess steps={job.hiringProcess} />
+                </SectionShell>
+              ) : null}
 
               <SectionShell id="company" title="기업 정보">
                 <div className="flex gap-4 max-[640px]:flex-col">
                   <CompanyLogo
                     name={company?.name ?? job.company}
                     logoText={company?.logoText ?? job.logoText}
+                    logoUrl={company?.logoUrl ?? job.logoUrl}
                     logoColor={company?.logoColor ?? job.logoColor}
                     logoAccent={company?.logoAccent ?? job.logoAccent}
                     size="sm"
@@ -1098,33 +1321,43 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 </div>
               </SectionShell>
 
+              <SectionShell id="news" title="더파마뉴스에서 본 이 기업">
+                <p className="-mt-1 mb-5 text-[14px] font-semibold leading-[1.7] text-[#667181]">
+                  더파마뉴스에 보도된 기업 관련 기사와 산업 뉴스를 확인해 보세요.
+                </p>
+                <CompanyNewsSection job={job} />
+              </SectionShell>
+
               <SectionShell id="reviews" title="기업 후기">
                 <ReviewsSection company={company} job={job} reviews={reviews} initialAccess={reviewAccess} />
               </SectionShell>
 
               <SectionShell id="similar" title="비슷한 공고">
-                <SimilarJobs jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
+                <p className="-mt-1 mb-5 text-[14px] font-semibold leading-[1.7] text-[#667181]">
+                  이 공고와 직무, 키워드, 경력 조건이 비슷한 공고입니다.
+                </p>
+                <SimilarJobs baseJob={job} jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
               </SectionShell>
             </div>
 
-            <aside className="sticky top-6 h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
+            <aside className="sticky top-[88px] self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <p className="text-[13px] font-black text-[#7d8796]">지원 정보</p>
                 <h2 className={clsx("mt-2 text-[30px] font-black", isClosed ? "text-danger" : "text-brand")}>{deadlineLabel(job)}</h2>
-                <p className="mt-1 text-[13px] font-bold text-[#687382]">{job.deadlineDate}</p>
+                <p className="mt-1 text-[13px] font-bold text-[#687382]">{deadlineDetail(job)}</p>
 
                 <div className="mt-5 space-y-3 border-y border-[#e6ecf1] py-4">
                   {[
                     { icon: BriefcaseBusiness, label: "경력", value: careerLabel(job) },
-                    { icon: Building2, label: "고용 형태", value: job.employmentType },
-                    { icon: MapPin, label: "근무지", value: job.location },
-                    { icon: CalendarDays, label: "지원 방식", value: job.applyMethod },
+                    { icon: Building2, label: "고용형태", value: job.employmentType },
+                    { icon: MapPin, label: "근무지역", value: job.location },
+                    { icon: CalendarDays, label: "지원방법", value: job.applyMethod },
                   ].map((item) => {
                     const Icon = item.icon;
 
                     return (
                       <div key={item.label} className="flex items-start gap-2.5 text-[13px]">
-                        <Icon size={16} className="mt-0.5 shrink-0 text-brand" />
+                        <Icon size={16} className="mt-0.5 shrink-0 text-[#6b7280]" />
                         <div>
                           <p className="font-black text-[#8993a1]">{item.label}</p>
                           <p className="mt-0.5 font-extrabold text-[#3f4855]">{item.value}</p>
@@ -1134,15 +1367,27 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   })}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  disabled={!canApply}
-                  className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius)] bg-brand text-[15px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)] disabled:cursor-not-allowed disabled:bg-[#b8b8b8]"
-                >
-                  {isClosed ? "마감된 공고입니다" : hasApplyUrl ? applyButtonLabel(job) : "지원 방법을 확인할 수 없습니다"}
-                  {canApply ? <ExternalLink size={17} /> : null}
-                </button>
+                {canApply && applyUrl ? (
+                  <a
+                    href={applyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setApplyMessage(job.applyMethod === "기업 홈페이지 지원" ? "기업 채용 페이지를 새 탭으로 엽니다." : "지원 화면을 엽니다.")}
+                    className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius)] bg-brand text-[15px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
+                  >
+                    {applyButtonLabel(job)}
+                    <ExternalLink size={17} />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    disabled
+                    className="mt-5 flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-[var(--radius)] bg-[#b8b8b8] text-[15px] font-black text-white"
+                  >
+                    {isClosed ? "마감된 공고입니다" : "지원 방법을 확인 중입니다"}
+                  </button>
+                )}
                 {applyMessage ? <p className="mt-2 text-[12px] font-bold text-danger">{applyMessage}</p> : null}
 
                 <div className="mt-2 grid grid-cols-2 gap-2">
@@ -1173,18 +1418,33 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   </p>
                 ) : null}
                 <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f7] px-3 py-3 text-[12px] font-semibold leading-[1.65] text-[#667181]">
-                  {job.applicationNotice ?? "지원 결과와 진행 상황은 해당 기업에서 관리합니다."}
+                  {applyNotice(job)}
                 </p>
               </section>
 
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <h2 className="flex items-center gap-2 text-[16px] font-black text-[#252d39]">
                   <Sparkles size={18} className="text-[#6b7280]" />
-                  더팜인 매칭
+                  더파마 매칭
                 </h2>
                 <p className="mt-2 text-[13px] font-semibold leading-[1.65] text-[#667181]">
-                  {bodyKeywords.slice(0, 3).join(", ")} 키워드와 최근 본 공고를 기준으로 유사 공고를 추천합니다.
+                  이 공고의 직무 키워드와 최근 본 공고를 바탕으로 유사 공고를 추천합니다.
                 </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {[
+                    `${job.role ?? job.jobCategory ?? "직무"} 직무 일치`,
+                    bodyKeywords[0] ? `${bodyKeywords[0]} 키워드 일치` : "",
+                    job.industry ?? job.category,
+                    `${job.location.split(" ")[0]}권 근무지`,
+                  ]
+                    .filter((reason): reason is string => Boolean(reason))
+                    .slice(0, 4)
+                    .map((reason) => (
+                      <span key={reason} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-2 py-1 text-[11px] font-black text-[#596373]">
+                        {reason}
+                      </span>
+                    ))}
+                </div>
               </section>
             </aside>
           </div>
@@ -1210,7 +1470,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
             disabled={!canApply}
             className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius)] bg-brand text-[14px] font-black text-white disabled:bg-[#b8b8b8]"
           >
-            {isClosed ? "마감된 공고입니다" : hasApplyUrl ? applyButtonLabel(job) : "지원 방법 확인 불가"}
+            {isClosed ? "마감된 공고입니다" : canApply ? applyButtonLabel(job) : "지원 방법 확인 중"}
             {canApply ? <ArrowRight size={17} /> : null}
           </button>
         </div>

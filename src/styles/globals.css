@@ -185,7 +185,7 @@ input:focus-visible {
 }
 
 .registration-sidebar {
-  top: 20px;
+  top: 92px;
   row-gap: 16px;
 }
 
@@ -298,8 +298,13 @@ input:focus-visible {
 }
 
 .registration-field-label {
-  padding-top: 7px;
+  padding-top: 8px;
   font-size: 14px;
+  line-height: 1.45;
+}
+
+.registration-form-row--control .registration-field-label {
+  padding-top: 10px;
 }
 
 .registration-page .registration-control,
@@ -313,6 +318,32 @@ input:focus-visible {
 .registration-page textarea {
   border-radius: 6px;
   font-size: 13px;
+}
+
+.registration-page .surface,
+.registration-page .registration-status-pill,
+.registration-page .registration-control,
+.registration-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.registration-page select,
+.registration-page textarea,
+.registration-page button,
+.registration-page .rounded-\[6px\],
+.registration-page .rounded-\[7px\],
+.registration-page .rounded-\[8px\],
+.registration-page .rounded-\[9px\],
+.registration-page .rounded-\[10px\],
+.registration-page .rounded-\[12px\] {
+  border-radius: 2px !important;
+}
+
+.registration-page .registration-step-circle {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px !important;
+  line-height: 1;
+  flex: 0 0 40px;
 }
 
 .registration-page .h-10 {
@@ -362,5 +393,10 @@ input:focus-visible {
   .registration-form-row {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .registration-field-label,
+  .registration-form-row--control .registration-field-label {
+    padding-top: 0;
   }
 }

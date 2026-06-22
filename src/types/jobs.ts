@@ -31,7 +31,7 @@ export type SortOption = "추천순" | "최신순" | "마감임박순";
 
 export type ClosingStatus = "dDay" | "today" | "always";
 
-export type ApplyMethod = "기업 홈페이지 지원" | "간편 지원";
+export type ApplyMethod = "기업 홈페이지 지원" | "간편 지원" | "더파마 간편지원" | "이메일 지원" | "별도 안내";
 
 export type ContentFormat = "bullet" | "numbered" | "paragraph";
 
@@ -40,17 +40,38 @@ export interface FormattedContent {
   items: string[];
 }
 
-export type DetailBlockType = "text" | "image" | "gallery" | "table" | "process" | "benefit" | "divider";
+export type DetailBlockType = "text" | "image" | "gallery" | "table" | "process" | "benefit" | "divider" | "file";
 
 export interface JobDetailBlock {
   type: DetailBlockType;
   title?: string;
   content?: string;
   url?: string;
+  fileName?: string;
   alt?: string;
   images?: Array<{ url: string; alt: string }>;
   rows?: Array<{ label: string; value: string }>;
   items?: string[];
+}
+
+export interface JobAdditionalMaterials {
+  images?: Array<{ url: string; alt: string; title?: string }>;
+  files?: Array<{ name: string; url: string; description?: string }>;
+}
+
+export type CompanyNewsType = "company" | "industry" | "regulatory" | "clinical" | "investment";
+
+export interface CompanyNewsArticle {
+  id: string;
+  type: CompanyNewsType;
+  label: string;
+  title: string;
+  publishedAt: string;
+  source: "더파마뉴스";
+  summary: string;
+  keywords: string[];
+  url: string;
+  contentType?: "article" | "press_release" | "sponsored" | "company_provided";
 }
 
 export interface WorkConditionItem {
@@ -215,9 +236,12 @@ export interface Job {
   companyId?: string;
   company: string;
   logoText: string;
+  logoUrl?: string;
   logoColor: string;
   logoAccent?: string;
   title: string;
+  role?: string;
+  headcount?: string;
   jobCategory?: string;
   career: string;
   education: string;
@@ -233,6 +257,8 @@ export interface Job {
   applyMethod: ApplyMethod;
   applicationUrl?: string;
   applicationNotice?: string;
+  applicationGuide?: string;
+  applicationEmail?: string;
   category: Category;
   jobSubcategoryIds: string[];
   employmentTypeIds?: string[];
@@ -259,6 +285,8 @@ export interface Job {
   industry?: string;
   introduction?: string;
   oneLineIntro?: string;
+  coverImageMode?: "company" | "upload" | "none";
+  coverImageUrl?: string;
   coreKeywords?: string[];
   responsibilitiesContent?: FormattedContent;
   requirementsContent?: FormattedContent;
@@ -267,17 +295,23 @@ export interface Job {
   requirements?: string[];
   preferredQualifications?: string[];
   benefits?: string[];
+  workType?: string;
+  workSchedule?: string;
+  workConditionDetail?: string;
   workConditionItems?: WorkConditionItem[];
   workConditions?: string[];
   hiringProcess?: string[];
   detailBlocks?: JobDetailBlock[];
+  additionalMaterials?: JobAdditionalMaterials;
   applicationInfo?: string[];
   overview?: Array<{ label: string; value: string }>;
   coverImage?: string;
+  deadlineType?: "date" | "untilHired";
   locationDetail?: JobLocationDetail;
   companyDescription?: string;
   companyHighlights?: string[];
   reviewSummary?: string;
+  companyNews?: CompanyNewsArticle[];
   similarJobIds?: number[];
   isRecommended?: boolean;
   isClosed?: boolean;
@@ -289,8 +323,11 @@ export interface Company {
   id: string;
   name: string;
   logoText: string;
+  logoUrl?: string;
   logoColor: string;
   logoAccent?: string;
+  coverImage?: string;
+  defaultImage?: string;
   verified: boolean;
   description: string;
   industry: string;
