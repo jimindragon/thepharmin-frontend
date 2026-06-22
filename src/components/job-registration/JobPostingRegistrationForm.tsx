@@ -33,6 +33,7 @@ import {
   useRef,
   useState,
 } from "react";
+import Link from "next/link";
 import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import { deriveJobTrack } from "@/config/trackMapping";
@@ -44,9 +45,34 @@ type ImageMode = "upload" | "company" | "none";
 type BlockType = "image" | "file";
 type ApplicationMethod = "quick" | "homepage" | "email" | "custom";
 type PositionEditorKey = "responsibilities" | "requirements" | "preferred";
+type WorkLocationMode = "company" | "manual" | "remote";
 
 const mockOrganizationType: OrganizationType = "pharmaceutical_company";
 const mockDerivedTrack = deriveJobTrack(mockOrganizationType);
+
+const mockCompanyProfile = {
+  name: "더팜인제약(주)",
+  logoText: "더팜인제약",
+  verified: true,
+  oneLineIntro: "",
+  industry: "전문의약품 제조업",
+  employeeCount: "501~1000명",
+  foundedYear: "",
+  representativeAddress: "서울 강남구 테헤란로 123, 8층",
+};
+
+const companyProfileRequiredFields = [
+  { key: "name", label: "기업명", value: mockCompanyProfile.name },
+  { key: "logo", label: "기업 로고", value: mockCompanyProfile.logoText },
+  { key: "verified", label: "인증 상태", value: mockCompanyProfile.verified ? "인증" : "" },
+  { key: "oneLineIntro", label: "한 줄 소개", value: mockCompanyProfile.oneLineIntro },
+  { key: "industry", label: "업종", value: mockCompanyProfile.industry },
+  { key: "employeeCount", label: "사원수", value: mockCompanyProfile.employeeCount },
+  { key: "foundedYear", label: "설립연도", value: mockCompanyProfile.foundedYear },
+  { key: "representativeAddress", label: "대표 주소", value: mockCompanyProfile.representativeAddress },
+] as const;
+
+const companyMissingItems = companyProfileRequiredFields.filter((field) => !String(field.value).trim()).map((field) => field.label);
 
 interface EditorItem {
   id: string;
@@ -265,33 +291,54 @@ function PageStepper() {
 }
 
 function CompanySummaryCard() {
+  const hasMissingCompanyInfo = companyMissingItems.length > 0;
+
   return (
-    <section className="registration-company-card surface mt-7 flex items-center justify-between gap-6 px-7 py-6">
-      <div className="flex min-w-0 items-center gap-5">
-        <div className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full border border-[#e2eceb] bg-[#f4f4f4]">
-          <div className="relative h-11 w-11">
-            <span className="absolute left-0 top-2 h-6 w-6 rounded-full bg-brand opacity-90" />
-            <span className="absolute right-0 top-2 h-6 w-6 rounded-full bg-[#6f747b] opacity-80" />
-            <span className="absolute bottom-0 left-[11px] h-6 w-6 rounded-full bg-brand opacity-70" />
+    <section className="registration-company-card surface mt-7 px-7 py-6">
+      <div className="flex items-center justify-between gap-6 max-[860px]:flex-col max-[860px]:items-stretch">
+        <div className="flex min-w-0 flex-1 items-center gap-5">
+          <div className="registration-company-logo grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full border border-[#e2eceb] bg-[#f4f4f4]">
+            <div className="relative h-11 w-11">
+              <span className="absolute left-0 top-2 h-6 w-6 rounded-full bg-brand opacity-90" />
+              <span className="absolute right-0 top-2 h-6 w-6 rounded-full bg-[#6f747b] opacity-80" />
+              <span className="absolute bottom-0 left-[11px] h-6 w-6 rounded-full bg-brand opacity-70" />
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="registration-company-title text-[24px] font-black tracking-[0] text-[#252d39]">{mockCompanyProfile.name}</h2>
+              {mockCompanyProfile.verified ? (
+                <span className="whitespace-nowrap border border-[#d9dee6] bg-[#f7f8fa] px-2 py-1 text-[11px] font-black text-[#4f5968]">
+                  운영팀 확인 기업
+                </span>
+              ) : null}
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] font-bold text-[#758090]">
+              <span>업종&nbsp; {mockCompanyProfile.industry}</span>
+              <span className="h-3 w-px bg-[#d8dfe7]" />
+              <span>규모&nbsp; {mockCompanyProfile.employeeCount}</span>
+              <span className="h-3 w-px bg-[#d8dfe7]" />
+              <span>대표 주소&nbsp; {mockCompanyProfile.representativeAddress}</span>
+            </div>
           </div>
         </div>
-        <div className="min-w-0">
-          <h2 className="registration-company-title text-[24px] font-black tracking-[0] text-[#252d39]">더팜인제약(주)</h2>
-          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] font-bold text-[#758090]">
-            <span>업종&nbsp; 전문의약품 제조업</span>
-            <span className="h-3 w-px bg-[#d8dfe7]" />
-            <span>규모&nbsp; 501~1000명</span>
-            <span className="h-3 w-px bg-[#d8dfe7]" />
-            <span>대표 주소&nbsp; 서울 강남구 테헤란로 123, 8층</span>
-          </div>
-        </div>
+        <Link
+          href="/companies/thepharmin-pharma"
+          className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#d8e0e8] bg-white px-5 text-[14px] font-black text-[#3c4655] transition hover:border-brand hover:text-brand"
+        >
+          기업정보 수정하러 가기
+        </Link>
       </div>
-      <button
-        type="button"
-        className="h-11 shrink-0 rounded-[8px] border border-[#d8e0e8] bg-white px-5 text-[14px] font-black text-[#3c4655] transition hover:border-brand hover:text-brand"
-      >
-        기업 정보 수정
-      </button>
+      {hasMissingCompanyInfo ? (
+        <div className="mt-5 border border-[#ead8d3] bg-[#fffafa] px-4 py-3">
+          <p className="text-[13px] font-black text-[#9b3a2d]">공고 상세에 노출될 기업정보가 부족합니다.</p>
+          <p className="mt-1 text-[13px] font-bold text-[#6f5960]">부족한 정보: {companyMissingItems.join(", ")}</p>
+        </div>
+      ) : (
+        <div className="mt-5 border border-[#dce5df] bg-[#f8fbf9] px-4 py-3">
+          <p className="text-[13px] font-black text-[#44505f]">공고 상세에 필요한 기본 기업정보가 확인되었습니다.</p>
+        </div>
+      )}
     </section>
   );
 }
@@ -744,6 +791,12 @@ export function JobPostingRegistrationForm() {
   const [applicationEmail, setApplicationEmail] = useState("");
   const [applicationGuide, setApplicationGuide] = useState("");
   const [deadlineMode, setDeadlineMode] = useState<"date" | "always">("date");
+  const [workLocationMode, setWorkLocationMode] = useState<WorkLocationMode>("company");
+  const [workLocationName, setWorkLocationName] = useState("서울 강남구");
+  const [workAddress, setWorkAddress] = useState(mockCompanyProfile.representativeAddress);
+  const [workAddressDetail, setWorkAddressDetail] = useState("8층 RA팀");
+  const [workTransitInfo, setWorkTransitInfo] = useState("2호선 역삼역 도보 6분");
+  const [workType, setWorkType] = useState("사무실 근무");
   const [keywordMessage, setKeywordMessage] = useState("");
   const [imageMode, setImageMode] = useState<ImageMode>("company");
   const [imagePreview, setImagePreview] = useState<string>(companyDefaultImage);
@@ -782,12 +835,31 @@ export function JobPostingRegistrationForm() {
       ["포지션 소개", introContent.trim()],
       ["주요업무", responsibilityContent.trim()],
       ["자격요건", requirementContent.trim()],
+      ["근무지명", workLocationName.trim()],
+      ["주소", workLocationMode === "remote" ? "ok" : workAddress.trim()],
+      ["근무 방식", workType.trim()],
       ["지원 URL", applicationMethod === "homepage" ? applicationUrl.trim() : "ok"],
       ["접수 이메일", applicationMethod === "email" ? applicationEmail.trim() : "ok"],
       ["지원 안내 문구", applicationMethod === "custom" ? applicationGuide.trim() : "ok"],
     ];
     return entries.filter(([, value]) => !value).map(([label]) => label);
-  }, [applicationEmail, applicationGuide, applicationMethod, applicationUrl, introContent, jobRole, requirementContent, responsibilityContent, title]);
+  }, [
+    applicationEmail,
+    applicationGuide,
+    applicationMethod,
+    applicationUrl,
+    introContent,
+    jobRole,
+    requirementContent,
+    responsibilityContent,
+    title,
+    workAddress,
+    workLocationMode,
+    workLocationName,
+    workType,
+  ]);
+
+  const canRequestPublish = missingItems.length === 0 && companyMissingItems.length === 0;
 
   const addStandardKeyword = (rawKeyword: string) => {
     const keyword = canonicalKeyword(rawKeyword);
@@ -871,6 +943,10 @@ export function JobPostingRegistrationForm() {
   const goNext = () => {
     if (missingItems.length) {
       setNotice(`필수 항목을 먼저 입력해 주세요: ${missingItems.join(", ")}`);
+      return;
+    }
+    if (companyMissingItems.length) {
+      setNotice(`공고 상세에 필요한 기업정보를 먼저 보완해 주세요: ${companyMissingItems.join(", ")}`);
       return;
     }
     setNotice("다음 단계로 이동할 수 있습니다.");
@@ -1196,20 +1272,125 @@ export function JobPostingRegistrationForm() {
 
             <SectionCard index={6} title="근무조건" description="근무지, 근무 방식, 급여와 복리후생을 입력합니다." status="완료">
               <div>
-                <FormRow label="근무지" required align="center">
-                  <SelectShell>
-                    <option>서울 강남구</option>
-                    <option>서울 서초구</option>
-                    <option>경기 성남시</option>
-                  </SelectShell>
+                <FormRow label="근무지 입력" required>
+                  <div className="grid gap-3">
+                    <div className="grid grid-cols-3 gap-2 max-[760px]:grid-cols-1">
+                      {[
+                        { id: "company" as WorkLocationMode, label: "기업 대표 주소 불러오기" },
+                        { id: "manual" as WorkLocationMode, label: "직접 입력" },
+                        { id: "remote" as WorkLocationMode, label: "재택/하이브리드" },
+                      ].map((option) => {
+                        const selected = workLocationMode === option.id;
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => {
+                              setWorkLocationMode(option.id);
+                              if (option.id === "company") {
+                                setWorkLocationName("서울 강남구");
+                                setWorkAddress(mockCompanyProfile.representativeAddress);
+                                setWorkAddressDetail("8층 RA팀");
+                                setWorkTransitInfo("2호선 역삼역 도보 6분");
+                                setWorkType("사무실 근무");
+                              }
+                              if (option.id === "remote") {
+                                setWorkLocationName("재택/하이브리드");
+                                setWorkAddress("");
+                                setWorkAddressDetail("");
+                                setWorkTransitInfo("필요 시 서울 본사 출근");
+                                setWorkType("하이브리드");
+                              }
+                            }}
+                            className={clsx(
+                              "h-11 border px-3 text-[13px] font-black transition",
+                              selected
+                                ? "border-[#111111] bg-[#111111] text-white"
+                                : "border-[#d8e0e8] bg-white text-[#4f5968] hover:border-[#111111] hover:text-[#111111]",
+                            )}
+                            aria-pressed={selected}
+                          >
+                            {option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-[12px] font-bold text-[#7d8796]">
+                      공고 상세에는 근무지명, 주소, 교통 정보와 근무 방식이 함께 노출됩니다.
+                    </p>
+                  </div>
                 </FormRow>
+
+                <FormRow label="근무지명" required align="center">
+                  <input
+                    value={workLocationName}
+                    onChange={(event) => setWorkLocationName(event.target.value)}
+                    placeholder="예: 서울 본사, 판교 연구소, 재택/하이브리드"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                  />
+                </FormRow>
+
+                <FormRow label="주소" required={workLocationMode !== "remote"} align="center">
+                  <input
+                    value={workAddress}
+                    onChange={(event) => setWorkAddress(event.target.value)}
+                    disabled={workLocationMode === "remote"}
+                    placeholder={workLocationMode === "remote" ? "재택/하이브리드 근무는 주소 입력 없이 등록할 수 있습니다." : "예: 서울 강남구 테헤란로 123"}
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
+                  />
+                </FormRow>
+
+                <FormRow label="상세주소" align="center">
+                  <input
+                    value={workAddressDetail}
+                    onChange={(event) => setWorkAddressDetail(event.target.value)}
+                    disabled={workLocationMode === "remote"}
+                    placeholder="예: 8층 RA팀"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
+                  />
+                </FormRow>
+
+                <FormRow label="가까운 역/교통 정보" align="center">
+                  <input
+                    value={workTransitInfo}
+                    onChange={(event) => setWorkTransitInfo(event.target.value)}
+                    placeholder="예: 2호선 역삼역 도보 6분, 셔틀버스 운행"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                  />
+                </FormRow>
+
                 <FormRow label="근무 방식" required align="center">
-                  <SelectShell>
+                  <SelectShell value={workType} onChange={setWorkType}>
                     <option>사무실 근무</option>
                     <option>하이브리드</option>
-                    <option>원격 근무</option>
+                    <option>재택근무</option>
+                    <option>외근/현장 근무</option>
                   </SelectShell>
                 </FormRow>
+
+                <FormRow label="지도 미리보기">
+                  <div className="overflow-hidden rounded-[8px] border border-[#dce4ec] bg-[#f7f8fa]">
+                    <div className="relative h-[150px] bg-[linear-gradient(135deg,#eef2f5_0%,#f8fafb_45%,#e9eef2_100%)]">
+                      <div className="absolute left-6 top-5 h-px w-[calc(100%-48px)] bg-white" />
+                      <div className="absolute left-6 top-16 h-px w-[calc(100%-48px)] bg-white" />
+                      <div className="absolute left-6 top-28 h-px w-[calc(100%-48px)] bg-white" />
+                      <div className="absolute left-16 top-4 h-[calc(100%-32px)] w-px bg-white" />
+                      <div className="absolute right-20 top-4 h-[calc(100%-32px)] w-px bg-white" />
+                      <div className="absolute left-1/2 top-1/2 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#111111] text-[12px] font-black text-white shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
+                        위치
+                      </div>
+                    </div>
+                    <div className="border-t border-[#dce4ec] bg-white px-4 py-3">
+                      <p className="text-[13px] font-black text-[#333c49]">{workLocationName || "근무지명 입력 필요"}</p>
+                      <p className="mt-1 text-[12px] font-semibold text-[#7d8796]">
+                        {workLocationMode === "remote"
+                          ? workTransitInfo || "재택/하이브리드 근무"
+                          : [workAddress, workAddressDetail, workTransitInfo].filter(Boolean).join(" · ") || "주소를 입력해 주세요."}
+                      </p>
+                    </div>
+                  </div>
+                </FormRow>
+
                 <FormRow label="근무 요일/시간" required align="center">
                   <input defaultValue="주 5일, 09:00~18:00" className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10" />
                 </FormRow>
@@ -1357,7 +1538,9 @@ export function JobPostingRegistrationForm() {
                   <div>
                     <p className="mt-1 text-[24px] font-black text-[#111827]">5 / 7</p>
                   </div>
-                  <span className="text-[13px] font-black text-[#5f6876]">작성 중</span>
+                  <span className="text-[13px] font-black text-[#5f6876]">
+                    {canRequestPublish ? "게시 요청 가능" : "게시 전 확인 필요"}
+                  </span>
                 </div>
                 <div className="mt-4 h-2 overflow-hidden bg-[#e3e8ef]">
                   <span className="block h-full w-[72%] bg-[#111111]" />
@@ -1389,7 +1572,13 @@ export function JobPostingRegistrationForm() {
               <div className="mt-5">
                 <h3 className="text-[13px] font-black text-[#364050]">미완료 항목</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {(missingItems.length ? missingItems : ["필수 누락 없음"]).slice(0, 4).map((item) => (
+                  {(
+                    missingItems.length || companyMissingItems.length
+                      ? [...missingItems, ...companyMissingItems.map((item) => `기업정보: ${item}`)]
+                      : ["필수 누락 없음"]
+                  )
+                    .slice(0, 6)
+                    .map((item) => (
                     <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-black text-[#9b3a2d]">
                       {item === "지원 URL" ? "지원 URL 입력 필요" : item}
                     </span>

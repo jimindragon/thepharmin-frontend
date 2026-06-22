@@ -4,10 +4,10 @@ export const navigationItems = [
   { label: "헤드헌팅", href: "#" },
   { label: "기업정보", href: "#" },
   { label: "커뮤니티", href: "#" },
-  { label: "Insight+", href: "#", highlight: true },
+  { label: "Insight+", href: "/insights", highlight: true },
 ];
 
 export const headerActions = [
   { label: "헤드헌팅 의뢰", href: "#", tone: "brand" },
-  { label: "기업 서비스", href: "/company/jobs/new", tone: "dark" },
+  { label: "기업 서비스", href: "/business", tone: "dark" },
 ] as const;

@@ -189,7 +189,7 @@ input:focus-visible {
   padding: 16px 20px;
 }
 
-.registration-company-card > div > div:first-child {
+.registration-company-logo {
   width: 62px;
   height: 62px;
 }
@@ -403,8 +403,53 @@ input:focus-visible {
   height: 58px;
 }
 
+.business-job-registration .registration-page {
+  background: transparent;
+  padding-top: 0;
+}
+
+.business-job-registration .registration-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.business-job-registration .registration-layout {
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 16px;
+}
+
+.business-job-registration .registration-sidebar {
+  top: 84px;
+}
+
+.business-job-registration .registration-sidebar > .surface {
+  padding: 16px;
+}
+
+.business-job-registration .registration-page-title {
+  font-size: 30px;
+}
+
+.business-job-registration .registration-company-card {
+  padding: 14px 16px;
+}
+
+.business-job-registration .registration-section-header,
+.business-job-registration .registration-section-body {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+.business-job-registration .registration-bottom-bar .app-shell {
+  width: min(100% - 40px, 1080px);
+}
+
 @media (max-width: 1180px) {
   .registration-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .business-job-registration .registration-layout {
     grid-template-columns: 1fr;
   }
 }
@@ -412,6 +457,23 @@ input:focus-visible {
 @media (max-width: 760px) {
   .registration-container {
     width: calc(100vw - 28px);
+  }
+
+  .business-job-registration .registration-stepper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 12px;
+  }
+
+  .business-job-registration .registration-stepper > div {
+    min-width: 0;
+  }
+
+  .business-job-registration .registration-stepper > div > span {
+    display: none;
+  }
+
+  .business-job-registration .registration-step-label {
+    font-size: 13px;
   }
 
   .registration-form-row {
