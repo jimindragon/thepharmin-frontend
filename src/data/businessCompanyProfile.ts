@@ -150,7 +150,7 @@ export const initialBusinessCompanyProfile: CompanyProfileMaster = {
     exposeOnJobs: true,
     exposeOnSearch: true,
   },
-  profileCompletion: 85,
+  profileCompletion: 83,
 };
 
 export const businessCompanyVerification: CompanyVerification = {

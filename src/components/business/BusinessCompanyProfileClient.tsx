@@ -181,14 +181,14 @@ function statusClass(status: FileStatus | null) {
 
 function LogoMark({ profile }: { profile: CompanyProfileMaster }) {
   if (profile.logoUrl && profile.logoUrl !== "mock-logo") {
-    return <img src={profile.logoUrl} alt={`${profile.displayName} 로고`} className="h-full w-full object-contain p-5" />;
+    return <img src={profile.logoUrl} alt={`${profile.displayName} 로고`} className="h-full w-full object-contain p-[12%]" />;
   }
 
   return (
-    <div className="relative h-12 w-16">
-      <span className="absolute left-1 top-2 h-9 w-9 rounded-full bg-[#111111] opacity-95" />
-      <span className="absolute right-1 top-2 h-9 w-9 rounded-full bg-[#6c737d] opacity-78" />
-      <span className="absolute left-1/2 top-5 h-9 w-9 -translate-x-1/2 rounded-full bg-[#111111] opacity-70" />
+    <div className="relative h-full w-full">
+      <span className="absolute left-[22%] top-1/2 h-[42%] w-[42%] -translate-y-1/2 rounded-full bg-[#111111] opacity-95" />
+      <span className="absolute right-[22%] top-1/2 h-[42%] w-[42%] -translate-y-1/2 rounded-full bg-[#6c737d] opacity-78" />
+      <span className="absolute left-1/2 top-[58%] h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#111111] opacity-70" />
     </div>
   );
 }
@@ -207,6 +207,16 @@ export function BusinessCompanyProfileClient() {
     { label: "담당자 정보", done: Boolean(businessCompanyManager.email && businessCompanyManager.phone) },
     { label: "계정 정보", done: false },
   ];
+  const accountVerificationItems = [
+    { label: "이메일 인증", detail: businessCompanyManager.email, done: true },
+    { label: "담당자 인증", detail: `${businessCompanyManager.managerName} · ${businessCompanyManager.phone}`, done: true },
+    { label: "사업자 인증", detail: "인증기업 · 승인 완료", done: businessCompanyVerification.verificationStatus === "approved" },
+  ];
+  const completedItems = completionItems.filter((item) => item.done);
+  const remainingItems = completionItems.filter((item) => !item.done);
+  const computedCompletion = Math.round((completedItems.length / completionItems.length) * 100);
+  const progressMessage =
+    remainingItems.length === 0 ? "공고 등록 요건을 충족했습니다." : `공고 등록 가능까지 ${remainingItems.length}단계 남음`;
   const verificationFiles: Array<{ label: string; name: string; status: FileStatus | null }> = [
     {
       label: "사업자등록증명원",
@@ -397,8 +407,10 @@ export function BusinessCompanyProfileClient() {
             <div className="grid grid-cols-[230px_minmax(0,1fr)] gap-6 max-[820px]:grid-cols-1">
               <div>
                 <FieldLabel required>기업 로고</FieldLabel>
-                <div className="mt-2 grid h-[128px] place-items-center border border-[#dfe4ea] bg-[#fbfcfd]">
-                  <LogoMark profile={profile} />
+                <div className="mt-2 grid h-[128px] w-full max-w-[230px] place-items-center border border-[#dfe4ea] bg-[#fbfcfd] p-4">
+                  <div className="h-[76px] w-[154px]">
+                    <LogoMark profile={profile} />
+                  </div>
                 </div>
                 <p className="mt-2 text-[11px] font-semibold text-[#8a94a3]">권장 사이즈: 240x60px / JPG, PNG (2MB 이하)</p>
                 <div className="mt-3 grid grid-cols-3 gap-2">
@@ -431,7 +443,7 @@ export function BusinessCompanyProfileClient() {
                 <div className="border border-[#dfe4ea] bg-white p-4">
                   <p className="text-[11px] font-bold text-[#8a94a3]">공고 상세 · 기업 정보 카드</p>
                   <div className="mt-4 flex gap-3">
-                    <div className="grid h-12 w-12 shrink-0 place-items-center border border-[#dfe4ea] bg-white">
+                    <div className="grid h-12 w-12 shrink-0 place-items-center border border-[#dfe4ea] bg-white p-1">
                       <LogoMark profile={profile} />
                     </div>
                     <div>
@@ -450,7 +462,7 @@ export function BusinessCompanyProfileClient() {
                 >
                   <p className="text-[11px] font-bold text-white/62">기업 상세 페이지 · hero 영역</p>
                   <div className="mt-5 flex items-center gap-4">
-                    <div className="grid h-14 w-14 shrink-0 place-items-center bg-white">
+                    <div className="grid h-14 w-14 shrink-0 place-items-center bg-white p-1.5">
                       <LogoMark profile={profile} />
                     </div>
                     <div>
@@ -556,17 +568,43 @@ export function BusinessCompanyProfileClient() {
           </SectionCard>
 
           <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다.">
-            <div className="grid grid-cols-3 gap-3 max-[820px]:grid-cols-1">
-              {[
-                ["기업 페이지를 공개합니다.", profile.visibilitySettings.publicCompanyPage],
-                ["공고에 기업정보를 함께 노출합니다.", profile.visibilitySettings.exposeOnJobs],
-                ["검색 결과에 기업 프로필을 노출합니다.", profile.visibilitySettings.exposeOnSearch],
-              ].map(([label, checked]) => (
-                <label key={String(label)} className="flex min-h-[68px] items-center gap-3 border border-[#dfe4ea] bg-white px-4">
-                  <input type="checkbox" defaultChecked={Boolean(checked)} className="h-4 w-4 accent-[#111111]" />
-                  <span className="text-[13px] font-black text-[#303946]">{label}</span>
-                </label>
-              ))}
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
+              <div>
+                <h3 className="text-[14px] font-black text-[#303946]">계정 인증 상태</h3>
+                <div className="mt-3 space-y-2">
+                  {accountVerificationItems.map((item) => (
+                    <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
+                      <span
+                        className={clsx(
+                          "mt-0.5 grid h-5 w-5 shrink-0 place-items-center border text-[11px]",
+                          item.done ? "border-[#111111] bg-[#111111] text-white" : "border-[#cbd5e1] bg-white text-[#8a94a3]",
+                        )}
+                      >
+                        {item.done ? <Check size={13} /> : null}
+                      </span>
+                      <span>
+                        <span className="block text-[13px] font-black text-[#303946]">{item.label}</span>
+                        <span className="mt-1 block text-[12px] font-semibold text-[#7b8491]">{item.detail}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="text-[14px] font-black text-[#303946]">공개 설정</h3>
+                <div className="mt-3 space-y-2">
+                  {[
+                    ["기업 페이지를 공개합니다.", profile.visibilitySettings.publicCompanyPage],
+                    ["공고에 기업정보를 함께 노출합니다.", profile.visibilitySettings.exposeOnJobs],
+                    ["검색 결과에 기업 프로필을 노출합니다.", profile.visibilitySettings.exposeOnSearch],
+                  ].map(([label, checked]) => (
+                    <label key={String(label)} className="flex min-h-[48px] items-center gap-3 border border-[#dfe4ea] bg-white px-4">
+                      <input type="checkbox" defaultChecked={Boolean(checked)} className="h-4 w-4 accent-[#111111]" />
+                      <span className="text-[13px] font-black text-[#303946]">{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </SectionCard>
 
@@ -589,22 +627,65 @@ export function BusinessCompanyProfileClient() {
           <div className="sticky top-[88px] max-h-[calc(100vh-112px)] space-y-5 overflow-y-auto pr-1 business-sidebar-scroll">
             <section className="border border-[#dfe4ea] bg-white p-5">
               <h2 className="text-[16px] font-black text-[#17202c]">기업 정보 등록 현황</h2>
-              <div className="mt-5 flex items-center gap-4">
-                <div className="grid h-[78px] w-[78px] place-items-center border-8 border-[#dfe4ea] text-[20px] font-black text-[#17202c]">
-                  {profile.profileCompletion}%
+              <div className="mt-4">
+                <div className="flex items-end justify-between gap-3">
+                  <p className="text-[34px] font-black leading-none tracking-[0] text-[#111111]">{computedCompletion}%</p>
+                  <p className="pb-1 text-right text-[12px] font-black text-[#68717e]">
+                    완료 {completedItems.length} / {completionItems.length}
+                  </p>
                 </div>
-                <p className="text-[12px] font-bold leading-[1.6] text-[#68717e]">등록 요건을 충족하면 공고 등록이 가능합니다.</p>
+                <div className="mt-3 h-2.5 w-full border border-[#dfe4ea] bg-[#f3f5f7]">
+                  <div className="h-full bg-[#111111]" style={{ width: `${computedCompletion}%` }} />
+                </div>
+                <p className="mt-3 text-[13px] font-black text-[#303946]">{progressMessage}</p>
+                <p className="mt-1 text-[12px] font-semibold leading-[1.55] text-[#7b8491]">
+                  남은 항목을 완료하면 기업 프로필과 공고 노출 준비가 마무리됩니다.
+                </p>
               </div>
-              <div className="mt-5 space-y-3">
-                {completionItems.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between text-[13px] font-bold text-[#4f5967]">
-                    <span>{item.label}</span>
-                    {item.done ? <Check size={17} className="text-[#111111]" /> : <span className="h-4 w-4 border border-[#cbd5e1]" />}
-                  </div>
-                ))}
+
+              <div className="mt-5 border-t border-[#edf1f5] pt-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#8a94a3]">완료</p>
+                <div className="mt-3 space-y-2">
+                  {completedItems.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-black text-[#303946]">
+                      <span className="grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-white">
+                        <Check size={13} />
+                      </span>
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              <div className="mt-5 border-t border-[#edf1f5] pt-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#8a94a3]">남은 항목</p>
+                <div className="mt-3 space-y-2">
+                  {remainingItems.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-black text-[#8a94a3]">
+                      <span className="h-5 w-5 shrink-0 border border-[#cbd5e1] bg-[#f8fafc]" />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                  {remainingItems.length === 0 ? (
+                    <div className="flex items-center gap-2 text-[13px] font-black text-[#303946]">
+                      <span className="grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-white">
+                        <Check size={13} />
+                      </span>
+                      <span>남은 항목 없음</span>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {remainingItems.length ? (
+                <div className="mt-5 border border-[#dfe4ea] bg-[#fbfcfd] p-3">
+                  <p className="text-[12px] font-black text-[#303946]">다음 작업</p>
+                  <p className="mt-1 text-[12px] font-semibold leading-[1.6] text-[#68717e]">{remainingItems[0].label} 항목을 확인해 주세요.</p>
+                </div>
+              ) : null}
+
               {missingItems.length ? (
-                <div className="mt-5 border border-[#ead8d3] bg-[#fffafa] p-3">
+                <div className="mt-3 border border-[#ead8d3] bg-[#fffafa] p-3">
                   <p className="text-[12px] font-black text-[#a43f31]">부족한 필수 항목</p>
                   <p className="mt-1 text-[12px] font-bold leading-[1.6] text-[#7d5960]">{missingItems.join(", ")}</p>
                 </div>
