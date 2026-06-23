@@ -119,7 +119,7 @@ function CompanyHero({ profile }: { profile: CompanyProfile }) {
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-[34px] font-extrabold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
+                <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
                 <span className="inline-flex h-7 items-center gap-1 border border-[#b8dfdb]/60 bg-white/10 px-2.5 text-[11px] font-medium text-[#dff7f4]">
                   <ShieldCheck size={13} />
                   {profile.verifiedLabel}
@@ -556,8 +556,8 @@ function RelatedCompanies({ profile }: { profile: CompanyProfile }) {
 export function CompanyProfileClient({ profile }: CompanyProfileClientProps) {
   return (
     <main className="bg-[#f5f6f7] pb-24 pt-6">
-      <div className="mx-auto w-[min(1280px,calc(100vw-48px))] max-[640px]:w-[calc(100vw-28px)]">
-        <PageBreadcrumb className="mb-4" items={[{ label: "기업정보" }, { label: profile.name }]} />
+      <div className="app-shell">
+        <PageBreadcrumb className="mb-5" items={[{ label: "기업정보" }, { label: profile.name }]} />
 
         <CompanyHero profile={profile} />
         <CompanyTabs profile={profile} />

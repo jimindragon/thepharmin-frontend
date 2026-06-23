@@ -104,7 +104,7 @@ export default function JobsPage() {
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 
-          <h1 className="mt-5 text-[32px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
+          <h1 className="mt-5 text-[32px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
             {siteConfig.pageTitle}
           </h1>
 

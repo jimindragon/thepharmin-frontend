@@ -163,7 +163,7 @@ export function InsightDetailClient({ insight, relatedArticles, relatedJobs }: I
               <span className="inline-flex h-7 items-center border border-[#dfe4ea] bg-[#f7f8fa] px-2.5 text-[11px] font-medium text-[#596373]">
                 {insight.category}
               </span>
-              <h1 className="mt-5 text-[34px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#111827] max-[720px]:text-[26px]">
+              <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#111827] max-[720px]:text-[26px]">
                 {insight.title}
               </h1>
               <p className="mt-4 text-[16px] font-normal leading-[1.75] text-[#5f6876]">{insight.description}</p>

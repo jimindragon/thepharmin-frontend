@@ -74,17 +74,22 @@ input:focus-visible {
 }
 
 .app-shell {
-  width: min(var(--width-wide), calc(100vw - 144px));
+  width: min(var(--width-wide), calc(100vw - 176px));
   margin: 0 auto;
 }
 
 .app-shell--default {
-  width: min(var(--width-default), calc(100vw - 144px));
+  width: min(var(--width-default), calc(100vw - 176px));
   margin: 0 auto;
 }
 
 .app-shell--text {
-  width: min(var(--width-text), calc(100vw - 144px));
+  width: min(var(--width-text), calc(100vw - 176px));
+  margin: 0 auto;
+}
+
+.business-shell {
+  width: min(1440px, calc(100vw - 176px));
   margin: 0 auto;
 }
 
@@ -154,15 +159,19 @@ input:focus-visible {
 
 @media (max-width: 1180px) {
   .app-shell {
-    width: min(100% - 64px, var(--width-wide));
+    width: min(100% - 88px, var(--width-wide));
   }
 
   .app-shell--default {
-    width: min(100% - 64px, var(--width-default));
+    width: min(100% - 88px, var(--width-default));
   }
 
   .app-shell--text {
-    width: min(100% - 64px, var(--width-text));
+    width: min(100% - 88px, var(--width-text));
+  }
+
+  .business-shell {
+    width: min(100% - 88px, 1440px);
   }
 
   .jobs-layout {
@@ -172,15 +181,19 @@ input:focus-visible {
 
 @media (max-width: 760px) {
   .app-shell {
-    width: min(100% - 40px, var(--width-wide));
+    width: min(100% - 56px, var(--width-wide));
   }
 
   .app-shell--default {
-    width: min(100% - 40px, var(--width-default));
+    width: min(100% - 56px, var(--width-default));
   }
 
   .app-shell--text {
-    width: min(100% - 40px, var(--width-text));
+    width: min(100% - 56px, var(--width-text));
+  }
+
+  .business-shell {
+    width: min(100% - 56px, 1440px);
   }
 }
 
@@ -190,13 +203,13 @@ input:focus-visible {
 }
 
 .registration-container {
-  width: min(1280px, calc(100vw - 112px));
+  width: min(1280px, calc(100vw - 140px));
 }
 
 .registration-page-title {
   margin-top: 14px;
   font-size: 34px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
@@ -483,7 +496,7 @@ input:focus-visible {
 }
 
 .business-job-registration .registration-bottom-bar .app-shell {
-  width: min(100% - 40px, 1080px);
+  width: min(100% - 56px, 1080px);
 }
 
 @media (max-width: 1180px) {
@@ -498,7 +511,7 @@ input:focus-visible {
 
 @media (max-width: 760px) {
   .registration-container {
-    width: calc(100vw - 40px);
+    width: calc(100vw - 56px);
   }
 
   .business-job-registration .registration-stepper {

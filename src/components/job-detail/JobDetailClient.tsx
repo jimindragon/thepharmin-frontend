@@ -1146,7 +1146,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                             관심기업
                           </button>
                         </div>
-                        <h1 className="mt-3 text-[34px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
+                        <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
                           {job.title}
                         </h1>
                         {job.oneLineIntro ? (

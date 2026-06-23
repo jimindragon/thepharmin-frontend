@@ -98,7 +98,7 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
     <>
       <BusinessCenterHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
-        <div className="mx-auto grid w-[min(1440px,100vw)] grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
+        <div className="business-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <BusinessSidebar />
           <div className="min-w-0 px-8 py-8 max-[760px]:px-4 max-[760px]:py-6">{children}</div>
         </div>

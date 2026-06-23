@@ -24,7 +24,7 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
 
           <section className="mt-5 rounded-[var(--radius)] border border-border bg-white p-7 shadow-[var(--shadow)]">
             <p className="text-[13px] font-medium text-brand">기업정보·후기</p>
-            <h1 className="mt-2 text-[34px] font-extrabold tracking-[-0.02em] text-[#202734]">
+            <h1 className="mt-2 text-[34px] font-bold tracking-[-0.02em] text-[#202734]">
               {company?.name ?? "기업"} 후기
             </h1>
             <div className="mt-6 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">

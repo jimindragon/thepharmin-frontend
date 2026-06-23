@@ -2,6 +2,7 @@
 
 import { ClipboardList, Plus, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import {
@@ -30,8 +31,8 @@ export function BusinessHeadhuntingManageClient() {
       <div>
         <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
           <div>
-            <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 헤드헌팅 관리</p>
-            <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">헤드헌팅 관리</h1>
+            <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "헤드헌팅" }, { label: "헤드헌팅 관리" }]} />
+            <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">헤드헌팅 관리</h1>
             <p className="mt-2 text-[13px] font-normal text-[#68717e]">진행 중인 헤드헌팅 의뢰와 추천 후보자 현황을 확인합니다.</p>
           </div>
           <Link

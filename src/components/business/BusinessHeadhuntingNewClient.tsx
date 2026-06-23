@@ -3,6 +3,7 @@
 import { ArrowLeft, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FieldLabel, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import { businessCompanyManager } from "@/data/businessCompanyProfile";
@@ -23,7 +24,7 @@ export function BusinessHeadhuntingNewClient() {
       <BusinessCenterShell>
         <section className="mx-auto max-w-[640px] border border-[#dfe4ea] bg-white p-10 text-center">
           <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
-          <h1 className="mt-3 text-[26px] font-extrabold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
+          <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
           <p className="mt-3 text-[13px] font-normal leading-[1.8] text-[#68717e]">
             담당 매니저가 의뢰 내용을 검토한 후 1~2영업일 내에 추천 후보자 탐색을 시작합니다.
           </p>
@@ -41,9 +42,9 @@ export function BusinessHeadhuntingNewClient() {
   return (
     <BusinessCenterShell>
       <div>
-        <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 새 헤드헌팅 의뢰</p>
-        <div className="mt-3 flex items-center justify-between gap-4">
-          <h1 className="text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">새 헤드헌팅 의뢰</h1>
+        <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "헤드헌팅", href: "/business/headhunting/manage" }, { label: "새 헤드헌팅 의뢰" }]} />
+        <div className="mt-5 flex items-center justify-between gap-4">
+          <h1 className="text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">새 헤드헌팅 의뢰</h1>
           <Link
             href="/business/headhunting/manage"
             className="inline-flex h-10 items-center gap-1.5 border border-[#cfd8e3] bg-white px-4 text-[12px] font-medium text-[#303946] hover:border-[#111111]"

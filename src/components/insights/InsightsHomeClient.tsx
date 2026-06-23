@@ -207,7 +207,7 @@ export function InsightsHomeClient() {
                 <div className="relative z-10 max-w-[760px] px-9 pb-10 pt-[68px] max-[720px]:px-6 max-[720px]:pt-10">
                   <Link href={`/insights/${leadArticle.slug}`} className="block">
                     <span className="inline-flex h-7 items-center bg-[#111111] px-3 text-[11px] font-medium text-white">{leadArticle.category}</span>
-                    <h1 className="mt-7 max-w-[820px] text-[38px] font-extrabold leading-[1.25] tracking-[-0.02em] text-white group-hover:underline max-[720px]:text-[24px]">
+                    <h1 className="mt-7 max-w-[820px] text-[38px] font-bold leading-[1.25] tracking-[-0.02em] text-white group-hover:underline max-[720px]:text-[24px]">
                       {leadArticle.title}
                     </h1>
                     <p className="mt-5 max-w-[620px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">{leadArticle.description}</p>
@@ -304,7 +304,7 @@ export function InsightsHomeClient() {
         ) : (
           <section className="mt-10">
             <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">{insightCategoryMeta[activeCategory].eyebrow}</p>
-            <h1 className="mt-3 text-[31px] font-bold tracking-[-0.02em] text-[#111111]">
+            <h1 className="mt-3 text-[31px] font-semibold tracking-[-0.02em] text-[#111111]">
               {activeCategory}{" "}
               <span className="text-[15px] font-medium text-[#8a94a3]">
                 총 <span className="font-bold text-[#111111]">{activeCategory === "직무백과" ? insightJobWikiEntries.length : categoryArticles.length}</span>

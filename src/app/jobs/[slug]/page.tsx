@@ -37,7 +37,7 @@ function MissingJob() {
       <main className="grid min-h-[calc(100vh-70px)] place-items-center bg-[#f5f5f3] px-6">
         <section className="w-full max-w-[520px] rounded-[var(--radius)] border border-border bg-white p-8 text-center shadow-[var(--shadow)]">
           <p className="text-[13px] font-black text-brand">채용공고</p>
-          <h1 className="mt-2 text-[28px] font-black text-[#202734]">공고를 찾을 수 없습니다.</h1>
+          <h1 className="mt-2 text-[28px] font-bold text-[#202734]">공고를 찾을 수 없습니다.</h1>
           <p className="mt-3 text-[15px] font-semibold leading-[1.7] text-[#667181]">
             주소가 변경되었거나 마감되어 더 이상 열람할 수 없는 공고입니다.
           </p>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { FieldLabel, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import {
   businessAreaOptions,
@@ -216,8 +217,8 @@ export function BusinessCompanyProfileClient() {
 
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
-          <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 기업 관리 &gt; 기업정보 관리</p>
-          <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
+          <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업 관리" }, { label: "기업정보 관리" }]} />
+          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
           <p className="mt-2 text-[13px] font-normal text-[#68717e]">공고 상세와 기업 상세 페이지에 노출되는 회사 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
