@@ -16,7 +16,7 @@ const centerNavItems = [
   { label: "대시보드", href: "/business/dashboard" },
   { label: "채용관리", href: "/business/jobs" },
   { label: "기업 프로필", href: "/business/company/profile" },
-  { label: "헤드헌팅", href: "/business/headhunting" },
+  { label: "헤드헌팅 관리", href: "/business/headhunting/manage" },
   { label: "인재풀", href: "/business/applicants" },
   { label: "결제·이용권", href: "/business/billing/plans" },
   { label: "고객센터", href: "/business/support/inquiries" },

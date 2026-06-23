@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { InsightDetailClient } from "@/components/insights/InsightDetailClient";
-import { insightRelatedJobIds, insights, newsLinkedInsights } from "@/data/insights";
+import { insightRelatedJobIds, insights } from "@/data/insights";
 import { jobs } from "@/data/jobs";
 
 interface InsightDetailPageProps {
@@ -11,7 +11,7 @@ interface InsightDetailPageProps {
 
 export async function generateMetadata({ params }: InsightDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const insight = [...insights, ...newsLinkedInsights].find((item) => item.slug === slug);
+  const insight = insights.find((item) => item.slug === slug);
 
   if (!insight) {
     return {
@@ -27,14 +27,13 @@ export async function generateMetadata({ params }: InsightDetailPageProps): Prom
 
 export default async function InsightDetailPage({ params }: InsightDetailPageProps) {
   const { slug } = await params;
-  const allInsights = [...insights, ...newsLinkedInsights];
-  const insight = allInsights.find((item) => item.slug === slug);
+  const insight = insights.find((item) => item.slug === slug);
 
   if (!insight) {
     notFound();
   }
 
-  const relatedArticles = allInsights.filter((item) => item.slug !== slug);
+  const relatedArticles = insights.filter((item) => item.slug !== slug);
   const relatedJobs = insightRelatedJobIds.map((id) => jobs.find((job) => job.id === id)).filter((job): job is (typeof jobs)[number] => Boolean(job));
 
   return (

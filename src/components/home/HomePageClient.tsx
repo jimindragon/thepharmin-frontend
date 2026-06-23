@@ -58,8 +58,8 @@ function HomeTrackBar({
               className={clsx(
                 "h-[42px] min-w-[84px] border px-5 text-[14px] font-black transition-colors",
                 activeTrack === track.id
-                  ? "border-[#111111] bg-[#111111] text-white shadow-[0_8px_18px_rgba(0,0,0,0.12)]"
-                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
+                  ? "border-[#00746c] bg-[#00746c] text-white"
+                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#00746c]",
               )}
               aria-pressed={activeTrack === track.id}
             >
@@ -169,7 +169,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                 className={clsx(
                   "mb-6 grid h-12 w-12 place-items-center border text-[14px] font-black",
                   company.logoTone === "plus"
-                    ? "border-[#2fb19f] bg-[#2fb19f] text-white"
+                    ? "border-[#00746c] bg-[#00746c] text-white"
                     : "border-[#e2e5e8] bg-white text-[#111111]",
                 )}
               >
@@ -183,7 +183,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                   </span>
                 ))}
               </p>
-              <p className="mt-5 text-[13px] font-black text-[#146c83]">{company.positionCount}</p>
+              <p className="mt-5 text-[13px] font-black text-[#00746c]">{company.positionCount}</p>
             </Link>
           ))}
         </div>
@@ -195,9 +195,9 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 function RecruiterSolutionBanner() {
   return (
     <section className="mt-5 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
-      <Link href="/company/jobs/new" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
+      <Link href="/business/jobs/new" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
         <p className="text-[14px] font-bold text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
-        <span className="text-[13px] font-black text-[#146c83]">더파마 리크루트 채용 솔루션 알아보기 ›</span>
+        <span className="text-[13px] font-black text-[#00746c]">더파마 리크루트 채용 솔루션 알아보기 ›</span>
       </Link>
     </section>
   );
@@ -271,7 +271,7 @@ function HomeRecommendationCard({
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {job.postingSource === "headhunting" ? <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-black text-white">헤드헌팅</span> : null}
-          <span className="border border-[#bfe7e2] px-2.5 py-1 text-[11px] font-black text-[#146c83]">
+          <span className="border border-[#bfe7e2] px-2.5 py-1 text-[11px] font-black text-[#00746c]">
             {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
           </span>
         </div>

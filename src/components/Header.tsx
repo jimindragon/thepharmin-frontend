@@ -52,8 +52,8 @@ export function Header() {
               href={action.href}
               className={
                 action.tone === "brand"
-                  ? "overflow-hidden border border-[#1a817d] bg-[linear-gradient(90deg,#126f7e_0%,#1f8f83_100%)] px-3.5 py-2 text-[12px] font-black text-white shadow-none hover:border-[#269b91] hover:brightness-105"
-                  : "border border-white/25 bg-transparent px-3.5 py-2 text-[12px] font-black text-white hover:border-white/55"
+                  ? "rounded-md bg-[linear-gradient(90deg,#00564f_0%,#00a896_100%)] px-4 py-2 text-[12px] font-black text-white transition hover:brightness-110"
+                  : "rounded-md border border-white/25 bg-transparent px-3.5 py-2 text-[12px] font-black text-white transition hover:border-white/55"
               }
             >
               {action.label}

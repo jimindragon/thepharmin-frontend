@@ -1,7 +1,6 @@
 export const navigationItems = [
   { label: "채용공고", href: "/jobs" },
   { label: "캘린더", href: "/calendar" },
-  { label: "헤드헌팅", href: "#" },
   { label: "기업정보", href: "#" },
   { label: "커뮤니티", href: "#" },
   { label: "Insight+", href: "/insights", highlight: true },
