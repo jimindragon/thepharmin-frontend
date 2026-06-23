@@ -17,10 +17,15 @@
   --color-danger: #e14b2d;
   --radius: 3px;
   --shadow: 0 1px 0 rgba(18, 24, 30, 0.04);
-  --content-max-width: 1320px;
+  /* 콘텐츠 폭: 페이지 성격별 3단계. 거터(좌우 패딩)는 공통 */
+  --width-wide: 1320px;
+  --width-default: 1160px;
+  --width-text: 760px;
+  /* 핵심 CTA 전용 그라데이션 — 다른 버튼에는 쓰지 않음 */
+  --gradient-cta: linear-gradient(135deg, #06403d 0%, #11897e 55%, #20c79f 100%);
   --sidebar-width: 260px;
-  --font-size-heading: 30px;
-  --font-size-body: 13px;
+  --font-size-heading: 46px;
+  --font-size-body: 15px;
   --control-height: 36px;
   --card-padding: 14px;
   --section-gap: 18px;
@@ -48,7 +53,9 @@ body {
     BlinkMacSystemFont,
     system-ui,
     sans-serif;
-  letter-spacing: 0;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.65;
 }
 
 button,
@@ -67,7 +74,17 @@ input:focus-visible {
 }
 
 .app-shell {
-  width: min(var(--content-max-width), calc(100vw - 96px));
+  width: min(var(--width-wide), calc(100vw - 144px));
+  margin: 0 auto;
+}
+
+.app-shell--default {
+  width: min(var(--width-default), calc(100vw - 144px));
+  margin: 0 auto;
+}
+
+.app-shell--text {
+  width: min(var(--width-text), calc(100vw - 144px));
   margin: 0 auto;
 }
 
@@ -137,7 +154,15 @@ input:focus-visible {
 
 @media (max-width: 1180px) {
   .app-shell {
-    width: min(100% - 40px, var(--content-max-width));
+    width: min(100% - 64px, var(--width-wide));
+  }
+
+  .app-shell--default {
+    width: min(100% - 64px, var(--width-default));
+  }
+
+  .app-shell--text {
+    width: min(100% - 64px, var(--width-text));
   }
 
   .jobs-layout {
@@ -147,7 +172,15 @@ input:focus-visible {
 
 @media (max-width: 760px) {
   .app-shell {
-    width: min(100% - 28px, var(--content-max-width));
+    width: min(100% - 40px, var(--width-wide));
+  }
+
+  .app-shell--default {
+    width: min(100% - 40px, var(--width-default));
+  }
+
+  .app-shell--text {
+    width: min(100% - 40px, var(--width-text));
   }
 }
 
@@ -157,12 +190,14 @@ input:focus-visible {
 }
 
 .registration-container {
-  width: min(1280px, calc(100vw - 80px));
+  width: min(1280px, calc(100vw - 112px));
 }
 
 .registration-page-title {
   margin-top: 14px;
-  font-size: 32px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .registration-page-subtitle {
@@ -303,11 +338,14 @@ input:focus-visible {
 }
 
 .registration-section-title {
-  font-size: 17px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .registration-section-description {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .registration-status-pill {
@@ -350,7 +388,6 @@ input:focus-visible {
 .registration-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .registration-page select,
 .registration-page textarea,
-.registration-page button,
 .registration-page .rounded-\[6px\],
 .registration-page .rounded-\[7px\],
 .registration-page .rounded-\[8px\],
@@ -358,6 +395,11 @@ input:focus-visible {
 .registration-page .rounded-\[10px\],
 .registration-page .rounded-\[12px\] {
   border-radius: 2px !important;
+}
+
+/* 버튼은 pill(완전한 원형)이 아니라면 라운딩을 전혀 쓰지 않음 */
+.registration-page button {
+  border-radius: 0 !important;
 }
 
 .registration-page .registration-step-circle {
@@ -427,7 +469,7 @@ input:focus-visible {
 }
 
 .business-job-registration .registration-page-title {
-  font-size: 30px;
+  font-size: 32px;
 }
 
 .business-job-registration .registration-company-card {
@@ -456,7 +498,7 @@ input:focus-visible {
 
 @media (max-width: 760px) {
   .registration-container {
-    width: calc(100vw - 28px);
+    width: calc(100vw - 40px);
   }
 
   .business-job-registration .registration-stepper {

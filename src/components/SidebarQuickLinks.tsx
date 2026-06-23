@@ -92,7 +92,7 @@ export function SidebarQuickLinks({
               type="button"
               onClick={handleFirstClick}
               className={clsx(
-                "flex h-[46px] w-full items-center justify-center gap-2.5 rounded-[var(--radius)] border text-[14px] font-extrabold transition-all",
+                "flex h-[46px] w-full items-center justify-center gap-2.5 border text-[14px] font-semibold transition-all",
                 preferenceApplied
                   ? "border-brand bg-[var(--color-brand-soft)] text-brand"
                   : "border-[#bdbdbd] text-brand hover:bg-[#f3f3f3]",
@@ -108,7 +108,7 @@ export function SidebarQuickLinks({
                 <button
                   type="button"
                   onClick={handleEditPreference}
-                  className="flex h-[36px] w-full items-center gap-2 rounded-[var(--radius)] px-3 text-left text-[13px] font-bold text-[#3d4653] hover:bg-[#f5f8fa]"
+                  className="flex h-[36px] w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
                 >
                   <Settings2 size={15} />
                   관심 조건 수정
@@ -116,7 +116,7 @@ export function SidebarQuickLinks({
                 <button
                   type="button"
                   onClick={handleClearPreference}
-                  className="flex h-[36px] w-full items-center gap-2 rounded-[var(--radius)] px-3 text-left text-[13px] font-bold text-[#3d4653] hover:bg-[#f5f8fa]"
+                  className="flex h-[36px] w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
                 >
                   <Filter size={15} />
                   관심 조건 해제
@@ -129,7 +129,7 @@ export function SidebarQuickLinks({
             type="button"
             onClick={() => onQuickLinkClick("saved")}
             className={clsx(
-              "flex h-[46px] items-center justify-center gap-2.5 rounded-[var(--radius)] border border-[#dfe4ec] text-[14px] font-extrabold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
+              "flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-semibold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
               activeQuickLink === "saved" && "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]",
             )}
           >
@@ -141,7 +141,7 @@ export function SidebarQuickLinks({
             type="button"
             onClick={() => onQuickLinkClick("recent")}
             className={clsx(
-              "flex h-[46px] items-center justify-center gap-2.5 rounded-[var(--radius)] border border-[#dfe4ec] text-[14px] font-extrabold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
+              "flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-semibold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
               activeQuickLink === "recent" && "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]",
             )}
           >
@@ -153,7 +153,7 @@ export function SidebarQuickLinks({
         <div className="mt-5 rounded-[var(--radius)] border border-[#eef2f6] bg-[#f8fafb] px-5 py-5">
           {!preference ? (
             <>
-              <p className="text-[14px] font-extrabold leading-[1.55] text-[#3d4653]">
+              <p className="text-[14px] font-semibold leading-[1.55] text-[#3d4653]">
                 관심 조건을 설정해두면
                 <br />
                 원하는 공고만 빠르게 볼 수 있어요.
@@ -161,25 +161,25 @@ export function SidebarQuickLinks({
               <button
                 type="button"
                 onClick={() => onSetPreference(mockUserPreferences.configured)}
-                className="mt-4 h-[36px] rounded-[var(--radius)] bg-brand px-4 text-[13px] font-bold text-white hover:bg-[var(--color-brand-dark)]"
+                className="mt-4 h-[36px] bg-brand px-4 text-[13px] font-medium text-white hover:bg-[var(--color-brand-dark)]"
               >
                 관심 조건 설정하기
               </button>
-              <p className="mt-4 text-[12px] font-semibold text-[#8a94a3]">새 공고 이메일 알림도 받을 수 있어요.</p>
+              <p className="mt-4 text-[12px] font-normal text-[#8a94a3]">새 공고 이메일 알림도 받을 수 있어요.</p>
             </>
           ) : (
             <>
-              <p className="text-[13px] font-bold text-[#8791a0]">내 관심 조건</p>
-              <p className="mt-2 text-[17px] font-extrabold text-[#252b36]">{preferenceSummary?.jobSummary}</p>
-              <p className="mt-1 text-[13px] font-bold leading-[1.5] text-[#687383]">{preferenceSummary?.detailSummary}</p>
+              <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
+              <p className="mt-2 text-[17px] font-semibold text-[#252b36]">{preferenceSummary?.jobSummary}</p>
+              <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">{preferenceSummary?.detailSummary}</p>
               <button
                 type="button"
                 onClick={handleEditPreference}
-                className="mt-4 h-[34px] rounded-[var(--radius)] border border-[#d9e1e8] bg-white px-3 text-[13px] font-bold text-[#46505f] hover:border-brand hover:text-brand"
+                className="mt-4 h-[34px] border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-brand hover:text-brand"
               >
                 관심 조건 수정
               </button>
-              <div className="mt-5 flex items-center gap-2 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-bold text-[#687383]">
+              <div className="mt-5 flex items-center gap-2 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
                 <MailCheck size={17} className="text-brand" />
                 {preference.emailAlertEnabled ? "이메일 알림 사용 중" : "새 공고 알림 받기"}
               </div>

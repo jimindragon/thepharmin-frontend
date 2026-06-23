@@ -19,18 +19,18 @@ export function JobListToolbar({
   return (
     <div className="mb-2.5 mt-5 flex items-center justify-between gap-3.5 max-[760px]:flex-col max-[760px]:items-stretch">
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-[15px] font-extrabold text-[#3c4655]">
+        <p className="text-[15px] font-semibold text-[#3c4655]">
           총 <span className="text-brand">{totalCount}개</span> 공고
         </p>
       </div>
-      <div className="grid h-[34px] grid-cols-3 overflow-hidden rounded-[var(--radius)] border border-[#dce2ea] bg-white">
+      <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
         {sortOptions.map((option) => (
           <button
             key={option}
             type="button"
             onClick={() => onSortChange(option)}
             className={clsx(
-              "min-w-[96px] border-r border-[#dce2ea] px-3.5 text-[12px] font-bold last:border-r-0",
+              "min-w-[96px] border-r border-[#dce2ea] px-3.5 text-[12px] font-medium last:border-r-0",
               sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
             )}
           >

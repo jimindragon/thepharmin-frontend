@@ -260,7 +260,7 @@ function CompanyLogo({
               style={{ backgroundColor: logoColor, left: size === "lg" ? 19 : 11, bottom: 0 }}
             />
           </div>
-          <span className={clsx("-mt-1 max-w-[58px] truncate font-black", textSize)} style={{ color: logoColor }}>
+          <span className={clsx("-mt-1 max-w-[58px] truncate font-medium", textSize)} style={{ color: logoColor }}>
             {logoText}
           </span>
         </>
@@ -271,7 +271,7 @@ function CompanyLogo({
 
 function HeaderTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3 py-1.5 text-[13px] font-extrabold text-[#4f5a66]">
+    <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3 py-1.5 text-[13px] font-normal text-[#4f5a66]">
       {children}
     </span>
   );
@@ -294,7 +294,7 @@ function ActionIconButton({
       onClick={onClick}
       aria-label={label}
       className={clsx(
-        "grid h-11 w-11 shrink-0 place-items-center rounded-[var(--radius)] border bg-white transition",
+        "grid h-11 w-11 shrink-0 place-items-center border bg-white transition",
         active
           ? "border-brand text-brand shadow-[0_4px_14px_rgba(17,17,17,0.14)]"
           : "border-border text-[#818b98] hover:border-brand hover:text-brand",
@@ -325,13 +325,13 @@ function DefaultCover({ job }: { job: Job }) {
           size="sm"
         />
         <div>
-          <p className="text-[14px] font-black text-white">{job.company}</p>
-          <p className="mt-1 text-[12px] font-bold text-white/66">{job.industry ?? job.category} · {job.role ?? job.jobCategory ?? "채용"}</p>
+          <p className="text-[14px] font-medium text-white">{job.company}</p>
+          <p className="mt-1 text-[12px] font-medium text-white/66">{job.industry ?? job.category} · {job.role ?? job.jobCategory ?? "채용"}</p>
         </div>
       </div>
       <div className="absolute bottom-8 left-8 right-8 max-w-[720px] max-[720px]:bottom-6 max-[720px]:left-5 max-[720px]:right-5">
-        <p className="text-[15px] font-black text-white/78">THE PHARMA Recruit</p>
-        <p className="mt-2 text-[28px] font-black leading-[1.25] text-white max-[720px]:text-[22px]">{job.company}</p>
+        <p className="text-[15px] font-medium text-white/78">THE PHARMA Recruit</p>
+        <p className="mt-2 text-[28px] font-medium leading-[1.25] text-white max-[720px]:text-[22px]">{job.company}</p>
       </div>
     </div>
   );
@@ -340,8 +340,8 @@ function DefaultCover({ job }: { job: Job }) {
 function OverviewCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3.5">
-      <p className="text-[12px] font-black text-[#8893a2]">{label}</p>
-      <p className="mt-1.5 text-[15px] font-extrabold text-[#2f3845]">{value}</p>
+      <p className="text-[12px] font-medium text-[#8893a2]">{label}</p>
+      <p className="mt-1.5 text-[15px] font-normal text-[#2f3845]">{value}</p>
     </div>
   );
 }
@@ -349,7 +349,7 @@ function OverviewCard({ label, value }: { label: string; value: string }) {
 function SectionShell({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
-      <h2 className="text-[22px] font-black tracking-[0] text-[#242b36]">{title}</h2>
+      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">{title}</h2>
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -364,7 +364,7 @@ function FormattedContentView({ content, fallback }: { content?: FormattedConten
 
   if (normalized.format === "paragraph") {
     return (
-      <div className="space-y-3 text-[16px] font-semibold leading-[1.85] text-[#3f4855]">
+      <div className="space-y-3 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
         {normalized.items.map((item) => (
           <p key={item}>{item}</p>
         ))}
@@ -375,7 +375,7 @@ function FormattedContentView({ content, fallback }: { content?: FormattedConten
   const ListTag = normalized.format === "numbered" ? "ol" : "ul";
 
   return (
-    <ListTag className={clsx("space-y-3 text-[15px] font-semibold leading-[1.75] text-[#3f4855]", normalized.format === "numbered" && "list-decimal pl-5")}>
+    <ListTag className={clsx("space-y-3 text-[15px] font-normal leading-[1.75] text-[#3f4855]", normalized.format === "numbered" && "list-decimal pl-5")}>
       {normalized.items.map((item, index) => (
         <li key={`${item}-${index}`} className={normalized.format === "bullet" ? "flex gap-2.5" : undefined}>
           {normalized.format === "bullet" ? <span className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#111111]" /> : null}
@@ -407,7 +407,7 @@ function AdditionalMaterials({ job }: { job: Job }) {
           {images.map((image) => (
             <figure key={image.url} className="overflow-hidden rounded-[var(--radius)] border border-border bg-[#fbfcfd]">
               <img src={image.url} alt={image.alt} className="h-[180px] w-full object-cover" />
-              {image.title ? <figcaption className="px-4 py-3 text-[13px] font-bold text-[#687382]">{image.title}</figcaption> : null}
+              {image.title ? <figcaption className="px-4 py-3 text-[13px] font-medium text-[#687382]">{image.title}</figcaption> : null}
             </figure>
           ))}
         </div>
@@ -425,8 +425,8 @@ function AdditionalMaterials({ job }: { job: Job }) {
                   <FileText size={17} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-black text-[#2f3845]">{file.name}</span>
-                  {file.description ? <span className="mt-0.5 block truncate text-[12px] font-bold text-[#8a95a5]">{file.description}</span> : null}
+                  <span className="block truncate text-[14px] font-medium text-[#2f3845]">{file.name}</span>
+                  {file.description ? <span className="mt-0.5 block truncate text-[12px] font-medium text-[#8a95a5]">{file.description}</span> : null}
                 </span>
               </span>
               <Download size={17} className="shrink-0 text-[#8a95a5]" />
@@ -434,7 +434,7 @@ function AdditionalMaterials({ job }: { job: Job }) {
           ))}
         </div>
       ) : null}
-      <p className="text-[12px] font-bold leading-[1.6] text-[#8a95a5]">기업이 제공한 채용 소개 이미지와 첨부 자료입니다.</p>
+      <p className="text-[12px] font-medium leading-[1.6] text-[#8a95a5]">기업이 제공한 채용 소개 이미지와 첨부 자료입니다.</p>
     </div>
   );
 }
@@ -453,17 +453,17 @@ function WorkConditions({ job }: { job: Job }) {
       <div className="grid grid-cols-2 gap-3 max-[720px]:grid-cols-1">
         {items.map((item) => (
           <div key={item.label} className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3.5">
-            <p className="text-[12px] font-black text-[#8893a2]">{item.label}</p>
-            <p className="mt-1.5 text-[15px] font-extrabold leading-[1.55] text-[#2f3845]">{item.value}</p>
+            <p className="text-[12px] font-medium text-[#8893a2]">{item.label}</p>
+            <p className="mt-1.5 text-[15px] font-normal leading-[1.55] text-[#2f3845]">{item.value}</p>
           </div>
         ))}
       </div>
       {benefitItems.length > 0 ? (
         <div>
-          <h3 className="text-[15px] font-black text-[#303947]">복리후생</h3>
+          <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#303947]">복리후생</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {visibleBenefits.map((benefit) => (
-              <span key={benefit} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3.5 py-2 text-[13px] font-extrabold text-[#4f5a66]">
+              <span key={benefit} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3.5 py-2 text-[13px] font-normal text-[#4f5a66]">
                 {benefit}
               </span>
             ))}
@@ -471,7 +471,7 @@ function WorkConditions({ job }: { job: Job }) {
               <button
                 type="button"
                 onClick={() => setExpanded((value) => !value)}
-                className="rounded-[var(--radius)] border border-brand bg-white px-3.5 py-2 text-[13px] font-black text-brand transition hover:bg-brand-soft"
+                className="border border-brand bg-white px-3.5 py-2 text-[13px] font-medium text-brand transition hover:bg-brand-soft"
               >
                 {expanded ? "접기" : `더 보기 ${benefitItems.length - 5}개`}
               </button>
@@ -481,8 +481,8 @@ function WorkConditions({ job }: { job: Job }) {
       ) : null}
       {job.workConditionDetail ? (
         <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-white px-4 py-3.5">
-          <p className="text-[12px] font-black text-[#8893a2]">근무조건 상세</p>
-          <p className="mt-1.5 text-[14px] font-semibold leading-[1.7] text-[#3f4855]">{job.workConditionDetail}</p>
+          <p className="text-[12px] font-medium text-[#8893a2]">근무조건 상세</p>
+          <p className="mt-1.5 text-[14px] font-normal leading-[1.7] text-[#3f4855]">{job.workConditionDetail}</p>
         </div>
       ) : null}
     </div>
@@ -499,14 +499,14 @@ function HiringProcess({ steps }: { steps?: string[] }) {
       <div className="grid grid-cols-5 gap-2 max-[960px]:grid-cols-3 max-[640px]:grid-cols-1">
         {steps.map((step, index) => (
           <div key={step} className="relative rounded-[var(--radius)] border border-[#dfe7ee] bg-[#fbfcfd] px-3.5 py-4 text-center">
-            <span className="mx-auto grid h-8 w-8 place-items-center rounded-[var(--radius)] bg-brand text-[13px] font-black text-white">
+            <span className="mx-auto grid h-8 w-8 place-items-center rounded-[var(--radius)] bg-brand text-[13px] font-medium text-white">
               {index + 1}
             </span>
-            <p className="mt-2.5 text-[13px] font-extrabold text-[#3f4855]">{step}</p>
+            <p className="mt-2.5 text-[13px] font-normal text-[#3f4855]">{step}</p>
           </div>
         ))}
       </div>
-      <p className="mt-3 text-[12px] font-bold text-[#8a95a5]">채용 절차와 일정은 기업 사정에 따라 변경될 수 있습니다.</p>
+      <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">채용 절차와 일정은 기업 사정에 따라 변경될 수 있습니다.</p>
     </div>
   );
 }
@@ -518,7 +518,7 @@ function CompanyNewsSection({ job }: { job: Job }) {
   return (
     <div>
       {!hasDirectCompanyNews ? (
-        <p className="mb-4 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-bold leading-[1.6] text-[#7d8796]">
+        <p className="mb-4 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-medium leading-[1.6] text-[#7d8796]">
           아직 이 기업과 직접 관련된 기사가 없습니다. 대신 이 공고와 관련된 제약·바이오 산업 뉴스를 확인해 보세요.
         </p>
       ) : null}
@@ -527,24 +527,24 @@ function CompanyNewsSection({ job }: { job: Job }) {
           <article key={article.id} className="group overflow-hidden border border-[#e0e6ee] bg-white transition hover:border-[#111111]">
             <div className="h-[122px] bg-[#eef1f4]">
               <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#eef3f6_0%,#d7e3ea_42%,#f6f8fa_100%)] p-4">
-                <span className="bg-white/88 px-2.5 py-1 text-[11px] font-black text-[#4f5a66] ring-1 ring-[#dfe7ee]">{article.label}</span>
+                <span className="bg-white/88 px-2.5 py-1 text-[11px] font-medium text-[#4f5a66] ring-1 ring-[#dfe7ee]">{article.label}</span>
               </div>
             </div>
             <div className="p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[11px] font-bold text-[#8a95a5]">{article.publishedAt}</p>
-                <p className="text-[11px] font-black text-[#00746c]">{article.source}</p>
+                <p className="text-[11px] font-medium text-[#8a95a5]">{article.publishedAt}</p>
+                <p className="text-[11px] font-medium text-[#596373]">{article.source}</p>
               </div>
-              <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[14px] font-black leading-[1.45] text-[#202733]">{article.title}</h3>
-              <p className="mt-2 line-clamp-2 text-[12px] font-semibold leading-[1.6] text-[#667181]">{article.summary}</p>
+              <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[14px] font-bold leading-[1.45] text-[#202733]">{article.title}</h3>
+              <p className="mt-2 line-clamp-2 text-[12px] font-normal leading-[1.6] text-[#667181]">{article.summary}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {article.keywords.slice(0, 3).map((keyword) => (
-                  <span key={keyword} className="border border-[#e4e9ef] bg-[#fbfcfd] px-2 py-1 text-[11px] font-bold text-[#687382]">
+                  <span key={keyword} className="border border-[#e4e9ef] bg-[#fbfcfd] px-2 py-1 text-[11px] font-medium text-[#687382]">
                     {keyword}
                   </span>
                 ))}
               </div>
-              <a href={article.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-[12px] font-black text-[#2f3845] hover:text-brand">
+              <a href={article.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-[12px] font-medium text-[#2f3845] hover:text-brand">
                 기사 보기
                 <ExternalLink size={13} />
               </a>
@@ -575,7 +575,7 @@ function MapPlaceholder({ job, company }: { job: Job; company: Company | null })
           />
           <div className="relative z-10 rounded-[var(--radius)] border border-[#d7dde5] bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
             <MapPin className="mx-auto text-[#111111]" size={22} />
-            <p className="mt-1 text-[13px] font-black text-[#3f4855]">지도 영역</p>
+            <p className="mt-1 text-[13px] font-medium text-[#3f4855]">지도 영역</p>
           </div>
         </div>
       ) : null}
@@ -667,8 +667,8 @@ function ReviewWriteModal({
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[13px] font-black text-brand">후기 작성</p>
-            <h2 id="review-modal-title" className="mt-1 text-[22px] font-black text-[#202734]">
+            <p className="text-[13px] font-medium text-brand">후기 작성</p>
+            <h2 id="review-modal-title" className="mt-1 text-[24px] font-bold tracking-[-0.02em] text-[#202734]">
               열람권 받기
             </h2>
           </div>
@@ -676,7 +676,7 @@ function ReviewWriteModal({
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            className="grid h-9 w-9 place-items-center rounded-[var(--radius)] border border-border text-[#7d8796] hover:border-brand hover:text-brand"
+            className="grid h-9 w-9 place-items-center border border-border text-[#7d8796] hover:border-brand hover:text-brand"
             aria-label="후기 작성 닫기"
           >
             <X size={18} />
@@ -696,7 +696,7 @@ function ReviewWriteModal({
               aria-selected={type === tab.id}
               onClick={() => setType(tab.id as CompanyReviewType)}
               className={clsx(
-                "h-11 rounded-[var(--radius)] border text-[14px] font-black transition",
+                "h-11 border text-[14px] font-medium transition",
                 type === tab.id
                   ? "border-brand bg-brand-soft text-brand"
                   : "border-[#dfe5ec] bg-white text-[#596373] hover:border-brand hover:text-brand",
@@ -707,7 +707,7 @@ function ReviewWriteModal({
           ))}
         </div>
 
-        <div className="mt-5 grid gap-3 rounded-[var(--radius)] bg-[#f8fafb] p-4 text-[13px] font-bold text-[#596373]">
+        <div className="mt-5 grid gap-3 rounded-[var(--radius)] bg-[#f8fafb] p-4 text-[13px] font-medium text-[#596373]">
           <p>기업: {companyName}</p>
           <p>직무: {jobTitle}</p>
           <p className="leading-[1.6] text-[#7d8796]">익명으로 표시되며, 개인정보나 특정인을 식별할 수 있는 내용은 작성하지 마세요.</p>
@@ -717,14 +717,14 @@ function ReviewWriteModal({
           value={content}
           onChange={(event) => setContent(event.target.value)}
           placeholder="후기를 간단히 작성해 주세요."
-          className="mt-4 min-h-[128px] w-full resize-none rounded-[var(--radius)] border border-[#dfe5ec] px-4 py-3 text-[14px] font-semibold leading-[1.7] text-[#2f3845] outline-none transition placeholder:text-[#a3adba] focus:border-brand focus:ring-4 focus:ring-[rgba(17,17,17,0.12)]"
+          className="mt-4 min-h-[128px] w-full resize-none rounded-[var(--radius)] border border-[#dfe5ec] px-4 py-3 text-[14px] font-normal leading-[1.7] text-[#2f3845] outline-none transition placeholder:text-[#a3adba] focus:border-brand focus:ring-4 focus:ring-[rgba(17,17,17,0.12)]"
         />
 
         <div className="mt-5 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="h-11 rounded-[var(--radius)] border border-[#dfe5ec] px-5 text-[14px] font-black text-[#596373] hover:border-brand hover:text-brand"
+            className="h-11 border border-[#dfe5ec] px-5 text-[14px] font-medium text-[#596373] hover:border-brand hover:text-brand"
           >
             취소
           </button>
@@ -736,7 +736,7 @@ function ReviewWriteModal({
               setContent("");
               onComplete();
             }}
-            className="h-11 rounded-[var(--radius)] bg-brand px-5 text-[14px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)] disabled:cursor-not-allowed disabled:bg-[#c7c7c7]"
+            className="h-11 bg-brand px-5 text-[14px] font-medium text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)] disabled:cursor-not-allowed disabled:bg-[#c7c7c7]"
           >
             작성 완료
           </button>
@@ -778,7 +778,7 @@ function ReviewsSection({
               aria-selected={tab === item.id}
               onClick={() => setTab(item.id as CompanyReviewType)}
               className={clsx(
-                "h-9 rounded-[var(--radius)] px-4 text-[13px] font-black transition",
+                "h-9 px-4 text-[13px] font-medium transition",
                 tab === item.id ? "bg-white text-brand shadow-[0_2px_8px_rgba(20,32,46,0.07)]" : "text-[#7d8796] hover:text-brand",
               )}
             >
@@ -791,22 +791,22 @@ function ReviewsSection({
           {visibleReviews.map((review) => (
             <article key={review.id} className="min-w-0 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] p-4 max-[720px]:w-[280px] max-[720px]:shrink-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-black text-brand">
+                <span className="rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
                   {review.type === "interview" ? "면접" : "회사"}
                 </span>
-                <span className="text-[11px] font-bold text-[#9aa5b2]">{review.writtenAt}</span>
+                <span className="text-[11px] font-medium text-[#9aa5b2]">{review.writtenAt}</span>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {review.tags.slice(0, 2).map((tag) => (
-                  <span key={tag} className="rounded-[var(--radius)] border border-[#e4e9ef] bg-white px-2 py-1 text-[11px] font-bold text-[#687382]">
+                  <span key={tag} className="rounded-[var(--radius)] border border-[#e4e9ef] bg-white px-2 py-1 text-[11px] font-medium text-[#687382]">
                     {tag}
                   </span>
                 ))}
               </div>
-              <p className={clsx("mt-3 text-[13px] font-semibold leading-[1.7] text-[#3f4855]", !canRead && "blur-[3px] select-none")}>
+              <p className={clsx("mt-3 text-[13px] font-normal leading-[1.7] text-[#3f4855]", !canRead && "blur-[3px] select-none")}>
                 {review.content}
               </p>
-              <div className="mt-3 flex items-center justify-between text-[11px] font-bold text-[#8a95a5]">
+              <div className="mt-3 flex items-center justify-between text-[11px] font-medium text-[#8a95a5]">
                 <span>
                   {review.jobRole} · {review.authorStatus}
                 </span>
@@ -821,7 +821,7 @@ function ReviewsSection({
 
         <Link
           href={`/companies/${company?.id ?? job.companyId ?? "thepharmin-pharma"}/reviews`}
-          className="mt-4 inline-flex h-11 items-center gap-2 rounded-[var(--radius)] border border-[#dfe5ec] bg-white px-4 text-[14px] font-black text-[#4f5a66] transition hover:border-brand hover:text-brand"
+          className="mt-4 inline-flex h-11 items-center gap-2 border border-[#dfe5ec] bg-white px-4 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
         >
           {job.company} 기업정보·후기 페이지로 이동
           <ChevronRight size={16} />
@@ -829,23 +829,23 @@ function ReviewsSection({
       </div>
 
       <aside className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#fbfcfd] p-4">
-        <h3 className="flex items-center gap-2 text-[16px] font-black text-[#202734]">
+        <h3 className="flex items-center gap-2 text-[18px] font-bold tracking-[-0.02em] text-[#202734]">
           <WalletCards size={17} className="text-[#4f5a66]" />
           후기 열람권
         </h3>
-        <p className="mt-3 text-[14px] font-bold text-[#667181]">
-          <span className="text-[24px] font-black text-[#111111]">{remainingPasses}</span>장 남음
+        <p className="mt-3 text-[14px] font-medium text-[#667181]">
+          <span className="text-[24px] font-medium text-[#111111]">{remainingPasses}</span>장 남음
         </p>
-        <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#667181]">후기를 작성하면 열람권을 추가로 받을 수 있습니다.</p>
-        <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#8a95a5]">면접 후기와 회사 후기를 확인할 수 있습니다.</p>
+        <p className="mt-2 text-[12px] font-normal leading-[1.6] text-[#667181]">후기를 작성하면 열람권을 추가로 받을 수 있습니다.</p>
+        <p className="mt-2 text-[12px] font-normal leading-[1.6] text-[#8a95a5]">면접 후기와 회사 후기를 확인할 수 있습니다.</p>
         {!canRead ? (
-          <p className="mt-3 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-bold text-danger">열람권이 없어 후기 일부만 표시됩니다.</p>
+          <p className="mt-3 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-medium text-danger">열람권이 없어 후기 일부만 표시됩니다.</p>
         ) : null}
         <button
           type="button"
           data-testid="review-pass-cta"
           onClick={() => setModalOpen(true)}
-          className="mt-4 h-10 w-full rounded-[var(--radius)] border border-[#111111] bg-white text-[13px] font-black text-[#111111] transition hover:bg-[#f4f4f4]"
+          className="mt-4 h-10 w-full rounded-[var(--radius)] border border-[#111111] bg-white text-[13px] font-medium text-[#111111] transition hover:bg-[#f4f4f4]"
         >
           후기 작성하고 열람권 받기
         </button>
@@ -894,7 +894,7 @@ function SimilarCompanyLogo({ job }: { job: Job }) {
   const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
 
   return (
-    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-black text-[#2f3845]">
+    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-medium text-[#2f3845]">
       {job.logoUrl ? <img src={job.logoUrl} alt={`${job.company} 로고`} className="h-full w-full rounded-full object-contain p-1" /> : fallback}
     </span>
   );
@@ -902,7 +902,7 @@ function SimilarCompanyLogo({ job }: { job: Job }) {
 
 function SimilarJobs({ baseJob, jobs, savedIds, onToggleSave }: { baseJob: Job; jobs: Job[]; savedIds: Set<number>; onToggleSave: (jobId: number) => void }) {
   if (!jobs.length) {
-    return <p className="text-[14px] font-semibold text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>;
+    return <p className="text-[14px] font-normal text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>;
   }
 
   return (
@@ -914,7 +914,7 @@ function SimilarJobs({ baseJob, jobs, savedIds, onToggleSave }: { baseJob: Job; 
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 <SimilarCompanyLogo job={similarJob} />
-                <p className="min-w-0 truncate text-[12px] font-black text-[#596373]">{similarJob.company}</p>
+                <p className="min-w-0 truncate text-[12px] font-medium text-[#596373]">{similarJob.company}</p>
               </div>
               <button
                 type="button"
@@ -923,24 +923,24 @@ function SimilarJobs({ baseJob, jobs, savedIds, onToggleSave }: { baseJob: Job; 
                   event.stopPropagation();
                   onToggleSave(similarJob.id);
                 }}
-                className={clsx("grid h-8 w-8 shrink-0 place-items-center rounded-[var(--radius)]", savedIds.has(similarJob.id) ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand")}
+                className={clsx("grid h-8 w-8 shrink-0 place-items-center", savedIds.has(similarJob.id) ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand")}
                 aria-label={`${similarJob.title} 저장`}
               >
                 <Bookmark size={18} fill={savedIds.has(similarJob.id) ? "currentColor" : "none"} />
               </button>
             </div>
-            <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-black leading-[1.4] text-[#2b3340]">{similarJob.title}</h3>
-            <p className="mt-2 text-[12px] font-bold text-[#7d8796]">
+            <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.4] text-[#2b3340]">{similarJob.title}</h3>
+            <p className="mt-2 text-[12px] font-medium text-[#7d8796]">
               {careerLabel(similarJob)} · {similarJob.employmentType} · {similarJob.location}
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {reasons.map((reason) => (
-                <span key={reason} className="rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f4f5f6] px-2 py-1 text-[11px] font-black text-[#4f5a66]">
+                <span key={reason} className="rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f4f5f6] px-2 py-1 text-[11px] font-medium text-[#4f5a66]">
                   {reason}
                 </span>
               ))}
               {similarJob.tags.slice(0, Math.max(0, 2 - reasons.length)).map((tag) => (
-                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-white px-2 py-1 text-[11px] font-bold text-[#777f8c]">
+                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-white px-2 py-1 text-[11px] font-medium text-[#777f8c]">
                   {tag}
                 </span>
               ))}
@@ -1131,26 +1131,26 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       />
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[15px] font-extrabold text-[#667181]">{job.company}</p>
+                          <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
                           {company?.verified ? (
-                            <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-black text-brand">
+                            <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
                               <ShieldCheck size={13} />
                               인증기업
                             </span>
                           ) : null}
                           <button
                             type="button"
-                            className="inline-flex h-8 items-center gap-1.5 rounded-[var(--radius)] border border-[#dfe5ec] bg-white px-3 text-[12px] font-black text-[#596373] transition hover:border-brand hover:text-brand"
+                            className="inline-flex h-8 items-center gap-1.5 border border-[#dfe5ec] bg-white px-3 text-[12px] font-medium text-[#596373] transition hover:border-brand hover:text-brand"
                           >
                             <Heart size={14} />
                             관심기업
                           </button>
                         </div>
-                        <h1 className="mt-3 text-[33px] font-black leading-[1.18] tracking-[0] text-[#1f2733] max-[720px]:text-[25px]">
+                        <h1 className="mt-3 text-[34px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
                           {job.title}
                         </h1>
                         {job.oneLineIntro ? (
-                          <p className="mt-3 max-w-[760px] text-[16px] font-semibold leading-[1.65] text-[#667181]">{job.oneLineIntro}</p>
+                          <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">{job.oneLineIntro}</p>
                         ) : null}
                         <div className="mt-4 flex flex-wrap gap-2">
                           {topTags.map((tag) => (
@@ -1179,8 +1179,8 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
 
               <section className="rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-[22px] font-black text-[#242b36]">공고 한눈에 보기</h2>
-                  <span className={clsx("rounded-[var(--radius)] px-3 py-1.5 text-[12px] font-black", isClosed ? "bg-[#fff1f1] text-danger" : "bg-brand-soft text-brand")}>
+                  <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">공고 한눈에 보기</h2>
+                  <span className={clsx("rounded-[var(--radius)] px-3 py-1.5 text-[12px] font-medium", isClosed ? "bg-[#fff1f1] text-danger" : "bg-brand-soft text-brand")}>
                     {deadlineLabel(job)}
                   </span>
                 </div>
@@ -1203,7 +1203,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       type="button"
                       onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
                       className={clsx(
-                        "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-black transition",
+                        "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-medium transition",
                         activeSection === section.id
                           ? "text-brand shadow-[inset_0_-2px_0_#00746C]"
                           : "text-[#4f5967] hover:bg-[#f7f8fa] hover:text-[#111111]",
@@ -1216,25 +1216,25 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               </nav>
 
               <SectionShell id="intro" title="포지션 소개">
-                <p className="text-[16px] font-semibold leading-[1.85] text-[#3f4855]">{job.introduction ?? job.oneLineIntro}</p>
+                <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{job.introduction ?? job.oneLineIntro}</p>
               </SectionShell>
 
               <SectionShell id="qualifications" title="업무·자격">
                 <div className="space-y-7">
                   <div>
-                    <h3 className="text-[17px] font-black text-[#2f3845]">주요업무</h3>
+                    <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">주요업무</h3>
                     <div className="mt-3">
                       <FormattedContentView content={job.responsibilitiesContent} fallback={job.responsibilities} />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-[17px] font-black text-[#2f3845]">자격요건</h3>
+                    <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">자격요건</h3>
                     <div className="mt-3">
                       <FormattedContentView content={job.requirementsContent} fallback={job.requirements} />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-[17px] font-black text-[#2f3845]">우대사항</h3>
+                    <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">우대사항</h3>
                     <div className="mt-3">
                       <FormattedContentView content={job.preferredContent} fallback={job.preferredQualifications} />
                     </div>
@@ -1245,12 +1245,12 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               <SectionShell id="keywords" title="핵심 키워드">
                 <div className="flex flex-wrap gap-2">
                   {bodyKeywords.map((keyword) => (
-                    <span key={keyword} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-black text-[#2f3845]">
+                    <span key={keyword} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-medium text-[#2f3845]">
                       {keyword}
                     </span>
                   ))}
                 </div>
-                <p className="mt-3 text-[12px] font-bold text-[#8a95a5]">선택된 키워드를 기준으로 유사 공고와 맞춤 추천이 제공됩니다.</p>
+                <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">선택된 키워드를 기준으로 유사 공고와 맞춤 추천이 제공됩니다.</p>
               </SectionShell>
 
               {hasAdditionalMaterials ? (
@@ -1262,7 +1262,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               <SectionShell id="work" title="근무조건">
                 <WorkConditions job={job} />
                 <div className="mt-6 border-t border-[#edf1f4] pt-6">
-                  <h3 className="mb-4 text-[17px] font-black text-[#2f3845]">근무지</h3>
+                  <h3 className="mb-4 text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">근무지</h3>
                   <MapPlaceholder job={job} company={company} />
                 </div>
               </SectionShell>
@@ -1285,15 +1285,15 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-[18px] font-black text-[#252d39]">{company?.name ?? job.company}</h3>
+                      <h3 className="text-[18px] font-bold text-[#252d39]">{company?.name ?? job.company}</h3>
                       {company?.verified ? (
-                        <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-black text-brand">
+                        <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
                           <ShieldCheck size={13} />
                           인증기업
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-2 text-[14px] font-semibold leading-[1.75] text-[#566171]">{company?.description ?? job.companyDescription}</p>
+                    <p className="mt-2 text-[14px] font-normal leading-[1.75] text-[#566171]">{company?.description ?? job.companyDescription}</p>
                   </div>
                 </div>
                 <div className="mt-5 grid grid-cols-4 gap-3 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
@@ -1305,7 +1305,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 <div className="mt-5 flex flex-wrap gap-2">
                   <Link
                     href={`/companies/${company?.id ?? job.companyId ?? "thepharmin-pharma"}`}
-                    className="inline-flex h-11 items-center gap-2 rounded-[var(--radius)] border border-[#dfe5ec] bg-white px-4 text-[14px] font-black text-[#4f5a66] transition hover:border-brand hover:text-brand"
+                    className="inline-flex h-11 items-center gap-2 border border-[#dfe5ec] bg-white px-4 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
                   >
                     기업정보 더보기
                     <ChevronRight size={16} />
@@ -1315,7 +1315,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       href={company.website}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex h-11 items-center gap-2 rounded-[var(--radius)] border border-[#dfe5ec] bg-white px-4 text-[14px] font-black text-[#4f5a66] transition hover:border-brand hover:text-brand"
+                      className="inline-flex h-11 items-center gap-2 border border-[#dfe5ec] bg-white px-4 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
                     >
                       홈페이지
                       <ExternalLink size={15} />
@@ -1325,7 +1325,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               </SectionShell>
 
               <SectionShell id="news" title="더파마뉴스에서 본 이 기업">
-                <p className="-mt-1 mb-5 text-[14px] font-semibold leading-[1.7] text-[#667181]">
+                <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
                   더파마뉴스에 보도된 기업 관련 기사와 산업 뉴스를 확인해 보세요.
                 </p>
                 <CompanyNewsSection job={job} />
@@ -1336,7 +1336,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
               </SectionShell>
 
               <SectionShell id="similar" title="비슷한 공고">
-                <p className="-mt-1 mb-5 text-[14px] font-semibold leading-[1.7] text-[#667181]">
+                <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
                   이 공고와 직무, 키워드, 경력 조건이 비슷한 공고입니다.
                 </p>
                 <SimilarJobs baseJob={job} jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
@@ -1345,9 +1345,9 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
 
             <aside className="sticky top-[88px] self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
-                <p className="text-[13px] font-black text-[#7d8796]">지원 정보</p>
-                <h2 className={clsx("mt-2 text-[30px] font-black", isClosed ? "text-danger" : "text-brand")}>{deadlineLabel(job)}</h2>
-                <p className="mt-1 text-[13px] font-bold text-[#687382]">{deadlineDetail(job)}</p>
+                <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
+                <h2 className={clsx("mt-2 text-[30px] font-bold", isClosed ? "text-danger" : "text-brand")}>{deadlineLabel(job)}</h2>
+                <p className="mt-1 text-[13px] font-medium text-[#687382]">{deadlineDetail(job)}</p>
 
                 <div className="mt-5 space-y-3 border-y border-[#e6ecf1] py-4">
                   {[
@@ -1362,8 +1362,8 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       <div key={item.label} className="flex items-start gap-2.5 text-[13px]">
                         <Icon size={16} className="mt-0.5 shrink-0 text-[#6b7280]" />
                         <div>
-                          <p className="font-black text-[#8993a1]">{item.label}</p>
-                          <p className="mt-0.5 font-extrabold text-[#3f4855]">{item.value}</p>
+                          <p className="font-medium text-[#8993a1]">{item.label}</p>
+                          <p className="mt-0.5 font-normal text-[#3f4855]">{item.value}</p>
                         </div>
                       </div>
                     );
@@ -1376,7 +1376,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setApplyMessage(job.applyMethod === "기업 홈페이지 지원" ? "기업 채용 페이지를 새 탭으로 엽니다." : "지원 화면을 엽니다.")}
-                    className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius)] bg-brand text-[15px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
+                    className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-brand text-[15px] font-medium text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
                   >
                     {applyButtonLabel(job)}
                     <ExternalLink size={17} />
@@ -1386,19 +1386,19 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                     type="button"
                     onClick={handleApply}
                     disabled
-                    className="mt-5 flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-[var(--radius)] bg-[#b8b8b8] text-[15px] font-black text-white"
+                    className="mt-5 flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 bg-[#b8b8b8] text-[15px] font-medium text-white"
                   >
                     {isClosed ? "마감된 공고입니다" : "지원 방법을 확인 중입니다"}
                   </button>
                 )}
-                {applyMessage ? <p className="mt-2 text-[12px] font-bold text-danger">{applyMessage}</p> : null}
+                {applyMessage ? <p className="mt-2 text-[12px] font-medium text-danger">{applyMessage}</p> : null}
 
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => toggleSave(job.id)}
                     className={clsx(
-                      "flex h-11 items-center justify-center gap-2 rounded-[var(--radius)] border bg-white text-[14px] font-black transition",
+                      "flex h-11 items-center justify-center gap-2 border bg-white text-[14px] font-medium transition",
                       saved ? "border-brand text-brand" : "border-border text-[#4f5a66] hover:border-brand hover:text-brand",
                     )}
                   >
@@ -1408,29 +1408,29 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   <button
                     type="button"
                     onClick={handleShare}
-                    className="flex h-11 items-center justify-center gap-2 rounded-[var(--radius)] border border-border bg-white text-[14px] font-black text-[#4f5a66] transition hover:border-brand hover:text-brand"
+                    className="flex h-11 items-center justify-center gap-2 border border-border bg-white text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
                   >
                     <Share2 size={17} />
                     공유
                   </button>
                 </div>
                 {shareMessage ? (
-                  <p className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-bold text-brand">
+                  <p className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-brand">
                     <Copy size={13} />
                     {shareMessage}
                   </p>
                 ) : null}
-                <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f7] px-3 py-3 text-[12px] font-semibold leading-[1.65] text-[#667181]">
+                <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">
                   {applyNotice(job)}
                 </p>
               </section>
 
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
-                <h2 className="flex items-center gap-2 text-[16px] font-black text-[#252d39]">
+                <h2 className="flex items-center gap-2 text-[18px] font-bold tracking-[-0.02em] text-[#252d39]">
                   <Sparkles size={18} className="text-[#6b7280]" />
                   더파마 매칭
                 </h2>
-                <p className="mt-2 text-[13px] font-semibold leading-[1.65] text-[#667181]">
+                <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#667181]">
                   이 공고의 직무 키워드와 최근 본 공고를 바탕으로 유사 공고를 추천합니다.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
@@ -1443,7 +1443,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                     .filter((reason): reason is string => Boolean(reason))
                     .slice(0, 4)
                     .map((reason) => (
-                      <span key={reason} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-2 py-1 text-[11px] font-black text-[#596373]">
+                      <span key={reason} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-2 py-1 text-[11px] font-medium text-[#596373]">
                         {reason}
                       </span>
                     ))}
@@ -1460,7 +1460,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
             type="button"
             onClick={() => toggleSave(job.id)}
             className={clsx(
-              "flex h-12 items-center justify-center gap-1.5 rounded-[var(--radius)] border bg-white text-[13px] font-black",
+              "flex h-12 items-center justify-center gap-1.5 border bg-white text-[13px] font-medium",
               saved ? "border-brand text-brand" : "border-border text-[#4f5a66]",
             )}
           >
@@ -1471,7 +1471,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
             type="button"
             onClick={handleApply}
             disabled={!canApply}
-            className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius)] bg-brand text-[14px] font-black text-white disabled:bg-[#b8b8b8]"
+            className="flex h-12 items-center justify-center gap-2 bg-brand text-[14px] font-medium text-white disabled:bg-[#b8b8b8]"
           >
             {isClosed ? "마감된 공고입니다" : canApply ? applyButtonLabel(job) : "지원 방법 확인 중"}
             {canApply ? <ArrowRight size={17} /> : null}

@@ -30,13 +30,13 @@ export function BusinessHeadhuntingManageClient() {
       <div>
         <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
           <div>
-            <p className="text-[13px] font-black text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 헤드헌팅 관리</p>
-            <h1 className="mt-3 text-[30px] font-black tracking-[0] text-[#17202c]">헤드헌팅 관리</h1>
-            <p className="mt-2 text-[13px] font-semibold text-[#68717e]">진행 중인 헤드헌팅 의뢰와 추천 후보자 현황을 확인합니다.</p>
+            <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 헤드헌팅 관리</p>
+            <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">헤드헌팅 관리</h1>
+            <p className="mt-2 text-[13px] font-normal text-[#68717e]">진행 중인 헤드헌팅 의뢰와 추천 후보자 현황을 확인합니다.</p>
           </div>
           <Link
             href="/business/headhunting/manage/new"
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 bg-[#00746c] px-5 text-[13px] font-black text-white transition hover:bg-[#075f59] max-[760px]:w-full"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a] max-[760px]:w-full"
           >
             <Plus size={15} />
             새 헤드헌팅 의뢰
@@ -46,12 +46,12 @@ export function BusinessHeadhuntingManageClient() {
         <div className="mt-6 grid grid-cols-3 gap-4 max-[760px]:grid-cols-1">
           {summaryStats.map((stat) => (
             <div key={stat.label} className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-              <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#00746c]">
+              <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
                 <stat.icon size={18} />
               </span>
               <div>
-                <p className="text-[12px] font-bold text-[#8a94a3]">{stat.label}</p>
-                <p className="mt-0.5 text-[18px] font-black text-[#17202c]">{stat.value}</p>
+                <p className="text-[12px] font-normal text-[#8a94a3]">{stat.label}</p>
+                <p className="mt-0.5 text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -61,7 +61,7 @@ export function BusinessHeadhuntingManageClient() {
           <SectionCard title="의뢰 목록" description="등록한 헤드헌팅 의뢰의 진행 상태입니다.">
             <div className="overflow-x-auto">
               <div className="min-w-[760px]">
-                <div className="grid grid-cols-[minmax(0,1fr)_140px_130px_70px_100px_100px] gap-3 border-b border-[#e5e9ef] px-2 pb-3 text-[12px] font-black text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,1fr)_140px_130px_70px_100px_100px] gap-3 border-b border-[#e5e9ef] px-2 pb-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>포지션</span>
                   <span>직무 분야</span>
                   <span>상태</span>
@@ -75,14 +75,14 @@ export function BusinessHeadhuntingManageClient() {
                       key={request.id}
                       className="grid grid-cols-[minmax(0,1fr)_140px_130px_70px_100px_100px] items-center gap-3 px-2 py-4 text-[13px]"
                     >
-                      <span className="font-black text-[#17202c]">{request.positionTitle}</span>
-                      <span className="font-semibold text-[#596373]">{request.jobCategory}</span>
-                      <span className={`inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-black ${headhuntingStatusClass(request.status)}`}>
+                      <span className="font-medium text-[#17202c]">{request.positionTitle}</span>
+                      <span className="font-normal text-[#596373]">{request.jobCategory}</span>
+                      <span className={`inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium ${headhuntingStatusClass(request.status)}`}>
                         {headhuntingStatusLabel(request.status)}
                       </span>
-                      <span className="font-bold text-[#303946]">{request.headcount}명</span>
-                      <span className="font-bold text-[#303946]">{request.recommendedCandidateCount}명</span>
-                      <span className="font-semibold text-[#8a94a3]">{request.requestedAt}</span>
+                      <span className="font-normal text-[#303946]">{request.headcount}명</span>
+                      <span className="font-normal text-[#303946]">{request.recommendedCandidateCount}명</span>
+                      <span className="font-normal text-[#8a94a3]">{request.requestedAt}</span>
                     </div>
                   ))}
                 </div>
@@ -97,13 +97,13 @@ export function BusinessHeadhuntingManageClient() {
                   key={candidate.id}
                   className="grid grid-cols-[110px_minmax(0,1fr)_180px_110px_100px] items-center gap-4 px-4 py-4 max-[760px]:grid-cols-1 max-[760px]:gap-2"
                 >
-                  <p className="text-[13px] font-black text-[#303946]">{candidate.code}</p>
-                  <p className="text-[13px] font-semibold text-[#68717e]">{candidate.experienceSummary}</p>
-                  <p className="text-[12px] font-bold text-[#8a94a3]">{requestTitleById.get(candidate.matchedRequestId)}</p>
-                  <span className={`inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-black ${candidateStatusClass(candidate.status)}`}>
+                  <p className="text-[13px] font-medium text-[#303946]">{candidate.code}</p>
+                  <p className="text-[13px] font-normal text-[#68717e]">{candidate.experienceSummary}</p>
+                  <p className="text-[12px] font-normal text-[#8a94a3]">{requestTitleById.get(candidate.matchedRequestId)}</p>
+                  <span className={`inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium ${candidateStatusClass(candidate.status)}`}>
                     {candidateStatusLabel(candidate.status)}
                   </span>
-                  <p className="text-[12px] font-semibold text-[#8a94a3]">{candidate.recommendedAt}</p>
+                  <p className="text-[12px] font-normal text-[#8a94a3]">{candidate.recommendedAt}</p>
                 </div>
               ))}
             </div>

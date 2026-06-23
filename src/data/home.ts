@@ -177,7 +177,7 @@ export const themeCurationCards: Array<{
     id: "urgent",
     title: "마감 임박 얼리버드 공고",
     subtitle: "빠른 지원 필요",
-    image: companyExampleImages.workspace,
+    image: companyExampleImages.lab,
     href: "/jobs?sort=deadline",
   },
 ];

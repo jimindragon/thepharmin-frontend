@@ -43,7 +43,7 @@ function MissingJob() {
           </p>
           <Link
             href="/jobs"
-            className="mx-auto mt-6 inline-flex h-12 items-center gap-2 rounded-[var(--radius)] bg-brand px-5 text-[15px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.18)] transition hover:bg-[var(--color-brand-dark)]"
+            className="mx-auto mt-6 inline-flex h-12 items-center gap-2 bg-brand px-5 text-[15px] font-black text-white shadow-[0_4px_14px_rgba(17,17,17,0.18)] transition hover:bg-[var(--color-brand-dark)]"
           >
             <ChevronLeft size={18} />
             채용공고 목록으로 돌아가기

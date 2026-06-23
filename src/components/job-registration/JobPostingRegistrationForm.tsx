@@ -181,7 +181,7 @@ function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <label className="registration-field-label block text-[15px] font-black text-[#2d3644]">
+    <label className="registration-field-label block text-[15px] font-medium text-[#2d3644]">
       {children}
       {required ? <span className="ml-1 text-danger">*</span> : null}
     </label>
@@ -206,18 +206,18 @@ function SectionCard({
       <div className="registration-section-header flex items-start justify-between gap-5 border-b border-[#e7ecf2] px-7 py-5">
         <div className="flex items-start gap-3">
           {index ? (
-            <span className="registration-section-index mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-[15px] font-black text-white">
+            <span className="registration-section-index mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-[15px] font-medium text-white">
               {index}
             </span>
           ) : null}
           <div>
-            <h2 className="registration-section-title text-[22px] font-black tracking-[0] text-[#242b36]">{title}</h2>
-            {description ? <p className="registration-section-description mt-1.5 text-[13px] font-semibold text-[#768190]">{description}</p> : null}
+            <h2 className="registration-section-title font-bold tracking-[-0.02em] text-[#242b36]">{title}</h2>
+            {description ? <p className="registration-section-description mt-1.5 text-[13px] font-normal text-[#768190]">{description}</p> : null}
           </div>
         </div>
         <span
           className={clsx(
-            "registration-status-pill mt-1 rounded-full border px-3 py-1.5 text-[12px] font-black",
+            "registration-status-pill mt-1 rounded-full border px-3 py-1.5 text-[12px] font-medium",
             status === "완료" && "border-[#d7dde5] bg-[#f4f5f6] text-[#252d39]",
             status === "작성 중" && "border-[#d7dde5] bg-white text-[#5f6876]",
             status === "필수 입력 필요" && "border-[#f1c9bf] bg-[#fff3f0] text-danger",
@@ -271,7 +271,7 @@ function PageStepper() {
           <div className="flex items-center gap-3">
             <span
               className={clsx(
-                "registration-step-circle grid h-11 w-11 place-items-center rounded-full text-[18px] font-black",
+                "registration-step-circle grid h-11 w-11 place-items-center rounded-full text-[18px] font-medium",
                 step.state === "done" && "bg-[#e8e8e8] text-brand",
                 step.state === "active" && "bg-brand text-white",
                 step.state === "todo" && "bg-[#eef1f4] text-[#8b95a3]",
@@ -279,7 +279,7 @@ function PageStepper() {
             >
               {step.state === "done" ? "✓" : index + 1}
             </span>
-            <span className={clsx("registration-step-label text-[18px] font-black", step.state === "active" ? "text-brand" : "text-[#6d7683]")}>
+            <span className={clsx("registration-step-label text-[18px] font-medium", step.state === "active" ? "text-brand" : "text-[#6d7683]")}>
               {step.label}
             </span>
           </div>
@@ -306,14 +306,14 @@ function CompanySummaryCard() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="registration-company-title text-[24px] font-black tracking-[0] text-[#252d39]">{mockCompanyProfile.name}</h2>
+              <h2 className="registration-company-title text-[20px] font-bold tracking-[-0.02em] text-[#252d39]">{mockCompanyProfile.name}</h2>
               {mockCompanyProfile.verified ? (
-                <span className="whitespace-nowrap border border-[#d9dee6] bg-[#f7f8fa] px-2 py-1 text-[11px] font-black text-[#4f5968]">
+                <span className="whitespace-nowrap border border-[#d9dee6] bg-[#f7f8fa] px-2 py-1 text-[11px] font-medium text-[#4f5968]">
                   운영팀 확인 기업
                 </span>
               ) : null}
             </div>
-            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] font-bold text-[#758090]">
+            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] font-medium text-[#758090]">
               <span>업종&nbsp; {mockCompanyProfile.industry}</span>
               <span className="h-3 w-px bg-[#d8dfe7]" />
               <span>규모&nbsp; {mockCompanyProfile.employeeCount}</span>
@@ -324,19 +324,19 @@ function CompanySummaryCard() {
         </div>
         <Link
           href="/companies/thepharmin-pharma"
-          className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#d8e0e8] bg-white px-5 text-[14px] font-black text-[#3c4655] transition hover:border-brand hover:text-brand"
+          className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap border border-[#d8e0e8] bg-white px-5 text-[14px] font-medium text-[#3c4655] transition hover:border-brand hover:text-brand"
         >
           기업정보 수정하러 가기
         </Link>
       </div>
       {hasMissingCompanyInfo ? (
         <div className="mt-5 border border-[#ead8d3] bg-[#fffafa] px-4 py-3">
-          <p className="text-[13px] font-black text-[#9b3a2d]">공고 상세에 노출될 기업정보가 부족합니다.</p>
-          <p className="mt-1 text-[13px] font-bold text-[#6f5960]">부족한 정보: {companyMissingItems.join(", ")}</p>
+          <p className="text-[13px] font-medium text-[#9b3a2d]">공고 상세에 노출될 기업정보가 부족합니다.</p>
+          <p className="mt-1 text-[13px] font-medium text-[#6f5960]">부족한 정보: {companyMissingItems.join(", ")}</p>
         </div>
       ) : (
         <div className="mt-5 border border-[#dce5df] bg-[#f8fbf9] px-4 py-3">
-          <p className="text-[13px] font-black text-[#44505f]">공고 상세에 필요한 기본 기업정보가 확인되었습니다.</p>
+          <p className="text-[13px] font-medium text-[#44505f]">공고 상세에 필요한 기본 기업정보가 확인되었습니다.</p>
         </div>
       )}
     </section>
@@ -357,7 +357,7 @@ function SelectShell({
       <select
         value={value}
         onChange={(event) => onChange?.(event.target.value)}
-        className="registration-control h-[52px] w-full appearance-none rounded-[10px] border border-[#dce4ec] bg-white px-4 pr-10 text-[16px] font-bold text-[#333c49] transition hover:border-brand focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/10"
+        className="registration-control h-[52px] w-full appearance-none rounded-[10px] border border-[#dce4ec] bg-white px-4 pr-10 text-[16px] font-medium text-[#333c49] transition hover:border-brand focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/10"
       >
         {children}
       </select>
@@ -530,7 +530,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                     type="button"
                     onClick={() => changeMode(option.mode)}
                     className={clsx(
-                      "inline-flex h-9 items-center gap-1.5 rounded-[7px] px-3 text-[13px] font-black transition",
+                      "inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-medium transition",
                       mode === option.mode ? "bg-brand text-white" : "text-[#596373] hover:bg-[#f5f8fa] hover:text-brand",
                     )}
                   >
@@ -543,7 +543,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
               <button
                 type="button"
                 onClick={() => toggleInlineFlag("bold")}
-                className="grid h-9 w-9 place-items-center rounded-[7px] text-[#2f3946] transition hover:bg-[#f5f8fa] hover:text-brand"
+                className="grid h-9 w-9 place-items-center text-[#2f3946] transition hover:bg-[#f5f8fa] hover:text-brand"
                 aria-label="굵게"
               >
                 <Bold size={17} />
@@ -551,7 +551,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
               <button
                 type="button"
                 onClick={() => toggleInlineFlag("linked")}
-                className="grid h-9 w-9 place-items-center rounded-[7px] text-[#2f3946] transition hover:bg-[#f5f8fa] hover:text-brand"
+                className="grid h-9 w-9 place-items-center text-[#2f3946] transition hover:bg-[#f5f8fa] hover:text-brand"
                 aria-label="링크"
               >
                 <LinkIcon size={17} />
@@ -563,7 +563,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                 type="button"
                 onClick={undo}
                 disabled={!history.length}
-                className="grid h-9 w-9 place-items-center rounded-[7px] text-[#8a95a5] transition hover:bg-[#f5f8fa] hover:text-brand disabled:cursor-not-allowed disabled:opacity-35"
+                className="grid h-9 w-9 place-items-center text-[#8a95a5] transition hover:bg-[#f5f8fa] hover:text-brand disabled:cursor-not-allowed disabled:opacity-35"
                 aria-label="실행 취소"
               >
                 <Undo2 size={17} />
@@ -572,7 +572,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                 type="button"
                 onClick={redo}
                 disabled={!future.length}
-                className="grid h-9 w-9 place-items-center rounded-[7px] text-[#8a95a5] transition hover:bg-[#f5f8fa] hover:text-brand disabled:cursor-not-allowed disabled:opacity-35"
+                className="grid h-9 w-9 place-items-center text-[#8a95a5] transition hover:bg-[#f5f8fa] hover:text-brand disabled:cursor-not-allowed disabled:opacity-35"
                 aria-label="다시 실행"
               >
                 <Redo2 size={17} />
@@ -595,12 +595,12 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
               }}
               rows={5}
               className={clsx(
-                "min-h-[94px] w-full resize-y border-0 bg-white px-5 py-4 pb-9 text-[15px] font-semibold leading-[1.75] text-[#333c49] outline-none placeholder:text-[#a3adba]",
-                items[0]?.bold && "font-black",
+                "min-h-[94px] w-full resize-y border-0 bg-white px-5 py-4 pb-9 text-[15px] font-normal leading-[1.75] text-[#333c49] outline-none placeholder:text-[#a3adba]",
+                items[0]?.bold && "font-medium",
                 items[0]?.linked && "text-brand underline decoration-brand/40 underline-offset-4",
               )}
             />
-            <span className="absolute bottom-3 right-4 text-[12px] font-bold text-[#98a2b0]">{characterCount} / 800</span>
+            <span className="absolute bottom-3 right-4 text-[12px] font-medium text-[#98a2b0]">{characterCount} / 800</span>
           </div>
         ) : (
           <div className="relative space-y-2 bg-white p-3 pb-9">
@@ -622,12 +622,12 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                     event.dataTransfer.effectAllowed = "move";
                   }}
                   onDragEnd={() => setDraggingId(null)}
-                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-[6px] text-[#b1bac6] hover:bg-[#f4f7f9] hover:text-brand"
+                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center text-[#b1bac6] hover:bg-[#f4f7f9] hover:text-brand"
                   aria-label={`${label} ${index + 1}번째 항목 순서 변경`}
                 >
                   <GripVertical size={16} />
                 </button>
-                <span className="mt-[8px] w-5 shrink-0 text-center text-[15px] font-black text-[#202733]">
+                <span className="mt-[8px] w-5 shrink-0 text-center text-[15px] font-medium text-[#202733]">
                   {mode === "number" ? `${index + 1}.` : "•"}
                 </span>
                 <textarea
@@ -641,22 +641,22 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                   onChange={(event) => updateText(item.id, event.target.value)}
                   rows={item.text.includes("\n") ? 2 : 1}
                   className={clsx(
-                    "min-h-[38px] flex-1 resize-y rounded-[6px] border border-transparent bg-transparent px-2 py-2 text-[15px] font-semibold leading-[1.55] text-[#333c49] outline-none focus:border-[#d8e1e9] focus:bg-white",
-                    item.bold && "font-black",
+                    "min-h-[38px] flex-1 resize-y rounded-[6px] border border-transparent bg-transparent px-2 py-2 text-[15px] font-normal leading-[1.55] text-[#333c49] outline-none focus:border-[#d8e1e9] focus:bg-white",
+                    item.bold && "font-medium",
                     item.linked && "text-brand underline decoration-brand/40 underline-offset-4",
                   )}
                 />
                 <button
                   type="button"
                   onClick={() => removeItem(item.id)}
-                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-[6px] text-[#b1bac6] transition hover:bg-[#fff0f0] hover:text-danger"
+                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center text-[#b1bac6] transition hover:bg-[#fff0f0] hover:text-danger"
                   aria-label={`${label} ${index + 1}번째 항목 삭제`}
                 >
                   <Trash2 size={15} />
                 </button>
               </div>
             ))}
-            <span className="absolute bottom-3 right-4 text-[12px] font-bold text-[#98a2b0]">{characterCount} / 800</span>
+            <span className="absolute bottom-3 right-4 text-[12px] font-medium text-[#98a2b0]">{characterCount} / 800</span>
           </div>
         )}
       </div>
@@ -691,8 +691,8 @@ function KeywordPanel({
       <div className="grid gap-5">
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-[14px] font-black text-[#364050]">선택된 키워드</h3>
-            <span className="text-[12px] font-bold text-[#7d8796]">{selectedStandard.length}개 / 최대 8개</span>
+            <h3 className="text-[15px] font-bold tracking-[-0.02em] text-[#364050]">선택된 키워드</h3>
+            <span className="text-[12px] font-medium text-[#7d8796]">{selectedStandard.length}개 / 최대 8개</span>
           </div>
           <div className="flex min-h-[46px] flex-wrap gap-2 rounded-[9px] border border-[#dfe7ee] bg-[#fbfcfd] p-3">
             {selectedKeywords.map((keyword) => (
@@ -701,7 +701,7 @@ function KeywordPanel({
                 type="button"
                 onClick={() => onRemoveKeyword(keyword)}
                 className={clsx(
-                  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-black transition",
+                  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition",
                   "border-[#dddddd] bg-brand-soft text-brand hover:border-brand",
                 )}
               >
@@ -710,7 +710,7 @@ function KeywordPanel({
               </button>
             ))}
             {!selectedKeywords.length ? (
-              <span className="text-[13px] font-semibold text-[#8a95a5]">키워드 추가 버튼으로 필요한 항목을 선택해 주세요.</span>
+              <span className="text-[13px] font-normal text-[#8a95a5]">키워드 추가 버튼으로 필요한 항목을 선택해 주세요.</span>
             ) : null}
           </div>
         </div>
@@ -718,22 +718,22 @@ function KeywordPanel({
         <div className="border border-[#dfe7ee] bg-white px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-[14px] font-black text-[#364050]">추천 키워드 목록에서 추가</h3>
-              <p className="mt-1 text-[12px] font-bold text-[#7d8796]">제공된 키워드 중 필요한 항목을 선택하세요.</p>
+              <h3 className="text-[15px] font-bold tracking-[-0.02em] text-[#364050]">추천 키워드 목록에서 추가</h3>
+              <p className="mt-1 text-[12px] font-medium text-[#7d8796]">제공된 키워드 중 필요한 항목을 선택하세요.</p>
             </div>
             <button
               type="button"
               onClick={() => setKeywordModalOpen(true)}
-              className="inline-flex h-10 shrink-0 items-center gap-1.5 border border-[#111111] bg-[#111111] px-4 text-[13px] font-black text-white hover:bg-[#222222]"
+              className="inline-flex h-10 shrink-0 items-center gap-1.5 border border-[#111111] bg-[#111111] px-4 text-[13px] font-medium text-white hover:bg-[#222222]"
             >
               <Plus size={16} />
               키워드 추가
             </button>
           </div>
-          {message ? <p className="mt-2 text-[12px] font-bold text-brand">{message}</p> : null}
+          {message ? <p className="mt-2 text-[12px] font-medium text-brand">{message}</p> : null}
         </div>
 
-        <div className="rounded-[9px] bg-[#f7f7f7] px-4 py-3 text-[12px] font-semibold leading-[1.65] text-[#687484]">
+        <div className="rounded-[9px] bg-[#f7f7f7] px-4 py-3 text-[12px] font-normal leading-[1.65] text-[#687484]">
           공고 목록에는 핵심 키워드 최대 3개가 노출되며, 상세 페이지와 검색·추천에는 선택한 키워드가 활용됩니다.
         </div>
       </div>
@@ -743,8 +743,8 @@ function KeywordPanel({
           <div className="w-full max-w-[560px] border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)]">
             <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
               <div>
-                <h3 className="text-[18px] font-black text-[#242b36]">키워드 추가</h3>
-                <p className="mt-1 text-[12px] font-bold text-[#7d8796]">{selectedStandard.length}개 / 최대 8개</p>
+                <h3 className="text-[19px] font-bold tracking-[-0.02em] text-[#242b36]">키워드 추가</h3>
+                <p className="mt-1 text-[12px] font-medium text-[#7d8796]">{selectedStandard.length}개 / 최대 8개</p>
               </div>
               <button type="button" onClick={() => setKeywordModalOpen(false)} className="grid h-9 w-9 place-items-center text-[#667181] hover:bg-[#f4f5f6]" aria-label="키워드 추가 닫기">
                 <X size={18} />
@@ -758,7 +758,7 @@ function KeywordPanel({
                     type="button"
                     onClick={() => onSelectKeyword(keyword)}
                     disabled={selectedStandard.length >= 8}
-                    className="h-11 border border-[#dce5ed] bg-white px-3 text-left text-[13px] font-black text-[#47515f] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-45"
+                    className="h-11 border border-[#dce5ed] bg-white px-3 text-left text-[13px] font-medium text-[#47515f] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     {keyword}
                   </button>
@@ -766,7 +766,7 @@ function KeywordPanel({
               </div>
             </div>
             <div className="flex justify-end border-t border-[#e5e9ef] px-5 py-4">
-              <button type="button" onClick={() => setKeywordModalOpen(false)} className="h-10 border border-[#111111] bg-[#111111] px-5 text-[13px] font-black text-white">
+              <button type="button" onClick={() => setKeywordModalOpen(false)} className="h-10 border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white">
                 완료
               </button>
             </div>
@@ -958,8 +958,8 @@ export function JobPostingRegistrationForm() {
         <div className="flex items-start justify-between gap-5">
           <div>
             <PageBreadcrumb items={[{ label: "기업 서비스" }, { label: "공고 등록" }]} />
-            <h1 className="registration-page-title mt-5 text-[42px] font-black tracking-[0] text-[#111827]">공고 등록</h1>
-            <p className="registration-page-subtitle mt-3 text-[18px] font-bold text-[#747f8f]">
+            <h1 className="registration-page-title mt-5 text-[#111827]">공고 등록</h1>
+            <p className="registration-page-subtitle mt-3 text-[18px] font-medium text-[#747f8f]">
               채용 공고를 손쉽게 등록하세요.
             </p>
           </div>
@@ -967,7 +967,7 @@ export function JobPostingRegistrationForm() {
             <button
               type="button"
               onClick={saveDraft}
-              className="h-11 rounded-[8px] border border-[#d8e0e8] bg-white px-5 text-[14px] font-black text-[#44505f] transition hover:border-brand hover:text-brand"
+              className="h-11 border border-[#d8e0e8] bg-white px-5 text-[14px] font-medium text-[#44505f] transition hover:border-brand hover:text-brand"
             >
               임시 저장
             </button>
@@ -978,7 +978,7 @@ export function JobPostingRegistrationForm() {
         <CompanySummaryCard />
 
         {notice ? (
-          <div className="mt-5 flex items-center justify-between rounded-[9px] border border-[#dddddd] bg-brand-soft px-4 py-3 text-[13px] font-black text-brand">
+          <div className="mt-5 flex items-center justify-between rounded-[9px] border border-[#dddddd] bg-brand-soft px-4 py-3 text-[13px] font-medium text-brand">
             <span>{notice}</span>
             <button type="button" onClick={() => setNotice("")} aria-label="알림 닫기">
               <X size={16} />
@@ -994,19 +994,19 @@ export function JobPostingRegistrationForm() {
                   <input
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
-                    className="registration-control h-[52px] w-full rounded-[10px] border border-[#dce4ec] px-5 py-3 text-[17px] font-bold text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    className="registration-control h-[52px] w-full rounded-[10px] border border-[#dce4ec] px-5 py-3 text-[17px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
                 </FormRow>
 
                 <FormRow label="공고 분류" required align="center">
                   <div className="max-w-[720px] rounded-[8px] border border-[#dce4ec] bg-[#f7f8fa] px-5 py-4" aria-readonly="true">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex h-8 items-center rounded-[var(--radius)] border border-[#d3d9e1] bg-white px-3 text-[13px] font-black text-[#242b36]">
+                      <span className="inline-flex h-8 items-center rounded-[var(--radius)] border border-[#d3d9e1] bg-white px-3 text-[13px] font-medium text-[#242b36]">
                         {jobTrackLabels[mockDerivedTrack]} 트랙
                       </span>
-                      <span className="text-[14px] font-black text-[#303946]">승인된 기업 정보 기준으로 자동 분류됩니다.</span>
+                      <span className="text-[14px] font-medium text-[#303946]">승인된 기업 정보 기준으로 자동 분류됩니다.</span>
                     </div>
-                    <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#667181]">
+                    <p className="mt-2 text-[12px] font-normal leading-[1.6] text-[#667181]">
                       수정이 필요하면 기업 정보 수정 또는 고객센터로 문의해 주세요.
                     </p>
                   </div>
@@ -1014,14 +1014,14 @@ export function JobPostingRegistrationForm() {
 
                 <FormRow label="모집 직무" required align="center">
                   <div className="grid grid-cols-[minmax(0,1fr)_142px] gap-4 max-[760px]:grid-cols-1">
-                    <div className="flex h-[52px] items-center rounded-[10px] border border-[#dce4ec] bg-white px-5 text-[16px] font-bold text-[#333c49]">
+                    <div className="flex h-[52px] items-center rounded-[10px] border border-[#dce4ec] bg-white px-5 text-[16px] font-medium text-[#333c49]">
                       인허가·메디컬
                       <ChevronDown className="mx-3 rotate-[-90deg] text-[#a0a9b7]" size={17} />
                       RA
                     </div>
                     <button
                       type="button"
-                      className="h-[52px] rounded-[10px] border border-[#d8e0e8] bg-white px-4 text-[15px] font-black text-[#343d4a] transition hover:border-brand hover:text-brand"
+                      className="h-[52px] border border-[#d8e0e8] bg-white px-4 text-[15px] font-medium text-[#343d4a] transition hover:border-brand hover:text-brand"
                     >
                       모집 직무 선택
                     </button>
@@ -1079,15 +1079,15 @@ export function JobPostingRegistrationForm() {
                       rows={2}
                       onChange={(event) => setIntroContent(event.target.value)}
                       placeholder="예: 의약품 허가 및 규제 대응을 담당할 RA Specialist를 찾습니다."
-                      className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-semibold leading-[1.65] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-normal leading-[1.65] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                     />
-                    <div className="mt-2 flex items-center justify-between gap-3 text-[12px] font-bold text-[#7d8796]">
+                    <div className="mt-2 flex items-center justify-between gap-3 text-[12px] font-medium text-[#7d8796]">
                       <span>공고 목록과 상세 상단에 노출되는 요약 문장입니다.</span>
                       <span>{introContent.length} / 120</span>
                     </div>
                   </div>
                 </FormRow>
-                <div className="mb-2 rounded-[9px] bg-[#f7f8fa] px-4 py-3 text-[12px] font-bold leading-[1.65] text-[#667181]">
+                <div className="mb-2 rounded-[9px] bg-[#f7f8fa] px-4 py-3 text-[12px] font-medium leading-[1.65] text-[#667181]">
                   Enter로 새 항목을 추가하고, Shift+Enter로 같은 항목 안에서 줄바꿈할 수 있습니다. 항목은 드래그해 순서를 바꿀 수 있습니다.
                 </div>
                 <StructuredEditor
@@ -1149,7 +1149,7 @@ export function JobPostingRegistrationForm() {
                         setImagePreview(option.mode === "company" ? companyDefaultImage : "");
                       }}
                       className={clsx(
-                        "inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border px-3.5 text-[13px] font-black transition",
+                        "inline-flex h-11 items-center justify-center gap-2 border px-3.5 text-[13px] font-medium transition",
                         imageMode === option.mode
                           ? "border-[#252d39] bg-white text-[#252d39]"
                           : "border-border bg-white text-[#536071] hover:border-brand hover:text-brand",
@@ -1165,26 +1165,26 @@ export function JobPostingRegistrationForm() {
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onImageUpload} />
 
               {imageMode === "none" ? (
-                <div className="rounded-[10px] border border-[#dfe7ee] bg-[#fbfcfd] px-5 py-5 text-[14px] font-semibold leading-[1.7] text-[#667181]">
+                <div className="rounded-[10px] border border-[#dfe7ee] bg-[#fbfcfd] px-5 py-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
                   이미지 없이 등록합니다. 상세 페이지에서는 기업 로고와 브랜드 컬러로 기본 커버가 표시됩니다.
                 </div>
               ) : imagePreview ? (
                 <div className="rounded-[10px] border border-[#dfe7ee] bg-white p-3">
                   <img src={imagePreview} alt="공고 대표 이미지 미리보기" className="h-[190px] w-full rounded-[8px] object-cover" />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-[12px] font-bold text-[#7a8594]">상세 페이지 상단 커버와 추천 공고 카드에 우선 노출됩니다.</p>
+                    <p className="text-[12px] font-medium text-[#7a8594]">상세 페이지 상단 커버와 추천 공고 카드에 우선 노출됩니다.</p>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="h-9 rounded-[7px] border border-border bg-white px-3 text-[13px] font-black text-[#536071] hover:border-brand hover:text-brand"
+                        className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-[#536071] hover:border-brand hover:text-brand"
                       >
                         이미지 변경
                       </button>
                       <button
                         type="button"
                         onClick={() => setImagePreview("")}
-                        className="h-9 rounded-[7px] border border-border bg-white px-3 text-[13px] font-black text-danger hover:border-danger"
+                        className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-danger hover:border-danger"
                       >
                         삭제
                       </button>
@@ -1195,12 +1195,12 @@ export function JobPostingRegistrationForm() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="grid min-h-[174px] w-full place-items-center rounded-[10px] border border-dashed border-[#bfcbd7] bg-[#fbfcfd] px-6 text-center transition hover:border-brand hover:bg-brand-soft"
+                  className="grid min-h-[174px] w-full place-items-center border border-dashed border-[#bfcbd7] bg-[#fbfcfd] px-6 text-center transition hover:border-brand hover:bg-brand-soft"
                 >
                   <span>
                     <Upload className="mx-auto text-brand" size={32} />
-                    <span className="mt-3 block text-[15px] font-black text-[#364050]">이미지를 업로드하세요</span>
-                    <span className="mt-2 block text-[12px] font-semibold leading-[1.7] text-[#7d8796]">
+                    <span className="mt-3 block text-[15px] font-medium text-[#364050]">이미지를 업로드하세요</span>
+                    <span className="mt-2 block text-[12px] font-normal leading-[1.7] text-[#7d8796]">
                       권장 비율: 가로형 · 권장 크기: 1600×560px · JPG, PNG, WebP · 최대 5MB
                     </span>
                   </span>
@@ -1215,15 +1215,15 @@ export function JobPostingRegistrationForm() {
               status="선택 사항"
             >
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => addBlock("image")} className="subtle-button h-10 px-3.5 text-[13px] font-black">
+                <button type="button" onClick={() => addBlock("image")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
                   이미지 추가
                 </button>
-                <button type="button" onClick={() => addBlock("file")} className="subtle-button h-10 px-3.5 text-[13px] font-black">
+                <button type="button" onClick={() => addBlock("file")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
                   파일 추가
                 </button>
               </div>
 
-              <div className="mt-4 flex items-start gap-2 border border-[#dfe5ec] bg-[#f7f8fa] px-4 py-3 text-[12px] font-bold leading-[1.65] text-[#667181]">
+              <div className="mt-4 flex items-start gap-2 border border-[#dfe5ec] bg-[#f7f8fa] px-4 py-3 text-[12px] font-medium leading-[1.65] text-[#667181]">
                 <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#7b8492]" />
                 <span>주요업무, 자격요건, 근무조건, 지원방법 등 핵심 정보는 이미지로만 대체할 수 없습니다.</span>
               </div>
@@ -1249,13 +1249,13 @@ export function JobPostingRegistrationForm() {
                       <GripVertical size={18} className="text-[#a0a9b7]" />
                       {block.type === "image" ? <ImageIcon size={20} className="text-brand" /> : <FileText size={20} className="text-brand" />}
                       <div className="min-w-0 flex-1">
-                        <p className="text-[14px] font-black text-[#364050]">{block.title}</p>
-                        <p className="truncate text-[12px] font-semibold text-[#7d8796]">{block.description}</p>
+                        <p className="text-[14px] font-medium text-[#364050]">{block.title}</p>
+                        <p className="truncate text-[12px] font-normal text-[#7d8796]">{block.description}</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => setDetailBlocks((current) => current.filter((item) => item.id !== block.id))}
-                        className="grid h-8 w-8 place-items-center rounded-[7px] text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
+                        className="grid h-8 w-8 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
                         aria-label={`${block.title} 블록 삭제`}
                       >
                         <Trash2 size={16} />
@@ -1263,7 +1263,7 @@ export function JobPostingRegistrationForm() {
                     </div>
                   ))
                 ) : (
-                  <div className="grid min-h-[90px] place-items-center rounded-[9px] border border-dashed border-[#cfd9e2] bg-[#fbfcfd] text-[13px] font-semibold text-[#8a95a5]">
+                  <div className="grid min-h-[90px] place-items-center rounded-[9px] border border-dashed border-[#cfd9e2] bg-[#fbfcfd] text-[13px] font-normal text-[#8a95a5]">
                     추가된 상세 자료가 없습니다.
                   </div>
                 )}
@@ -1303,7 +1303,7 @@ export function JobPostingRegistrationForm() {
                               }
                             }}
                             className={clsx(
-                              "h-11 border px-3 text-[13px] font-black transition",
+                              "h-11 border px-3 text-[13px] font-medium transition",
                               selected
                                 ? "border-[#111111] bg-[#111111] text-white"
                                 : "border-[#d8e0e8] bg-white text-[#4f5968] hover:border-[#111111] hover:text-[#111111]",
@@ -1315,7 +1315,7 @@ export function JobPostingRegistrationForm() {
                         );
                       })}
                     </div>
-                    <p className="text-[12px] font-bold text-[#7d8796]">
+                    <p className="text-[12px] font-medium text-[#7d8796]">
                       공고 상세에는 근무지명, 주소, 교통 정보와 근무 방식이 함께 노출됩니다.
                     </p>
                   </div>
@@ -1326,7 +1326,7 @@ export function JobPostingRegistrationForm() {
                     value={workLocationName}
                     onChange={(event) => setWorkLocationName(event.target.value)}
                     placeholder="예: 서울 본사, 판교 연구소, 재택/하이브리드"
-                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
                 </FormRow>
 
@@ -1336,7 +1336,7 @@ export function JobPostingRegistrationForm() {
                     onChange={(event) => setWorkAddress(event.target.value)}
                     disabled={workLocationMode === "remote"}
                     placeholder={workLocationMode === "remote" ? "재택/하이브리드 근무는 주소 입력 없이 등록할 수 있습니다." : "예: 서울 강남구 테헤란로 123"}
-                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
                   />
                 </FormRow>
 
@@ -1346,7 +1346,7 @@ export function JobPostingRegistrationForm() {
                     onChange={(event) => setWorkAddressDetail(event.target.value)}
                     disabled={workLocationMode === "remote"}
                     placeholder="예: 8층 RA팀"
-                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
                   />
                 </FormRow>
 
@@ -1355,7 +1355,7 @@ export function JobPostingRegistrationForm() {
                     value={workTransitInfo}
                     onChange={(event) => setWorkTransitInfo(event.target.value)}
                     placeholder="예: 2호선 역삼역 도보 6분, 셔틀버스 운행"
-                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
                 </FormRow>
 
@@ -1376,13 +1376,13 @@ export function JobPostingRegistrationForm() {
                       <div className="absolute left-6 top-28 h-px w-[calc(100%-48px)] bg-white" />
                       <div className="absolute left-16 top-4 h-[calc(100%-32px)] w-px bg-white" />
                       <div className="absolute right-20 top-4 h-[calc(100%-32px)] w-px bg-white" />
-                      <div className="absolute left-1/2 top-1/2 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#111111] text-[12px] font-black text-white shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
+                      <div className="absolute left-1/2 top-1/2 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#111111] text-[12px] font-medium text-white shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
                         위치
                       </div>
                     </div>
                     <div className="border-t border-[#dce4ec] bg-white px-4 py-3">
-                      <p className="text-[13px] font-black text-[#333c49]">{workLocationName || "근무지명 입력 필요"}</p>
-                      <p className="mt-1 text-[12px] font-semibold text-[#7d8796]">
+                      <p className="text-[13px] font-medium text-[#333c49]">{workLocationName || "근무지명 입력 필요"}</p>
+                      <p className="mt-1 text-[12px] font-normal text-[#7d8796]">
                         {workLocationMode === "remote"
                           ? workTransitInfo || "재택/하이브리드 근무"
                           : [workAddress, workAddressDetail, workTransitInfo].filter(Boolean).join(" · ") || "주소를 입력해 주세요."}
@@ -1392,12 +1392,12 @@ export function JobPostingRegistrationForm() {
                 </FormRow>
 
                 <FormRow label="근무 요일/시간" required align="center">
-                  <input defaultValue="주 5일, 09:00~18:00" className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10" />
+                  <input defaultValue="주 5일, 09:00~18:00" className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10" />
                 </FormRow>
                 <FormRow label="급여" required align="center">
                   <input
                     defaultValue="회사 내규에 따름"
-                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
                 </FormRow>
                 <FormRow label="복리후생">
@@ -1414,7 +1414,7 @@ export function JobPostingRegistrationForm() {
                             );
                           }}
                           className={clsx(
-                            "h-9 rounded-full border px-3 text-[12px] font-black transition",
+                            "h-9 rounded-full border px-3 text-[12px] font-medium transition",
                             selected
                               ? "border-[#252d39] bg-[#252d39] text-white"
                               : "border-[#d8e0e8] bg-white text-[#596373] hover:border-brand hover:text-brand",
@@ -1431,7 +1431,7 @@ export function JobPostingRegistrationForm() {
                   <textarea
                     defaultValue={"4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다."}
                     rows={3}
-                    className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-semibold leading-[1.65] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-normal leading-[1.65] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
                 </FormRow>
               </div>
@@ -1446,7 +1446,7 @@ export function JobPostingRegistrationForm() {
                     <option value="email">이메일 지원</option>
                     <option value="custom">별도 안내</option>
                   </SelectShell>
-                  <p className="mt-2 text-[12px] font-bold text-[#7d8796]">
+                  <p className="mt-2 text-[12px] font-medium text-[#7d8796]">
                     선택한 지원 방식에 따라 지원자에게 필요한 정보가 공고 상세 페이지에 노출됩니다.
                   </p>
                 </FormRow>
@@ -1455,14 +1455,14 @@ export function JobPostingRegistrationForm() {
                     <FormRow label="제출서류" align="center">
                       <input
                         defaultValue="이력서, 경력기술서"
-                        className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                        className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                       />
                     </FormRow>
                     <FormRow label="사전질문">
                       <textarea
                         defaultValue={"RA 업무 경험과 담당 허가 품목을 간단히 작성해 주세요."}
                         rows={3}
-                        className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-semibold leading-[1.65] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                        className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-normal leading-[1.65] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                       />
                     </FormRow>
                   </>
@@ -1473,7 +1473,7 @@ export function JobPostingRegistrationForm() {
                       value={applicationUrl}
                       onChange={(event) => setApplicationUrl(event.target.value)}
                       placeholder="https://example.com/careers/ra-specialist"
-                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                     />
                   </FormRow>
                 ) : null}
@@ -1483,7 +1483,7 @@ export function JobPostingRegistrationForm() {
                       value={applicationEmail}
                       onChange={(event) => setApplicationEmail(event.target.value)}
                       placeholder="recruit@example.com"
-                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                     />
                   </FormRow>
                 ) : null}
@@ -1494,7 +1494,7 @@ export function JobPostingRegistrationForm() {
                       onChange={(event) => setApplicationGuide(event.target.value)}
                       placeholder="지원 방법과 제출 경로를 안내해 주세요."
                       rows={3}
-                      className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-semibold leading-[1.65] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="w-full resize-y rounded-[8px] border border-border px-3.5 py-3 text-[14px] font-normal leading-[1.65] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
                     />
                   </FormRow>
                 ) : null}
@@ -1504,9 +1504,9 @@ export function JobPostingRegistrationForm() {
                       type="date"
                       defaultValue="2026-06-30"
                       disabled={deadlineMode === "always"}
-                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-bold outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
+                      className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
                     />
-                    <label className="inline-flex h-11 items-center gap-2 text-[13px] font-black text-[#4c5665]">
+                    <label className="inline-flex h-11 items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                       <input
                         type="checkbox"
                         checked={deadlineMode === "always"}
@@ -1523,7 +1523,7 @@ export function JobPostingRegistrationForm() {
             <div className="surface px-5 py-4">
               <div className="flex items-start gap-3">
                 <AlertCircle size={19} className="mt-0.5 text-brand" />
-                <p className="text-[13px] font-bold leading-[1.7] text-[#596373]">
+                <p className="text-[13px] font-medium leading-[1.7] text-[#596373]">
                   이미지나 채용 포스터를 추가할 수 있지만, 검색과 추천을 위해 주요업무·자격요건·근무조건은 반드시 별도로 입력해 주세요.
                 </p>
               </div>
@@ -1532,13 +1532,13 @@ export function JobPostingRegistrationForm() {
 
           <aside className="registration-sidebar sticky top-[84px] self-start h-fit space-y-4 max-[1180px]:static">
             <section className="registration-progress-card surface px-6 py-6">
-              <h2 className="text-[20px] font-black text-[#242b36]">등록 진행 상황</h2>
+              <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">등록 진행 상황</h2>
               <div className="mt-5 border border-[#e0e6ee] bg-[#f8fafb] p-4">
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="mt-1 text-[24px] font-black text-[#111827]">5 / 7</p>
+                    <p className="mt-1 text-[24px] font-medium text-[#111827]">5 / 7</p>
                   </div>
-                  <span className="text-[13px] font-black text-[#5f6876]">
+                  <span className="text-[13px] font-medium text-[#5f6876]">
                     {canRequestPublish ? "게시 요청 가능" : "게시 전 확인 필요"}
                   </span>
                 </div>
@@ -1548,10 +1548,10 @@ export function JobPostingRegistrationForm() {
               </div>
 
               <div className="mt-5">
-                <h3 className="text-[13px] font-black text-[#364050]">완료 항목</h3>
+                <h3 className="text-[13px] font-bold text-[#364050]">완료 항목</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {["기본 정보", "포지션 소개", "핵심 키워드", "근무조건"].map((item) => (
-                    <span key={item} className="border border-[#d9dee6] bg-white px-2.5 py-1 text-[11px] font-black text-[#596373]">
+                    <span key={item} className="border border-[#d9dee6] bg-white px-2.5 py-1 text-[11px] font-medium text-[#596373]">
                       {item}
                     </span>
                   ))}
@@ -1559,10 +1559,10 @@ export function JobPostingRegistrationForm() {
               </div>
 
               <div className="mt-5">
-                <h3 className="text-[13px] font-black text-[#364050]">작성 중</h3>
+                <h3 className="text-[13px] font-bold text-[#364050]">작성 중</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {["지원방법 및 마감일", "대표 이미지"].map((item) => (
-                    <span key={item} className="border border-[#d9dee6] bg-[#f7f8fa] px-2.5 py-1 text-[11px] font-black text-[#596373]">
+                    <span key={item} className="border border-[#d9dee6] bg-[#f7f8fa] px-2.5 py-1 text-[11px] font-medium text-[#596373]">
                       {item}
                     </span>
                   ))}
@@ -1570,7 +1570,7 @@ export function JobPostingRegistrationForm() {
               </div>
 
               <div className="mt-5">
-                <h3 className="text-[13px] font-black text-[#364050]">미완료 항목</h3>
+                <h3 className="text-[13px] font-bold text-[#364050]">미완료 항목</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {(
                     missingItems.length || companyMissingItems.length
@@ -1579,7 +1579,7 @@ export function JobPostingRegistrationForm() {
                   )
                     .slice(0, 6)
                     .map((item) => (
-                    <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-black text-[#9b3a2d]">
+                    <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-medium text-[#9b3a2d]">
                       {item === "지원 URL" ? "지원 URL 입력 필요" : item}
                     </span>
                   ))}
@@ -1592,7 +1592,7 @@ export function JobPostingRegistrationForm() {
 
       <div className="registration-bottom-bar fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur">
         <div className="app-shell flex h-[72px] items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-[13px] font-bold text-[#667181]">
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[#667181]">
             <RotateCcw size={16} />
             {saveStatus}
           </div>
@@ -1600,18 +1600,18 @@ export function JobPostingRegistrationForm() {
             <button
               type="button"
               onClick={addItemToActiveEditor}
-              className="inline-flex h-11 items-center gap-1.5 rounded-[8px] border border-[#111111] bg-white px-4 text-[14px] font-black text-[#111111] hover:bg-[#f4f4f4]"
+              className="inline-flex h-11 items-center gap-1.5 border border-[#111111] bg-white px-4 text-[14px] font-medium text-[#111111] hover:bg-[#f4f4f4]"
             >
               <Plus size={16} />
               항목 추가
             </button>
-            <button type="button" className="h-11 rounded-[8px] border border-border bg-white px-4 text-[14px] font-black text-[#536071] hover:border-brand hover:text-brand">
+            <button type="button" className="h-11 border border-border bg-white px-4 text-[14px] font-medium text-[#536071] hover:border-brand hover:text-brand">
               이전
             </button>
-            <button type="button" onClick={showPreview} className="h-11 rounded-[8px] border border-border bg-white px-4 text-[14px] font-black text-[#536071] hover:border-brand hover:text-brand">
+            <button type="button" onClick={showPreview} className="h-11 border border-border bg-white px-4 text-[14px] font-medium text-[#536071] hover:border-brand hover:text-brand">
               미리보기
             </button>
-            <button type="button" onClick={goNext} className="h-11 rounded-[8px] bg-brand px-5 text-[14px] font-black text-white hover:bg-[var(--color-brand-dark)]">
+            <button type="button" onClick={goNext} className="h-11 bg-brand px-5 text-[14px] font-medium text-white hover:bg-[var(--color-brand-dark)]">
               다음
             </button>
           </div>

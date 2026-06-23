@@ -35,14 +35,14 @@ function InsightCard({ article }: { article: InsightArticle }) {
       </div>
 
       <div className="p-5">
-        <span className="inline-flex h-6 items-center border border-[#cfe2df] bg-[#f7fbfa] px-2 text-[11px] font-black text-[#0b756e]">
+        <span className="inline-flex h-6 items-center border border-[#dfe4ea] bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">
           {article.category}
         </span>
-        <h3 className="mt-3 text-[18px] font-black leading-[1.42] tracking-[0] text-[#171d26] group-hover:underline">{article.title}</h3>
-        <p className="mt-3 text-[13px] font-semibold leading-[1.65] text-[#6f7783]">{article.description}</p>
+        <h3 className="mt-3 text-[19px] font-bold leading-[1.42] tracking-[-0.02em] text-[#171d26] group-hover:underline">{article.title}</h3>
+        <p className="mt-3 text-[13px] font-normal leading-[1.65] text-[#6f7783]">{article.description}</p>
         <div className="mt-5 flex flex-wrap gap-1.5">
           {article.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="bg-[#f3f4f5] px-2 py-1 text-[11px] font-bold text-[#68717e]">
+            <span key={tag} className="bg-[#f3f4f5] px-2 py-1 text-[11px] font-medium text-[#68717e]">
               #{tag}
             </span>
           ))}
@@ -59,16 +59,16 @@ function CategoryArticleCard({ article }: { article: InsightArticle }) {
         <img src={article.thumbnail} alt="" className="h-full w-full object-cover grayscale transition duration-200 group-hover:scale-[1.02]" />
       </div>
       <div className="p-5">
-        <h3 className="line-clamp-2 text-[16px] font-black leading-[1.42] tracking-[0] text-[#171d26] group-hover:underline">{article.title}</h3>
-        <p className="mt-3 line-clamp-2 text-[12px] font-semibold leading-[1.65] text-[#6f7783]">{article.description}</p>
+        <h3 className="line-clamp-2 text-[17px] font-bold leading-[1.42] tracking-[-0.02em] text-[#171d26] group-hover:underline">{article.title}</h3>
+        <p className="mt-3 line-clamp-2 text-[12px] font-normal leading-[1.65] text-[#6f7783]">{article.description}</p>
         <div className="mt-4 flex flex-wrap gap-1.5">
           {article.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="bg-[#f3f4f5] px-2 py-1 text-[11px] font-bold text-[#68717e]">
+            <span key={tag} className="bg-[#f3f4f5] px-2 py-1 text-[11px] font-medium text-[#68717e]">
               #{tag}
             </span>
           ))}
         </div>
-        <div className="mt-4 flex items-center justify-between text-[11px] font-bold text-[#9aa3af]">
+        <div className="mt-4 flex items-center justify-between text-[11px] font-normal text-[#9aa3af]">
           <span>{article.date}</span>
           <span>읽기 {formatViews(article.views)}</span>
         </div>
@@ -87,13 +87,13 @@ function JobWikiCard({ entry }: { entry: InsightJobWikiEntry }) {
     <Link href={`/jobs?subcategory=${entry.jobSubcategoryId}`} className="group border border-[#dfe4ea] bg-white transition hover:border-[#111111]">
       <div className="relative h-[140px] overflow-hidden bg-[#f2f3f4]">
         <img src={entry.thumbnail} alt="" className="h-full w-full object-cover grayscale transition duration-200 group-hover:scale-[1.02]" />
-        <span className="absolute left-0 top-0 inline-flex h-7 items-center bg-[#0b756e] px-2.5 text-[11px] font-black text-white">{entry.code}</span>
+        <span className="absolute left-0 top-0 inline-flex h-7 items-center bg-[#0b756e] px-2.5 text-[11px] font-medium text-white">{entry.code}</span>
       </div>
       <div className="p-5">
-        <h3 className="text-[16px] font-black text-[#171d26]">{entry.title}</h3>
-        <p className="mt-1 text-[12px] font-bold text-[#8a94a3]">{entry.englishLabel}</p>
-        <p className="mt-3 text-[12px] font-semibold leading-[1.65] text-[#6f7783]">{entry.description}</p>
-        <p className="mt-4 text-[12px] font-black text-[#0b756e] group-hover:underline">진행 중 공고 {openCount}건 ›</p>
+        <h3 className="text-[17px] font-bold tracking-[-0.02em] text-[#171d26]">{entry.title}</h3>
+        <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">{entry.englishLabel}</p>
+        <p className="mt-3 text-[12px] font-normal leading-[1.65] text-[#6f7783]">{entry.description}</p>
+        <p className="mt-4 text-[12px] font-medium text-[#0b756e] group-hover:underline">진행 중 공고 {openCount}건 ›</p>
       </div>
     </Link>
   );
@@ -102,9 +102,9 @@ function JobWikiCard({ entry }: { entry: InsightJobWikiEntry }) {
 function SectionHeader({ title, actionHref }: { title: string; actionHref?: string }) {
   return (
     <div className="mb-5 flex items-end justify-between gap-4">
-      <h2 className="text-[22px] font-black tracking-[0] text-[#111111]">{title}</h2>
+      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#111111]">{title}</h2>
       {actionHref ? (
-        <Link href={actionHref} className="inline-flex items-center gap-1 text-[13px] font-bold text-[#777777] hover:text-[#111111]">
+        <Link href={actionHref} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#777777] hover:text-[#111111]">
           더보기
           <ChevronRight size={15} />
         </Link>
@@ -124,9 +124,9 @@ function CategoryTabs({ activeCategory, onChange }: { activeCategory: InsightCat
             type="button"
             onClick={() => onChange(category)}
             className={clsx(
-              "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-black whitespace-nowrap transition",
+              "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-medium whitespace-nowrap transition",
               selected
-                ? "text-[#00746c] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#00746c]"
+                ? "font-semibold text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                 : "text-[#4f5967] hover:text-[#111111]",
             )}
           >
@@ -149,14 +149,14 @@ function RankedInsights({ articles, actionHref }: { articles: InsightArticle[]; 
             href={`/insights/${article.slug}`}
             className="group flex items-center gap-4 py-4 first:pt-0 last:pb-0"
           >
-            <span className="w-6 shrink-0 text-[18px] font-black text-[#0b756e]">{index + 1}</span>
+            <span className="w-6 shrink-0 text-[18px] font-bold text-[#111111]">{index + 1}</span>
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[14px] font-black text-[#171d26] group-hover:underline">{article.title}</h3>
-              <p className="mt-1 text-[11px] font-bold text-[#9aa3af]">
+              <h3 className="truncate text-[14px] font-bold text-[#171d26] group-hover:underline">{article.title}</h3>
+              <p className="mt-1 text-[11px] font-normal text-[#9aa3af]">
                 읽기 {formatViews(article.views)} · {article.date}
               </p>
             </div>
-            <span className="shrink-0 text-[11px] font-black text-[#0b756e]">{article.category}</span>
+            <span className="shrink-0 text-[11px] font-medium text-[#596373]">{article.category}</span>
             <ChevronRight size={16} className="shrink-0 text-[#c2c9d2]" />
           </Link>
         ))}
@@ -206,25 +206,25 @@ export function InsightsHomeClient() {
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.72)_45%,rgba(0,0,0,0.22)_100%)]" />
                 <div className="relative z-10 max-w-[760px] px-9 pb-10 pt-[68px] max-[720px]:px-6 max-[720px]:pt-10">
                   <Link href={`/insights/${leadArticle.slug}`} className="block">
-                    <span className="inline-flex h-7 items-center bg-[#0b756e] px-3 text-[11px] font-black text-white">{leadArticle.category}</span>
-                    <h1 className="mt-7 text-[32px] font-black leading-[1.28] tracking-[0] text-white group-hover:underline max-[720px]:text-[24px]">
+                    <span className="inline-flex h-7 items-center bg-[#111111] px-3 text-[11px] font-medium text-white">{leadArticle.category}</span>
+                    <h1 className="mt-7 max-w-[820px] text-[38px] font-extrabold leading-[1.25] tracking-[-0.02em] text-white group-hover:underline max-[720px]:text-[24px]">
                       {leadArticle.title}
                     </h1>
-                    <p className="mt-5 max-w-[620px] text-[14px] font-semibold leading-[1.8] text-white/72">{leadArticle.description}</p>
-                    <p className="mt-6 text-[12px] font-bold text-white/55">
+                    <p className="mt-5 max-w-[620px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">{leadArticle.description}</p>
+                    <p className="mt-6 text-[12px] font-normal text-white/55">
                       {leadArticle.date} · 읽기 {formatViews(leadArticle.views)}
                     </p>
                   </Link>
                   <div className="mt-7 flex flex-wrap gap-3">
                     <Link
                       href={`/insights/${leadArticle.slug}`}
-                      className="inline-flex h-11 items-center border border-white bg-white px-5 text-[13px] font-black text-[#111111] hover:bg-[#f3f4f5]"
+                      className="inline-flex h-11 items-center border border-white bg-white px-5 text-[13px] font-medium text-[#111111] hover:bg-[#f3f4f5]"
                     >
                       자세히 보기
                     </Link>
                     <Link
                       href="/jobs"
-                      className="inline-flex h-11 items-center border border-white/28 bg-white/8 px-5 text-[13px] font-black text-white hover:bg-white/14"
+                      className="inline-flex h-11 items-center border border-white/28 bg-white/8 px-5 text-[13px] font-medium text-white hover:bg-white/14"
                     >
                       관련 채용공고 보기
                     </Link>
@@ -250,12 +250,12 @@ export function InsightsHomeClient() {
                 {insightDataCards.map((card) => (
                   <article key={card.label} className="border border-[#e1e6ec] bg-white p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="text-[12px] font-black text-[#596373]">{card.label}</p>
+                      <p className="text-[12px] font-medium text-[#596373]">{card.label}</p>
                       <Database size={18} className="text-[#8c98a7]" />
                     </div>
-                    <p className="mt-4 text-[28px] font-black tracking-[0] text-[#111827]">{card.value}</p>
-                    <p className="mt-3 text-[12px] font-bold text-[#667181]">
-                      <span className="font-black text-[#0b756e]">{card.change}</span> {card.caption}
+                    <p className="mt-4 text-[28px] font-bold tracking-[-0.02em] text-[#111827]">{card.value}</p>
+                    <p className="mt-3 text-[12px] font-normal text-[#667181]">
+                      <span className="font-semibold text-[#337ddf]">{card.change}</span> {card.caption}
                     </p>
                   </article>
                 ))}
@@ -268,13 +268,13 @@ export function InsightsHomeClient() {
                 {latestArticles.map((article) => (
                   <Link key={article.id} href={`/insights/${article.slug}`} className="group border border-[#dfe4ea] bg-white p-4 transition hover:border-[#111111]">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="border border-[#cfe2df] bg-[#f7fbfa] px-2 py-1 text-[11px] font-black text-[#0b756e]">{article.category}</span>
-                      <span className="text-[11px] font-bold text-[#9aa3af]">{article.date}</span>
+                      <span className="border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[11px] font-medium text-[#596373]">{article.category}</span>
+                      <span className="text-[11px] font-normal text-[#9aa3af]">{article.date}</span>
                     </div>
-                    <h3 className="mt-4 line-clamp-2 min-h-[44px] text-[15px] font-black leading-[1.45] text-[#171d26] group-hover:underline">
+                    <h3 className="mt-4 line-clamp-2 min-h-[44px] text-[16px] font-bold leading-[1.45] tracking-[-0.02em] text-[#171d26] group-hover:underline">
                       {article.title}
                     </h3>
-                    <div className="mt-5 flex items-center justify-between gap-3 text-[11px] font-bold text-[#7b8491]">
+                    <div className="mt-5 flex items-center justify-between gap-3 text-[11px] font-normal text-[#7b8491]">
                       <span>{article.tags.slice(0, 2).map((tag) => `#${tag}`).join(" ")}</span>
                       <span>읽기 {formatViews(article.views)}</span>
                     </div>
@@ -292,9 +292,9 @@ export function InsightsHomeClient() {
                       <img src={article.thumbnail} alt="" className="h-full w-full object-cover grayscale transition duration-200 group-hover:scale-[1.02]" />
                     </div>
                     <div className="p-4">
-                      <span className="text-[11px] font-black text-[#0b756e]">{article.category}</span>
-                      <h3 className="mt-2 line-clamp-2 text-[15px] font-black leading-[1.45] text-[#171d26] group-hover:underline">{article.title}</h3>
-                      <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.65] text-[#6f7783]">{article.description}</p>
+                      <span className="text-[11px] font-medium text-[#596373]">{article.category}</span>
+                      <h3 className="mt-2 line-clamp-2 text-[16px] font-bold leading-[1.45] tracking-[-0.02em] text-[#171d26] group-hover:underline">{article.title}</h3>
+                      <p className="mt-3 line-clamp-3 text-[12px] font-normal leading-[1.65] text-[#6f7783]">{article.description}</p>
                     </div>
                   </Link>
                 ))}
@@ -303,15 +303,15 @@ export function InsightsHomeClient() {
           </>
         ) : (
           <section className="mt-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#8a94a3]">{insightCategoryMeta[activeCategory].eyebrow}</p>
-            <h1 className="mt-3 text-[26px] font-black tracking-[0] text-[#111111]">
+            <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">{insightCategoryMeta[activeCategory].eyebrow}</p>
+            <h1 className="mt-3 text-[31px] font-bold tracking-[-0.02em] text-[#111111]">
               {activeCategory}{" "}
-              <span className="text-[15px] font-bold text-[#8a94a3]">
-                총 <span className="font-black text-[#0b756e]">{activeCategory === "직무백과" ? insightJobWikiEntries.length : categoryArticles.length}</span>
+              <span className="text-[15px] font-medium text-[#8a94a3]">
+                총 <span className="font-bold text-[#111111]">{activeCategory === "직무백과" ? insightJobWikiEntries.length : categoryArticles.length}</span>
                 개{activeCategory === "직무백과" ? " 직무" : "의 글"}
               </span>
             </h1>
-            <p className="mt-3 text-[14px] font-semibold text-[#68717e]">{insightCategoryMeta[activeCategory].description}</p>
+            <p className="mt-3 text-[14px] font-normal text-[#68717e]">{insightCategoryMeta[activeCategory].description}</p>
 
             <div className="mt-8 grid grid-cols-3 gap-4 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
               {activeCategory === "직무백과"

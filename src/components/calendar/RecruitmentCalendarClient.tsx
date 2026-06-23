@@ -307,7 +307,7 @@ function CalendarOptionChip({
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-[34px] border px-3 py-1.5 text-left text-[12px] font-bold leading-[1.35] transition ${
+      className={`min-h-[34px] border px-3 py-1.5 text-left text-[12px] font-medium leading-[1.35] transition ${
         active ? "border-[#111111] bg-[#111111] text-white" : "border-[#dfe4ea] bg-white text-[#424b57] hover:border-[#111111]"
       }`}
       title={option.description}
@@ -346,7 +346,7 @@ function CalendarJobFilterBody({
       <div className="border border-[#e3e7ec] bg-white">
         <button
           type="button"
-          className={`flex h-[38px] w-full items-center border-b border-[#eef1f4] px-3 text-left text-[12px] font-black ${
+          className={`flex h-[38px] w-full items-center border-b border-[#eef1f4] px-3 text-left text-[12px] font-medium ${
             activeCategoryId === ALL_JOB_CATEGORY_ID ? "bg-[#080808] text-white" : "bg-white text-[#46505d] hover:bg-[#f6f7f8]"
           }`}
           onClick={() => {
@@ -366,7 +366,7 @@ function CalendarJobFilterBody({
             <button
               key={category.id}
               type="button"
-              className={`flex h-[38px] w-full items-center justify-between gap-3 border-b border-[#eef1f4] px-3 text-left text-[12px] font-black last:border-b-0 ${
+              className={`flex h-[38px] w-full items-center justify-between gap-3 border-b border-[#eef1f4] px-3 text-left text-[12px] font-medium last:border-b-0 ${
                 active ? "bg-[#080808] text-white" : selected ? "bg-[#f4f4f4] text-[#171b20]" : "bg-white text-[#46505d] hover:bg-[#f6f7f8]"
               }`}
               onClick={() => {
@@ -390,9 +390,9 @@ function CalendarJobFilterBody({
 
       <div className="border border-[#e3e7ec] bg-[#fbfcfc] p-3.5">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-[12px] font-black text-[#2c3440]">{activeCategory?.label ?? "전체"}</p>
+          <p className="text-[12px] font-medium text-[#2c3440]">{activeCategory?.label ?? "전체"}</p>
           {activeCategory ? (
-            <p className="text-[12px] font-bold text-[#8a93a1]">
+            <p className="text-[12px] font-medium text-[#8a93a1]">
               {activeCategoryAllSelected ? "전체 선택" : activeCategorySubcategoryCount ? `${activeCategorySubcategoryCount}개 선택` : "2차 선택 사항"}
             </p>
           ) : null}
@@ -471,11 +471,11 @@ function CalendarJobChip({ job }: { job: CalendarJob }) {
     >
       <div className="flex min-w-0 items-center gap-1.5">
         <span className={`h-2 w-2 shrink-0 rounded-full ${style.marker}`} aria-label={eventTypeLabels[eventType]} />
-        <span className="min-w-0 flex-1 truncate text-[12px] font-black leading-[15px] text-[#232830]">
+        <span className="min-w-0 flex-1 truncate text-[12px] font-medium leading-[15px] text-[#232830]">
           {job.companyName}
         </span>
       </div>
-      <p className="mt-0.5 truncate pl-3.5 text-[11px] font-bold leading-[13px] text-[#8a93a1]">{job.role}</p>
+      <p className="mt-0.5 truncate pl-3.5 text-[11px] font-medium leading-[13px] text-[#8a93a1]">{job.role}</p>
     </Link>
   );
 }
@@ -496,7 +496,7 @@ function ApplicationStepper({ stage }: { stage?: CalendarJobStage }) {
           return (
             <div key={item} className="relative z-10 flex flex-col items-center gap-1.5">
               <span className={`h-4 w-4 rounded-full border-[3px] ${active ? "border-[#d8dce2] bg-[#111111]" : "border-[#eef1f4] bg-white"}`} />
-              <span className={`text-[10px] font-black ${active ? "text-[#25303b]" : "text-[#a4acb8]"}`}>
+              <span className={`text-[10px] font-medium ${active ? "text-[#25303b]" : "text-[#a4acb8]"}`}>
                 {stageLabels[item]}
               </span>
             </div>
@@ -512,12 +512,12 @@ function ApplicationStatusCard({ job }: { job: CalendarJob }) {
     <Link href={job.href} className="block border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-[14px] font-black text-[#1e232b]">{job.companyName}</p>
-          <p className="mt-2 truncate text-[12px] font-bold text-[#8b94a2]">{job.title}</p>
+          <p className="truncate text-[14px] font-medium text-[#1e232b]">{job.companyName}</p>
+          <p className="mt-2 truncate text-[12px] font-medium text-[#8b94a2]">{job.title}</p>
         </div>
         {job.statusLabel ? (
           <span
-            className={`shrink-0 px-2.5 py-1 text-[12px] font-black ${
+            className={`shrink-0 px-2.5 py-1 text-[12px] font-medium ${
               job.statusLabel.includes("면접") ? "bg-[#f1f3f5] text-[#111111]" : "bg-[#fff0ec] text-[#e95544]"
             }`}
           >
@@ -545,8 +545,8 @@ function LoginGateModal({
             <div className="grid h-10 w-10 place-items-center bg-[#111111] text-white">
               <Lock size={18} />
             </div>
-            <h2 className="mt-5 text-[22px] font-black leading-tight text-[#171b20]">로그인이 필요합니다</h2>
-            <p className="mt-3 text-[13px] font-bold leading-6 text-[#7a8490]">
+            <h2 className="mt-5 text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#171b20]">로그인이 필요합니다</h2>
+            <p className="mt-3 text-[13px] font-medium leading-6 text-[#7a8490]">
               내 관심 공고, 지원 현황, 다른 달 이동은 회원 기능입니다. 로그인 후 채용 마감 일정을 이어서 확인할 수 있습니다.
             </p>
           </div>
@@ -555,10 +555,10 @@ function LoginGateModal({
           </button>
         </div>
         <div className="mt-6 grid grid-cols-[1fr_auto] gap-2">
-          <button type="button" className="h-11 bg-[#111111] px-5 text-[13px] font-black text-white" onClick={onLogin}>
+          <button type="button" className="h-11 bg-[#111111] px-5 text-[13px] font-medium text-white" onClick={onLogin}>
             로그인하고 보기
           </button>
-          <button type="button" className="h-11 border border-[#d9dee5] px-5 text-[13px] font-black text-[#4b5563]" onClick={onClose}>
+          <button type="button" className="h-11 border border-[#d9dee5] px-5 text-[13px] font-medium text-[#4b5563]" onClick={onClose}>
             닫기
           </button>
         </div>
@@ -581,8 +581,8 @@ function MoreJobsModal({
       <div className="w-full max-w-[520px] border border-[#20242b] bg-white p-5 shadow-[0_24px_70px_rgba(0,0,0,0.24)]">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-[12px] font-black text-[#6b7280]">채용 일정</p>
-            <h2 className="mt-1 text-[20px] font-black text-[#171b20]">{dateLabel}</h2>
+            <p className="text-[12px] font-medium text-[#6b7280]">채용 일정</p>
+            <h2 className="mt-1 text-[22px] font-bold tracking-[-0.02em] text-[#171b20]">{dateLabel}</h2>
           </div>
           <button type="button" className="grid h-8 w-8 place-items-center hover:bg-[#f2f3f5]" onClick={onClose} aria-label="닫기">
             <X size={18} />
@@ -600,8 +600,8 @@ function MoreJobsModal({
               <div className="flex min-w-0 items-start gap-2">
                 <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${eventTypeStyles[eventTypeOf(job)].marker}`} />
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-black text-[#222832]">{job.companyName}</p>
-                  <p className="mt-1 truncate text-[12px] font-bold text-[#87909d]">{job.title}</p>
+                  <p className="truncate text-[14px] font-medium text-[#222832]">{job.companyName}</p>
+                  <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
                 </div>
               </div>
             </Link>
@@ -810,8 +810,8 @@ export function RecruitmentCalendarClient() {
           <PageBreadcrumb items={[{ label: "채용 캘린더" }]} />
 
           <div className="mt-5">
-            <h1 className="text-[30px] font-extrabold leading-none tracking-[0] text-[#242b36] max-[760px]:text-[26px]">채용 캘린더</h1>
-            <p className="mt-4 text-[14px] font-bold text-[#8a94a3]">
+            <h1 className="text-[34px] font-extrabold leading-[1.2] tracking-[-0.02em] text-[#242b36] max-[760px]:text-[26px]">채용 캘린더</h1>
+            <p className="mt-4 text-[14px] font-medium text-[#8a94a3]">
               채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요.
             </p>
           </div>
@@ -826,7 +826,7 @@ export function RecruitmentCalendarClient() {
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  className={`h-[48px] text-[15px] font-black transition ${
+                  className={`h-[48px] text-[15px] font-medium transition ${
                     active
                       ? "bg-[#1b1f25] text-white shadow-[0_10px_22px_rgba(17,17,17,0.16)]"
                       : "bg-white text-[#4b535f] hover:bg-[#f6f7f8]"
@@ -859,7 +859,7 @@ export function RecruitmentCalendarClient() {
                   >
                     <ChevronLeft size={18} />
                   </button>
-                  <h2 className="min-w-[132px] text-center text-[26px] font-black text-[#20242b]">
+                  <h2 className="min-w-[132px] text-center text-[28px] font-bold tracking-[-0.02em] text-[#20242b]">
                     {visibleMonth.getFullYear()}. {String(visibleMonth.getMonth() + 1).padStart(2, "0")}
                   </h2>
                   <button
@@ -872,14 +872,14 @@ export function RecruitmentCalendarClient() {
                   </button>
                   <button
                     type="button"
-                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-black text-[#4d5662] hover:border-[#1b1f25]"
+                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25]"
                     onClick={moveToday}
                   >
                     오늘
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 text-[13px] font-black text-[#4d5662]">
+                <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#4d5662]">
                   {[
                     { id: "all" as const, label: "전체" },
                     { id: "deadline" as const, label: "마감" },
@@ -914,7 +914,7 @@ export function RecruitmentCalendarClient() {
                         <button
                           key={track.id}
                           type="button"
-                          className={`h-10 border px-5 text-[13px] font-black ${
+                          className={`h-10 border px-5 text-[13px] font-medium ${
                             trackFilter === track.id
                               ? "border-[#111111] bg-[#111111] text-white shadow-[0_10px_18px_rgba(17,17,17,0.10)]"
                               : "border-[#dfe4eb] bg-white text-[#4b535f] hover:border-[#111111]"
@@ -929,7 +929,7 @@ export function RecruitmentCalendarClient() {
                     {activeFilterDefinitions.length > 0 ? (
                       <button
                         type="button"
-                        className="inline-flex h-10 items-center gap-2 border border-[#dfe4eb] bg-white px-4 text-[13px] font-black text-[#5f6875] hover:border-[#111111] hover:text-[#111111]"
+                        className="inline-flex h-10 items-center gap-2 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#5f6875] hover:border-[#111111] hover:text-[#111111]"
                         onClick={resetCalendarFilters}
                       >
                         <RotateCcw size={15} />
@@ -948,7 +948,7 @@ export function RecruitmentCalendarClient() {
                             <button
                               key={definition.id}
                               type="button"
-                              className={`inline-flex min-h-[42px] items-center gap-2 border px-4 text-[13px] font-black transition ${
+                              className={`inline-flex min-h-[42px] items-center gap-2 border px-4 text-[13px] font-medium transition ${
                                 active
                                   ? "border-[#111111] bg-[#111111] text-white"
                                   : "border-[#dfe4eb] bg-white text-[#3f4753] hover:border-[#111111]"
@@ -996,7 +996,7 @@ export function RecruitmentCalendarClient() {
                     {WEEKDAYS.map((weekday, index) => (
                       <div
                         key={weekday}
-                        className={`px-4 py-3 text-[13px] font-black ${
+                        className={`px-4 py-3 text-[13px] font-medium ${
                           index === 0 ? "text-[#e95544]" : index === 6 ? "text-[#337ddf]" : "text-[#87909d]"
                         }`}
                       >
@@ -1024,7 +1024,7 @@ export function RecruitmentCalendarClient() {
                           }`}
                         >
                           <div
-                            className={`inline-grid h-7 min-w-7 place-items-center px-2 text-[14px] font-black ${
+                            className={`inline-grid h-7 min-w-7 place-items-center px-2 text-[14px] font-medium ${
                               isToday
                                 ? "bg-[#1b1f25] text-white"
                                 : !inCurrentMonth
@@ -1046,7 +1046,7 @@ export function RecruitmentCalendarClient() {
                             {hiddenCount > 0 ? (
                               <button
                                 type="button"
-                                className="h-7 bg-[#eef0f2] text-[12px] font-black text-[#3f4651] hover:bg-[#e2e6ea]"
+                                className="h-7 bg-[#eef0f2] text-[12px] font-medium text-[#3f4651] hover:bg-[#e2e6ea]"
                                 onClick={() =>
                                   setMoreJobs({
                                     dateLabel: `${visibleMonth.getFullYear()}년 ${visibleMonth.getMonth() + 1}월 ${day.getDate()}일`,
@@ -1072,7 +1072,7 @@ export function RecruitmentCalendarClient() {
                   <button
                     type="button"
                     onClick={applyInterestCondition}
-                    className={`flex h-[46px] w-full items-center justify-center gap-2.5 border text-[14px] font-extrabold transition-all ${
+                    className={`flex h-[46px] w-full items-center justify-center gap-2.5 border text-[14px] font-normal transition-all ${
                       activeQuickLink === "preference"
                         ? "border-[#bdbdbd] bg-[#f3f3f3] text-[#111111] ring-2 ring-[rgba(17,17,17,0.12)]"
                         : "border-[#bdbdbd] text-[#111111] hover:bg-[#f3f3f3]"
@@ -1085,7 +1085,7 @@ export function RecruitmentCalendarClient() {
                   <button
                     type="button"
                     onClick={showSavedJobs}
-                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-extrabold text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
+                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-normal text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
                       activeQuickLink === "saved" ? "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]" : ""
                     }`}
                   >
@@ -1096,7 +1096,7 @@ export function RecruitmentCalendarClient() {
                   <button
                     type="button"
                     onClick={showRecentJobs}
-                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-extrabold text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
+                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-normal text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
                       activeQuickLink === "recent" ? "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]" : ""
                     }`}
                   >
@@ -1106,17 +1106,17 @@ export function RecruitmentCalendarClient() {
                 </div>
 
                 <div className="mt-5 border border-[#eef2f6] bg-[#f8fafb] px-5 py-5">
-                  <p className="text-[13px] font-bold text-[#8791a0]">내 관심 조건</p>
-                  <p className="mt-2 text-[17px] font-extrabold text-[#252b36]">RA 외 2개</p>
-                  <p className="mt-1 text-[13px] font-bold leading-[1.5] text-[#687383]">3~5년 · 서울 · 경기</p>
+                  <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
+                  <p className="mt-2 text-[17px] font-normal text-[#252b36]">RA 외 2개</p>
+                  <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">3~5년 · 서울 · 경기</p>
                   <button
                     type="button"
-                    className="mt-4 h-[34px] border border-[#d9e1e8] bg-white px-3 text-[13px] font-bold text-[#46505f] hover:border-[#111111] hover:text-[#111111]"
+                    className="mt-4 h-[34px] border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-[#111111] hover:text-[#111111]"
                     onClick={applyInterestCondition}
                   >
                     관심 조건 수정
                   </button>
-                  <div className="mt-5 flex items-center gap-2 bg-white px-3 py-2 text-[12px] font-bold text-[#687383]">
+                  <div className="mt-5 flex items-center gap-2 bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
                     <MailCheck size={17} className="text-[#111111]" />
                     이메일 알림 사용 중
                   </div>
@@ -1126,9 +1126,9 @@ export function RecruitmentCalendarClient() {
               <section className="surface p-5">
                 <div className="flex items-center gap-2">
                   <Pin size={16} className="text-[#596373]" />
-                  <h2 className="text-[15px] font-black text-[#1f252d]">지원 현황</h2>
+                  <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d]">지원 현황</h2>
                 </div>
-                <p className="mt-2 text-[12px] font-bold leading-5 text-[#8b94a2]">지원한 공고의 다음 일정을 확인합니다.</p>
+                <p className="mt-2 text-[12px] font-medium leading-5 text-[#8b94a2]">지원한 공고의 다음 일정을 확인합니다.</p>
                 <div className="mt-4 grid gap-2.5">
                   {appliedJobs.map((job) => (
                     <ApplicationStatusCard key={job.id} job={job} />

@@ -20,7 +20,7 @@ export function Pagination({ currentPage, onPageChange }: PaginationProps) {
             type="button"
             onClick={() => onPageChange(page)}
             className={clsx(
-              "h-[38px] w-[46px] border border-r-0 border-[#dce2ea] text-[13px] font-bold first:rounded-l-[var(--radius)]",
+              "h-[38px] w-[46px] border border-r-0 border-[#dce2ea] text-[13px] font-medium",
               currentPage === page ? "bg-[#050505] text-white" : "bg-white text-[#5c6675] hover:bg-[#f5f5f5] hover:text-brand",
             )}
           >
@@ -30,7 +30,7 @@ export function Pagination({ currentPage, onPageChange }: PaginationProps) {
         <button
           type="button"
           onClick={() => onPageChange(Math.min(currentPage + 1, 5))}
-          className="flex h-[38px] items-center gap-2 rounded-r-[var(--radius)] border border-[#dce2ea] bg-white px-4 text-[13px] font-bold text-[#5c6675] hover:bg-[#f5f5f5] hover:text-brand"
+          className="flex h-[38px] items-center gap-2 border border-[#dce2ea] bg-white px-4 text-[13px] font-medium text-[#5c6675] hover:bg-[#f5f5f5] hover:text-brand"
         >
           다음
           <ChevronRight size={18} />

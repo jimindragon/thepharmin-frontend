@@ -53,17 +53,17 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
               style={{ backgroundColor: job.logoColor, left: 22, bottom: 1 }}
             />
           </div>
-          <span className="max-w-[68px] text-center text-[10px] font-black leading-tight" style={{ color: job.logoColor }}>
+          <span className="max-w-[68px] text-center text-[10px] font-semibold leading-tight" style={{ color: job.logoColor }}>
             {job.logoText}
           </span>
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-[13px] font-extrabold text-[#343c49]">{job.company}</p>
+          <p className="truncate text-[13px] font-medium text-[#343c49]">{job.company}</p>
           <button
             type="button"
             onClick={(event) => event.stopPropagation()}
-            className="relative z-20 mt-1 inline-flex h-[25px] items-center gap-1 rounded-[var(--radius)] border border-[#d8dee7] bg-white px-2.5 text-[11px] font-bold text-[#4d5664] hover:border-brand hover:text-brand"
+            className="relative z-20 mt-1 inline-flex h-[25px] items-center gap-1 border border-[#d8dee7] bg-white px-2.5 text-[11px] font-medium text-[#4d5664] hover:border-brand hover:text-brand"
           >
             <MessageSquareText size={14} />
             기업 후기
@@ -74,13 +74,13 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
       <div className="min-w-0 px-4 max-[720px]:col-span-2 max-[720px]:px-0">
         <div className="flex min-w-0 items-center gap-2">
           {job.postingSource === "headhunting" ? (
-            <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-black text-[#535c68]">
+            <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-medium text-[#535c68]">
               헤드헌팅
             </span>
           ) : null}
-          <h3 className="truncate text-[15px] font-extrabold text-[#2b3340]">{job.title}</h3>
+          <h3 className="truncate text-[15px] font-bold text-[#2b3340]">{job.title}</h3>
         </div>
-        <p className="mt-1 truncate text-[11px] font-bold text-[#737d8a]">
+        <p className="mt-1 truncate text-[11px] font-normal text-[#737d8a]">
           {job.career}
           <span className="px-2.5 text-[#c2c8d1]">·</span>
           {job.education}
@@ -95,7 +95,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
           {job.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-bold text-[#7c8490]"
+              className="rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]"
             >
               {tag}
             </span>
@@ -104,10 +104,10 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
       </div>
 
       <div className="flex flex-col items-end justify-center gap-2 text-right max-[720px]:items-start max-[720px]:text-left">
-        <strong className={clsx("text-[15px] font-black", danger ? "text-danger" : "text-brand")}>{deadlineText}</strong>
+        <strong className={clsx("text-[15px] font-semibold", danger ? "text-danger" : "text-brand")}>{deadlineText}</strong>
         <span
           className={clsx(
-            "inline-flex h-[24px] cursor-default items-center rounded-[var(--radius)] px-2 text-[11px] font-semibold",
+            "inline-flex h-[24px] cursor-default items-center rounded-[var(--radius)] px-2 text-[11px] font-medium",
             easyApply
               ? "bg-brand text-white"
               : "border border-[#d9e1e8] bg-white text-[#596373]",
@@ -124,7 +124,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
           onToggleBookmark(job.id);
         }}
         className={clsx(
-          "relative z-20 ml-auto grid h-[34px] w-[32px] place-items-center rounded-[var(--radius)] transition-colors",
+          "relative z-20 ml-auto grid h-[34px] w-[32px] place-items-center transition-colors",
           isBookmarked ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand",
         )}
         aria-label={`${job.title} 북마크 ${isBookmarked ? "해제" : "저장"}`}

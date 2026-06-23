@@ -13,7 +13,7 @@ interface PageBreadcrumbProps {
 
 export function PageBreadcrumb({ items, className = "" }: PageBreadcrumbProps) {
   return (
-    <nav className={`flex items-center gap-3 text-[13px] font-bold text-[#a0a9b7] ${className}`} aria-label="breadcrumb">
+    <nav className={`flex items-center gap-3 text-[13px] font-medium text-[#a0a9b7] ${className}`} aria-label="breadcrumb">
       <Home size={16} strokeWidth={2.1} className="shrink-0" />
       {items.map((item, index) => {
         const isLast = index === items.length - 1;

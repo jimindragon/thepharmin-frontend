@@ -65,7 +65,7 @@ function Segmented<T extends string>({
           type="button"
           onClick={() => onChange(option.id)}
           className={clsx(
-            "h-10 border px-4 text-[13px] font-black transition",
+            "h-10 border px-4 text-[13px] font-medium transition",
             value === option.id
               ? "border-[#111111] bg-[#f7f8fa] text-[#111111]"
               : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111] hover:text-[#111111]",
@@ -93,7 +93,7 @@ function ToggleChip({
       type="button"
       onClick={onClick}
       className={clsx(
-        "h-9 border px-3 text-[12px] font-black transition",
+        "h-9 border px-3 text-[12px] font-medium transition",
         selected ? "border-[#111111] bg-[#f7f8fa] text-[#111111]" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
       )}
       aria-pressed={selected}
@@ -209,23 +209,23 @@ export function BusinessCompanyProfileClient() {
   return (
     <div>
       {saved ? (
-        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-black text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
           기업 정보가 저장되었습니다.
         </div>
       ) : null}
 
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
-          <p className="text-[13px] font-black text-[#8a94a3]">기업센터 &gt; 기업 관리 &gt; 기업정보 관리</p>
-          <h1 className="mt-3 text-[30px] font-black tracking-[0] text-[#17202c]">기업 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-semibold text-[#68717e]">공고 상세와 기업 상세 페이지에 노출되는 회사 정보를 관리합니다.</p>
+          <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 기업 관리 &gt; 기업정보 관리</p>
+          <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">공고 상세와 기업 상세 페이지에 노출되는 회사 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
-          <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-black text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
+          <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
             브랜드 페이지 미리보기
             <ExternalLink size={15} />
           </Link>
-          <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center gap-2 border border-[#111111] bg-[#111111] px-6 text-[13px] font-black text-white hover:bg-[#2a2a2a] max-[760px]:flex-1">
+          <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center gap-2 border border-[#111111] bg-[#111111] px-6 text-[13px] font-medium text-white hover:bg-[#2a2a2a] max-[760px]:flex-1">
             <Save size={15} />
             저장하기
           </button>
@@ -239,7 +239,7 @@ export function BusinessCompanyProfileClient() {
             type="button"
             onClick={() => scrollToSection(tab.id)}
             className={clsx(
-              "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-black transition hover:bg-[#f7f8fa] hover:text-[#111111]",
+              "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-medium transition hover:bg-[#f7f8fa] hover:text-[#111111]",
               index === 0 ? "text-[#111111] shadow-[inset_0_-2px_0_#111111]" : "text-[#4f5967]",
             )}
           >
@@ -252,10 +252,10 @@ export function BusinessCompanyProfileClient() {
         <div className="space-y-5">
           <SectionCard id="verification" title="인증 정보" description="인증 정보는 운영팀 검토 후 변경됩니다. 공고 신뢰도와 인증 배지에 영향을 줄 수 있습니다.">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-black text-[#303946]">
+              <span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">
                 인증기업 · 승인 완료
               </span>
-              <button type="button" className="ml-auto h-9 border border-[#cfd8e3] bg-white px-4 text-[12px] font-black text-[#303946] hover:border-[#111111]">
+              <button type="button" className="ml-auto h-9 border border-[#cfd8e3] bg-white px-4 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
                 변경 요청
               </button>
             </div>
@@ -267,12 +267,12 @@ export function BusinessCompanyProfileClient() {
                 ["승인일", profile.approvedAt],
               ].map(([label, value]) => (
                 <div key={label} className="border-r border-[#dfe4ea] px-4 py-4 last:border-r-0 max-[900px]:border-b">
-                  <p className="text-[11px] font-black text-[#8a94a3]">{label}</p>
-                  <p className="mt-2 text-[13px] font-black text-[#17202c]">{value}</p>
+                  <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
+                  <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-semibold leading-[1.6] text-[#6f7783]">
+            <div className="mt-4 flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
               <Info size={15} className="mt-0.5 shrink-0" />
               사업자등록번호, 법인명, 대표자명은 직접 수정할 수 없으며 변경 요청 후 운영팀 검토가 필요합니다.
             </div>
@@ -308,7 +308,7 @@ export function BusinessCompanyProfileClient() {
                 <FieldLabel required>대표 주소</FieldLabel>
                 <div className="grid grid-cols-[1fr_112px] gap-2">
                   <TextInput value={profile.zipCode} onChange={(value) => updateProfile("zipCode", value)} />
-                  <button type="button" className="h-11 border border-[#d8e0e8] bg-white text-[12px] font-black text-[#303946] hover:border-[#111111]">우편번호 찾기</button>
+                  <button type="button" className="h-11 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">우편번호 찾기</button>
                 </div>
                 <TextInput value={profile.address} onChange={(value) => updateProfile("address", value)} />
               </div>
@@ -322,7 +322,7 @@ export function BusinessCompanyProfileClient() {
               </div>
               <div className="space-y-2">
                 <FieldLabel required>설립연도</FieldLabel>
-                <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} right={<span className="grid h-11 w-10 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-bold text-[#7b8491]">년</span>} />
+                <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} right={<span className="grid h-11 w-10 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-medium text-[#7b8491]">년</span>} />
               </div>
               <div className="space-y-2">
                 <FieldLabel required>직원 수</FieldLabel>
@@ -352,11 +352,11 @@ export function BusinessCompanyProfileClient() {
                     <LogoMark profile={profile} />
                   </div>
                 </div>
-                <p className="mt-2 text-[11px] font-semibold text-[#8a94a3]">권장 사이즈: 240x60px / JPG, PNG (2MB 이하)</p>
+                <p className="mt-2 text-[11px] font-normal text-[#8a94a3]">권장 사이즈: 240x60px / JPG, PNG (2MB 이하)</p>
                 <div className="mt-3 grid grid-cols-3 gap-2">
-                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-black text-[#303946] hover:border-[#111111]">변경</button>
-                  <button type="button" onClick={() => updateProfile("logoUrl", null)} className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-black text-[#303946] hover:border-[#111111]">삭제</button>
-                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-black text-[#303946] hover:border-[#111111]">미리보기</button>
+                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">변경</button>
+                  <button type="button" onClick={() => updateProfile("logoUrl", null)} className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">삭제</button>
+                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">미리보기</button>
                 </div>
               </div>
               <div className="space-y-4">
@@ -370,26 +370,26 @@ export function BusinessCompanyProfileClient() {
                     value={profile.fullIntro}
                     onChange={(event) => updateProfile("fullIntro", event.target.value)}
                     maxLength={1000}
-                    className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-semibold leading-[1.7] text-[#303946] outline-none focus:border-[#111111]"
+                    className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none focus:border-[#111111]"
                   />
-                  <p className="text-right text-[11px] font-bold text-[#8a94a3]">{profile.fullIntro.length} / 1000</p>
+                  <p className="text-right text-[11px] font-medium text-[#8a94a3]">{profile.fullIntro.length} / 1000</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 border border-[#e2e8ef] bg-[#fbfcfd] p-4">
-              <h3 className="text-[14px] font-black text-[#303946]">노출 미리보기</h3>
+              <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">노출 미리보기</h3>
               <div className="mt-4 grid grid-cols-2 gap-4 max-[820px]:grid-cols-1">
                 <div className="border border-[#dfe4ea] bg-white p-4">
-                  <p className="text-[11px] font-bold text-[#8a94a3]">공고 상세 · 기업 정보 카드</p>
+                  <p className="text-[11px] font-medium text-[#8a94a3]">공고 상세 · 기업 정보 카드</p>
                   <div className="mt-4 flex gap-3">
                     <div className="grid h-12 w-12 shrink-0 place-items-center border border-[#dfe4ea] bg-white p-1">
                       <LogoMark profile={profile} />
                     </div>
                     <div>
-                      <p className="text-[14px] font-black text-[#17202c]">{profile.displayName}</p>
-                      <p className="mt-1 text-[12px] font-semibold text-[#6f7783]">{profile.shortIntro}</p>
-                      <p className="mt-2 text-[11px] font-bold text-[#8a94a3]">{profile.foundedYear}년 설립 · {employeeCountOptions.find((item) => item.id === profile.employeeCount)?.label}</p>
+                      <p className="text-[14px] font-medium text-[#17202c]">{profile.displayName}</p>
+                      <p className="mt-1 text-[12px] font-normal text-[#6f7783]">{profile.shortIntro}</p>
+                      <p className="mt-2 text-[11px] font-medium text-[#8a94a3]">{profile.foundedYear}년 설립 · {employeeCountOptions.find((item) => item.id === profile.employeeCount)?.label}</p>
                     </div>
                   </div>
                 </div>
@@ -400,15 +400,15 @@ export function BusinessCompanyProfileClient() {
                       "linear-gradient(90deg, rgba(5,5,5,0.78), rgba(5,5,5,0.32)), url('/images/company/company_pic_example.jpg')",
                   }}
                 >
-                  <p className="text-[11px] font-bold text-white/62">기업 상세 페이지 · hero 영역</p>
+                  <p className="text-[11px] font-medium text-white/62">기업 상세 페이지 · hero 영역</p>
                   <div className="mt-5 flex items-center gap-4">
                     <div className="grid h-14 w-14 shrink-0 place-items-center bg-white p-1.5">
                       <LogoMark profile={profile} />
                     </div>
                     <div>
-                      <p className="text-[16px] font-black">{profile.displayName}</p>
-                      <p className="mt-1 text-[12px] font-semibold text-white/78">{profile.shortIntro}</p>
-                      <p className="mt-3 text-[11px] font-bold text-white/65">{profile.foundedYear}년 설립 · 서울 강남구</p>
+                      <p className="text-[16px] font-medium">{profile.displayName}</p>
+                      <p className="mt-1 text-[12px] font-normal text-white/78">{profile.shortIntro}</p>
+                      <p className="mt-3 text-[11px] font-medium text-white/65">{profile.foundedYear}년 설립 · 서울 강남구</p>
                     </div>
                   </div>
                 </div>
@@ -438,7 +438,7 @@ export function BusinessCompanyProfileClient() {
                 <FieldLabel>대표 제품/서비스</FieldLabel>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {profile.products.map((product) => (
-                    <span key={product} className="inline-flex h-9 items-center gap-2 border border-[#d8e0e8] bg-white px-3 text-[12px] font-black text-[#3c4654]">
+                    <span key={product} className="inline-flex h-9 items-center gap-2 border border-[#d8e0e8] bg-white px-3 text-[12px] font-medium text-[#3c4654]">
                       {product}
                       <button type="button" onClick={() => updateProfile("products", profile.products.filter((item) => item !== product))} aria-label={`${product} 삭제`}>
                         <Trash2 size={13} />
@@ -457,9 +457,9 @@ export function BusinessCompanyProfileClient() {
                       }
                     }}
                     placeholder="대표 제품/서비스 입력"
-                    className="h-10 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-bold outline-none focus:border-[#111111]"
+                    className="h-10 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none focus:border-[#111111]"
                   />
-                  <button type="button" onClick={addProduct} className="inline-flex h-10 items-center gap-1 border-y border-r border-[#d8e0e8] px-3 text-[12px] font-black text-[#303946]">
+                  <button type="button" onClick={addProduct} className="inline-flex h-10 items-center gap-1 border-y border-r border-[#d8e0e8] px-3 text-[12px] font-medium text-[#303946]">
                     <Plus size={14} />
                     추가
                   </button>
@@ -480,10 +480,10 @@ export function BusinessCompanyProfileClient() {
             <div className="divide-y divide-[#e5e9ef] border border-[#dfe4ea]">
               {verificationFiles.map(({ label, name, status }) => (
                 <div key={`${label}-${name}`} className="grid grid-cols-[180px_minmax(0,1fr)_120px_100px] items-center gap-4 px-4 py-4 max-[760px]:grid-cols-1">
-                  <p className="text-[13px] font-black text-[#303946]">{label}</p>
-                  <p className="text-[13px] font-semibold text-[#68717e]">{name}</p>
-                  <span className={clsx("inline-flex h-7 items-center justify-center border px-2 text-[11px] font-black", statusClass(status))}>{statusLabel(status)}</span>
-                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-black text-[#303946] hover:border-[#111111]">파일 변경</button>
+                  <p className="text-[13px] font-medium text-[#303946]">{label}</p>
+                  <p className="text-[13px] font-normal text-[#68717e]">{name}</p>
+                  <span className={clsx("inline-flex h-7 items-center justify-center border px-2 text-[11px] font-medium", statusClass(status))}>{statusLabel(status)}</span>
+                  <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">파일 변경</button>
                 </div>
               ))}
             </div>
@@ -510,7 +510,7 @@ export function BusinessCompanyProfileClient() {
           <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다.">
             <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
               <div>
-                <h3 className="text-[14px] font-black text-[#303946]">계정 인증 상태</h3>
+                <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
                 <div className="mt-3 space-y-2">
                   {accountVerificationItems.map((item) => (
                     <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
@@ -523,15 +523,15 @@ export function BusinessCompanyProfileClient() {
                         {item.done ? <Check size={13} /> : null}
                       </span>
                       <span>
-                        <span className="block text-[13px] font-black text-[#303946]">{item.label}</span>
-                        <span className="mt-1 block text-[12px] font-semibold text-[#7b8491]">{item.detail}</span>
+                        <span className="block text-[13px] font-medium text-[#303946]">{item.label}</span>
+                        <span className="mt-1 block text-[12px] font-normal text-[#7b8491]">{item.detail}</span>
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
               <div>
-                <h3 className="text-[14px] font-black text-[#303946]">공개 설정</h3>
+                <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">공개 설정</h3>
                 <div className="mt-3 space-y-2">
                   {[
                     ["기업 페이지를 공개합니다.", profile.visibilitySettings.publicCompanyPage],
@@ -540,7 +540,7 @@ export function BusinessCompanyProfileClient() {
                   ].map(([label, checked]) => (
                     <label key={String(label)} className="flex min-h-[48px] items-center gap-3 border border-[#dfe4ea] bg-white px-4">
                       <input type="checkbox" defaultChecked={Boolean(checked)} className="h-4 w-4 accent-[#111111]" />
-                      <span className="text-[13px] font-black text-[#303946]">{label}</span>
+                      <span className="text-[13px] font-medium text-[#303946]">{label}</span>
                     </label>
                   ))}
                 </div>
@@ -550,12 +550,12 @@ export function BusinessCompanyProfileClient() {
 
           <div className="sticky bottom-0 z-20 border border-[#dfe4ea] bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
             <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-              <p className="text-[12px] font-semibold text-[#7b8491]">저장 시 개인 사용자에게 표시될 기업 정보에 반영됩니다.</p>
+              <p className="text-[12px] font-normal text-[#7b8491]">저장 시 개인 사용자에게 표시될 기업 정보에 반영됩니다.</p>
               <div className="flex gap-2 max-[640px]:w-full">
-                <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-black text-[#303946] hover:border-[#111111] max-[640px]:flex-1">
+                <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[640px]:flex-1">
                   미리보기
                 </Link>
-                <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center border border-[#111111] bg-[#111111] px-9 text-[13px] font-black text-white hover:bg-[#2a2a2a] max-[640px]:flex-1">
+                <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center border border-[#111111] bg-[#111111] px-9 text-[13px] font-medium text-white hover:bg-[#2a2a2a] max-[640px]:flex-1">
                   저장하기
                 </button>
               </div>
@@ -566,28 +566,28 @@ export function BusinessCompanyProfileClient() {
         <aside className="self-start">
           <div className="sticky top-[88px] max-h-[calc(100vh-112px)] space-y-5 overflow-y-auto pr-1 business-sidebar-scroll">
             <section className="border border-[#dfe4ea] bg-white p-5">
-              <h2 className="text-[16px] font-black text-[#17202c]">기업 정보 등록 현황</h2>
+              <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 등록 현황</h2>
               <div className="mt-4">
                 <div className="flex items-end justify-between gap-3">
-                  <p className="text-[34px] font-black leading-none tracking-[0] text-[#111111]">{computedCompletion}%</p>
-                  <p className="pb-1 text-right text-[12px] font-black text-[#68717e]">
+                  <p className="text-[34px] font-medium leading-none tracking-[0] text-[#111111]">{computedCompletion}%</p>
+                  <p className="pb-1 text-right text-[12px] font-medium text-[#68717e]">
                     완료 {completedItems.length} / {completionItems.length}
                   </p>
                 </div>
                 <div className="mt-3 h-2.5 w-full border border-[#dfe4ea] bg-[#f3f5f7]">
                   <div className="h-full bg-[#111111]" style={{ width: `${computedCompletion}%` }} />
                 </div>
-                <p className="mt-3 text-[13px] font-black text-[#303946]">{progressMessage}</p>
-                <p className="mt-1 text-[12px] font-semibold leading-[1.55] text-[#7b8491]">
+                <p className="mt-3 text-[13px] font-medium text-[#303946]">{progressMessage}</p>
+                <p className="mt-1 text-[12px] font-normal leading-[1.55] text-[#7b8491]">
                   남은 항목을 완료하면 기업 프로필과 공고 노출 준비가 마무리됩니다.
                 </p>
               </div>
 
               <div className="mt-5 border-t border-[#edf1f5] pt-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#8a94a3]">완료</p>
+                <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">완료</p>
                 <div className="mt-3 space-y-2">
                   {completedItems.map((item) => (
-                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-black text-[#303946]">
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-[#303946]">
                       <span className="grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-white">
                         <Check size={13} />
                       </span>
@@ -598,16 +598,16 @@ export function BusinessCompanyProfileClient() {
               </div>
 
               <div className="mt-5 border-t border-[#edf1f5] pt-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#8a94a3]">남은 항목</p>
+                <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">남은 항목</p>
                 <div className="mt-3 space-y-2">
                   {remainingItems.map((item) => (
-                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-black text-[#8a94a3]">
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-[#8a94a3]">
                       <span className="h-5 w-5 shrink-0 border border-[#cbd5e1] bg-[#f8fafc]" />
                       <span>{item.label}</span>
                     </div>
                   ))}
                   {remainingItems.length === 0 ? (
-                    <div className="flex items-center gap-2 text-[13px] font-black text-[#303946]">
+                    <div className="flex items-center gap-2 text-[13px] font-medium text-[#303946]">
                       <span className="grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-white">
                         <Check size={13} />
                       </span>
@@ -619,21 +619,21 @@ export function BusinessCompanyProfileClient() {
 
               {remainingItems.length ? (
                 <div className="mt-5 border border-[#dfe4ea] bg-[#fbfcfd] p-3">
-                  <p className="text-[12px] font-black text-[#303946]">다음 작업</p>
-                  <p className="mt-1 text-[12px] font-semibold leading-[1.6] text-[#68717e]">{remainingItems[0].label} 항목을 확인해 주세요.</p>
+                  <p className="text-[12px] font-medium text-[#303946]">다음 작업</p>
+                  <p className="mt-1 text-[12px] font-normal leading-[1.6] text-[#68717e]">{remainingItems[0].label} 항목을 확인해 주세요.</p>
                 </div>
               ) : null}
 
               {missingItems.length ? (
                 <div className="mt-3 border border-[#ead8d3] bg-[#fffafa] p-3">
-                  <p className="text-[12px] font-black text-[#a43f31]">부족한 필수 항목</p>
-                  <p className="mt-1 text-[12px] font-bold leading-[1.6] text-[#7d5960]">{missingItems.join(", ")}</p>
+                  <p className="text-[12px] font-medium text-[#a43f31]">부족한 필수 항목</p>
+                  <p className="mt-1 text-[12px] font-medium leading-[1.6] text-[#7d5960]">{missingItems.join(", ")}</p>
                 </div>
               ) : null}
             </section>
 
             <section className="border border-[#dfe4ea] bg-white p-5">
-              <h2 className="text-[16px] font-black text-[#17202c]">공고 등록 전 체크</h2>
+              <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">공고 등록 전 체크</h2>
               <div className="mt-4 space-y-3">
                 {[
                   { label: "한 줄 소개 입력", done: Boolean(profile.shortIntro) },
@@ -642,7 +642,7 @@ export function BusinessCompanyProfileClient() {
                   { label: "주요 채용 직무 입력", done: profile.mainJobCategories.length > 0, warn: true },
                   { label: "핵심 키워드 입력", done: profile.keywords.length > 0, warn: true },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between text-[13px] font-bold text-[#4f5967]">
+                  <div key={item.label} className="flex items-center justify-between text-[13px] font-medium text-[#4f5967]">
                     <span>{item.label}</span>
                     {item.done ? <Check size={16} className="text-[#111111]" /> : item.warn ? <AlertTriangle size={16} className="text-[#8f98a5]" /> : <span className="h-4 w-4 border border-[#cbd5e1]" />}
                   </div>
@@ -651,14 +651,14 @@ export function BusinessCompanyProfileClient() {
             </section>
 
             <section className="border border-[#dfe4ea] bg-white p-5">
-              <h2 className="text-[16px] font-black text-[#17202c]">도움말</h2>
+              <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">도움말</h2>
               <div className="mt-4 space-y-3">
                 {[
                   ["기업 정보 관리 가이드", HelpCircle],
                   ["브랜드 페이지 미리보기", ExternalLink],
                   ["1:1 문의하기", FileCheck2],
                 ].map(([label, Icon]) => (
-                  <Link key={String(label)} href="/business/support/inquiries" className="flex items-center gap-3 text-[13px] font-bold text-[#4f5967] hover:text-[#111111]">
+                  <Link key={String(label)} href="/business/support/inquiries" className="flex items-center gap-3 text-[13px] font-medium text-[#4f5967] hover:text-[#111111]">
                     <Icon size={16} />
                     {String(label)}
                   </Link>
@@ -667,22 +667,22 @@ export function BusinessCompanyProfileClient() {
             </section>
 
             <section className="border border-[#dfe4ea] bg-white p-5">
-              <h2 className="text-[16px] font-black text-[#17202c]">최근 저장</h2>
-              <div className="mt-4 space-y-2 text-[13px] font-bold text-[#4f5967]">
+              <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">최근 저장</h2>
+              <div className="mt-4 space-y-2 text-[13px] font-medium text-[#4f5967]">
                 <p className="flex items-center gap-2">
                   <Clock3 size={15} />
                   2026.06.22 14:30
                 </p>
                 <p>이길동 ({businessCompanyManager.department})</p>
               </div>
-              <button type="button" className="mt-4 inline-flex h-9 items-center gap-2 border border-[#d8e0e8] px-3 text-[12px] font-black text-[#303946] hover:border-[#111111]">
+              <button type="button" className="mt-4 inline-flex h-9 items-center gap-2 border border-[#d8e0e8] px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
                 <History size={14} />
                 변경 이력 보기
               </button>
             </section>
 
             <section className="border border-[#dfe4ea] bg-[#fbfcfd] p-5">
-              <h2 className="text-[16px] font-black text-[#17202c]">시스템 집계 정보</h2>
+              <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">시스템 집계 정보</h2>
               <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
                 {[
                   ["진행 중 공고", `${businessCompanyStats.activeJobCount}건`],
@@ -691,12 +691,12 @@ export function BusinessCompanyProfileClient() {
                   ["평균 응답", businessCompanyStats.averageResponseTime],
                 ].map(([label, value]) => (
                   <div key={label} className="border border-[#e2e8ef] bg-white p-3">
-                    <p className="font-bold text-[#8a94a3]">{label}</p>
-                    <p className="mt-1 text-[15px] font-black text-[#17202c]">{value}</p>
+                    <p className="font-medium text-[#8a94a3]">{label}</p>
+                    <p className="mt-1 text-[15px] font-medium text-[#17202c]">{value}</p>
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[11px] font-semibold leading-[1.6] text-[#8a94a3]">관심기업 수, 후기, 뉴스, 진행 중 공고 수는 기업이 직접 입력하는 값이 아닙니다.</p>
+              <p className="mt-3 text-[11px] font-normal leading-[1.6] text-[#8a94a3]">관심기업 수, 후기, 뉴스, 진행 중 공고 수는 기업이 직접 입력하는 값이 아닙니다.</p>
             </section>
           </div>
         </aside>

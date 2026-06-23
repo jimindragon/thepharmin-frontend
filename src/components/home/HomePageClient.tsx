@@ -9,6 +9,9 @@ import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
 import { RecommendedJobs } from "@/components/RecommendedJobs";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
+import { LinkButton } from "@/components/ui/Button";
+import { typeScale } from "@/components/ui/Typography";
+import { companyLogos } from "@/config/companyImages";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import {
   homeHeroSlides,
@@ -46,7 +49,7 @@ function HomeTrackBar({
     <section className="sticky top-[64px] z-30 border-b border-[#e5e7eb] bg-white/95 shadow-[0_6px_18px_rgba(17,24,39,0.05)] backdrop-blur">
       <div className="app-shell flex h-[72px] items-center gap-5 overflow-x-auto">
         <div className="flex shrink-0 items-center gap-5 pr-1">
-          <span className="whitespace-nowrap text-[14px] font-black text-[#1f242b]">채용 분야</span>
+          <span className="whitespace-nowrap text-[14px] font-medium text-[#1f242b]">채용 분야</span>
           <span className="h-7 w-px bg-[#d9dde3]" />
         </div>
         <div className="flex items-center gap-2.5">
@@ -56,10 +59,10 @@ function HomeTrackBar({
               type="button"
               onClick={() => onChange(track.id)}
               className={clsx(
-                "h-[42px] min-w-[84px] border px-5 text-[14px] font-black transition-colors",
+                "h-[42px] min-w-[84px] border px-5 text-[14px] font-medium transition-colors",
                 activeTrack === track.id
-                  ? "border-[#00746c] bg-[#00746c] text-white"
-                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#00746c]",
+                  ? "border-[#111111] bg-[#111111] text-white"
+                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
               )}
               aria-pressed={activeTrack === track.id}
             >
@@ -86,26 +89,23 @@ function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 
   return (
     <section className="pt-7">
-      <div className="relative h-[316px] overflow-hidden bg-[linear-gradient(102deg,#080d18_0%,#151d28_46%,#6f7880_100%)] text-white max-[760px]:h-[292px]">
+      <div className="relative h-[352px] overflow-hidden bg-[linear-gradient(102deg,#080d18_0%,#151d28_46%,#6f7880_100%)] text-white max-[760px]:h-[320px]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_44%,rgba(176,190,205,0.22)_0%,rgba(176,190,205,0.12)_26%,transparent_48%)]" />
         <div className="absolute inset-y-0 left-0 w-[58%] bg-[linear-gradient(90deg,rgba(5,9,17,0.82)_0%,rgba(5,9,17,0.42)_72%,transparent_100%)]" />
         <div className="absolute inset-y-0 right-0 w-[48%] bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.08)_100%)]" />
 
-        <div className="relative z-10 flex h-full flex-col px-12 pb-9 pt-[72px] max-[760px]:px-6 max-[760px]:pt-12">
-          <h1 className="max-w-[920px] text-[30px] font-extrabold leading-[1.28] tracking-[0] text-white/95 max-[760px]:text-[23px]">
+        <div className="relative z-10 flex h-full flex-col px-12 pb-9 pt-[68px] max-[760px]:px-6 max-[760px]:pt-12">
+          <h1 className="max-w-[820px] text-[36px] font-extrabold leading-[1.25] tracking-[-0.02em] text-white/95 max-[760px]:text-[24px]">
             {activeSlide.title}
           </h1>
-          <p className="mt-5 text-[15px] font-semibold leading-7 text-white/72">
+          <p className="mt-5 text-[15px] font-normal leading-7 text-white/72">
             {activeSlide.tags.map((tag) => `#${tag}`).join(" ")}
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-5">
-            <Link
-              href={activeSlide.href}
-              className="inline-flex h-[46px] items-center border border-white bg-white px-7 text-[14px] font-black text-[#17212b] transition hover:bg-[#f4f4f4]"
-            >
+            <LinkButton href={activeSlide.href} variant="gradient" size="lg">
               {activeSlide.positionCount}
-            </Link>
-            <span className="text-[13px] font-semibold text-white/58">{activeSlide.deadline}</span>
+            </LinkButton>
+            <span className="text-[13px] font-normal text-white/58">{activeSlide.deadline}</span>
           </div>
           <div className="mt-auto flex items-center gap-2">
             {visibleSlides.map((slide, index) => (
@@ -117,7 +117,7 @@ function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                 aria-label={`${index + 1}번째 배너 보기`}
               />
             ))}
-            <span className="ml-4 text-[13px] font-semibold text-white/58">
+            <span className="ml-4 text-[13px] font-normal text-white/58">
               {(slideIndex % visibleSlides.length) + 1} / {visibleSlides.length}
             </span>
           </div>
@@ -150,42 +150,49 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const visibleCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
 
   return (
-    <section className="mt-10">
-      <div className="mb-4 flex items-end justify-between gap-4">
-        <h2 className="text-[22px] font-black tracking-[0] text-[#111111]">프리미엄 대표기업</h2>
-        <Link href="/jobs" className="text-[13px] font-bold text-[#777777] hover:text-[#111111]">
+    <section className="mt-14">
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>프리미엄 대표기업</h2>
+        <Link href="/jobs" className="text-[13px] font-medium text-[#777777] hover:text-[#111111]">
           전체보기 ›
         </Link>
       </div>
       <div className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
         <div className="flex min-w-max">
-          {visibleCompanies.map((company) => (
-            <Link
-              key={company.id}
-              href={company.track === "all" ? "/jobs" : `/jobs?track=${company.track}`}
-              className="min-h-[188px] w-[330px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0"
-            >
-              <div
-                className={clsx(
-                  "mb-6 grid h-12 w-12 place-items-center border text-[14px] font-black",
-                  company.logoTone === "plus"
-                    ? "border-[#00746c] bg-[#00746c] text-white"
-                    : "border-[#e2e5e8] bg-white text-[#111111]",
-                )}
+          {visibleCompanies.map((company) => {
+            const logoSrc = companyLogos[company.name];
+            return (
+              <Link
+                key={company.id}
+                href={company.track === "all" ? "/jobs" : `/jobs?track=${company.track}`}
+                className="min-h-[188px] w-[330px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0"
               >
-                {company.logoText}
-              </div>
-              <h3 className="text-[16px] font-black text-[#15191f]">{company.name}</h3>
-              <p className="mt-3 text-[13px] font-semibold leading-6 text-[#777777]">
-                {company.lines.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </p>
-              <p className="mt-5 text-[13px] font-black text-[#00746c]">{company.positionCount}</p>
-            </Link>
-          ))}
+                {logoSrc ? (
+                  <div className="mb-6 grid h-12 w-20 place-items-center border border-[#e2e5e8] bg-white p-1.5">
+                    <img src={logoSrc} alt={company.name} className="h-full w-full object-contain" />
+                  </div>
+                ) : (
+                  <div
+                    className={clsx(
+                      "mb-6 grid h-12 w-12 place-items-center border text-[14px] font-semibold",
+                      company.logoTone === "plus" ? "border-[#111111] bg-[#111111] text-white" : "border-[#e2e5e8] bg-white text-[#111111]",
+                    )}
+                  >
+                    {company.logoText}
+                  </div>
+                )}
+                <h3 className={clsx(typeScale.cardTitle, "text-[#15191f]")}>{company.name}</h3>
+                <p className="mt-3 text-[13px] font-normal leading-6 text-[#777777]">
+                  {company.lines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </p>
+                <p className="mt-5 text-[13px] font-semibold text-[#111111]">{company.positionCount}</p>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -194,10 +201,10 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 
 function RecruiterSolutionBanner() {
   return (
-    <section className="mt-5 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
+    <section className="mt-6 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
       <Link href="/business/jobs/new" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
-        <p className="text-[14px] font-bold text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
-        <span className="text-[13px] font-black text-[#00746c]">더파마 리크루트 채용 솔루션 알아보기 ›</span>
+        <p className="text-[14px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
+        <span className="text-[13px] font-medium text-[#111111] hover:underline">더파마 리크루트 채용 솔루션 알아보기 ›</span>
       </Link>
     </section>
   );
@@ -205,9 +212,9 @@ function RecruiterSolutionBanner() {
 
 function ThemeCuration() {
   return (
-    <section className="mt-12">
+    <section className="mt-16">
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-[22px] font-black tracking-[0] text-[#111111]">다양한 테마의 공고</h2>
+        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>다양한 테마의 공고</h2>
         <div className="hidden gap-1 md:flex">
           <button type="button" className="grid h-8 w-8 place-items-center border border-[#d8dce2] text-[#9aa3af]" aria-label="이전 테마">
             <ChevronLeft size={16} />
@@ -228,8 +235,8 @@ function ThemeCuration() {
               <img src={card.image} alt="" className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]" />
             </div>
             <div className="px-5 py-4">
-              <h3 className="truncate text-[16px] font-black text-[#333333]">{card.title}</h3>
-              <p className="mt-2 text-[12px] font-semibold text-[#8a8a8a]">{card.subtitle}</p>
+              <h3 className={clsx(typeScale.cardTitle, "truncate text-[#222222]")}>{card.title}</h3>
+              <p className="mt-2 text-[12px] font-normal text-[#8a8a8a]">{card.subtitle}</p>
             </div>
           </Link>
         ))}
@@ -256,22 +263,22 @@ function HomeRecommendationCard({
       >
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
-      <div className="grid h-14 w-14 place-items-center border border-[#e3e6ea] bg-white text-center text-[13px] font-black leading-tight text-[#333333]">
+      <div className="grid h-14 w-14 place-items-center border border-[#e3e6ea] bg-white text-center text-[13px] font-semibold leading-tight text-[#333333]">
         {job.logoText.slice(0, 4)}
       </div>
       <div className="min-w-0">
-        <p className="text-[12px] font-bold text-[#777777]">{job.company}</p>
-        <h3 className="mt-1 truncate text-[17px] font-black text-[#111111]">{job.title}</h3>
+        <p className="text-[12px] font-normal text-[#777777]">{job.company}</p>
+        <h3 className={clsx(typeScale.cardTitle, "mt-1 truncate text-[#111111]")}>{job.title}</h3>
         <div className="mt-4 flex flex-wrap gap-2">
           {job.tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="bg-[#f3f3f3] px-2.5 py-1 text-[12px] font-bold text-[#555555]">
+            <span key={tag} className="bg-[#f3f3f3] px-2.5 py-1 text-[12px] font-medium text-[#555555]">
               {tag}
             </span>
           ))}
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          {job.postingSource === "headhunting" ? <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-black text-white">헤드헌팅</span> : null}
-          <span className="border border-[#bfe7e2] px-2.5 py-1 text-[11px] font-black text-[#00746c]">
+          {job.postingSource === "headhunting" ? <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-medium text-white">헤드헌팅</span> : null}
+          <span className="border border-[#dddddd] px-2.5 py-1 text-[11px] font-medium text-[#555555]">
             {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
           </span>
         </div>
@@ -288,7 +295,7 @@ function HomeRecommendationCard({
         >
           <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
-        <strong className="text-[15px] font-black text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
+        <strong className="text-[15px] font-semibold text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
       </div>
     </article>
   );
@@ -310,10 +317,10 @@ function PersonalRecommendationSection({
     .slice(0, 4);
 
   return (
-    <section className="mt-12">
+    <section className="mt-16">
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className="text-[22px] font-black tracking-[0] text-[#111111]">맞춤 추천 채용</h2>
-        <Link href="/jobs" className="text-[13px] font-bold text-[#777777] hover:text-[#111111]">
+        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>맞춤 추천 채용</h2>
+        <Link href="/jobs" className="text-[13px] font-medium text-[#777777] hover:text-[#111111]">
           전체보기 ›
         </Link>
       </div>
@@ -362,10 +369,10 @@ function HomeJobsSection({
   const moreHref = `/jobs?track=${activeJobTrack}`;
 
   return (
-    <section className="mt-14 bg-[#f5f6f7] py-12">
+    <section className="mt-20 bg-[#f5f6f7] py-16 max-[760px]:py-10">
       <div className="app-shell">
-        <div className="mb-4 flex items-center gap-2">
-          <h2 className="text-[22px] font-black tracking-[0] text-[#111111]">공고 탐색하기</h2>
+        <div className="mb-5 flex items-center gap-2">
+          <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>공고 탐색하기</h2>
         </div>
 
         <SearchFilterPanel
@@ -403,7 +410,7 @@ function HomeJobsSection({
         </div>
 
         <div className="mt-7 flex justify-center">
-          <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-black text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
+          <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-medium text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
             공고 더 보기
           </Link>
         </div>

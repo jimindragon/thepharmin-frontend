@@ -92,7 +92,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.18",
     tags: ["CRA", "커리어전환"],
     views: 1240,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.hero,
   },
   {
     id: "pharma-trend-2026",
@@ -103,7 +103,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.17",
     tags: ["산업트렌드", "채용전망"],
     views: 1530,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.workspace,
   },
   {
     id: "global-pharma-people",
@@ -125,7 +125,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.05",
     tags: ["이력서", "경험", "정리"],
     views: 870,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.lab,
   },
   {
     id: "research-org-career",
@@ -136,7 +136,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.18",
     tags: ["R&D", "조직문화"],
     views: 890,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.meeting,
   },
   {
     id: "pv-day",
@@ -147,7 +147,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.16",
     tags: ["PV", "커리어"],
     views: 760,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.office,
   },
   // 현직자 인터뷰
   {
@@ -159,7 +159,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.18",
     tags: ["CRA", "커리어전환", "임상"],
     views: 1500,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.research,
   },
   {
     id: "ra-5year-daily",
@@ -170,7 +170,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.14",
     tags: ["RA", "허가", "일과"],
     views: 1100,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.primary,
   },
   {
     id: "qa-manager-system",
@@ -181,7 +181,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.10",
     tags: ["QA", "품질", "조직문화"],
     views: 980,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.hero,
   },
   {
     id: "nonclinical-to-medical-writer",
@@ -214,7 +214,7 @@ export const insights: InsightArticle[] = [
     date: "2026.05.29",
     tags: ["임상PM", "프로젝트"],
     views: 690,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.lab,
   },
   // 산업 인사이트
   {
@@ -226,7 +226,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.18",
     tags: ["QC", "QA", "증설"],
     views: 1800,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.meeting,
   },
   {
     id: "cro-cra-market",
@@ -237,7 +237,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.16",
     tags: ["CRO", "CRA", "전망"],
     views: 1200,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.office,
   },
   {
     id: "approval-ra-pv-demand",
@@ -248,7 +248,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.17",
     tags: ["RA", "PV", "인허가"],
     views: 1500,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.research,
   },
   {
     id: "cdmo-expansion-production",
@@ -270,7 +270,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.08",
     tags: ["ADC", "품질", "분석"],
     views: 920,
-    thumbnail: companyExampleImages.culture,
+    thumbnail: companyExampleImages.hero,
   },
   {
     id: "obesity-drug-sales-marketing",
@@ -281,7 +281,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.04",
     tags: ["비만치료제", "영업", "마케팅"],
     views: 880,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.workspace,
   },
   // 기업 이야기
   {
@@ -293,7 +293,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.11",
     tags: ["RA", "조직", "기업문화"],
     views: 940,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.culture,
   },
   {
     id: "biotech-first-quality-system",
@@ -304,7 +304,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.07",
     tags: ["바이오벤처", "GMP", "품질"],
     views: 810,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.lab,
   },
   {
     id: "global-cdmo-path",
@@ -315,7 +315,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.03",
     tags: ["CDMO", "전환", "전략"],
     views: 720,
-    thumbnail: companyExampleImages.culture,
+    thumbnail: companyExampleImages.meeting,
   },
   {
     id: "lab-learning-culture",
@@ -326,7 +326,7 @@ export const insights: InsightArticle[] = [
     date: "2026.05.30",
     tags: ["R&D", "학습", "문화"],
     views: 650,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.office,
   },
   // 데이터 인사이트
   {
@@ -338,7 +338,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.13",
     tags: ["공고추이", "직무", "데이터"],
     views: 1100,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.research,
   },
   {
     id: "job-change-survey-200",
@@ -349,7 +349,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.09",
     tags: ["이직", "설문", "동인"],
     views: 990,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.primary,
   },
   {
     id: "entry-job-required-skills",
@@ -360,7 +360,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.05",
     tags: ["신입", "역량", "분석"],
     views: 840,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.hero,
   },
   {
     id: "region-job-distribution",
@@ -371,7 +371,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.01",
     tags: ["지역", "일자리", "분포"],
     views: 700,
-    thumbnail: companyExampleImages.culture,
+    thumbnail: companyExampleImages.workspace,
   },
   // 취업·이직 가이드
   {
@@ -383,7 +383,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.14",
     tags: ["직무전환", "임상", "가이드"],
     views: 910,
-    thumbnail: companyExampleImages.workspace,
+    thumbnail: companyExampleImages.culture,
   },
   {
     id: "ra-interview-questions",
@@ -394,7 +394,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.09",
     tags: ["RA", "면접", "질문"],
     views: 1000,
-    thumbnail: companyExampleImages.hero,
+    thumbnail: companyExampleImages.lab,
   },
   {
     id: "first-job-roadmap",
@@ -405,7 +405,7 @@ export const insights: InsightArticle[] = [
     date: "2026.06.01",
     tags: ["신입", "준비", "로드맵"],
     views: 800,
-    thumbnail: companyExampleImages.primary,
+    thumbnail: companyExampleImages.meeting,
   },
   {
     id: "salary-negotiation-standard",
@@ -416,7 +416,7 @@ export const insights: InsightArticle[] = [
     date: "2026.05.27",
     tags: ["연봉", "협상", "기준"],
     views: 740,
-    thumbnail: companyExampleImages.culture,
+    thumbnail: companyExampleImages.office,
   },
 ];
 
@@ -437,14 +437,14 @@ export const insightDataCards: InsightDataCard[] = [
 ];
 
 export const insightJobWikiEntries: InsightJobWikiEntry[] = [
-  { code: "RA", title: "인허가", englishLabel: "Regulatory Affairs", description: "허가 전략부터 CTD 제출까지, 규제 대응의 중심.", jobSubcategoryId: "ra", thumbnail: companyExampleImages.primary },
+  { code: "RA", title: "인허가", englishLabel: "Regulatory Affairs", description: "허가 전략부터 CTD 제출까지, 규제 대응의 중심.", jobSubcategoryId: "ra", thumbnail: companyExampleImages.research },
   { code: "QA", title: "품질보증", englishLabel: "Quality Assurance", description: "GMP 체계를 세우고 지키는 품질의 최종 책임.", jobSubcategoryId: "qa", thumbnail: companyExampleImages.primary },
-  { code: "QC", title: "품질관리", englishLabel: "Quality Control", description: "원료부터 완제품까지 시험으로 품질을 증명.", jobSubcategoryId: "qc", thumbnail: companyExampleImages.primary },
+  { code: "QC", title: "품질관리", englishLabel: "Quality Control", description: "원료부터 완제품까지 시험으로 품질을 증명.", jobSubcategoryId: "qc", thumbnail: companyExampleImages.hero },
   { code: "CRA", title: "임상 모니터링", englishLabel: "Clinical Research Associate", description: "임상시험 현장을 점검하고 데이터 신뢰성을 지킨다.", jobSubcategoryId: "cra", thumbnail: companyExampleImages.workspace },
-  { code: "PV", title: "약물감시", englishLabel: "Pharmacovigilance", description: "시판 후 안전성 정보를 수집·평가·보고한다.", jobSubcategoryId: "pv-drug-safety", thumbnail: companyExampleImages.workspace },
-  { code: "PM", title: "임상 프로젝트 관리", englishLabel: "Clinical Project Manager", description: "일정·예산·사람을 묶어 임상을 끌고 간다.", jobSubcategoryId: "clinical-pm", thumbnail: companyExampleImages.hero },
-  { code: "CMC", title: "제조·품질 연계", englishLabel: "Chemistry, Manufacturing & Controls", description: "물질·공정·규격을 문서로 연결하는 기술 허브.", jobSubcategoryId: "cmc-ra", thumbnail: companyExampleImages.primary },
-  { code: "MW", title: "메디컬 라이팅", englishLabel: "Medical Writer", description: "데이터를 규제·학술 문서로 정확히 옮긴다.", jobSubcategoryId: "medical-writing", thumbnail: companyExampleImages.hero },
+  { code: "PV", title: "약물감시", englishLabel: "Pharmacovigilance", description: "시판 후 안전성 정보를 수집·평가·보고한다.", jobSubcategoryId: "pv-drug-safety", thumbnail: companyExampleImages.culture },
+  { code: "PM", title: "임상 프로젝트 관리", englishLabel: "Clinical Project Manager", description: "일정·예산·사람을 묶어 임상을 끌고 간다.", jobSubcategoryId: "clinical-pm", thumbnail: companyExampleImages.lab },
+  { code: "CMC", title: "제조·품질 연계", englishLabel: "Chemistry, Manufacturing & Controls", description: "물질·공정·규격을 문서로 연결하는 기술 허브.", jobSubcategoryId: "cmc-ra", thumbnail: companyExampleImages.meeting },
+  { code: "MW", title: "메디컬 라이팅", englishLabel: "Medical Writer", description: "데이터를 규제·학술 문서로 정확히 옮긴다.", jobSubcategoryId: "medical-writing", thumbnail: companyExampleImages.office },
 ];
 
 export const salaryTenureChartPoints: InsightChartPoint[] = [

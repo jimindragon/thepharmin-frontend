@@ -22,14 +22,14 @@ export function BusinessHeadhuntingNewClient() {
     return (
       <BusinessCenterShell>
         <section className="mx-auto max-w-[640px] border border-[#dfe4ea] bg-white p-10 text-center">
-          <p className="text-[12px] font-black text-[#00746c]">접수 완료</p>
-          <h1 className="mt-3 text-[24px] font-black text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
-          <p className="mt-3 text-[13px] font-semibold leading-[1.8] text-[#68717e]">
+          <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
+          <h1 className="mt-3 text-[26px] font-extrabold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
+          <p className="mt-3 text-[13px] font-normal leading-[1.8] text-[#68717e]">
             담당 매니저가 의뢰 내용을 검토한 후 1~2영업일 내에 추천 후보자 탐색을 시작합니다.
           </p>
           <Link
             href="/business/headhunting/manage"
-            className="mt-7 inline-flex h-11 items-center justify-center bg-[#00746c] px-6 text-[13px] font-black text-white hover:bg-[#075f59]"
+            className="mt-7 inline-flex h-11 items-center justify-center bg-[#111111] px-6 text-[13px] font-medium text-white hover:bg-[#2a2a2a]"
           >
             헤드헌팅 관리로 이동
           </Link>
@@ -41,18 +41,18 @@ export function BusinessHeadhuntingNewClient() {
   return (
     <BusinessCenterShell>
       <div>
-        <p className="text-[13px] font-black text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 새 헤드헌팅 의뢰</p>
+        <p className="text-[13px] font-medium text-[#8a94a3]">기업센터 &gt; 헤드헌팅 &gt; 새 헤드헌팅 의뢰</p>
         <div className="mt-3 flex items-center justify-between gap-4">
-          <h1 className="text-[30px] font-black tracking-[0] text-[#17202c]">새 헤드헌팅 의뢰</h1>
+          <h1 className="text-[34px] font-extrabold tracking-[-0.02em] text-[#17202c]">새 헤드헌팅 의뢰</h1>
           <Link
             href="/business/headhunting/manage"
-            className="inline-flex h-10 items-center gap-1.5 border border-[#cfd8e3] bg-white px-4 text-[12px] font-black text-[#303946] hover:border-[#111111]"
+            className="inline-flex h-10 items-center gap-1.5 border border-[#cfd8e3] bg-white px-4 text-[12px] font-medium text-[#303946] hover:border-[#111111]"
           >
             <ArrowLeft size={14} />
             목록으로
           </Link>
         </div>
-        <p className="mt-2 text-[13px] font-semibold text-[#68717e]">전문 직무 인재 탐색을 위한 헤드헌팅 상담을 요청합니다.</p>
+        <p className="mt-2 text-[13px] font-normal text-[#68717e]">전문 직무 인재 탐색을 위한 헤드헌팅 상담을 요청합니다.</p>
 
         <div className="mt-6 space-y-5">
           <SectionCard title="채용 정보" description="찾고 있는 포지션과 채용 조건을 입력해 주세요.">
@@ -70,7 +70,7 @@ export function BusinessHeadhuntingNewClient() {
                 <TextInput
                   value={headcount}
                   onChange={setHeadcount}
-                  right={<span className="grid h-11 w-10 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-bold text-[#7b8491]">명</span>}
+                  right={<span className="grid h-11 w-10 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-normal text-[#7b8491]">명</span>}
                 />
               </div>
               <div className="space-y-2">
@@ -86,9 +86,9 @@ export function BusinessHeadhuntingNewClient() {
               onChange={(event) => setRequirements(event.target.value)}
               maxLength={1000}
               placeholder="예: 글로벌 임상시험 경험자 우대, 영어 커뮤니케이션 가능자 우대"
-              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-semibold leading-[1.7] text-[#303946] outline-none focus:border-[#111111]"
+              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none focus:border-[#111111]"
             />
-            <p className="text-right text-[11px] font-bold text-[#8a94a3]">{requirements.length} / 1000</p>
+            <p className="text-right text-[11px] font-normal text-[#8a94a3]">{requirements.length} / 1000</p>
           </SectionCard>
 
           <SectionCard title="담당자 정보" description="추천 후보자 안내와 진행 상황을 전달받을 담당자입니다.">
@@ -106,12 +106,12 @@ export function BusinessHeadhuntingNewClient() {
 
           <div className="sticky bottom-0 z-20 border border-[#dfe4ea] bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
             <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-              <p className="text-[12px] font-semibold text-[#7b8491]">제출 후 담당 매니저가 1~2영업일 내에 연락드립니다.</p>
+              <p className="text-[12px] font-normal text-[#7b8491]">제출 후 담당 매니저가 1~2영업일 내에 연락드립니다.</p>
               <button
                 type="button"
                 onClick={() => isValid && setSubmitted(true)}
                 disabled={!isValid}
-                className="inline-flex h-11 items-center justify-center gap-2 bg-[#00746c] px-7 text-[13px] font-black text-white transition hover:bg-[#075f59] disabled:cursor-not-allowed disabled:bg-[#cfd8e3] max-[640px]:w-full"
+                className="inline-flex h-11 items-center justify-center gap-2 bg-[#111111] px-7 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:bg-[#cfd8e3] max-[640px]:w-full"
               >
                 <Send size={15} />
                 의뢰 제출하기

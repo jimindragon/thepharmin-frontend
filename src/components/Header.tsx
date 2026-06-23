@@ -4,6 +4,7 @@ import { Bell, ChevronDown, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { headerActions, navigationItems } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
+import { LinkButton } from "@/components/ui/Button";
 
 export function Header() {
   const pathname = usePathname();
@@ -33,10 +34,10 @@ export function Header() {
                 href={item.href}
                 className={
                   item.highlight
-                    ? "font-semibold text-white hover:text-white"
+                    ? "font-medium text-white hover:text-white"
                     : isActive
-                      ? "relative font-black text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-[linear-gradient(90deg,#167b8e_0%,#2bb59d_100%)]"
-                      : "font-semibold text-white/62 hover:text-white"
+                      ? "relative font-semibold text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-white"
+                      : "font-medium text-white/62 hover:text-white"
                 }
               >
                 {item.label}
@@ -47,17 +48,15 @@ export function Header() {
 
         <div className="flex items-center gap-2.5 max-[1120px]:hidden">
           {headerActions.map((action) => (
-            <a
+            <LinkButton
               key={action.label}
               href={action.href}
-              className={
-                action.tone === "brand"
-                  ? "rounded-md bg-[linear-gradient(90deg,#00564f_0%,#00a896_100%)] px-4 py-2 text-[12px] font-black text-white transition hover:brightness-110"
-                  : "rounded-md border border-white/25 bg-transparent px-3.5 py-2 text-[12px] font-black text-white transition hover:border-white/55"
-              }
+              variant={action.tone === "brand" ? "gradient" : "secondary"}
+              tone="dark"
+              size="sm"
             >
               {action.label}
-            </a>
+            </LinkButton>
           ))}
         </div>
 
@@ -70,10 +69,10 @@ export function Header() {
             <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-[#050505]" />
           </button>
           <button className="flex items-center gap-2 py-1 pl-1 pr-1.5 hover:bg-white/10 max-[520px]:gap-1.5 max-[520px]:pr-1.5">
-            <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-bold text-white">
+            <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
               김
             </span>
-            <span className="whitespace-nowrap text-[13px] font-bold text-white/88 max-[720px]:hidden">{siteConfig.userName}</span>
+            <span className="whitespace-nowrap text-[13px] font-medium text-white/88 max-[720px]:hidden">{siteConfig.userName}</span>
             <ChevronDown size={16} color="rgba(255,255,255,0.58)" className="max-[520px]:hidden" />
           </button>
         </div>
