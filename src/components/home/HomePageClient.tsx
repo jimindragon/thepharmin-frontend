@@ -3,12 +3,13 @@
 import clsx from "clsx";
 import { Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
 import { RecommendedJobs } from "@/components/RecommendedJobs";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
+import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
 import { LinkButton } from "@/components/ui/Button";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
@@ -22,9 +23,11 @@ import {
   type HomeTrackFilter,
 } from "@/data/home";
 import { jobs } from "@/data/jobs";
+import { defaultPreferenceScenario, mockUserPreferences } from "@/data/mockUserPreferences";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
-import type { Job, JobTrack, SortOption } from "@/types/jobs";
+import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
+import type { Job, JobTrack, SortOption, UserJobPreference } from "@/types/jobs";
 
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
@@ -413,6 +416,11 @@ function HomeJobsSection({
 }) {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
   const [recommendedOffset, setRecommendedOffset] = useState(0);
+  const [activeQuickLink, setActiveQuickLink] = useState("preference");
+  const [preference, setPreferenceState] = useState<UserJobPreference | null>(
+    mockUserPreferences[defaultPreferenceScenario],
+  );
+  const initializedPreference = useRef(false);
   const filterState = useJobFilters(false, { syncUrl: false });
   const activeJobTrack = filterState.filters.track;
   const activeFilterConfig = trackFilterConfigs[activeJobTrack];
@@ -425,6 +433,25 @@ function HomeJobsSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTrack, filterState.filters.track]);
 
+  useEffect(() => {
+    if (initializedPreference.current) return;
+
+    const stored = getStoredJobPreference();
+    if (stored) {
+      setPreferenceState(stored);
+      filterState.applyPreference(stored);
+      filterState.setPreferenceApplied(true);
+      initializedPreference.current = true;
+      return;
+    }
+
+    if (defaultPreferenceScenario === "applied" && preference) {
+      filterState.applyPreference(preference);
+      initializedPreference.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const visibleRecommendedJobs = useMemo(() => {
     const trackRecommendedJobs = recommendedJobs.filter((job) => job.track === activeJobTrack);
     if (trackRecommendedJobs.length === 0) return [];
@@ -435,6 +462,20 @@ function HomeJobsSection({
   const visibleJobs = useMemo(() => sortJobs(filteredJobs, sortOption).slice(0, 6), [filteredJobs, sortOption]);
   const moreHref = `/jobs?track=${activeJobTrack}`;
 
+  const setPreference = (nextPreference: UserJobPreference | null) => {
+    setPreferenceState(nextPreference);
+    filterState.setPreferenceApplied(false);
+  };
+
+  const applyPreference = () => {
+    if (!preference) return;
+    filterState.applyPreference(preference);
+  };
+
+  const clearPreferenceFilters = () => {
+    filterState.clearPreferenceFilters(preference);
+  };
+
   return (
     <section className="mt-20 bg-[#f5f6f7] py-16 max-[760px]:py-10">
       <div className="app-shell">
@@ -442,44 +483,59 @@ function HomeJobsSection({
           <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>공고 둘러보기</h2>
         </div>
 
-        <SearchFilterPanel
-          track={activeJobTrack}
-          config={activeFilterConfig}
-          filters={filterState.filters}
-          keywordInput={filterState.keywordInput}
-          appliedChips={filterState.appliedChips}
-          onKeywordInputChange={filterState.setKeywordInput}
-          onSubmitKeyword={filterState.submitKeyword}
-          onToggleJobCategory={filterState.toggleJobCategory}
-          onToggleJobSubcategory={filterState.toggleJobSubcategory}
-          onToggleMultiFilter={filterState.toggleMultiFilter}
-          onSetSingleFilter={filterState.setSingleFilter}
-          onSetSpecialFilter={filterState.setSpecialFilter}
-          onRemoveAppliedFilter={filterState.removeAppliedFilter}
-          onResetAll={filterState.resetFilters}
-        />
+        <div className="jobs-layout">
+          <div className="jobs-main">
+            <SearchFilterPanel
+              track={activeJobTrack}
+              config={activeFilterConfig}
+              filters={filterState.filters}
+              keywordInput={filterState.keywordInput}
+              appliedChips={filterState.appliedChips}
+              onKeywordInputChange={filterState.setKeywordInput}
+              onSubmitKeyword={filterState.submitKeyword}
+              onToggleJobCategory={filterState.toggleJobCategory}
+              onToggleJobSubcategory={filterState.toggleJobSubcategory}
+              onToggleMultiFilter={filterState.toggleMultiFilter}
+              onSetSingleFilter={filterState.setSingleFilter}
+              onSetSpecialFilter={filterState.setSpecialFilter}
+              onRemoveAppliedFilter={filterState.removeAppliedFilter}
+              onResetAll={filterState.resetFilters}
+            />
 
-        <RecommendedJobs
-          jobs={visibleRecommendedJobs}
-          onNext={() => setRecommendedOffset((current) => (current + 1) % Math.max(1, recommendedJobs.length))}
-        />
+            <RecommendedJobs
+              jobs={visibleRecommendedJobs}
+              onNext={() => setRecommendedOffset((current) => (current + 1) % Math.max(1, recommendedJobs.length))}
+            />
 
-        <JobListToolbar
-          totalCount={filteredJobs.length}
-          sortOption={sortOption}
-          onSortChange={setSortOption}
-        />
+            <JobListToolbar
+              totalCount={filteredJobs.length}
+              sortOption={sortOption}
+              onSortChange={setSortOption}
+            />
 
-        <div className="flex flex-col gap-1.5">
-          {visibleJobs.map((job) => (
-            <JobCard key={`home-${job.id}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
-          ))}
-        </div>
+            <div className="flex flex-col gap-1.5">
+              {visibleJobs.map((job) => (
+                <JobCard key={`home-${job.id}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
+              ))}
+            </div>
 
-        <div className="mt-7 flex justify-center">
-          <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-medium text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
-            공고 더 보기
-          </Link>
+            <div className="mt-7 flex justify-center">
+              <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-medium text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
+                공고 더 보기
+              </Link>
+            </div>
+          </div>
+
+          <SidebarQuickLinks
+            savedCount={bookmarkedIds.length}
+            preference={preference}
+            preferenceApplied={filterState.preferenceApplied}
+            activeQuickLink={activeQuickLink}
+            onQuickLinkClick={setActiveQuickLink}
+            onSetPreference={setPreference}
+            onApplyPreference={applyPreference}
+            onClearPreferenceFilters={clearPreferenceFilters}
+          />
         </div>
       </div>
     </section>

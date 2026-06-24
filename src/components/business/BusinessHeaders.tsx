@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Bell, ChevronDown, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { sharedRoutes } from "@/config/routes";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
@@ -33,12 +34,7 @@ const businessNavItems = [
 ];
 
 function navLinkClassName(active: boolean) {
-  return clsx(
-    "whitespace-nowrap transition",
-    active
-      ? "relative font-semibold text-[#111111] after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-[#111111]"
-      : "font-medium text-[#4f5967] hover:text-[#111111]",
-  );
+  return clsx("whitespace-nowrap transition", headerNavItemClassName(active, "light"));
 }
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { headerActions, navigationItems } from "@/config/navigation";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
+import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 
 function AccountMenu() {
@@ -119,21 +120,13 @@ export function Header() {
 
         <nav className="flex min-w-0 flex-1 items-center justify-center gap-6 text-[14px] max-[1120px]:hidden">
           {navigationItems.map((item) => {
-            const isActive =
-              item.href !== "#" &&
-              ((pathname === "/" && item.href === "/jobs") || pathname === item.href || pathname.startsWith(`${item.href}/`));
+            const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
 
             return (
               <a
                 key={item.label}
                 href={item.href}
-                className={
-                  item.highlight
-                    ? "font-medium text-white hover:text-white"
-                    : isActive
-                      ? "relative font-semibold text-white after:absolute after:-bottom-[22px] after:left-0 after:h-[3px] after:w-full after:bg-white"
-                      : "font-medium text-white/62 hover:text-white"
-                }
+                className={item.highlight ? "font-medium text-white hover:text-white" : headerNavItemClassName(isActive, "dark")}
               >
                 {item.label}
               </a>
