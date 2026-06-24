@@ -18,23 +18,6 @@ type PendingRemoval =
   | { type: "job"; id: number; label: string; index: number }
   | { type: "organization"; id: string; label: string; index: number };
 
-function isUrgent(job: Job) {
-  return job.closingStatus !== "always" && (job.closingStatus === "today" || job.deadlineOrder <= 7);
-}
-
-function ScrapedJobRow({ job, onRemove }: { job: Job; onRemove: (jobId: number) => void }) {
-  return (
-    <div className="relative">
-      {isUrgent(job) ? (
-        <span className="absolute -top-2.5 left-4 z-20 border border-danger/30 bg-white px-2 py-0.5 text-[11px] font-semibold text-danger">
-          마감 임박
-        </span>
-      ) : null}
-      <JobCard job={job} isBookmarked onToggleBookmark={() => onRemove(job.id)} showBookmarkLabel />
-    </div>
-  );
-}
-
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <div className="border border-[#dfe4ea] bg-white p-10 text-center">
@@ -145,7 +128,7 @@ export function MyPageScrapsClient() {
           visibleJobs.length > 0 ? (
             <div className="flex flex-col gap-3">
               {visibleJobs.map((job) => (
-                <ScrapedJobRow key={job.id} job={job} onRemove={removeJob} />
+                <JobCard key={job.id} job={job} isBookmarked onToggleBookmark={() => removeJob(job.id)} showBookmarkLabel />
               ))}
             </div>
           ) : (

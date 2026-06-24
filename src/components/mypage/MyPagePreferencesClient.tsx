@@ -12,6 +12,7 @@ import {
 import { SelectedFilterChips } from "@/components/SelectedFilterChips";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { Button } from "@/components/ui/Button";
+import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   educationOptions,
   employmentTypeOptions,
@@ -178,28 +179,6 @@ function FilterPillButton({
         <span className={clsx("max-w-[120px] truncate text-[12px] font-normal", open ? "text-white/72" : "text-[#777777]")}>{summary}</span>
       ) : null}
       {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-    </button>
-  );
-}
-
-function EmailToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className={clsx(
-        "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
-        checked ? "border-[#111111] bg-[#111111]" : "border-[#d8dee7] bg-[#eef1f4]",
-      )}
-    >
-      <span
-        className={clsx(
-          "absolute top-[3px] h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.25)] transition-transform",
-          checked ? "translate-x-[22px]" : "translate-x-[3px]",
-        )}
-      />
     </button>
   );
 }
@@ -375,7 +354,8 @@ export function MyPagePreferencesClient() {
             <h2 className="text-[16px] font-bold tracking-[-0.02em] text-[#17202c]">이메일 알림</h2>
             <p className="mt-1.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">관심 조건과 일치하는 신규 공고를 이메일로 받아보세요.</p>
           </div>
-          <EmailToggleSwitch
+          <ToggleSwitch
+            label="이메일 알림"
             checked={draft.emailAlertEnabled}
             onChange={(checked) =>
               setDraft((current) => ({

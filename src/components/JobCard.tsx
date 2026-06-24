@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Bookmark, Info } from "lucide-react";
 import { companies } from "@/data/companies";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import type { Job } from "@/types/jobs";
 
 interface JobCardProps {
@@ -25,10 +26,10 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showBookmarkLabel
   return (
     <article
       className={clsx(
-        "surface group relative grid h-[96px] items-center border-[#dedede] px-3.5 py-2 shadow-none transition-colors hover:border-brand/60 hover:bg-[#fbfcfc] max-[720px]:h-auto max-[720px]:gap-y-3 max-[720px]:px-3 max-[720px]:py-3",
+        "group relative grid items-center transition-colors hover:border-brand/60 hover:bg-[#fbfcfc]",
         showBookmarkLabel
-          ? "grid-cols-[226px_1fr_130px_auto] gap-x-3 max-[720px]:grid-cols-[1fr_auto] max-[720px]:gap-x-3"
-          : "grid-cols-[226px_1fr_130px_36px] max-[720px]:grid-cols-[1fr_40px]",
+          ? "min-h-[112px] grid-cols-[226px_1fr_130px_auto] gap-x-3 border border-[#dfe4ea] bg-white p-5 max-[720px]:grid-cols-[1fr_auto] max-[720px]:gap-x-3 max-[720px]:gap-y-3 max-[720px]:p-4"
+          : "surface h-[96px] grid-cols-[226px_1fr_130px_36px] border-[#dedede] px-3.5 py-2 shadow-none max-[720px]:h-auto max-[720px]:grid-cols-[1fr_40px] max-[720px]:gap-y-3 max-[720px]:px-3 max-[720px]:py-3",
       )}
     >
       {job.slug ? (
@@ -47,26 +48,35 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showBookmarkLabel
         </Link>
       ) : null}
 
-      <div className="flex h-full items-center gap-3 border-r border-border pr-3.5 max-[720px]:col-span-2 max-[720px]:border-b max-[720px]:border-r-0 max-[720px]:pb-3 max-[720px]:pr-0">
-        <div className="flex w-[66px] flex-col items-center justify-center gap-0.5">
-          <div className="relative grid h-[30px] w-[56px] place-items-center">
-            <span
-              className="absolute h-[22px] w-[22px] rounded-full opacity-90"
-              style={{ backgroundColor: job.logoColor, left: 7, top: 8 }}
-            />
-            <span
-              className="absolute h-[22px] w-[22px] rounded-full opacity-80"
-              style={{ backgroundColor: job.logoAccent ?? job.logoColor, right: 9, top: 8 }}
-            />
-            <span
-              className="absolute h-[22px] w-[22px] rounded-full opacity-75"
-              style={{ backgroundColor: job.logoColor, left: 22, bottom: 1 }}
-            />
+      <div
+        className={clsx(
+          "flex h-full items-center gap-3 max-[720px]:col-span-2 max-[720px]:pb-3",
+          showBookmarkLabel ? "max-[720px]:border-b max-[720px]:border-[#edf1f5]" : "border-r border-border pr-3.5 max-[720px]:border-b max-[720px]:border-r-0 max-[720px]:pr-0",
+        )}
+      >
+        {showBookmarkLabel ? (
+          <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={48} />
+        ) : (
+          <div className="flex w-[66px] flex-col items-center justify-center gap-0.5">
+            <div className="relative grid h-[30px] w-[56px] place-items-center">
+              <span
+                className="absolute h-[22px] w-[22px] rounded-full opacity-90"
+                style={{ backgroundColor: job.logoColor, left: 7, top: 8 }}
+              />
+              <span
+                className="absolute h-[22px] w-[22px] rounded-full opacity-80"
+                style={{ backgroundColor: job.logoAccent ?? job.logoColor, right: 9, top: 8 }}
+              />
+              <span
+                className="absolute h-[22px] w-[22px] rounded-full opacity-75"
+                style={{ backgroundColor: job.logoColor, left: 22, bottom: 1 }}
+              />
+            </div>
+            <span className="max-w-[68px] text-center text-[10px] font-semibold leading-tight" style={{ color: job.logoColor }}>
+              {job.logoText}
+            </span>
           </div>
-          <span className="max-w-[68px] text-center text-[10px] font-semibold leading-tight" style={{ color: job.logoColor }}>
-            {job.logoText}
-          </span>
-        </div>
+        )}
 
         <div className="min-w-0">
           <p className="truncate text-[13px] font-medium text-[#343c49]">{job.company}</p>

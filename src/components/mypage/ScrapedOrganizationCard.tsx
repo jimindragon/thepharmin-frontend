@@ -2,6 +2,7 @@
 
 import { Bookmark } from "lucide-react";
 import Link from "next/link";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import type { ScrapedOrganization } from "@/data/scraps";
 
 const typeLabels: Record<ScrapedOrganization["type"], string> = {
@@ -18,18 +19,13 @@ export function ScrapedOrganizationCard({
   onRemove: (id: string) => void;
 }) {
   return (
-    <article className="group relative flex items-start gap-4 border border-[#dfe4ea] bg-white p-5 transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[480px]:flex-col">
+    <article className="group relative flex min-h-[112px] items-center gap-4 border border-[#dfe4ea] bg-white p-5 transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[480px]:flex-col max-[480px]:items-stretch">
       <Link href={organization.href} className="absolute inset-0 z-10" aria-label={`${organization.name} 상세 보기`}>
         <span className="sr-only">{organization.name} 상세 보기</span>
       </Link>
 
-      <div className="flex min-w-0 flex-1 items-start gap-4">
-        <div
-          className="grid h-14 w-14 shrink-0 place-items-center border text-[13px] font-bold"
-          style={{ borderColor: organization.logoColor, color: organization.logoColor }}
-        >
-          {organization.logoText.slice(0, 2)}
-        </div>
+      <div className="flex min-w-0 flex-1 items-center gap-4">
+        <EntityLogo name={organization.name} logoText={organization.logoText} size={48} />
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -39,7 +35,7 @@ export function ScrapedOrganizationCard({
             </span>
           </div>
           <p className="mt-1.5 truncate text-[13px] font-normal leading-[1.6] text-[#68717e]">{organization.summary}</p>
-          <p className="mt-2.5 text-[12px] font-medium text-[#8a94a3]">
+          <p className="mt-1.5 text-[12px] font-medium text-[#8a94a3]">
             {organization.activeJobCount > 0 ? (
               <>
                 진행 중 공고 <strong className="font-bold text-[#303946]">{organization.activeJobCount}건</strong>
