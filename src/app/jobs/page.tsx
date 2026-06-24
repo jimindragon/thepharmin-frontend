@@ -16,6 +16,7 @@ import { jobs } from "@/data/jobs";
 import { defaultPreferenceScenario, mockUserPreferences } from "@/data/mockUserPreferences";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
+import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
 
 function sortJobs(items: Job[], sortOption: SortOption) {
@@ -48,7 +49,18 @@ export default function JobsPage() {
   const activeFilterConfig = trackFilterConfigs[activeTrack];
 
   useEffect(() => {
-    if (defaultPreferenceScenario === "applied" && preference && !initializedPreference.current) {
+    if (initializedPreference.current) return;
+
+    const stored = getStoredJobPreference();
+    if (stored) {
+      setPreferenceState(stored);
+      filterState.applyPreference(stored);
+      filterState.setPreferenceApplied(true);
+      initializedPreference.current = true;
+      return;
+    }
+
+    if (defaultPreferenceScenario === "applied" && preference) {
       filterState.applyPreference(preference);
       initializedPreference.current = true;
     }

@@ -28,3 +28,44 @@ export function Eyebrow({ children, tone = "light", align = "left" }: { children
     </p>
   );
 }
+
+/**
+ * Shared "section header" composition: eyebrow label + h2 + optional intro
+ * paragraph. Use for marketing-style page sections (business intro/pricing
+ * pages) so every section opener shares the same hierarchy and spacing —
+ * align defaults to "center" since that's the convention for section
+ * intros on these pages; leave content grids/cards below it left-aligned.
+ */
+export function SectionIntro({
+  eyebrow,
+  title,
+  description,
+  align = "center",
+  tone = "light",
+}: {
+  eyebrow: string;
+  title: ReactNode;
+  description?: ReactNode;
+  align?: "left" | "center";
+  tone?: "light" | "dark";
+}) {
+  return (
+    <div className={align === "center" ? "text-center" : undefined}>
+      <Eyebrow tone={tone} align={align}>
+        {eyebrow}
+      </Eyebrow>
+      <h2 className={clsx("mt-3", tone === "dark" ? "text-white" : "text-[#17202c]", typeScale.sectionTitle)}>{title}</h2>
+      {description ? (
+        <p
+          className={clsx(
+            "mt-3 text-[14px] font-normal leading-[1.75] tracking-[-0.01em]",
+            tone === "dark" ? "text-white/72" : "text-[#68717e]",
+            align === "center" && "mx-auto max-w-[640px]",
+          )}
+        >
+          {description}
+        </p>
+      ) : null}
+    </div>
+  );
+}

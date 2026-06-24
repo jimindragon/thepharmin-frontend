@@ -23,6 +23,8 @@
   --width-text: 760px;
   /* 핵심 CTA 전용 그라데이션 — 다른 버튼에는 쓰지 않음 */
   --gradient-cta: linear-gradient(135deg, #06403d 0%, #11897e 55%, #20c79f 100%);
+  /* 기업 마케팅 페이지(요금제/헤드헌팅 의뢰) 히어로 사진 영역 높이 — 두 페이지가 동일 값 참조 */
+  --hero-height: 600px;
   --sidebar-width: 260px;
   --font-size-heading: 46px;
   --font-size-body: 15px;
@@ -88,7 +90,7 @@ input:focus-visible {
   margin: 0 auto;
 }
 
-.business-shell {
+.sidebar-shell {
   width: min(1440px, calc(100vw - 176px));
   margin: 0 auto;
 }
@@ -170,7 +172,7 @@ input:focus-visible {
     width: min(100% - 88px, var(--width-text));
   }
 
-  .business-shell {
+  .sidebar-shell {
     width: min(100% - 88px, 1440px);
   }
 
@@ -192,7 +194,7 @@ input:focus-visible {
     width: min(100% - 56px, var(--width-text));
   }
 
-  .business-shell {
+  .sidebar-shell {
     width: min(100% - 56px, 1440px);
   }
 }

@@ -83,7 +83,7 @@ function summaryForDefinition(definition: FilterDefinition, filters: JobFilters)
   return `${summaries[0]} 외 ${summaries.length - 1}개`;
 }
 
-function OptionChip({
+export function OptionChip({
   option,
   active,
   disabled,
@@ -114,7 +114,7 @@ function OptionChip({
   );
 }
 
-function JobFilterPanel({
+export function JobFilterPanel({
   categories,
   selectedCategoryIds,
   selectedJobIds,
@@ -210,7 +210,7 @@ function JobFilterPanel({
   );
 }
 
-function OptionsPanel({
+export function OptionsPanel({
   options,
   selected,
   onToggle,

@@ -25,6 +25,10 @@ export const personExampleImages = {
   secondary: "/images/person-example-1.jpg",
 } as const;
 
+export const heroImages = {
+  support: "/images/working-people-1.jpg",
+} as const;
+
 export const companyLogos: Record<string, string> = {
   유한양행: "/images/companies/yuhan.png",
   삼성바이오로직스: "/images/companies/samsung-biologics.png",

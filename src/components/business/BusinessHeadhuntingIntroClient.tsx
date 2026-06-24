@@ -1,8 +1,9 @@
 "use client";
 
+import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessPublicHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
-import { Eyebrow, typeScale } from "@/components/ui/Typography";
+import { Eyebrow, SectionIntro, typeScale } from "@/components/ui/Typography";
 import { companyExampleImages } from "@/config/companyImages";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 
@@ -72,122 +73,104 @@ export function BusinessHeadhuntingIntroClient() {
     <>
       <BusinessPublicHeader />
       <main>
-        <section
-          className="relative bg-[#050505] px-6 py-24 text-white max-[760px]:py-16"
-          style={{
-            backgroundImage: `linear-gradient(90deg, rgba(5,5,5,0.86) 0%, rgba(5,5,5,0.5) 64%, rgba(5,5,5,0.22) 100%), url('${companyExampleImages.workspace}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="app-shell--default">
-            <Eyebrow tone="dark">THE PHARMA HEADHUNTING</Eyebrow>
-            <h1 className={`mt-4 max-w-[980px] text-white ${typeScale.heroTitle}`}>
-              제약·바이오 채용은
-              <br />
-              산업을 이해하는 파트너에게 맡기세요.
-            </h1>
-            <p className="mt-5 max-w-[560px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
-              채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다. 연구개발부터 임상, 허가, 사업개발, 생산·품질까지 기업이 찾는 인재를 이해하고 직접 발굴해 연결합니다.
-            </p>
-            <div className="mt-9">
-              <HeroCtaRow isMember={isMember} />
-            </div>
-            <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
+        <BusinessImageBand image={companyExampleImages.culture} gradient="horizontal" variant="hero">
+          <Eyebrow tone="dark">THE PHARMA HEADHUNTING</Eyebrow>
+          <h1 className={`mt-4 max-w-[980px] text-white ${typeScale.heroTitle}`}>
+            제약·바이오 채용은
+            <br />
+            산업을 이해하는 파트너에게 맡기세요.
+          </h1>
+          <p className="mt-5 max-w-[560px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
+            채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다. 연구개발부터 임상, 허가, 사업개발, 생산·품질까지 기업이 찾는 인재를 이해하고 직접 발굴해 연결합니다.
+          </p>
+          <div className="mt-9">
+            <HeroCtaRow isMember={isMember} />
           </div>
-        </section>
+          <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
+        </BusinessImageBand>
 
-        <section className="bg-white px-6 py-20 max-[760px]:py-14">
-          <div className="app-shell--default">
-            <Eyebrow align="center">WHY THE PHARMA</Eyebrow>
-            <h2 className={`mt-3 text-center text-[#17202c] ${typeScale.sectionTitle}`}>더파마 헤드헌팅이 특별한 이유</h2>
-            <div className="mt-10 grid grid-cols-3 gap-5 max-[900px]:grid-cols-1">
-              {reasons.map((reason) => (
-                <div key={reason.number} className="border border-[#dfe4ea] bg-white p-7">
-                  <p className="text-[22px] font-bold text-[#cfd8e3]">{reason.number}</p>
-                  <h3 className={`mt-3 text-[#17202c] ${typeScale.cardTitle}`}>{reason.title}</h3>
-                  <p className="mt-2 text-[13px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
+        <BusinessSection tone="light">
+          <SectionIntro eyebrow="WHY THE PHARMA" title="더파마 헤드헌팅이 특별한 이유" />
+          <div className="mt-10 grid grid-cols-3 gap-5 max-[900px]:grid-cols-1">
+            {reasons.map((reason) => (
+              <BusinessCard key={reason.number} padding="lg">
+                <p className="text-[22px] font-bold text-[#cfd8e3]">{reason.number}</p>
+                <h3 className={`mt-3 text-[#17202c] ${typeScale.cardTitle}`}>{reason.title}</h3>
+                <p className="mt-2 text-[13px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
+              </BusinessCard>
+            ))}
+          </div>
+        </BusinessSection>
+
+        <BusinessSection tone="muted">
+          <SectionIntro
+            eyebrow="SPECIALIZED POSITIONS"
+            title={
+              <>
+                제약·바이오 주요 직무의
+                <br className="max-[640px]:hidden" />
+                전문인재를 연결합니다.
+              </>
+            }
+            description="산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해 실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다."
+          />
+          <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
+            {specializedPositions.map((position) => (
+              <BusinessCard key={position.title} padding="none" className="overflow-hidden transition hover:border-[#111111]">
+                <div className="h-[140px] overflow-hidden bg-[#f2f3f4]">
+                  <img src={position.image} alt="" className="h-full w-full object-cover" />
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-[#f5f6f7] px-6 py-20 max-[760px]:py-14">
-          <div className="app-shell--default">
-            <Eyebrow align="center">SPECIALIZED POSITIONS</Eyebrow>
-            <h2 className={`mt-3 text-center text-[#17202c] ${typeScale.sectionTitle}`}>
-              제약·바이오 주요 직무의
-              <br className="max-[640px]:hidden" />
-              전문인재를 연결합니다.
-            </h2>
-            <p className="mx-auto mt-4 max-w-[640px] text-center text-[14px] font-normal leading-[1.75] tracking-[-0.01em] text-[#68717e]">
-              산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해 실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
-            </p>
-            <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
-              {specializedPositions.map((position) => (
-                <div key={position.title} className="overflow-hidden border border-[#dddddd] bg-white transition hover:border-[#111111]">
-                  <div className="h-[140px] overflow-hidden bg-[#f2f3f4]">
-                    <img src={position.image} alt="" className="h-full w-full object-cover" />
-                  </div>
-                  <div className="px-5 py-4">
-                    <h3 className={`text-[#17202c] ${typeScale.cardTitle}`}>{position.title}</h3>
-                    <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#8a94a3]">{position.tags}</p>
-                  </div>
+                <div className="px-5 py-4">
+                  <h3 className={`text-[#17202c] ${typeScale.cardTitle}`}>{position.title}</h3>
+                  <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#8a94a3]">{position.tags}</p>
                 </div>
-              ))}
-            </div>
-            <p className="mt-8 text-center text-[13px] font-normal text-[#68717e]">
-              제약회사, 바이오텍, CRO, CDMO, 의료기기 및 헬스케어 기업의 채용을 지원합니다.
-            </p>
+              </BusinessCard>
+            ))}
           </div>
-        </section>
+          <p className="mt-8 text-center text-[13px] font-normal text-[#68717e]">
+            제약회사, 바이오텍, CRO, CDMO, 의료기기 및 헬스케어 기업의 채용을 지원합니다.
+          </p>
+        </BusinessSection>
 
-        <section className="bg-[#050505] px-6 py-20 max-[760px]:py-14">
-          <div className="app-shell--default">
-            <Eyebrow tone="dark" align="center">PROCESS</Eyebrow>
-            <h2 className={`mt-3 text-center text-white ${typeScale.sectionTitle}`}>
-              채용 의뢰부터 입사까지
-              <br className="max-[640px]:hidden" />
-              더파마가 함께합니다.
-            </h2>
-            <div className="mt-10 grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1">
-              {processSteps.map((step) => (
-                <div key={step.number} className="border border-[#dfe4ea] bg-white p-6">
-                  <p className="text-[20px] font-bold text-[#111111]">{step.number}</p>
-                  <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#17202c]">{step.title}</h3>
-                  <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{step.description}</p>
-                </div>
-              ))}
-            </div>
+        <BusinessSection tone="dark">
+          <SectionIntro
+            tone="dark"
+            eyebrow="PROCESS"
+            title={
+              <>
+                채용 의뢰부터 입사까지
+                <br className="max-[640px]:hidden" />
+                더파마가 함께합니다.
+              </>
+            }
+          />
+          <div className="mt-10 grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1">
+            {processSteps.map((step) => (
+              <BusinessCard key={step.number}>
+                <p className="text-[20px] font-bold text-[#111111]">{step.number}</p>
+                <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#17202c]">{step.title}</h3>
+                <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{step.description}</p>
+              </BusinessCard>
+            ))}
           </div>
-        </section>
+        </BusinessSection>
 
-        <section
-          className="relative bg-[#050505] px-6 py-24 text-center text-white max-[760px]:py-16"
-          style={{
-            backgroundImage: `linear-gradient(180deg, rgba(5,5,5,0.7) 0%, rgba(5,5,5,0.88) 100%), url('${companyExampleImages.culture}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="app-shell--default">
-            <h2 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-white max-[640px]:text-[21px]">
-              채용공고만으로 찾기 어려운 인재,
-              <br />
-              더파마와 함께 찾아보세요.
-            </h2>
-            <p className="mx-auto mt-4 max-w-[480px] text-[14px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
-              채용 직무와 필요한 경력을 남겨주시면 담당자가 확인 후 적합한 진행 방법을 안내드립니다.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <HeroCtaRow isMember={isMember} />
-            </div>
-            <p className="mt-5 text-[12px] font-normal text-white/50">
-              상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
-            </p>
+        <BusinessImageBand image={companyExampleImages.workspace} gradient="vertical" align="center">
+          <h2 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-white max-[640px]:text-[21px]">
+            채용공고만으로 찾기 어려운 인재,
+            <br />
+            더파마와 함께 찾아보세요.
+          </h2>
+          <p className="mx-auto mt-4 max-w-[480px] text-[14px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
+            채용 직무와 필요한 경력을 남겨주시면 담당자가 확인 후 적합한 진행 방법을 안내드립니다.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <HeroCtaRow isMember={isMember} />
           </div>
-        </section>
+          <p className="mt-5 text-[12px] font-normal text-white/50">
+            상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
+          </p>
+        </BusinessImageBand>
       </main>
     </>
   );

@@ -1,10 +1,105 @@
 "use client";
 
+import clsx from "clsx";
 import { Bell, ChevronDown, Search } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { headerActions, navigationItems } from "@/config/navigation";
+import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
 import { LinkButton } from "@/components/ui/Button";
+
+function AccountMenu() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex items-center gap-2 py-1 pl-1 pr-1.5 hover:bg-white/10 max-[520px]:gap-1.5 max-[520px]:pr-1.5"
+      >
+        <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
+          김
+        </span>
+        <span className="whitespace-nowrap text-[13px] font-medium text-white/88 max-[720px]:hidden">{siteConfig.userName}</span>
+        <ChevronDown
+          size={16}
+          color="rgba(255,255,255,0.58)"
+          className={clsx("transition-transform max-[520px]:hidden", open && "rotate-180")}
+        />
+      </button>
+
+      {open ? (
+        <div
+          role="menu"
+          className="absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-[#e5e9ef] bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+        >
+          <div className="px-3 py-2.5">
+            <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
+            <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{myPageUser.email}</p>
+          </div>
+          <div className="h-px bg-[#edf1f5]" />
+          <div className="py-2">
+            {myPageMenuGroups.map((group) => (
+              <div key={group.title} className="px-1 py-1.5">
+                <p className="px-2 text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
+                <div className="mt-1">
+                  {group.items.map((item) => {
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={clsx(
+                          "flex items-center justify-between gap-3 px-2 py-2 text-[13px] font-medium transition-colors",
+                          active ? "text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+                        )}
+                      >
+                        <span className={active ? "font-bold" : undefined}>{item.label}</span>
+                        {item.badge ? (
+                          <span className={clsx("text-[12px] font-normal", active ? "text-[#596373]" : "text-[#a0a9b7]")}>{item.badge}</span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export function Header() {
   const pathname = usePathname();
@@ -68,13 +163,7 @@ export function Header() {
             <Bell size={20} strokeWidth={2} />
             <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-[#050505]" />
           </button>
-          <button className="flex items-center gap-2 py-1 pl-1 pr-1.5 hover:bg-white/10 max-[520px]:gap-1.5 max-[520px]:pr-1.5">
-            <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
-              김
-            </span>
-            <span className="whitespace-nowrap text-[13px] font-medium text-white/88 max-[720px]:hidden">{siteConfig.userName}</span>
-            <ChevronDown size={16} color="rgba(255,255,255,0.58)" className="max-[520px]:hidden" />
-          </button>
+          <AccountMenu />
         </div>
       </div>
     </header>

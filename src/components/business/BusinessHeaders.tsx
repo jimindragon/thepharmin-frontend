@@ -13,13 +13,11 @@ const publicNavItems = [
 ];
 
 const centerNavItems = [
-  { label: "대시보드", href: "/business/dashboard" },
-  { label: "채용관리", href: "/business/jobs" },
-  { label: "기업 프로필", href: "/business/company/profile" },
-  { label: "헤드헌팅 관리", href: "/business/headhunting/manage" },
-  { label: "인재풀", href: "/business/applicants" },
-  { label: "결제·이용권", href: "/business/billing/plans" },
-  { label: "고객센터", href: "/business/support/inquiries" },
+  { label: "대시보드", href: "/business/dashboard", match: ["/business/dashboard"] },
+  { label: "채용관리", href: "/business/jobs", match: ["/business/jobs", "/business/applicants", "/business/headhunting"] },
+  { label: "기업관리", href: "/business/company/profile", match: ["/business/company"] },
+  { label: "요금제/결제", href: "/business/billing/plans", match: ["/business/billing"] },
+  { label: "고객센터", href: "/support", match: ["/support"] },
 ];
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {
@@ -87,9 +85,9 @@ export function BusinessCenterHeader() {
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#dfe4ea] bg-white text-[#17202c]">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
         <BusinessBrand homeHref="/business/dashboard" />
-        <nav className="flex min-w-0 flex-1 items-center gap-5 text-[14px] max-[1180px]:hidden">
+        <nav className="flex min-w-0 flex-1 items-center justify-center gap-8 text-[14px] max-[1180px]:hidden">
           {centerNavItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const active = item.match.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
             return (
               <Link
                 key={item.href}

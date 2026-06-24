@@ -657,9 +657,13 @@ export function BusinessCompanyProfileClient() {
                 {[
                   ["기업 정보 관리 가이드", HelpCircle],
                   ["브랜드 페이지 미리보기", ExternalLink],
-                  ["1:1 문의하기", FileCheck2],
+                  ["고객센터 문의하기", FileCheck2],
                 ].map(([label, Icon]) => (
-                  <Link key={String(label)} href="/business/support/inquiries" className="flex items-center gap-3 text-[13px] font-medium text-[#4f5967] hover:text-[#111111]">
+                  <Link
+                    key={String(label)}
+                    href={label === "고객센터 문의하기" ? "/support/contact" : "/business/support/inquiries"}
+                    className="flex items-center gap-3 text-[13px] font-medium text-[#4f5967] hover:text-[#111111]"
+                  >
                     <Icon size={16} />
                     {String(label)}
                   </Link>
