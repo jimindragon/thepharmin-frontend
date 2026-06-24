@@ -2,7 +2,8 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { Bookmark, MessageSquareText } from "lucide-react";
+import { Bookmark, Info } from "lucide-react";
+import { companies } from "@/data/companies";
 import type { Job } from "@/types/jobs";
 
 interface JobCardProps {
@@ -60,14 +61,21 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
 
         <div className="min-w-0">
           <p className="truncate text-[13px] font-medium text-[#343c49]">{job.company}</p>
-          <button
-            type="button"
-            onClick={(event) => event.stopPropagation()}
-            className="relative z-20 mt-1 inline-flex h-[25px] items-center gap-1 border border-[#d8dee7] bg-white px-2.5 text-[11px] font-medium text-[#4d5664] hover:border-brand hover:text-brand"
-          >
-            <MessageSquareText size={14} />
-            기업 후기
-          </button>
+          {job.companyId && companies.some((item) => item.id === job.companyId) ? (
+            <Link
+              href={`/companies/${job.companyId}`}
+              onClick={(event) => event.stopPropagation()}
+              className="relative z-20 mt-1 inline-flex h-[25px] items-center gap-1 border border-[#d8dee7] bg-white px-2.5 text-[11px] font-medium text-[#4d5664] hover:border-brand hover:text-brand"
+            >
+              <Info size={14} />
+              기업 정보
+            </Link>
+          ) : (
+            <span className="mt-1 inline-flex h-[25px] items-center gap-1 border border-[#d8dee7] bg-white px-2.5 text-[11px] font-medium text-[#4d5664]">
+              <Info size={14} />
+              기업 정보
+            </span>
+          )}
         </div>
       </div>
 

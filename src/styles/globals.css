@@ -21,6 +21,8 @@
   --width-wide: 1320px;
   --width-default: 1160px;
   --width-text: 760px;
+  /* 공통 좌우 거터(양쪽 합산 값). 브레이크포인트별로 아래에서 재정의 */
+  --shell-gutter: 200px;
   /* 핵심 CTA 전용 그라데이션 — 다른 버튼에는 쓰지 않음 */
   --gradient-cta: linear-gradient(135deg, #06403d 0%, #11897e 55%, #20c79f 100%);
   /* 기업 마케팅 페이지(요금제/헤드헌팅 의뢰) 히어로 사진 영역 높이 — 두 페이지가 동일 값 참조 */
@@ -76,22 +78,22 @@ input:focus-visible {
 }
 
 .app-shell {
-  width: min(var(--width-wide), calc(100vw - 176px));
+  width: min(var(--width-wide), calc(100vw - var(--shell-gutter)));
   margin: 0 auto;
 }
 
 .app-shell--default {
-  width: min(var(--width-default), calc(100vw - 176px));
+  width: min(var(--width-default), calc(100vw - var(--shell-gutter)));
   margin: 0 auto;
 }
 
 .app-shell--text {
-  width: min(var(--width-text), calc(100vw - 176px));
+  width: min(var(--width-text), calc(100vw - var(--shell-gutter)));
   margin: 0 auto;
 }
 
 .sidebar-shell {
-  width: min(1440px, calc(100vw - 176px));
+  width: min(1440px, calc(100vw - var(--shell-gutter)));
   margin: 0 auto;
 }
 
@@ -148,6 +150,39 @@ input:focus-visible {
   background: #8f98a5;
 }
 
+/* 홈 히어로 슬라이드 크로스페이드 — 모션 최소화 환경에서는 즉시 전환 */
+.hero-slide {
+  transition: opacity 900ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    transition: opacity 1ms linear;
+  }
+}
+
+/* 필터·정렬 드롭다운 패널이 펼쳐질 때의 절제된 진입 모션 */
+@keyframes dropdown-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-panel {
+  animation: dropdown-reveal 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-panel {
+    animation: none;
+  }
+}
+
 .jobs-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
@@ -160,20 +195,24 @@ input:focus-visible {
 }
 
 @media (max-width: 1180px) {
+  :root {
+    --shell-gutter: 104px;
+  }
+
   .app-shell {
-    width: min(100% - 88px, var(--width-wide));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-wide));
   }
 
   .app-shell--default {
-    width: min(100% - 88px, var(--width-default));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-default));
   }
 
   .app-shell--text {
-    width: min(100% - 88px, var(--width-text));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-text));
   }
 
   .sidebar-shell {
-    width: min(100% - 88px, 1440px);
+    width: min(calc(100% - var(--shell-gutter)), 1440px);
   }
 
   .jobs-layout {
@@ -182,20 +221,24 @@ input:focus-visible {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --shell-gutter: 64px;
+  }
+
   .app-shell {
-    width: min(100% - 56px, var(--width-wide));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-wide));
   }
 
   .app-shell--default {
-    width: min(100% - 56px, var(--width-default));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-default));
   }
 
   .app-shell--text {
-    width: min(100% - 56px, var(--width-text));
+    width: min(calc(100% - var(--shell-gutter)), var(--width-text));
   }
 
   .sidebar-shell {
-    width: min(100% - 56px, 1440px);
+    width: min(calc(100% - var(--shell-gutter)), 1440px);
   }
 }
 

@@ -10,6 +10,7 @@ import { Pagination } from "@/components/Pagination";
 import { RecommendedJobs } from "@/components/RecommendedJobs";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
 import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
+import { PageTitle } from "@/components/ui/Typography";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import { siteConfig } from "@/config/site";
 import { jobs } from "@/data/jobs";
@@ -116,9 +117,7 @@ export default function JobsPage() {
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 
-          <h1 className="mt-5 text-[32px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
-            {siteConfig.pageTitle}
-          </h1>
+          <PageTitle>{siteConfig.pageTitle}</PageTitle>
 
           <CategoryTabs activeTrack={activeTrack} onChange={filterState.setTrack} />
 

@@ -307,7 +307,7 @@ function ActionIconButton({
 
 function DefaultCover({ job }: { job: Job }) {
   return (
-    <div className="relative h-[286px] overflow-hidden border-t border-border bg-[#071115] max-[720px]:h-[210px]">
+    <div className="relative h-[286px] overflow-hidden rounded-[var(--radius)] border border-border bg-[#071115] max-[720px]:h-[210px]">
       <div
         className="absolute inset-0"
         style={{
@@ -1119,44 +1119,52 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">
             <div className="min-w-0 space-y-5">
               <section className="overflow-hidden rounded-[var(--radius)] border border-border bg-white shadow-[var(--shadow)]">
-                <div className="px-7 pb-6 pt-7 max-[720px]:px-5">
+                <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
+                  {/* 상단 행: 로고+회사 정보(좌) / 저장·공유(우) */}
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
-                    <div className="flex min-w-0 gap-4">
-                      <CompanyLogo
-                        name={company?.name ?? job.company}
-                        logoText={company?.logoText ?? job.logoText}
-                        logoUrl={company?.logoUrl ?? job.logoUrl}
-                        logoColor={company?.logoColor ?? job.logoColor}
-                        logoAccent={company?.logoAccent ?? job.logoAccent}
-                      />
-                      <div className="min-w-0">
+                    <div className="flex items-center gap-4">
+                      {company ? (
+                        <Link href={`/companies/${company.id}`} className="shrink-0" aria-label={`${job.company} 기업 상세 보기`}>
+                          <CompanyLogo
+                            name={company?.name ?? job.company}
+                            logoText={company?.logoText ?? job.logoText}
+                            logoUrl={company?.logoUrl ?? job.logoUrl}
+                            logoColor={company?.logoColor ?? job.logoColor}
+                            logoAccent={company?.logoAccent ?? job.logoAccent}
+                          />
+                        </Link>
+                      ) : (
+                        <CompanyLogo
+                          name={job.company}
+                          logoText={job.logoText}
+                          logoUrl={job.logoUrl}
+                          logoColor={job.logoColor}
+                          logoAccent={job.logoAccent}
+                        />
+                      )}
+                      <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          {company ? (
+                            <Link href={`/companies/${company.id}`} className="text-[15px] font-normal text-[#667181] hover:text-brand">
+                              {job.company}
+                            </Link>
+                          ) : (
+                            <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          )}
                           {company?.verified ? (
                             <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
                               <ShieldCheck size={13} />
                               인증기업
                             </span>
                           ) : null}
-                          <button
-                            type="button"
-                            className="inline-flex h-8 items-center gap-1.5 border border-[#dfe5ec] bg-white px-3 text-[12px] font-medium text-[#596373] transition hover:border-brand hover:text-brand"
-                          >
-                            <Heart size={14} />
-                            관심기업
-                          </button>
                         </div>
-                        <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
-                          {job.title}
-                        </h1>
-                        {job.oneLineIntro ? (
-                          <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">{job.oneLineIntro}</p>
-                        ) : null}
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {topTags.map((tag) => (
-                            <HeaderTag key={tag}>{tag}</HeaderTag>
-                          ))}
-                        </div>
+                        <button
+                          type="button"
+                          className="inline-flex h-8 items-center gap-1.5 border border-[#dfe5ec] bg-white px-3 text-[12px] font-medium text-[#596373] transition hover:border-brand hover:text-brand"
+                        >
+                          <Heart size={14} />
+                          관심기업
+                        </button>
                       </div>
                     </div>
                     <div className="flex shrink-0 gap-2">
@@ -1168,13 +1176,32 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       </ActionIconButton>
                     </div>
                   </div>
-                </div>
 
-                {coverImage ? (
-                  <img src={coverImage} alt={`${job.company} 대표 이미지`} className="h-[286px] w-full border-t border-border object-cover max-[720px]:h-[210px]" />
-                ) : (
-                  <DefaultCover job={job} />
-                )}
+                  {/* 제목 → 설명 → 태그 → 이미지: 컨테이너 좌측 패딩 기준에 맞춰 정렬 */}
+                  <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
+                    {job.title}
+                  </h1>
+                  {job.oneLineIntro ? (
+                    <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">{job.oneLineIntro}</p>
+                  ) : null}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {topTags.map((tag) => (
+                      <HeaderTag key={tag}>{tag}</HeaderTag>
+                    ))}
+                  </div>
+
+                  <div className="mt-5">
+                    {coverImage ? (
+                      <img
+                        src={coverImage}
+                        alt={`${job.company} 대표 이미지`}
+                        className="h-[286px] w-full rounded-[var(--radius)] border border-border object-cover max-[720px]:h-[210px]"
+                      />
+                    ) : (
+                      <DefaultCover job={job} />
+                    )}
+                  </div>
+                </div>
               </section>
 
               <section className="rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">

@@ -191,7 +191,7 @@ export function InsightsHomeClient() {
 
   return (
     <main className="bg-white pb-16">
-      <section className="border-b border-[#e4e7eb] bg-white">
+      <section className="sticky top-[64px] z-30 border-b border-[#e4e7eb] bg-white">
         <div className="app-shell">
           <CategoryTabs activeCategory={activeCategory} onChange={setActiveCategory} />
         </div>

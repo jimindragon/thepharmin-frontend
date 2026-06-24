@@ -21,6 +21,7 @@ import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters"
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
@@ -809,12 +810,10 @@ export function RecruitmentCalendarClient() {
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: "채용 캘린더" }]} />
 
-          <div className="mt-5">
-            <h1 className="text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36] max-[760px]:text-[26px]">채용 캘린더</h1>
-            <p className="mt-4 text-[14px] font-medium text-[#8a94a3]">
-              채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요.
-            </p>
-          </div>
+          <PageTitle>채용 캘린더</PageTitle>
+          <p className="mt-4 text-[14px] font-medium text-[#8a94a3]">
+            채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요.
+          </p>
 
           <section className="mt-7 grid grid-cols-3 gap-0 overflow-hidden border border-[#e0e5eb] bg-white p-1.5">
             {tabs.map((tab) => {

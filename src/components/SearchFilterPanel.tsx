@@ -373,7 +373,7 @@ export function SearchFilterPanel({
         </div>
 
         {openDefinition ? (
-          <div className="mt-2 border border-[#dddddd] bg-white px-3.5 py-3.5">
+          <div className="dropdown-panel mt-2 border border-[#dddddd] bg-white px-3.5 py-3.5">
             {openDefinition.kind === "job" ? (
               <JobFilterPanel
                 categories={openDefinition.categories}

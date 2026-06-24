@@ -22,6 +22,9 @@ export const homeHeroSlides: Array<{
   positionCount: string;
   deadline: string;
   href: string;
+  image: string;
+  imageAlt: string;
+  imagePosition?: string;
 }> = [
   {
     id: 1,
@@ -31,6 +34,9 @@ export const homeHeroSlides: Array<{
     positionCount: "18개 포지션 보기",
     deadline: "채용 마감 D-10",
     href: "/jobs?track=research",
+    image: "/images/home/hero-research-biology.jpg",
+    imageAlt: "DNA 이중나선 구조 시각화",
+    imagePosition: "center",
   },
   {
     id: 2,
@@ -40,6 +46,9 @@ export const homeHeroSlides: Array<{
     positionCount: "28개 포지션 보기",
     deadline: "채용 마감 D-12",
     href: "/jobs?track=industry",
+    image: "/images/home/hero-industry-factory.jpg",
+    imageAlt: "제약·바이오 생산 플랜트 전경",
+    imagePosition: "center 62%",
   },
   {
     id: 3,
@@ -49,6 +58,9 @@ export const homeHeroSlides: Array<{
     positionCount: "8개 포지션 보기",
     deadline: "채용 마감 D-8",
     href: "/jobs?track=hospital",
+    image: "/images/home/hero-hospital.jpg",
+    imageAlt: "종합병원 로비 전경",
+    imagePosition: "center 38%",
   },
   {
     id: 4,
@@ -58,6 +70,9 @@ export const homeHeroSlides: Array<{
     positionCount: "34개 포지션 보기",
     deadline: "상시 채용",
     href: "/jobs?track=pharmacy",
+    image: "/images/home/hero-pharmacy.jpg",
+    imageAlt: "약국 내부, 안내 자료를 살펴보는 모습",
+    imagePosition: "center 30%",
   },
 ];
 

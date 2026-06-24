@@ -9,11 +9,20 @@ import type { ReactNode } from "react";
  */
 export const typeScale = {
   heroTitle: "text-[46px] font-bold leading-[1.25] tracking-[-0.03em] max-[760px]:text-[30px]",
+  pageTitle: "text-[34px] font-bold leading-[1.2] tracking-[-0.02em] max-[760px]:text-[26px]",
   sectionTitle: "text-[31px] font-bold leading-[1.3] tracking-[-0.02em] max-[760px]:text-[24px]",
   cardTitle: "text-[19px] font-bold tracking-[-0.02em]",
   body: "text-[15px] font-normal leading-[1.65] tracking-[-0.01em]",
   meta: "text-[13px] font-normal leading-[1.65] tracking-[-0.01em] text-[#8a94a3]",
 } as const;
+
+/**
+ * Shared top-level page heading (breadcrumb 아래 첫 h1) — 채용공고/채용 캘린더처럼
+ * 같은 위계의 페이지 제목은 크기·자간·상하 여백을 맞추기 위해 이 컴포넌트를 사용.
+ */
+export function PageTitle({ children, className }: { children: ReactNode; className?: string }) {
+  return <h1 className={clsx("mt-5", typeScale.pageTitle, "text-[#242b36]", className)}>{children}</h1>;
+}
 
 export function Eyebrow({ children, tone = "light", align = "left" }: { children: ReactNode; tone?: "light" | "dark"; align?: "left" | "center" }) {
   return (
