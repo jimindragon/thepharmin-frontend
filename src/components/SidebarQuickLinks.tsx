@@ -2,8 +2,10 @@
 
 import clsx from "clsx";
 import { Bookmark, CheckCircle2, Clock3, Filter, MailCheck, Settings2 } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { optionLabelMaps } from "@/config/jobFilters/index";
+import { sharedRoutes } from "@/config/routes";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
 import type { UserJobPreference } from "@/types/jobs";
 
@@ -73,11 +75,6 @@ export function SidebarQuickLinks({
     setPopoverOpen(false);
   };
 
-  const handleEditPreference = () => {
-    onSetPreference(mockUserPreferences.configured);
-    setPopoverOpen(false);
-  };
-
   const handleClearPreference = () => {
     onClearPreferenceFilters();
     setPopoverOpen(false);
@@ -105,14 +102,13 @@ export function SidebarQuickLinks({
 
             {popoverOpen ? (
               <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 rounded-[var(--radius)] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]">
-                <button
-                  type="button"
-                  onClick={handleEditPreference}
+                <Link
+                  href={sharedRoutes.myPagePreferences}
                   className="flex h-[36px] w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
                 >
                   <Settings2 size={15} />
                   관심 조건 수정
-                </button>
+                </Link>
                 <button
                   type="button"
                   onClick={handleClearPreference}
@@ -172,13 +168,12 @@ export function SidebarQuickLinks({
               <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
               <p className="mt-2 text-[17px] font-semibold text-[#252b36]">{preferenceSummary?.jobSummary}</p>
               <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">{preferenceSummary?.detailSummary}</p>
-              <button
-                type="button"
-                onClick={handleEditPreference}
-                className="mt-4 h-[34px] border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-brand hover:text-brand"
+              <Link
+                href={sharedRoutes.myPagePreferences}
+                className="mt-4 inline-flex h-[34px] items-center border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-brand hover:text-brand"
               >
                 관심 조건 수정
-              </button>
+              </Link>
               <div className="mt-5 flex items-center gap-2 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
                 <MailCheck size={17} className="text-brand" />
                 {preference.emailAlertEnabled ? "이메일 알림 사용 중" : "새 공고 알림 받기"}

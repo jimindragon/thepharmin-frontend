@@ -5,11 +5,12 @@ import { Bell, ChevronDown, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LinkButton } from "@/components/ui/Button";
+import { sharedRoutes } from "@/config/routes";
 
 const publicNavItems = [
   { label: "요금제", href: "/business/pricing" },
   { label: "헤드헌팅 의뢰", href: "/business/headhunting" },
-  { label: "고객센터", href: "/business/support" },
+  { label: "고객센터", href: sharedRoutes.support },
 ];
 
 const centerNavItems = [
@@ -17,22 +18,26 @@ const centerNavItems = [
   { label: "채용관리", href: "/business/jobs", match: ["/business/jobs", "/business/applicants", "/business/headhunting"] },
   { label: "기업관리", href: "/business/company/profile", match: ["/business/company"] },
   { label: "요금제/결제", href: "/business/billing/plans", match: ["/business/billing"] },
-  { label: "고객센터", href: "/support", match: ["/support"] },
+  { label: "고객센터", href: sharedRoutes.support, match: [sharedRoutes.support] },
 ];
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
-    <Link href={homeHref} className="flex shrink-0 items-center gap-3" aria-label="더파마 리크루트 기업 서비스 홈">
-      <img
-        src="/images/logo_biz.svg"
-        alt="더파마 리크루트"
-        width={284}
-        height={28}
-        className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
-      />
+    <div className="flex shrink-0 items-center gap-3">
+      <Link href="/" aria-label="더파마 리크루트 개인회원 홈으로 이동">
+        <img
+          src="/images/logo_biz.svg"
+          alt="더파마 리크루트"
+          width={284}
+          height={28}
+          className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
+        />
+      </Link>
       <span className="h-5 w-px bg-[#d7dde5]" aria-hidden="true" />
-      <span className="whitespace-nowrap text-[13px] font-medium text-[#68717e] max-[420px]:text-[12px]">기업</span>
-    </Link>
+      <Link href={homeHref} className="whitespace-nowrap text-[13px] font-medium text-[#68717e] hover:text-[#111111] max-[420px]:text-[12px]">
+        기업 센터
+      </Link>
+    </div>
   );
 }
 

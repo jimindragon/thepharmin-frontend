@@ -154,7 +154,7 @@ function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }) {
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.88)_32%,rgba(6,8,13,0.6)_56%,rgba(6,8,13,0.2)_78%,rgba(6,8,13,0)_94%)]" />
               <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
 
-              <div className="relative z-10 flex h-full flex-col px-14 pb-6 pt-16 max-[1024px]:px-10 max-[1024px]:pt-12 max-[760px]:px-6 max-[760px]:pb-6 max-[760px]:pt-11">
+              <div className="relative z-10 flex h-full flex-col px-14 pb-6 pt-[88px] max-[1024px]:px-10 max-[1024px]:pt-12 max-[760px]:px-6 max-[760px]:pb-6 max-[760px]:pt-11">
                 <h1 className="max-w-[720px] break-keep text-[36px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[24px]">
                   {slide.title}
                 </h1>

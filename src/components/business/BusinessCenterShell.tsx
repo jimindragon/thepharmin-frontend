@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { BusinessCenterHeader } from "@/components/business/BusinessHeaders";
+import { sharedRoutes } from "@/config/routes";
 import { markBusinessMember } from "@/hooks/useBusinessMember";
 
 const sidebarStandaloneTop = { label: "대시보드", href: "/business/dashboard" };
@@ -35,8 +36,6 @@ const sidebarGroups = [
     ],
   },
 ];
-
-const sidebarStandaloneBottom = { label: "고객센터", href: "/support" };
 
 function SidebarLink({ label, href, active }: { label: string; href: string; active: boolean }) {
   return (
@@ -76,9 +75,6 @@ export function BusinessSidebar() {
             </div>
           </div>
         ))}
-        <div className="max-[1040px]:min-w-[148px]">
-          <SidebarLink {...sidebarStandaloneBottom} active={isActive(sidebarStandaloneBottom.href)} />
-        </div>
       </nav>
       <div className="mt-8 border border-[#dfe4ea] bg-[#fbfcfd] p-4 max-[1040px]:hidden">
         <div className="flex items-center gap-2 text-[13px] font-black text-[#2c3440]">
@@ -86,8 +82,8 @@ export function BusinessSidebar() {
           도움이 필요하신가요?
         </div>
         <p className="mt-2 text-[12px] font-semibold leading-[1.7] text-[#7b8491]">고객센터를 통해 빠르게 도와드리겠습니다.</p>
-        <Link href="/support/contact" className="mt-4 inline-flex h-9 items-center border border-[#d2dae4] bg-white px-4 text-[12px] font-black text-[#3c4654] hover:border-[#111111]">
-          문의하기
+        <Link href={sharedRoutes.support} className="mt-4 inline-flex h-9 items-center border border-[#d2dae4] bg-white px-4 text-[12px] font-black text-[#3c4654] hover:border-[#111111]">
+          고객센터
         </Link>
       </div>
     </aside>
@@ -103,9 +99,9 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
     <>
       <BusinessCenterHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
-        <div className="sidebar-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
+        <div className="app-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <BusinessSidebar />
-          <div className="min-w-0 px-8 py-8 max-[760px]:px-4 max-[760px]:py-6">{children}</div>
+          <div className="min-w-0 py-8 pl-8 max-[1040px]:px-4 max-[760px]:py-6">{children}</div>
         </div>
       </main>
     </>

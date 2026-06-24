@@ -22,6 +22,7 @@ import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/co
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { PageTitle } from "@/components/ui/Typography";
+import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
@@ -1108,13 +1109,12 @@ export function RecruitmentCalendarClient() {
                   <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
                   <p className="mt-2 text-[17px] font-normal text-[#252b36]">RA 외 2개</p>
                   <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">3~5년 · 서울 · 경기</p>
-                  <button
-                    type="button"
-                    className="mt-4 h-[34px] border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-[#111111] hover:text-[#111111]"
-                    onClick={applyInterestCondition}
+                  <Link
+                    href={sharedRoutes.myPagePreferences}
+                    className="mt-4 inline-flex h-[34px] items-center border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-[#111111] hover:text-[#111111]"
                   >
                     관심 조건 수정
-                  </button>
+                  </Link>
                   <div className="mt-5 flex items-center gap-2 bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
                     <MailCheck size={17} className="text-[#111111]" />
                     이메일 알림 사용 중

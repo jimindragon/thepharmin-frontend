@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
+import { sharedRoutes } from "@/config/routes";
 
 function SidebarLink({ label, href, badge, active }: { label: string; href: string; badge?: number; active: boolean }) {
   return (
@@ -61,8 +62,8 @@ export function MyPageSidebar() {
           도움이 필요하신가요?
         </div>
         <p className="mt-2 text-[12px] font-semibold leading-[1.7] text-[#7b8491]">고객센터를 통해 빠르게 도와드리겠습니다.</p>
-        <Link href="/support/contact" className="mt-4 inline-flex h-9 items-center border border-[#d2dae4] bg-white px-4 text-[12px] font-black text-[#3c4654] hover:border-[#111111]">
-          문의하기
+        <Link href={sharedRoutes.support} className="mt-4 inline-flex h-9 items-center border border-[#d2dae4] bg-white px-4 text-[12px] font-black text-[#3c4654] hover:border-[#111111]">
+          고객센터
         </Link>
       </div>
     </aside>
