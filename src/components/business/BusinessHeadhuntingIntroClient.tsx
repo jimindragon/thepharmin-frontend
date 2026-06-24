@@ -112,7 +112,13 @@ export function BusinessHeadhuntingIntroClient() {
                 전문인재를 연결합니다.
               </>
             }
-            description="산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해 실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다."
+            description={
+              <>
+                산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해{" "}
+                <br className="max-[640px]:hidden" />
+                실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
+              </>
+            }
           />
           <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
             {specializedPositions.map((position) => (
@@ -162,7 +168,9 @@ export function BusinessHeadhuntingIntroClient() {
             더파마와 함께 찾아보세요.
           </h2>
           <p className="mx-auto mt-4 max-w-[480px] text-[14px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
-            채용 직무와 필요한 경력을 남겨주시면 담당자가 확인 후 적합한 진행 방법을 안내드립니다.
+            채용 직무와 필요한 경력을 남겨주시면{" "}
+            <br className="max-[640px]:hidden" />
+            담당자가 확인 후 적합한 진행 방법을 안내드립니다.
           </p>
           <div className="mt-8 flex justify-center">
             <HeroCtaRow isMember={isMember} />

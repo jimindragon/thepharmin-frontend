@@ -168,7 +168,7 @@ export function SupportHomeClient() {
     <>
       <Header />
       <main className="bg-white pb-20">
-        <BusinessImageBand image={heroImages.support} gradient="vertical" align="center">
+        <BusinessImageBand image={heroImages.support} gradient="vertical" align="center" variant="hero">
           <Eyebrow tone="dark" align="center">
             THE PHARMA · HELP CENTER
           </Eyebrow>

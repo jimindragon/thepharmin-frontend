@@ -1,42 +1,19 @@
 "use client";
 
 import clsx from "clsx";
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { Bell, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { headerActions, navigationItems } from "@/config/navigation";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
 import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 function AccountMenu() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const onClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", onClickOutside);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onClickOutside);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+  const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
 
   return (
     <div ref={containerRef} className="relative">
@@ -149,9 +126,6 @@ export function Header() {
         </div>
 
         <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/82 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
-          <button className="grid h-9 w-9 place-items-center hover:bg-white/10 max-[420px]:hidden" aria-label="검색">
-            <Search size={20} strokeWidth={2} />
-          </button>
           <button className="relative grid h-9 w-9 place-items-center hover:bg-white/10" aria-label="알림">
             <Bell size={20} strokeWidth={2} />
             <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-[#050505]" />

@@ -1,41 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import { HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
-import { sharedRoutes } from "@/config/routes";
+import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
+import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
 import { markBusinessMember } from "@/hooks/useBusinessMember";
-
-const sidebarStandaloneTop = { label: "대시보드", href: "/business/dashboard" };
-
-const sidebarGroups = [
-  {
-    title: "채용관리",
-    items: [
-      { label: "공고 등록", href: "/business/jobs/new" },
-      { label: "공고 관리", href: "/business/jobs" },
-      { label: "지원자 관리", href: "/business/applicants" },
-      { label: "헤드헌팅 관리", href: "/business/headhunting/manage" },
-    ],
-  },
-  {
-    title: "기업관리",
-    items: [
-      { label: "기업정보 관리", href: "/business/company/profile" },
-      { label: "브랜드 페이지 미리보기", href: "/business/company/preview" },
-    ],
-  },
-  {
-    title: "요금제/결제",
-    items: [
-      { label: "요금제 관리", href: "/business/billing/plans" },
-      { label: "결제 내역", href: "/business/billing/history" },
-    ],
-  },
-];
 
 function SidebarLink({ label, href, active }: { label: string; href: string; active: boolean }) {
   return (
@@ -63,9 +35,9 @@ export function BusinessSidebar() {
       <div className="mt-5 h-px bg-[#e5e9ef]" />
       <nav className="mt-5 space-y-7 max-[1040px]:flex max-[1040px]:gap-6 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
         <div className="max-[1040px]:min-w-[148px]">
-          <SidebarLink {...sidebarStandaloneTop} active={isActive(sidebarStandaloneTop.href)} />
+          <SidebarLink {...businessCenterHomeItem} active={isActive(businessCenterHomeItem.href)} />
         </div>
-        {sidebarGroups.map((group) => (
+        {businessCenterMenuGroups.map((group) => (
           <div key={group.title} className="max-[1040px]:min-w-[148px]">
             <p className="text-[12px] font-black text-[#222a35]">{group.title}</p>
             <div className="mt-2 space-y-1">
@@ -76,16 +48,7 @@ export function BusinessSidebar() {
           </div>
         ))}
       </nav>
-      <div className="mt-8 border border-[#dfe4ea] bg-[#fbfcfd] p-4 max-[1040px]:hidden">
-        <div className="flex items-center gap-2 text-[13px] font-black text-[#2c3440]">
-          <HelpCircle size={17} />
-          도움이 필요하신가요?
-        </div>
-        <p className="mt-2 text-[12px] font-semibold leading-[1.7] text-[#7b8491]">고객센터를 통해 빠르게 도와드리겠습니다.</p>
-        <Link href={sharedRoutes.support} className="mt-4 inline-flex h-9 items-center border border-[#d2dae4] bg-white px-4 text-[12px] font-black text-[#3c4654] hover:border-[#111111]">
-          고객센터
-        </Link>
-      </div>
+      <SidebarHelpCard />
     </aside>
   );
 }
