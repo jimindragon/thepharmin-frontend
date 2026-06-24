@@ -5,7 +5,7 @@ import { HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { BusinessCenterHeader } from "@/components/business/BusinessHeaders";
+import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { sharedRoutes } from "@/config/routes";
 import { markBusinessMember } from "@/hooks/useBusinessMember";
 
@@ -97,7 +97,7 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <BusinessCenterHeader />
+      <BusinessHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
         <div className="app-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <BusinessSidebar />

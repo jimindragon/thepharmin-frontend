@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
-import { BusinessPublicHeader } from "@/components/business/BusinessHeaders";
+import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { Eyebrow } from "@/components/ui/Typography";
 
 export function BusinessLandingPage() {
   return (
     <>
-      <BusinessPublicHeader />
+      <BusinessHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
         <section className="app-shell py-16">
           <div className="grid grid-cols-[minmax(0,1fr)_360px] border border-[#dfe4ea] bg-white max-[900px]:grid-cols-1">
@@ -50,7 +50,7 @@ export function BusinessLandingPage() {
 export function BusinessPublicMockPage({ title, description }: { title: string; description: string }) {
   return (
     <>
-      <BusinessPublicHeader />
+      <BusinessHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7] px-11 py-16 max-[760px]:px-7">
         <section className="mx-auto max-w-[880px] border border-[#dfe4ea] bg-white p-10">
           <Eyebrow>기업 서비스</Eyebrow>

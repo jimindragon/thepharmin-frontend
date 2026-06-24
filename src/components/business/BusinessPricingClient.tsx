@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
-import { BusinessPublicHeader } from "@/components/business/BusinessHeaders";
+import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
 import { Eyebrow, SectionIntro, typeScale } from "@/components/ui/Typography";
 import { companyExampleImages } from "@/config/companyImages";
@@ -58,7 +58,7 @@ export function BusinessPricingClient() {
 
   return (
     <>
-      <BusinessPublicHeader />
+      <BusinessHeader />
       <main className="bg-white">
         <BusinessImageBand image={companyExampleImages.research} gradient="horizontal" variant="hero">
           <div className="flex items-start justify-between gap-12 max-[900px]:flex-col max-[900px]:gap-8">

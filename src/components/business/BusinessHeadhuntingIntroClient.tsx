@@ -1,7 +1,7 @@
 "use client";
 
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
-import { BusinessPublicHeader } from "@/components/business/BusinessHeaders";
+import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
 import { Eyebrow, SectionIntro, typeScale } from "@/components/ui/Typography";
 import { companyExampleImages } from "@/config/companyImages";
@@ -71,7 +71,7 @@ export function BusinessHeadhuntingIntroClient() {
 
   return (
     <>
-      <BusinessPublicHeader />
+      <BusinessHeader />
       <main>
         <BusinessImageBand image={companyExampleImages.culture} gradient="horizontal" variant="hero">
           <Eyebrow tone="dark">THE PHARMA HEADHUNTING</Eyebrow>
