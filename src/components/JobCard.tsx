@@ -10,9 +10,11 @@ interface JobCardProps {
   job: Job;
   isBookmarked: boolean;
   onToggleBookmark: (jobId: number) => void;
+  /** 스크랩 관리 화면처럼 북마크 버튼의 의미를 텍스트로 명확히 드러내야 할 때 사용 */
+  showBookmarkLabel?: boolean;
 }
 
-export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
+export function JobCard({ job, isBookmarked, onToggleBookmark, showBookmarkLabel }: JobCardProps) {
   const danger = job.closingStatus === "today" || job.deadlineOrder <= 7;
   const always = job.closingStatus === "always";
   const deadlineText =
@@ -21,7 +23,14 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
   const easyApply = job.applyMethod === "간편 지원";
 
   return (
-    <article className="surface group relative grid h-[96px] grid-cols-[226px_1fr_130px_36px] items-center border-[#dedede] px-3.5 py-2 shadow-none transition-colors hover:border-brand/60 hover:bg-[#fbfcfc] max-[720px]:h-auto max-[720px]:grid-cols-[1fr_40px] max-[720px]:gap-y-3 max-[720px]:px-3 max-[720px]:py-3">
+    <article
+      className={clsx(
+        "surface group relative grid h-[96px] items-center border-[#dedede] px-3.5 py-2 shadow-none transition-colors hover:border-brand/60 hover:bg-[#fbfcfc] max-[720px]:h-auto max-[720px]:gap-y-3 max-[720px]:px-3 max-[720px]:py-3",
+        showBookmarkLabel
+          ? "grid-cols-[226px_1fr_130px_auto] gap-x-3 max-[720px]:grid-cols-[1fr_auto] max-[720px]:gap-x-3"
+          : "grid-cols-[226px_1fr_130px_36px] max-[720px]:grid-cols-[1fr_40px]",
+      )}
+    >
       {job.slug ? (
         <Link
           href={`/jobs/${job.slug}`}
@@ -132,12 +141,22 @@ export function JobCard({ job, isBookmarked, onToggleBookmark }: JobCardProps) {
           onToggleBookmark(job.id);
         }}
         className={clsx(
-          "relative z-20 ml-auto grid h-[34px] w-[32px] place-items-center transition-colors",
-          isBookmarked ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand",
+          "relative z-20 ml-auto transition-colors",
+          showBookmarkLabel
+            ? clsx(
+                "inline-flex h-[36px] items-center gap-1.5 border px-3 text-[12px] font-medium",
+                isBookmarked ? "border-brand bg-[var(--color-brand-soft)] text-brand" : "border-[#d9e1e8] text-[#596373] hover:border-brand hover:text-brand",
+              )
+            : clsx("grid h-[34px] w-[32px] place-items-center", isBookmarked ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand"),
         )}
-        aria-label={`${job.title} 북마크 ${isBookmarked ? "해제" : "저장"}`}
+        aria-label={
+          showBookmarkLabel
+            ? `${job.title} ${isBookmarked ? "스크랩 해제" : "스크랩"}`
+            : `${job.title} 북마크 ${isBookmarked ? "해제" : "저장"}`
+        }
       >
-        <Bookmark size={24} strokeWidth={1.8} fill={isBookmarked ? "currentColor" : "none"} />
+        <Bookmark size={showBookmarkLabel ? 16 : 24} strokeWidth={1.8} fill={isBookmarked ? "currentColor" : "none"} />
+        {showBookmarkLabel ? <span>{isBookmarked ? "스크랩 해제" : "스크랩"}</span> : null}
       </button>
     </article>
   );

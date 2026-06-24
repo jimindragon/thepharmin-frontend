@@ -1,5 +1,11 @@
+export const trackNavigationItems = [
+  { label: "산업", href: "/jobs/industry" },
+  { label: "연구", href: "/jobs/research" },
+  { label: "병원", href: "/jobs/hospital" },
+  { label: "약국", href: "/jobs/pharmacy" },
+];
+
 export const navigationItems = [
-  { label: "채용공고", href: "/jobs" },
   { label: "캘린더", href: "/calendar" },
   { label: "기업정보", href: "#" },
   { label: "커뮤니티", href: "#" },

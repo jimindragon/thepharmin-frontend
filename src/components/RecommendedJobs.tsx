@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Info } from "lucide-react";
 import { typeScale } from "@/components/ui/Typography";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import type { RecommendedJob } from "@/types/jobs";
 
 interface RecommendedJobsProps {
@@ -11,7 +12,43 @@ interface RecommendedJobsProps {
   onNext: () => void;
 }
 
-export function RecommendedJobs({ jobs, onNext }: RecommendedJobsProps) {
+export function JobNoticePopover() {
+  const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label="주목할 만한 공고 안내"
+        className="grid h-4 w-4 place-items-center text-[#a1aabb] hover:text-[#6b7280]"
+      >
+        <Info size={16} />
+      </button>
+
+      {open ? (
+        <div
+          role="dialog"
+          className="dropdown-panel absolute left-1/2 top-[calc(100%+8px)] z-30 w-[280px] max-w-[calc(100vw-32px)] -translate-x-1/2 border border-[#e5e9ef] bg-white p-4 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+        >
+          <p className="text-[14px] font-bold text-[#17202c]">주목할 만한 공고에 노출하고 싶으신가요?</p>
+          <p className="mt-2 text-[12px] font-normal leading-[1.6] text-[#687383]">기업회원 전용 상품과 노출 혜택을 확인해보세요.</p>
+          <Link
+            href="/business/pricing"
+            onClick={() => setOpen(false)}
+            className="mt-4 inline-flex h-9 items-center justify-center bg-brand px-4 text-[13px] font-medium text-white hover:bg-[var(--color-brand-dark)]"
+          >
+            요금제 확인하기
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function RecommendedJobsGrid({ jobs, onNext }: RecommendedJobsProps) {
   const renderCard = (job: RecommendedJob) => (
     <article className="surface h-full overflow-hidden border-[#dedede] shadow-none transition duration-150 hover:border-[#111111]/55 hover:shadow-[0_8px_22px_rgba(12,18,24,0.08)]">
       <div className="relative h-[82px] overflow-hidden bg-[linear-gradient(120deg,#070707_0%,#242424_48%,#8f9397_100%)]">
@@ -49,42 +86,48 @@ export function RecommendedJobs({ jobs, onNext }: RecommendedJobsProps) {
   );
 
   return (
+    <div className="relative">
+      <div className="grid grid-cols-3 gap-[14px]">
+        {jobs.map((job) => (
+          job.jobSlug ? (
+            <Link
+              key={job.id}
+              href={`/jobs/${job.jobSlug}`}
+              className="block cursor-pointer rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
+              onKeyDown={(event) => {
+                if (event.key === " ") {
+                  event.preventDefault();
+                  event.currentTarget.click();
+                }
+              }}
+            >
+              {renderCard(job)}
+            </Link>
+          ) : (
+            <div key={job.id}>{renderCard(job)}</div>
+          )
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={onNext}
+        className="absolute right-[-14px] top-[92px] grid h-[36px] w-[36px] place-items-center border border-[#dfe5ec] bg-white text-[#a3adba] shadow-[0_4px_12px_rgba(20,32,46,0.12)] transition-colors hover:border-brand hover:text-brand max-[720px]:right-0"
+        aria-label="추천 공고 다음 보기"
+      >
+        <ChevronRight size={22} />
+      </button>
+    </div>
+  );
+}
+
+export function RecommendedJobs(props: RecommendedJobsProps) {
+  return (
     <section className="mt-[18px]" aria-label="주목할 만한 공고">
       <div className="mb-3 flex items-center gap-2">
         <h2 className={clsx(typeScale.cardTitle, "text-[#2b3340]")}>주목할 만한 공고</h2>
-        <Info size={16} color="#a1aabb" />
+        <JobNoticePopover />
       </div>
-      <div className="relative">
-        <div className="grid grid-cols-3 gap-[14px]">
-          {jobs.map((job) => (
-            job.jobSlug ? (
-              <Link
-                key={job.id}
-                href={`/jobs/${job.jobSlug}`}
-                className="block cursor-pointer rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
-                onKeyDown={(event) => {
-                  if (event.key === " ") {
-                    event.preventDefault();
-                    event.currentTarget.click();
-                  }
-                }}
-              >
-                {renderCard(job)}
-              </Link>
-            ) : (
-              <div key={job.id}>{renderCard(job)}</div>
-            )
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={onNext}
-          className="absolute right-[-14px] top-[92px] grid h-[36px] w-[36px] place-items-center border border-[#dfe5ec] bg-white text-[#a3adba] shadow-[0_4px_12px_rgba(20,32,46,0.12)] transition-colors hover:border-brand hover:text-brand max-[720px]:right-0"
-          aria-label="추천 공고 다음 보기"
-        >
-          <ChevronRight size={22} />
-        </button>
-      </div>
+      <RecommendedJobsGrid {...props} />
     </section>
   );
 }

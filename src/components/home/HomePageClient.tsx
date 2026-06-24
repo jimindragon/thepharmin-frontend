@@ -3,218 +3,17 @@
 import clsx from "clsx";
 import { Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
-import { JobCard } from "@/components/JobCard";
-import { JobListToolbar } from "@/components/JobListToolbar";
-import { RecommendedJobs } from "@/components/RecommendedJobs";
-import { SearchFilterPanel } from "@/components/SearchFilterPanel";
-import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
-import { LinkButton } from "@/components/ui/Button";
+import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
+import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
+import { HomeJobsSection } from "@/components/home/HomeJobsSection";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
-import { trackFilterConfigs } from "@/config/jobFilters/index";
-import {
-  homeHeroSlides,
-  homeRecommendationJobIds,
-  homeTrackTabs,
-  premiumCompanies,
-  themeCurationCards,
-  type HomeTrackFilter,
-} from "@/data/home";
+import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, trackToJobTrack, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
-import { defaultPreferenceScenario, mockUserPreferences } from "@/data/mockUserPreferences";
-import { recommendedJobs } from "@/data/recommendedJobs";
-import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
-import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
-import type { Job, JobTrack, SortOption, UserJobPreference } from "@/types/jobs";
-
-function sortJobs(items: Job[], sortOption: SortOption) {
-  return [...items].sort((a, b) => {
-    if (sortOption === "최신순") return b.dateOrder - a.dateOrder;
-    if (sortOption === "마감임박순") return a.deadlineOrder - b.deadlineOrder;
-    return Number(b.isRecommended) - Number(a.isRecommended) || b.dateOrder - a.dateOrder;
-  });
-}
-
-function trackToJobTrack(track: HomeTrackFilter): JobTrack {
-  return track === "all" ? "industry" : track;
-}
-
-function HomeTrackBar({
-  activeTrack,
-  onChange,
-}: {
-  activeTrack: HomeTrackFilter;
-  onChange: (track: HomeTrackFilter) => void;
-}) {
-  return (
-    <section className="sticky top-[64px] z-30 border-b border-[#e5e7eb] bg-white/95 shadow-[0_6px_18px_rgba(17,24,39,0.05)] backdrop-blur">
-      <div className="app-shell flex h-[72px] items-center gap-5 overflow-x-auto">
-        <div className="flex shrink-0 items-center gap-5 pr-1">
-          <span className="whitespace-nowrap text-[14px] font-medium text-[#1f242b]">채용 분야</span>
-          <span className="h-7 w-px bg-[#d9dde3]" />
-        </div>
-        <div className="flex items-center gap-2.5">
-          {homeTrackTabs.map((track) => (
-            <button
-              key={track.id}
-              type="button"
-              onClick={() => onChange(track.id)}
-              className={clsx(
-                "h-[42px] min-w-[84px] border px-5 text-[14px] font-medium transition-colors",
-                activeTrack === track.id
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
-              )}
-              aria-pressed={activeTrack === track.id}
-            >
-              {track.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const HERO_AUTOPLAY_ALL_TRACK_MS = 4500;
-const HERO_AUTOPLAY_OTHER_TRACK_MS = 6500;
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(query.matches);
-    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-
-  return reduced;
-}
-
-function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }) {
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isTabHidden, setIsTabHidden] = useState(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  const visibleSlides = useMemo(() => {
-    const filtered = activeTrack === "all" ? homeHeroSlides : homeHeroSlides.filter((slide) => slide.track === activeTrack);
-    return filtered.length ? filtered : homeHeroSlides;
-  }, [activeTrack]);
-  const currentIndex = slideIndex % visibleSlides.length;
-
-  useEffect(() => {
-    setSlideIndex(0);
-  }, [activeTrack]);
-
-  useEffect(() => {
-    const onVisibilityChange = () => setIsTabHidden(document.hidden);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
-
-  const autoplayPaused = isHovering || isTabHidden || prefersReducedMotion || visibleSlides.length <= 1;
-  const autoplayIntervalMs = activeTrack === "all" ? HERO_AUTOPLAY_ALL_TRACK_MS : HERO_AUTOPLAY_OTHER_TRACK_MS;
-
-  useEffect(() => {
-    if (autoplayPaused) return;
-    const timer = window.setTimeout(() => {
-      setSlideIndex((current) => (current + 1) % visibleSlides.length);
-    }, autoplayIntervalMs);
-    return () => window.clearTimeout(timer);
-  }, [slideIndex, autoplayPaused, autoplayIntervalMs, visibleSlides.length]);
-
-  const moveSlide = (amount: number) => {
-    setSlideIndex((current) => (current + amount + visibleSlides.length) % visibleSlides.length);
-  };
-
-  return (
-    <section className="pt-7">
-      <div
-        className="relative h-[380px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[350px] max-[760px]:h-[320px]"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        {visibleSlides.map((slide, index) => {
-          const isActive = index === currentIndex;
-          return (
-            <div
-              key={slide.id}
-              className="hero-slide absolute inset-0"
-              style={{ opacity: isActive ? 1 : 0, pointerEvents: isActive ? "auto" : "none" }}
-              aria-hidden={!isActive}
-            >
-              <img
-                src={slide.image}
-                alt={slide.imageAlt}
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ objectPosition: slide.imagePosition ?? "center" }}
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.88)_32%,rgba(6,8,13,0.6)_56%,rgba(6,8,13,0.2)_78%,rgba(6,8,13,0)_94%)]" />
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
-
-              <div className="relative z-10 flex h-full flex-col px-14 pb-6 pt-[88px] max-[1024px]:px-10 max-[1024px]:pt-12 max-[760px]:px-6 max-[760px]:pb-6 max-[760px]:pt-11">
-                <h1 className="max-w-[720px] break-keep text-[36px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[24px]">
-                  {slide.title}
-                </h1>
-                <p className="mt-5 max-w-[620px] text-[15px] font-normal leading-7 text-white/76">
-                  {slide.tags.map((tag) => `#${tag}`).join(" ")}
-                </p>
-                <div className="mt-9 flex flex-wrap items-center gap-5">
-                  <LinkButton href={slide.href} variant="gradient" size="lg">
-                    {slide.positionCount}
-                  </LinkButton>
-                  <span className="text-[13px] font-normal text-white/64">{slide.deadline}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between px-14 pb-6 max-[1024px]:px-10 max-[760px]:px-6">
-          <div className="flex items-center gap-2">
-            {visibleSlides.map((slide, index) => (
-              <button
-                key={slide.id}
-                type="button"
-                className={clsx("h-1.5 transition-all duration-300", index === currentIndex ? "w-7 bg-white" : "w-1.5 bg-white/38 hover:bg-white/60")}
-                onClick={() => setSlideIndex(index)}
-                aria-label={`${index + 1}번째 배너 보기`}
-                aria-current={index === currentIndex}
-              />
-            ))}
-            <span className="ml-4 text-[13px] font-normal text-white/64">
-              {currentIndex + 1} / {visibleSlides.length}
-            </span>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className="grid h-10 w-10 place-items-center bg-black/25 text-white backdrop-blur-sm transition hover:bg-black/45"
-              onClick={() => moveSlide(-1)}
-              aria-label="이전 배너"
-            >
-              <ChevronLeft size={19} />
-            </button>
-            <button
-              type="button"
-              className="grid h-10 w-10 place-items-center bg-black/25 text-white backdrop-blur-sm transition hover:bg-black/45"
-              onClick={() => moveSlide(1)}
-              aria-label="다음 배너"
-            >
-              <ChevronRight size={19} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
+import type { Job } from "@/types/jobs";
 
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const visibleCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
@@ -405,150 +204,10 @@ function PersonalRecommendationSection({
   );
 }
 
-function HomeJobsSection({
-  bookmarkedIds,
-  onToggleBookmark,
-  activeTrack: selectedTrack,
-}: {
-  bookmarkedIds: number[];
-  onToggleBookmark: (jobId: number) => void;
-  activeTrack: HomeTrackFilter;
-}) {
-  const [sortOption, setSortOption] = useState<SortOption>("추천순");
-  const [recommendedOffset, setRecommendedOffset] = useState(0);
-  const [activeQuickLink, setActiveQuickLink] = useState("preference");
-  const [preference, setPreferenceState] = useState<UserJobPreference | null>(
-    mockUserPreferences[defaultPreferenceScenario],
-  );
-  const initializedPreference = useRef(false);
-  const filterState = useJobFilters(false, { syncUrl: false });
-  const activeJobTrack = filterState.filters.track;
-  const activeFilterConfig = trackFilterConfigs[activeJobTrack];
-
-  useEffect(() => {
-    const nextTrack = trackToJobTrack(selectedTrack);
-    if (filterState.filters.track !== nextTrack) {
-      filterState.setTrack(nextTrack);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTrack, filterState.filters.track]);
-
-  useEffect(() => {
-    if (initializedPreference.current) return;
-
-    const stored = getStoredJobPreference();
-    if (stored) {
-      setPreferenceState(stored);
-      filterState.applyPreference(stored);
-      filterState.setPreferenceApplied(true);
-      initializedPreference.current = true;
-      return;
-    }
-
-    if (defaultPreferenceScenario === "applied" && preference) {
-      filterState.applyPreference(preference);
-      initializedPreference.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const visibleRecommendedJobs = useMemo(() => {
-    const trackRecommendedJobs = recommendedJobs.filter((job) => job.track === activeJobTrack);
-    if (trackRecommendedJobs.length === 0) return [];
-    return trackRecommendedJobs.map((_, index) => trackRecommendedJobs[(index + recommendedOffset) % trackRecommendedJobs.length]).slice(0, 3);
-  }, [activeJobTrack, recommendedOffset]);
-
-  const filteredJobs = useMemo(() => filterJobsByFilters(jobs, filterState.filters), [filterState.filters]);
-  const visibleJobs = useMemo(() => sortJobs(filteredJobs, sortOption).slice(0, 6), [filteredJobs, sortOption]);
-  const moreHref = `/jobs?track=${activeJobTrack}`;
-
-  const setPreference = (nextPreference: UserJobPreference | null) => {
-    setPreferenceState(nextPreference);
-    filterState.setPreferenceApplied(false);
-  };
-
-  const applyPreference = () => {
-    if (!preference) return;
-    filterState.applyPreference(preference);
-  };
-
-  const clearPreferenceFilters = () => {
-    filterState.clearPreferenceFilters(preference);
-  };
-
-  return (
-    <section className="mt-20 bg-[#f5f6f7] py-16 max-[760px]:py-10">
-      <div className="app-shell">
-        <div className="mb-5 flex items-center gap-2">
-          <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>공고 둘러보기</h2>
-        </div>
-
-        <div className="jobs-layout">
-          <div className="jobs-main">
-            <SearchFilterPanel
-              track={activeJobTrack}
-              config={activeFilterConfig}
-              filters={filterState.filters}
-              keywordInput={filterState.keywordInput}
-              appliedChips={filterState.appliedChips}
-              onKeywordInputChange={filterState.setKeywordInput}
-              onSubmitKeyword={filterState.submitKeyword}
-              onToggleJobCategory={filterState.toggleJobCategory}
-              onToggleJobSubcategory={filterState.toggleJobSubcategory}
-              onToggleMultiFilter={filterState.toggleMultiFilter}
-              onSetSingleFilter={filterState.setSingleFilter}
-              onSetSpecialFilter={filterState.setSpecialFilter}
-              onRemoveAppliedFilter={filterState.removeAppliedFilter}
-              onResetAll={filterState.resetFilters}
-            />
-
-            <RecommendedJobs
-              jobs={visibleRecommendedJobs}
-              onNext={() => setRecommendedOffset((current) => (current + 1) % Math.max(1, recommendedJobs.length))}
-            />
-
-            <JobListToolbar
-              totalCount={filteredJobs.length}
-              sortOption={sortOption}
-              onSortChange={setSortOption}
-            />
-
-            <div className="flex flex-col gap-1.5">
-              {visibleJobs.map((job) => (
-                <JobCard key={`home-${job.id}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
-              ))}
-            </div>
-
-            <div className="mt-7 flex justify-center">
-              <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-medium text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
-                공고 더 보기
-              </Link>
-            </div>
-          </div>
-
-          <SidebarQuickLinks
-            savedCount={bookmarkedIds.length}
-            preference={preference}
-            preferenceApplied={filterState.preferenceApplied}
-            activeQuickLink={activeQuickLink}
-            onQuickLinkClick={setActiveQuickLink}
-            onSetPreference={setPreference}
-            onApplyPreference={applyPreference}
-            onClearPreferenceFilters={clearPreferenceFilters}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function HomePageClient() {
-  const [activeTrack, setActiveTrack] = useState<HomeTrackFilter>("all");
+  const activeTrack: HomeTrackFilter = "all";
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
-
-  const handleTrackChange = (track: HomeTrackFilter) => {
-    setActiveTrack(track);
-  };
+  const featuredJobs = useFeaturedJobs(trackToJobTrack(activeTrack));
 
   const toggleBookmark = (jobId: number) => {
     setBookmarkedIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
@@ -557,7 +216,6 @@ export function HomePageClient() {
   return (
     <>
       <Header />
-      <HomeTrackBar activeTrack={activeTrack} onChange={handleTrackChange} />
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={activeTrack} />
@@ -565,6 +223,7 @@ export function HomePageClient() {
           <RecruiterSolutionBanner />
           <ThemeCuration />
           <PersonalRecommendationSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
+          <FeaturedJobsSection jobs={featuredJobs.jobs} onNext={featuredJobs.onNext} />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>

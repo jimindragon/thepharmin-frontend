@@ -3,16 +3,9 @@ import type { JobTrack } from "@/types/jobs";
 
 export type HomeTrackFilter = "all" | JobTrack;
 
-export const homeTrackTabs: Array<{
-  id: HomeTrackFilter;
-  label: string;
-}> = [
-  { id: "all", label: "전체" },
-  { id: "industry", label: "산업" },
-  { id: "research", label: "연구" },
-  { id: "hospital", label: "병원" },
-  { id: "pharmacy", label: "약국" },
-];
+export function trackToJobTrack(track: HomeTrackFilter): JobTrack {
+  return track === "all" ? "industry" : track;
+}
 
 export const homeHeroSlides: Array<{
   id: number;

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Bell, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { headerActions, navigationItems } from "@/config/navigation";
+import { headerActions, navigationItems, trackNavigationItems } from "@/config/navigation";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
 import { headerNavItemClassName } from "@/components/headerNavStyles";
@@ -96,6 +96,18 @@ export function Header() {
         </a>
 
         <nav className="flex min-w-0 flex-1 items-center justify-center gap-6 text-[14px] max-[1120px]:hidden">
+          {trackNavigationItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+            return (
+              <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+                {item.label}
+              </a>
+            );
+          })}
+
+          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-white/15" />
+
           {navigationItems.map((item) => {
             const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
 

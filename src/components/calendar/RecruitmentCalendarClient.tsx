@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { hospitalTypeOptions } from "@/config/jobFilters/hospitalFilters";
 import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters";
+import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
@@ -27,9 +28,9 @@ import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJo
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
 type CalendarTab = "all" | "saved" | "applied";
-type CalendarAvailableTrack = Exclude<JobTrack, "pharmacy">;
+type CalendarAvailableTrack = JobTrack;
 type CalendarTrackFilter = "all" | CalendarAvailableTrack;
-type CalendarFilterId = "job" | "companyType" | "experience" | "institutionType" | "hospitalType";
+type CalendarFilterId = "job" | "companyType" | "experience" | "institutionType" | "hospitalType" | "pharmacyFeature";
 type CalendarEventView = "all" | CalendarEventType;
 
 interface CalendarFilterState {
@@ -38,6 +39,7 @@ interface CalendarFilterState {
   companyTypeIds: string[];
   institutionTypeIds: string[];
   hospitalTypeIds: string[];
+  pharmacyFeatureIds: string[];
   experienceId: string | null;
 }
 
@@ -62,6 +64,7 @@ const calendarTrackOptions: Array<{ id: CalendarTrackFilter; label: string }> = 
   { id: "industry", label: "산업" },
   { id: "research", label: "연구" },
   { id: "hospital", label: "병원" },
+  { id: "pharmacy", label: "약국" },
 ];
 
 const eventTypeLabels: Record<CalendarEventType, string> = {
@@ -86,6 +89,7 @@ const initialCalendarFilters: CalendarFilterState = {
   companyTypeIds: [],
   institutionTypeIds: [],
   hospitalTypeIds: [],
+  pharmacyFeatureIds: [],
   experienceId: null,
 };
 
@@ -102,6 +106,9 @@ const calendarFilterDefinitions: Record<CalendarAvailableTrack, CalendarFilterDe
   ],
   hospital: [
     { id: "hospitalType", label: "사업장 분류", kind: "options", selection: "multiple", options: hospitalTypeOptions },
+  ],
+  pharmacy: [
+    { id: "pharmacyFeature", label: "약국 특성", kind: "options", selection: "multiple", options: pharmacyFeatureOptions },
   ],
 };
 
@@ -202,7 +209,9 @@ function summaryForCalendarFilter(definition: CalendarFilterDefinition, filters:
       ? "companyTypeIds"
       : definition.id === "institutionType"
         ? "institutionTypeIds"
-        : "hospitalTypeIds";
+        : definition.id === "pharmacyFeature"
+          ? "pharmacyFeatureIds"
+          : "hospitalTypeIds";
 
   return summaryFromOptions(definition.options, filters[stateKey]);
 }
@@ -262,6 +271,11 @@ function deriveHospitalTypeIds(job: CalendarJob) {
   return ["hospital"];
 }
 
+function derivePharmacyFeatureIds(job: CalendarJob) {
+  if (job.companyName.includes("온누리") || job.companyName.includes("그린")) return ["prescription_focused"];
+  return ["otc_focused"];
+}
+
 function jobMatchesCalendarFilters(job: CalendarJob, filters: CalendarFilterState) {
   if (job.track === "industry") {
     const jobFacet = deriveIndustryJobFacet(job);
@@ -291,6 +305,10 @@ function jobMatchesCalendarFilters(job: CalendarJob, filters: CalendarFilterStat
 
   if (job.track === "hospital") {
     return filters.hospitalTypeIds.length === 0 || filters.hospitalTypeIds.some((id) => deriveHospitalTypeIds(job).includes(id));
+  }
+
+  if (job.track === "pharmacy") {
+    return filters.pharmacyFeatureIds.length === 0 || filters.pharmacyFeatureIds.some((id) => derivePharmacyFeatureIds(job).includes(id));
   }
 
   return false;
@@ -448,7 +466,9 @@ function CalendarOptionsFilterBody({
         ? filters.companyTypeIds
         : definition.id === "institutionType"
           ? filters.institutionTypeIds
-          : filters.hospitalTypeIds;
+          : definition.id === "pharmacyFeature"
+            ? filters.pharmacyFeatureIds
+            : filters.hospitalTypeIds;
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -632,7 +652,7 @@ export function RecruitmentCalendarClient() {
     setIsLoggedIn(!guestMode);
   }, []);
 
-  const availableCalendarJobs = useMemo(() => calendarJobs.filter((job) => job.track !== "pharmacy"), []);
+  const availableCalendarJobs = calendarJobs;
 
   const activeFilterDefinitions = useMemo(
     () => (trackFilter === "all" ? [] : calendarFilterDefinitions[trackFilter]),
@@ -758,6 +778,10 @@ export function RecruitmentCalendarClient() {
         return { ...current, institutionTypeIds: [] };
       }
 
+      if (definition.id === "pharmacyFeature") {
+        return { ...current, pharmacyFeatureIds: [] };
+      }
+
       return { ...current, hospitalTypeIds: [] };
     });
   };
@@ -774,6 +798,10 @@ export function RecruitmentCalendarClient() {
 
       if (definition.id === "institutionType") {
         return { ...current, institutionTypeIds: toggleArrayItem(current.institutionTypeIds, id) };
+      }
+
+      if (definition.id === "pharmacyFeature") {
+        return { ...current, pharmacyFeatureIds: toggleArrayItem(current.pharmacyFeatureIds, id) };
       }
 
       return { ...current, hospitalTypeIds: toggleArrayItem(current.hospitalTypeIds, id) };
