@@ -4,9 +4,8 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/Button";
-import { Eyebrow, PageTitle, typeScale } from "@/components/ui/Typography";
 import { featuredPackageId, popularResourceIds, resourceCategories, resources, type ResourceCategory, type ResourceFile } from "@/data/resources";
 import { formatResourcePrice } from "@/utils/resourcePrice";
 
@@ -195,12 +194,12 @@ export function ResourcesHomeClient() {
   return (
     <main className="bg-[#f7f8fa] pb-20">
       <div className="app-shell pt-8">
-        <PageBreadcrumb className="mb-5" items={[{ label: "자료실" }]} />
-        <Eyebrow>THE PHARMA LIBRARY</Eyebrow>
-        <PageTitle>자료실</PageTitle>
-        <p className={clsx("mt-3 max-w-[640px]", typeScale.body, "text-[#596373]")}>
-          제약·바이오 취업을 위한 기업분석·면접후기·직무가이드 전자책. 더파마가 직접 만들어 제공합니다.
-        </p>
+        <PageHeader
+          breadcrumbLabel="자료실"
+          eyebrow="THE PHARMA LIBRARY"
+          title="자료실"
+          description="제약·바이오 취업을 위한 기업분석·면접후기·직무가이드 전자책. 더파마가 직접 만들어 제공합니다."
+        />
 
         {pkg ? (
           <div className="mt-8">

@@ -4,11 +4,10 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Heart, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { LockedContent } from "@/components/companies/LockedContent";
 import { EntityLogo } from "@/components/ui/EntityLogo";
-import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
 import type { JobTrack } from "@/types/jobs";
@@ -64,7 +63,7 @@ function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
   });
 }
 
-function CompanyInfoHero({
+function CompanySearchBar({
   keyword,
   onKeywordChange,
   onSubmit,
@@ -74,66 +73,49 @@ function CompanyInfoHero({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <section className="relative min-h-[300px] overflow-hidden border-b border-[#dce2e8] bg-[#070a0d] text-white">
-      <img src={companyExampleImages.research} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,9,0.88)_0%,rgba(5,7,9,0.62)_48%,rgba(5,7,9,0.2)_100%)]" />
-      <div className="app-shell relative z-10 flex min-h-[300px] flex-col justify-center py-12 max-[720px]:py-9">
-        <span className="text-[12px] font-medium tracking-[0.08em] text-white/68">THE PHARMA · COMPANY REVIEW</span>
-        <h1 className="mt-4 max-w-[640px] text-[34px] font-bold leading-[1.32] tracking-[-0.02em] text-white max-[720px]:text-[25px]">
-          기업의 실제 근무 경험을 확인하세요
-        </h1>
-        <p className="mt-3 max-w-[560px] text-[15px] font-normal leading-[1.75] text-white/76 max-[720px]:text-[14px]">
-          현직자·전직자가 남긴 기업 리뷰와 면접 후기를 살펴보세요.
-        </p>
-        <form onSubmit={onSubmit} className="mt-7 flex max-w-[560px] gap-2 max-[520px]:flex-col">
-          <div className="flex h-12 flex-1 items-center gap-2 rounded-[var(--radius)] border border-white/25 bg-white px-4">
-            <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
-            <input
-              value={keyword}
-              onChange={(event) => onKeywordChange(event.target.value)}
-              placeholder="기업 또는 기관명을 검색하세요"
-              aria-label="기업 또는 기관명 검색"
-              className="h-full w-full bg-transparent text-[14px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
-            />
-          </div>
-          <button
-            type="submit"
-            className="h-12 shrink-0 rounded-[var(--radius)] bg-white px-6 text-[14px] font-medium text-[#111111] transition hover:bg-[#f0f0f0]"
-          >
-            검색
-          </button>
-        </form>
+    <form onSubmit={onSubmit} className="mt-8 flex max-w-[640px] gap-2 max-[520px]:flex-col">
+      <div className="flex h-12 flex-1 items-center gap-2 border border-[#dfe4ea] bg-white px-4">
+        <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
+        <input
+          value={keyword}
+          onChange={(event) => onKeywordChange(event.target.value)}
+          placeholder="기업 또는 기관명을 검색하세요"
+          aria-label="기업 또는 기관명 검색"
+          className="h-full w-full bg-transparent text-[14px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
+        />
       </div>
-    </section>
+      <button
+        type="submit"
+        className="h-12 shrink-0 bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]"
+      >
+        검색
+      </button>
+    </form>
   );
 }
 
 function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track: TrackFilter) => void }) {
   return (
-    <section className="border-b border-[#dfe4ea] bg-white">
-      <div className="app-shell">
-        <nav className="flex overflow-x-auto" aria-label="기업·기관 트랙">
-          {trackFilterTabs.map((tab) => {
-            const selected = active === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onChange(tab.id)}
-                className={clsx(
-                  "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-medium whitespace-nowrap transition",
-                  selected
-                    ? "font-semibold text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
-                    : "text-[#4f5967] hover:text-[#111111]",
-                )}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-    </section>
+    <nav className="mt-6 flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="기업·기관 트랙">
+      {trackFilterTabs.map((tab) => {
+        const selected = active === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={clsx(
+              "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-medium whitespace-nowrap transition",
+              selected
+                ? "font-semibold text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
+                : "text-[#4f5967] hover:text-[#111111]",
+            )}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -318,12 +300,18 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
 
   return (
     <main className="bg-[#f7f8fa] pb-20">
-      <CompanyInfoHero keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
-      <TrackTabs active={trackFilter} onChange={setTrackFilter} />
-
       <div className="app-shell pt-8">
-        <PageBreadcrumb className="mb-5" items={[{ label: "기업정보" }]} />
-        <section id="company-directory" className="mt-10">
+        <PageHeader
+          breadcrumbLabel="기업정보"
+          eyebrow="THE PHARMA COMPANIES"
+          title="기업정보"
+          description="현직자·전직자가 남긴 기업 리뷰와 면접 후기를 살펴보세요."
+        />
+
+        <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
+        <TrackTabs active={trackFilter} onChange={setTrackFilter} />
+
+        <section id="company-directory" className="mt-8">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
             <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">

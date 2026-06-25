@@ -21,8 +21,7 @@ import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters"
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { PageTitle } from "@/components/ui/Typography";
+import { PageHeader } from "@/components/PageHeader";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
@@ -837,12 +836,12 @@ export function RecruitmentCalendarClient() {
     <>
       <main className="min-h-screen bg-[#f7f8fa] pb-9">
         <div className="app-shell pt-8">
-          <PageBreadcrumb className="mb-5" items={[{ label: "채용 캘린더" }]} />
-
-          <PageTitle>채용 캘린더</PageTitle>
-          <p className="mt-4 text-[14px] font-medium text-[#8a94a3]">
-            채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요.
-          </p>
+          <PageHeader
+            breadcrumbLabel="채용 캘린더"
+            eyebrow="THE PHARMA CALENDAR"
+            title="채용 캘린더"
+            description="채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요."
+          />
 
           <section className="mt-7 grid grid-cols-3 gap-0 overflow-hidden border border-[#e0e5eb] bg-white p-1.5">
             {tabs.map((tab) => {

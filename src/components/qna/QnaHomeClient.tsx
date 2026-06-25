@@ -3,8 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { Eyebrow, PageTitle, typeScale } from "@/components/ui/Typography";
+import { PageHeader } from "@/components/PageHeader";
 import { isQnaPost, getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
 import { PopularTagsPanel, QnaAvatar, QnaNotice, QnaOperationPrinciplePanel, QnaTagChip, showQnaNotice } from "@/components/qna/QnaShared";
@@ -196,16 +195,13 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
   return (
     <main className="bg-[#f7f8fa] pb-20">
       <div className="app-shell pt-8">
-        <PageBreadcrumb className="mb-5" items={[{ label: "채용 QNA" }]} />
-
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <Eyebrow>THE PHARMA QNA</Eyebrow>
-            <PageTitle className="mt-2">채용 QNA</PageTitle>
-            <p className={clsx("mt-3 max-w-[560px]", typeScale.body, "text-[#596373]")}>{qnaTypeIntro[activeType]}</p>
-          </div>
-          {canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : null}
-        </div>
+        <PageHeader
+          breadcrumbLabel="채용 QNA"
+          eyebrow="THE PHARMA QNA"
+          title="채용 QNA"
+          description={qnaTypeIntro[activeType]}
+          rightSlot={canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : undefined}
+        />
 
         <QnaComposer
           activeType={activeType}
