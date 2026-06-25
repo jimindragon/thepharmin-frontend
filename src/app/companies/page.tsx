@@ -41,6 +41,7 @@ export default async function CompaniesPage({ searchParams }: CompaniesPageProps
         companyId: review.companyId,
         companyName: company?.name ?? "기업",
         track: directoryEntry?.track ?? "industry",
+        industryGroup: directoryEntry?.industryGroup,
         jobRole: review.jobRole,
         outcome: review.outcome,
         writtenAt: review.writtenAt,

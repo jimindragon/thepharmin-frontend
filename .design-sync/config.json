@@ -1,0 +1,22 @@
+{
+  "projectId": "bacb5a31-f5bc-4228-af40-5e3b7dee79fa",
+  "shape": "package",
+  "pkg": "thepharmin-frontend",
+  "globalName": "ThepharminUI",
+  "srcDir": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui",
+  "tsconfig": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/tsconfig.json",
+  "componentSrcMap": {
+    "Button": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/Button.tsx",
+    "LinkButton": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/Button.tsx",
+    "EntityLogo": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/EntityLogo.tsx",
+    "SectionCard": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/FormSection.tsx",
+    "FieldLabel": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/FormSection.tsx",
+    "FormRow": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/FormSection.tsx",
+    "SidebarHelpCard": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/SidebarHelpCard.tsx",
+    "ToggleSwitch": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/ToggleSwitch.tsx",
+    "PageTitle": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/Typography.tsx",
+    "Eyebrow": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/Typography.tsx",
+    "SectionIntro": "/Users/ijimin/Desktop/더팜인 기획/thepharmin-frontend/src/components/ui/Typography.tsx"
+  },
+  "cssEntry": "ui-kit.css"
+}

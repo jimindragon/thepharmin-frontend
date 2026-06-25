@@ -2,10 +2,14 @@ import { companies, companyReviews } from "@/data/companies";
 import { companyProfiles } from "@/data/companyProfiles";
 import type { JobTrack } from "@/types/jobs";
 
+export type IndustryGroup = "pharma_bio" | "cro_cdmo";
+
 export interface CompanyDirectoryEntry {
   id: string;
   name: string;
   track: JobTrack;
+  /** track === "industry"일 때만 의미 있다. 산업 트랙 기업을 제약·바이오/CRO·CDMO 큐레이션 탭으로 나누는 세분류 */
+  industryGroup?: IndustryGroup;
   /** 기업·기관 유형(예: 전문의약품 제조업, 의원(층)약국). Company.industry를 그대로 쓴다 */
   type: string;
   region: string;
@@ -14,11 +18,14 @@ export interface CompanyDirectoryEntry {
   logoColor: string;
   logoAccent?: string;
   verified: boolean;
+  /** 기업 리뷰 + 면접 후기 총합. 정렬(리뷰순)에 쓴다 */
   reviewCount: number;
+  companyReviewCount: number;
+  interviewReviewCount: number;
   /** 실제 관심기업 수 데이터가 없으면 임의로 만들지 않고 null로 둔다(화면에서 항목 자체를 숨김) */
   interestedCount: number | null;
   activeJobCount: number;
-  /** /companies/[id]/reviews는 companies.ts에 등록된 기업이면 항상 렌더되므로(리뷰 0건이어도 빈 상태) 항상 연결한다 */
+  /** companyProfiles.ts에 프로필이 있으면 기본 상세 페이지(/companies/{id}), 없으면 항상 렌더되는 리뷰 페이지(/companies/{id}/reviews)로 폴백한다 */
   detailHref: string;
 }
 
@@ -29,6 +36,15 @@ export interface CompanyDirectoryEntry {
 const trackById: Record<string, JobTrack> = {
   "thepharmin-pharma": "industry",
   "eunhaeng-pharmacy": "pharmacy",
+};
+
+/**
+ * 산업(industry) 트랙 기업을 제약·바이오/CRO·CDMO 큐레이션 탭으로 나누는 수동 매핑.
+ * Company 타입에는 이 구분이 없어 trackById와 같은 방식으로 여기서만 관리한다.
+ * 매핑이 없는 산업 기업은 기본값 "pharma_bio"로 분류한다 — 새 CRO·CDMO 기업이 추가되면 여기에 추가해야 한다.
+ */
+const industryGroupById: Record<string, IndustryGroup> = {
+  "thepharmin-pharma": "pharma_bio",
 };
 
 function regionFromAddress(address: string) {
@@ -44,11 +60,14 @@ function parseCount(value?: string) {
 /** 기업정보 홈의 "기업·기관 탐색" 목록. companies.ts/companyProfiles.ts에 실제로 등록된 기업·기관만 포함한다 — 예시를 위해 새 기관을 추가하지 않는다. */
 export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company) => {
   const profile = companyProfiles.find((item) => item.id === company.id);
+  const track = trackById[company.id] ?? "industry";
+  const reviewsForCompany = companyReviews.filter((review) => review.companyId === company.id);
 
   return {
     id: company.id,
     name: company.name,
-    track: trackById[company.id] ?? "industry",
+    track,
+    industryGroup: track === "industry" ? industryGroupById[company.id] ?? "pharma_bio" : undefined,
     type: company.industry,
     region: regionFromAddress(company.address),
     logoText: company.logoText,
@@ -56,9 +75,11 @@ export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company)
     logoColor: company.logoColor,
     logoAccent: company.logoAccent,
     verified: company.verified,
-    reviewCount: companyReviews.filter((review) => review.companyId === company.id).length,
+    reviewCount: reviewsForCompany.length,
+    companyReviewCount: reviewsForCompany.filter((review) => review.type === "company").length,
+    interviewReviewCount: reviewsForCompany.filter((review) => review.type === "interview").length,
     interestedCount: parseCount(profile?.sidebar.interestedCount),
     activeJobCount: company.activeJobCount,
-    detailHref: `/companies/${company.id}/reviews`,
+    detailHref: profile ? `/companies/${company.id}` : `/companies/${company.id}/reviews`,
   };
 });

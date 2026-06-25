@@ -24,7 +24,7 @@
   /* 공통 좌우 거터(양쪽 합산 값). 브레이크포인트별로 아래에서 재정의 */
   --shell-gutter: 200px;
   /* 핵심 CTA 전용 그라데이션 — 다른 버튼에는 쓰지 않음 */
-  --gradient-cta: linear-gradient(135deg, #06403d 0%, #11897e 55%, #20c79f 100%);
+  --gradient-cta: linear-gradient(90deg, #0d7369 0%, #17a68c 40%, #1fbf92 75%, #23d9a5 100%);
   /* 기업 마케팅 페이지(요금제/헤드헌팅 의뢰) 히어로 사진 영역 높이 — 두 페이지가 동일 값 참조 */
   --hero-height: 600px;
   --sidebar-width: 260px;

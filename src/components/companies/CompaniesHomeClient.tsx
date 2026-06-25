@@ -2,24 +2,25 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { Search, ShieldCheck } from "lucide-react";
+import { ChevronRight, Heart, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Pagination } from "@/components/Pagination";
 import { LockedContent } from "@/components/companies/LockedContent";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
-import type { CompanyDirectoryEntry } from "@/data/companyDirectory";
+import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
 import type { JobTrack } from "@/types/jobs";
 
-type TrackFilter = "all" | JobTrack;
-type SortOption = "리뷰많은순" | "관심기업순" | "채용중공고순";
+type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "hospital" | "pharmacy";
+type SortOption = "리뷰순" | "관심순" | "채용중순";
 
 interface RecentInterviewReviewPreview {
   id: string;
   companyId: string;
   companyName: string;
   track: JobTrack;
+  industryGroup?: IndustryGroup;
   jobRole: string;
   outcome?: "합격" | "불합격";
   writtenAt: string;
@@ -38,18 +39,26 @@ const PAGE_SIZE = 8;
 
 const trackFilterTabs: { id: TrackFilter; label: string }[] = [
   { id: "all", label: "전체" },
-  { id: "industry", label: "산업" },
-  { id: "research", label: "연구" },
+  { id: "pharma_bio", label: "제약·바이오" },
+  { id: "cro_cdmo", label: "CRO·CDMO" },
   { id: "hospital", label: "병원" },
   { id: "pharmacy", label: "약국" },
 ];
 
-const sortOptions: SortOption[] = ["리뷰많은순", "관심기업순", "채용중공고순"];
+const sortOptions: SortOption[] = ["리뷰순", "관심순", "채용중순"];
+
+/** 큐레이션 탭은 트랙(JobTrack)과 산업 세분류(IndustryGroup)를 함께 봐야 한다 — 산업 트랙이 제약·바이오/CRO·CDMO 두 탭으로 나뉘기 때문 */
+function matchesTrackFilter(track: JobTrack, industryGroup: IndustryGroup | undefined, filter: TrackFilter) {
+  if (filter === "all") return true;
+  if (filter === "pharma_bio") return track === "industry" && industryGroup !== "cro_cdmo";
+  if (filter === "cro_cdmo") return track === "industry" && industryGroup === "cro_cdmo";
+  return track === filter;
+}
 
 function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
   return [...entries].sort((a, b) => {
-    if (sort === "관심기업순") return (b.interestedCount ?? 0) - (a.interestedCount ?? 0);
-    if (sort === "채용중공고순") return b.activeJobCount - a.activeJobCount;
+    if (sort === "관심순") return (b.interestedCount ?? 0) - (a.interestedCount ?? 0);
+    if (sort === "채용중순") return b.activeJobCount - a.activeJobCount;
     return b.reviewCount - a.reviewCount;
   });
 }
@@ -127,34 +136,17 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
   );
 }
 
-/** 카드 안의 보조 액션. 카드 전체 클릭(상세 페이지 이동)과 겹치지 않도록 항상 overlay Link보다 위(z-20)에 두고 클릭 버블링을 막는다. */
-function CompanyCardAction({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      onClick={(event) => event.stopPropagation()}
-      className="relative z-20 inline-flex h-7 items-center border border-[#dfe4ea] bg-white px-2.5 text-[11px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
-    >
-      {label}
-    </Link>
-  );
-}
-
-function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
+function CompanyListItem({ entry, onRequestWriteReview }: { entry: CompanyDirectoryEntry; onRequestWriteReview: () => void }) {
   const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
-  const statParts = [
-    `리뷰 ${entry.reviewCount}`,
-    entry.interestedCount != null ? `관심기업 ${entry.interestedCount.toLocaleString("ko-KR")}` : null,
-    `채용중 ${entry.activeJobCount}`,
-  ].filter((part): part is string => Boolean(part));
+  const hasReviews = entry.reviewCount > 0;
 
   return (
-    <article className="relative grid min-h-[84px] grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-3 border border-[#e5e9ef] bg-white px-5 py-4 transition hover:border-[#111111] max-[640px]:grid-cols-[44px_1fr]">
-      {/* 카드 전체 클릭 영역. 보조 액션 버튼은 relative z-20으로 이 위에 올려 클릭이 겹치지 않게 한다 */}
+    <article className="relative grid min-h-[84px] grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-3 border border-[#e5e9ef] bg-white py-4 pl-5 pr-9 transition hover:border-[#111111] hover:bg-[#f7f8fa] max-[640px]:grid-cols-[44px_1fr]">
+      {/* 카드 전체 클릭 영역. "첫 리뷰 쓰기"는 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
       <Link
         href={entry.detailHref}
         aria-label={`${entry.name} 상세 보기`}
-        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
+        className="absolute inset-0 z-10 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
       />
       <EntityLogo name={entry.name} logoText={entry.logoText} logoUrl={entry.logoUrl} size={44} />
       <div className="min-w-0">
@@ -164,13 +156,43 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
         </div>
         <p className="mt-1 truncate text-[13px] font-normal text-[#777777]">{metaParts.join(" · ")}</p>
       </div>
-      <div className="flex flex-col items-end gap-2 max-[640px]:col-start-2 max-[640px]:row-start-2 max-[640px]:items-start">
-        <p className="text-[13px] font-medium text-[#4f5967]">{statParts.join(" · ")}</p>
-        <div className="flex gap-1.5">
-          <CompanyCardAction href={entry.detailHref} label="기업 리뷰" />
-          <CompanyCardAction href={`${entry.detailHref}?type=interview`} label="면접 후기" />
-        </div>
+      <div className="flex flex-col items-end gap-1 max-[640px]:col-start-2 max-[640px]:row-start-2 max-[640px]:items-start">
+        {hasReviews ? (
+          <p className="text-[14px] font-medium text-[#171d26]">
+            리뷰 {entry.companyReviewCount} · 면접후기 {entry.interviewReviewCount}
+          </p>
+        ) : (
+          <p className="flex items-center gap-1.5 text-[14px] font-medium text-[#171d26]">
+            <span>아직 리뷰가 없어요</span>
+            <span aria-hidden="true" className="text-[#d8dce2]">·</span>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onRequestWriteReview();
+              }}
+              className="relative z-20 font-medium text-[#596373] underline decoration-[#d8dce2] underline-offset-2 transition hover:text-[#111111]"
+            >
+              첫 리뷰 쓰기
+            </button>
+          </p>
+        )}
+        <p className="flex items-center gap-1 text-[13px] font-normal text-[#8a94a3]">
+          {entry.interestedCount != null ? (
+            <>
+              <Heart size={12} className="shrink-0" aria-hidden="true" />
+              <span>{entry.interestedCount.toLocaleString("ko-KR")}</span>
+              <span aria-hidden="true">·</span>
+            </>
+          ) : null}
+          <span>채용중 {entry.activeJobCount}</span>
+        </p>
       </div>
+      <ChevronRight
+        size={18}
+        aria-hidden="true"
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#b6bdc7]"
+      />
     </article>
   );
 }
@@ -237,14 +259,15 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
   const [keyword, setKeyword] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
-  const [sortOption, setSortOption] = useState<SortOption>("리뷰많은순");
+  const [sortOption, setSortOption] = useState<SortOption>("리뷰순");
   const [currentPage, setCurrentPage] = useState(1);
-  const [writeReviewNotice, setWriteReviewNotice] = useState("");
+  const [companyReviewNotice, setCompanyReviewNotice] = useState("");
+  const [interviewReviewNotice, setInterviewReviewNotice] = useState("");
 
   const filteredDirectory = useMemo(() => {
     const normalizedKeyword = searchKeyword.trim().toLowerCase();
     return directory.filter((entry) => {
-      const matchesTrack = trackFilter === "all" || entry.track === trackFilter;
+      const matchesTrack = matchesTrackFilter(entry.track, entry.industryGroup, trackFilter);
       const matchesKeyword = !normalizedKeyword || entry.name.toLowerCase().includes(normalizedKeyword);
       return matchesTrack && matchesKeyword;
     });
@@ -263,7 +286,7 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
   }, [sortedDirectory, currentPage]);
 
   const filteredInterviewReviews = useMemo(
-    () => (trackFilter === "all" ? recentInterviewReviews : recentInterviewReviews.filter((review) => review.track === trackFilter)),
+    () => recentInterviewReviews.filter((review) => matchesTrackFilter(review.track, review.industryGroup, trackFilter)),
     [recentInterviewReviews, trackFilter],
   );
 
@@ -272,9 +295,14 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
     setSearchKeyword(keyword);
   };
 
-  const handleRequestWriteReview = () => {
-    setWriteReviewNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
-    window.setTimeout(() => setWriteReviewNotice(""), 2400);
+  const handleRequestWriteCompanyReview = () => {
+    setCompanyReviewNotice("기업 리뷰 작성 화면은 추후 연결될 예정입니다.");
+    window.setTimeout(() => setCompanyReviewNotice(""), 2400);
+  };
+
+  const handleRequestWriteInterviewReview = () => {
+    setInterviewReviewNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
+    window.setTimeout(() => setInterviewReviewNotice(""), 2400);
   };
 
   const handleScrollToDirectory = () => {
@@ -310,7 +338,7 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
           {visibleDirectory.length ? (
             <div className="flex flex-col gap-2">
               {visibleDirectory.map((entry) => (
-                <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} />
+                <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} onRequestWriteReview={handleRequestWriteCompanyReview} />
               ))}
             </div>
           ) : (
@@ -318,6 +346,7 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
           )}
 
           <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+          {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
         </section>
 
         <section className="mt-12">
@@ -329,13 +358,18 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
           {filteredInterviewReviews.length ? (
             <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
               {filteredInterviewReviews.map((review) => (
-                <InterviewReviewCard key={review.id} review={review} isLoggedIn={isLoggedIn} onRequestWriteReview={handleRequestWriteReview} />
+                <InterviewReviewCard
+                  key={review.id}
+                  review={review}
+                  isLoggedIn={isLoggedIn}
+                  onRequestWriteReview={handleRequestWriteInterviewReview}
+                />
               ))}
             </div>
           ) : (
             <DirectoryEmptyState />
           )}
-          {writeReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{writeReviewNotice}</p> : null}
+          {interviewReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
         </section>
 
         <section className="mt-14 border border-[#e5e9ef] bg-[#fbfcfd] px-7 py-10 text-center max-[640px]:px-5 max-[640px]:py-8">
