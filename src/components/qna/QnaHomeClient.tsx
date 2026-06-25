@@ -4,12 +4,11 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { Button, LinkButton } from "@/components/ui/Button";
 import { Eyebrow, PageTitle, typeScale } from "@/components/ui/Typography";
-import { myPageUser } from "@/config/myPageMenu";
 import { isQnaPost, getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
 import { PopularTagsPanel, QnaAvatar, QnaNotice, QnaOperationPrinciplePanel, QnaTagChip, showQnaNotice } from "@/components/qna/QnaShared";
+import { QnaComposer } from "@/components/qna/QnaComposer";
 
 type QnaSortOption = "추천순" | "최신순" | "공감순";
 const qnaSortOptions: QnaSortOption[] = ["추천순", "최신순", "공감순"];
@@ -51,53 +50,6 @@ function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; prev
           </Link>
         );
       })}
-    </div>
-  );
-}
-
-function ProfileSummaryRow({ isVerifiedPharmacist }: { isVerifiedPharmacist: boolean }) {
-  return (
-    <div className="mt-6 flex items-center gap-3 border border-[#e5e9ef] bg-white px-4 py-3">
-      <ProfileAvatar />
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="truncate text-[14px] font-bold text-[#171d26]">{myPageUser.name}님</span>
-        {isVerifiedPharmacist ? (
-          <span className="inline-flex h-5 shrink-0 items-center border border-[#111111] px-1.5 text-[11px] font-medium text-[#111111]">약사 인증</span>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function ProfileAvatar() {
-  return (
-    <span className="grid h-8 w-8 shrink-0 place-items-center bg-[#222222] text-[13px] font-medium text-white">
-      {myPageUser.name.slice(0, 1)}
-    </span>
-  );
-}
-
-function WriteInducementRow({ isLoggedIn, onWriteClick }: { isLoggedIn: boolean; onWriteClick: () => void }) {
-  return (
-    <div className="mt-4 flex items-center gap-3 border border-[#e5e9ef] bg-white px-4 py-3">
-      <ProfileAvatar />
-      {isLoggedIn ? (
-        <>
-          <button type="button" onClick={onWriteClick} className="flex-1 truncate text-left text-[13px] font-normal text-[#a0a9b7]">
-            커리어·이직·전형 경험을 나눠보세요
-          </button>
-          <Button type="button" variant="gradient" size="sm" onClick={onWriteClick} className="shrink-0">
-            글쓰기
-          </Button>
-        </>
-      ) : (
-        <>
-          <p className="flex-1 truncate text-[13px] font-normal text-[#a0a9b7]">로그인 후 글을 작성할 수 있습니다.</p>
-          <LinkButton href="/qna" variant="gradient" size="sm" className="shrink-0">
-            로그인하기
-          </LinkButton>
-        </>
-      )}
     </div>
   );
 }
@@ -241,8 +193,6 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
     });
   }, [entries, categoryFilter, sortOption]);
 
-  const handleWriteClick = () => showQnaNotice(setNotice, "글쓰기 화면은 추후 연결될 예정입니다.");
-
   return (
     <main className="bg-[#f7f8fa] pb-20">
       <div className="app-shell pt-8">
@@ -257,8 +207,12 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           {canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : null}
         </div>
 
-        <ProfileSummaryRow isVerifiedPharmacist={canSwitchType} />
-        <WriteInducementRow isLoggedIn={isLoggedIn} onWriteClick={handleWriteClick} />
+        <QnaComposer
+          activeType={activeType}
+          isLoggedIn={isLoggedIn}
+          isVerifiedPharmacist={canSwitchType}
+          onNotify={(message) => showQnaNotice(setNotice, message)}
+        />
 
         <nav className="mt-8 flex flex-wrap gap-2 border-b border-[#eceff1] pb-3.5" aria-label="QNA 카테고리">
           {filterChips.map((chip) => (
