@@ -9,10 +9,10 @@ export const navigationItems = [
   { label: "캘린더", href: "/calendar" },
   { label: "기업정보", href: "/companies" },
   { label: "QNA", href: "/qna" },
-  { label: "자료실", href: "/resources", highlight: true },
+  { label: "자료실", href: "/resources" },
 ];
 
 export const headerActions = [
-  { label: "헤드헌팅 의뢰", href: "#", tone: "brand" },
+  { label: "헤드헌팅", href: "#", tone: "brand" },
   { label: "기업 서비스", href: "/business", tone: "dark" },
 ] as const;

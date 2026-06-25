@@ -112,11 +112,7 @@ export function Header() {
             const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
 
             return (
-              <a
-                key={item.label}
-                href={item.href}
-                className={item.highlight ? "font-medium text-white hover:text-white" : headerNavItemClassName(isActive, "dark")}
-              >
+              <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
                 {item.label}
               </a>
             );
