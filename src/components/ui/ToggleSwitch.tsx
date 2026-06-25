@@ -25,7 +25,7 @@ export function ToggleSwitch({
     >
       <span
         className={clsx(
-          "absolute left-[3px] top-[3px] h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.25)] transition-transform",
+          "absolute left-[3px] top-[2px] h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.25)] transition-transform",
           checked ? "translate-x-[18px]" : "translate-x-0",
         )}
       />

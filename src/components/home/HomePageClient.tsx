@@ -10,7 +10,7 @@ import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
-import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, trackToJobTrack, type HomeTrackFilter } from "@/data/home";
+import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
 import type { Job } from "@/types/jobs";
@@ -207,7 +207,7 @@ function PersonalRecommendationSection({
 export function HomePageClient() {
   const activeTrack: HomeTrackFilter = "all";
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
-  const featuredJobs = useFeaturedJobs(trackToJobTrack(activeTrack));
+  const featuredJobs = useFeaturedJobs(activeTrack);
 
   const toggleBookmark = (jobId: number) => {
     setBookmarkedIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
@@ -223,7 +223,13 @@ export function HomePageClient() {
           <RecruiterSolutionBanner />
           <ThemeCuration />
           <PersonalRecommendationSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
-          <FeaturedJobsSection jobs={featuredJobs.jobs} onNext={featuredJobs.onNext} />
+          <FeaturedJobsSection
+            jobs={featuredJobs.jobs}
+            onPrev={featuredJobs.onPrev}
+            onNext={featuredJobs.onNext}
+            canGoPrev={featuredJobs.canGoPrev}
+            canGoNext={featuredJobs.canGoNext}
+          />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>

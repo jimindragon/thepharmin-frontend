@@ -20,6 +20,21 @@ export const companies: Company[] = [
     activeJobCount: 4,
     address: "서울 강남구 테헤란로 123, 8층",
   },
+  {
+    id: "eunhaeng-pharmacy",
+    name: "은행약국",
+    logoText: "은행약국",
+    logoColor: "#111111",
+    verified: true,
+    repName: "정*래",
+    description: "경기 용인시 처인구 양지읍에서 일반의원 처방 조제를 중심으로 운영하는 약국입니다.",
+    industry: "의원(층)약국",
+    employeeCount: "-",
+    foundedYear: "2026.02.11",
+    website: "",
+    activeJobCount: 1,
+    address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",
+  },
 ];
 
 export const companyReviews: CompanyReview[] = [

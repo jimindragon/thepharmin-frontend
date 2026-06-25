@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
@@ -11,7 +11,6 @@ import { typeScale } from "@/components/ui/Typography";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import { trackToJobTrack, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
-import { defaultPreferenceScenario, mockUserPreferences } from "@/data/mockUserPreferences";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
@@ -27,6 +26,10 @@ function sortJobs(items: Job[], sortOption: SortOption) {
 /**
  * 홈 화면과 산업·연구·병원·약국 분야별 랜딩 페이지가 공유하는 "공고 둘러보기" 섹션.
  * `activeTrack`으로 받은 분야에 맞춰 검색·필터·추천·목록을 구성한다.
+ *
+ * 분야(트랙)는 페이지의 기본 범위 조건이라 항상 유지되고, 관심조건은 사용자가 사이드바에서
+ * 직접 적용을 선택했을 때만 덧씌워지는 별개의 선택 필터다 — 진입 시 자동으로 적용하지 않는다.
+ * 홈(activeTrack="all")은 분야 구분 없이 전체 공고를 보여주므로 트랙 일치 검사를 생략한다.
  */
 export function HomeJobsSection({
   bookmarkedIds,
@@ -39,13 +42,11 @@ export function HomeJobsSection({
 }) {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
   const [activeQuickLink, setActiveQuickLink] = useState("preference");
-  const [preference, setPreferenceState] = useState<UserJobPreference | null>(
-    mockUserPreferences[defaultPreferenceScenario],
-  );
-  const initializedPreference = useRef(false);
+  const [preference, setPreferenceState] = useState<UserJobPreference | null>(null);
   const filterState = useJobFilters(false, { syncUrl: false });
   const activeJobTrack = filterState.filters.track;
   const activeFilterConfig = trackFilterConfigs[activeJobTrack];
+  const showAllTracks = selectedTrack === "all";
 
   useEffect(() => {
     const nextTrack = trackToJobTrack(selectedTrack);
@@ -55,28 +56,17 @@ export function HomeJobsSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTrack, filterState.filters.track]);
 
+  // 분야(또는 홈의 기본 분야)가 바뀔 때마다 해당 분야의 저장된 관심조건만 불러온다 — 자동 적용은 하지 않는다.
   useEffect(() => {
-    if (initializedPreference.current) return;
+    setPreferenceState(getStoredJobPreference(trackToJobTrack(selectedTrack)));
+  }, [selectedTrack]);
 
-    const stored = getStoredJobPreference();
-    if (stored) {
-      setPreferenceState(stored);
-      filterState.applyPreference(stored);
-      filterState.setPreferenceApplied(true);
-      initializedPreference.current = true;
-      return;
-    }
-
-    if (defaultPreferenceScenario === "applied" && preference) {
-      filterState.applyPreference(preference);
-      initializedPreference.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const filteredJobs = useMemo(() => filterJobsByFilters(jobs, filterState.filters), [filterState.filters]);
+  const filteredJobs = useMemo(
+    () => filterJobsByFilters(jobs, filterState.filters, { matchTrack: !showAllTracks }),
+    [filterState.filters, showAllTracks],
+  );
   const visibleJobs = useMemo(() => sortJobs(filteredJobs, sortOption).slice(0, 6), [filteredJobs, sortOption]);
-  const moreHref = `/jobs?track=${activeJobTrack}`;
+  const moreHref = showAllTracks ? "/jobs" : `/jobs?track=${activeJobTrack}`;
 
   const setPreference = (nextPreference: UserJobPreference | null) => {
     setPreferenceState(nextPreference);
@@ -138,6 +128,7 @@ export function HomeJobsSection({
           </div>
 
           <SidebarQuickLinks
+            track={activeJobTrack}
             savedCount={bookmarkedIds.length}
             preference={preference}
             preferenceApplied={filterState.preferenceApplied}

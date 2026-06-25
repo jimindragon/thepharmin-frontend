@@ -187,18 +187,34 @@ export interface TrackFilterConfig {
 
 export type EmailFrequency = "daily" | "twice-weekly" | "weekly";
 
-export type PreferenceScenarioId = "unset" | "configured" | "applied";
-
+/**
+ * 분야(트랙)별로 독립적으로 저장되는 관심조건. 필드는 해당 트랙의 `TrackFilterConfig`(`trackFilterConfigs[track]`)가
+ * 실제로 사용하는 필터 키와 1:1로 대응한다 — 트랙마다 어떤 필드가 의미 있는지는 `trackFilterConfigs`를 따른다.
+ * `track`/`keyword`/`leaderOnly`/`headhuntingOnly`/`quickApplyOnly`는 저장 대상이 아니라 그때그때의 검색 행동이므로 제외한다.
+ */
 export interface UserJobPreference {
+  jobCategoryIds: string[];
   jobSubcategoryIds: string[];
   experienceId: string | null;
   educationId: string | null;
   regionIds: string[];
   employmentTypeIds: string[];
+  salaryId: string | null;
   workModeIds: string[];
+  companyTypeIds: string[];
+  institutionTypeIds: string[];
+  contractPeriodIds: string[];
+  workTypeIds: string[];
+  hourlyPayRangeId: string | null;
+  pharmacyFeatureIds: string[];
+  scheduleIds: string[];
+  hospitalTypeIds: string[];
+  shiftTypeIds: string[];
   emailAlertEnabled: boolean;
   emailFrequency: EmailFrequency | null;
 }
+
+export type TrackPreferences = Partial<Record<JobTrack, UserJobPreference>>;
 
 export interface JobFilters {
   track: JobTrack;
@@ -230,6 +246,68 @@ export interface AppliedFilterChip {
   kind: FilterKind;
   id: string;
   label: string;
+}
+
+export type SalaryKind = "월급" | "일급" | "시급" | "면접후결정";
+
+/** 원 단위로 정규화된 급여 표시 정보. min/max/note는 kind에 맞는 단위로 화면에서 포맷팅한다. */
+export interface SalaryDetail {
+  kind: SalaryKind;
+  min?: number;
+  max?: number;
+  note?: string;
+  /** 시급제 등에서 평일/주말처럼 요일별 차등이 있는 경우 */
+  weekdayNet?: number;
+  weekendNet?: number;
+}
+
+export interface JobWorkShift {
+  label?: string;
+  days: string;
+  time: string;
+  note?: string;
+}
+
+/** 근무지 교통편. 항목이 없으면 해당 행을 렌더링하지 않는다. */
+export interface JobCommute {
+  subway?: string[];
+  bus?: string;
+  car?: string;
+  parking?: "가능" | "불가" | "지원";
+}
+
+/** 약국 근무 환경(전산/기기/인력 구성). 값이 없는 필드는 숨긴다. */
+export interface PharmacyEnv {
+  simpyeong?: "필요" | "불필요";
+  atc?: string;
+  otherDevices?: string[];
+  software?: string[];
+  staff?: { pharmacist?: number; support?: number };
+  mainDept?: string[];
+  mainHospital?: string;
+}
+
+export interface PharmacyRecruitRow {
+  part: string;
+  duty: string;
+  qualification: string;
+}
+
+export interface JobHrTip {
+  question: string;
+  answer: string;
+}
+
+export type JobApplyChannel = "간편지원" | "전화" | "문자" | "이메일";
+
+/** 지원 채널·전형절차 상세. 기존 applyMethod(단일 라벨)와 별개로 채널이 여러 개인 공고에서 사용한다. */
+export interface JobApplyInfo {
+  channels: JobApplyChannel[];
+  blocked?: string;
+  phone?: string;
+  email?: string;
+  documents?: string[];
+  steps: string[];
 }
 
 export interface Job {
@@ -323,6 +401,21 @@ export interface Job {
   isClosed?: boolean;
   dateOrder: number;
   deadlineOrder: number;
+
+  /** 약국 등 salary 문자열만으로 표현하기 어려운 공고에서 사용하는 정규화된 급여 상세 */
+  salaryDetail?: SalaryDetail;
+  /** 근무 옵션이 여러 개인 공고(약국 파트타임 등)에서 사용 */
+  workShifts?: JobWorkShift[];
+  /** 본문 근무지 교통편. locationDetail(지하철 중심)과 별개로, 지하철이 없는 공고에서 사용 */
+  commute?: JobCommute;
+  pharmacyEnv?: PharmacyEnv;
+  /** 모집부문 및 자격요건 표. 복수 모집부문을 지원한다 */
+  recruitTable?: PharmacyRecruitRow[];
+  /** 상세 모집 내용(포지션 소개와 별개의 본문) */
+  recruitDetails?: FormattedContent;
+  hrTips?: JobHrTip[];
+  /** 지원 채널이 여러 개이거나 차단 안내가 필요한 공고에서 사용 */
+  applyInfo?: JobApplyInfo;
 }
 
 export interface Company {
@@ -340,6 +433,8 @@ export interface Company {
   employeeCount: string;
   foundedYear: string;
   website: string;
+  /** 마스킹된 대표자명(예: "정*래"). 실명 노출이 어려운 업종에서 사용 */
+  repName?: string;
   activeJobCount: number;
   address: string;
 }

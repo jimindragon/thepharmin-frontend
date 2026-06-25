@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
+import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
 import { jobs } from "@/data/jobs";
 import type { Job } from "@/types/jobs";
@@ -63,6 +64,16 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   const company = companies.find((item) => item.id === job.companyId) ?? null;
+
+  if (job.track === "pharmacy") {
+    return (
+      <>
+        <Header />
+        <PharmacyJobDetailClient job={job} company={company} similarJobs={getSimilarJobs(job)} />
+      </>
+    );
+  }
+
   const reviews = companyReviews.filter((review) => review.companyId === job.companyId);
 
   return (

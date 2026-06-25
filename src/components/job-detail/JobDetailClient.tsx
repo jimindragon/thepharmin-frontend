@@ -17,7 +17,6 @@ import {
   Heart,
   MapPin,
   Share2,
-  ShieldCheck,
   Sparkles,
   ThumbsUp,
   WalletCards,
@@ -28,11 +27,29 @@ import type {
   CompanyNewsArticle,
   CompanyReview,
   CompanyReviewType,
-  FormattedContent,
   Job,
   ReviewAccessState,
 } from "@/types/jobs";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import {
+  ActionIconButton,
+  CompanyLogo,
+  DefaultCover,
+  FormattedContentView,
+  HeaderTag,
+  HiringProcess,
+  MapBox,
+  OverviewCard,
+  SectionShell,
+  SimilarJobs,
+  VerifiedBadge,
+  careerLabel,
+  deadlineDetail,
+  deadlineLabel,
+  getCoverImage,
+  readSavedJobs,
+  writeSavedJobs,
+} from "@/components/job-detail/shared";
 
 interface JobDetailClientProps {
   job: Job;
@@ -46,67 +63,6 @@ interface SectionItem {
   id: string;
   label: string;
   visible: boolean;
-}
-
-const saveStorageKey = "thepharmin:saved-jobs";
-
-function readSavedJobs() {
-  if (typeof window === "undefined") {
-    return new Set<number>();
-  }
-
-  try {
-    const value = window.localStorage.getItem(saveStorageKey);
-    const ids = value ? (JSON.parse(value) as number[]) : [];
-    return new Set(ids);
-  } catch {
-    return new Set<number>();
-  }
-}
-
-function writeSavedJobs(ids: Set<number>) {
-  window.localStorage.setItem(saveStorageKey, JSON.stringify(Array.from(ids)));
-}
-
-function careerLabel(job: Job) {
-  return job.career.replace(/^경력\s*/, "");
-}
-
-function deadlineLabel(job: Job) {
-  if (job.isClosed) {
-    return "마감";
-  }
-
-  if (job.deadlineType === "untilHired" || job.closingStatus === "always") {
-    return "채용 시 마감";
-  }
-
-  if (!job.deadline) {
-    return job.deadlineLabel.replace("마감 ", "");
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const deadline = new Date(`${job.deadline}T00:00:00`);
-  const diff = Math.ceil((deadline.getTime() - today.getTime()) / 86400000);
-
-  if (diff < 0) {
-    return "마감";
-  }
-
-  if (diff === 0 || job.closingStatus === "today") {
-    return "오늘 마감";
-  }
-
-  return `D-${diff}`;
-}
-
-function deadlineDetail(job: Job) {
-  if (job.deadlineType === "untilHired" || job.closingStatus === "always") {
-    return "채용 시 마감";
-  }
-
-  return job.deadlineDate;
 }
 
 function applyButtonLabel(job: Job) {
@@ -157,22 +113,6 @@ function applyHref(job: Job) {
   return undefined;
 }
 
-function getCoverImage(job: Job, company: Company | null) {
-  if (job.coverImageMode === "upload" && job.coverImageUrl) {
-    return job.coverImageUrl;
-  }
-
-  if (job.coverImageMode === "company") {
-    return company?.coverImage ?? company?.defaultImage ?? job.coverImage;
-  }
-
-  if (job.coverImageMode === "none") {
-    return undefined;
-  }
-
-  return job.coverImageUrl ?? job.coverImage ?? company?.coverImage ?? company?.defaultImage;
-}
-
 function getVisibleJobTags(job: Job) {
   return [
     job.role ?? job.jobCategory ?? job.tags[0],
@@ -213,177 +153,6 @@ function getCompanyNewsForJob(job: Job): CompanyNewsArticle[] {
       url: "https://www.thepharmanews.com/news/global-ra",
     },
   ];
-}
-
-function CompanyLogo({
-  name,
-  logoText,
-  logoUrl,
-  logoColor,
-  logoAccent,
-  size = "lg",
-}: {
-  name: string;
-  logoText: string;
-  logoUrl?: string;
-  logoColor: string;
-  logoAccent?: string;
-  size?: "sm" | "lg";
-}) {
-  const boxSize = size === "lg" ? "h-[68px] w-[68px]" : "h-[46px] w-[46px]";
-  const shapeSize = size === "lg" ? "h-[22px] w-[22px]" : "h-[16px] w-[16px]";
-  const textSize = size === "lg" ? "text-[12px]" : "text-[8px]";
-
-  return (
-    <div
-      className={clsx(
-        "grid shrink-0 place-items-center rounded-[var(--radius)] border border-border bg-white shadow-[0_3px_10px_rgba(20,32,46,0.04)]",
-        boxSize,
-      )}
-      aria-label={`${name} 로고`}
-    >
-      {logoUrl ? (
-        <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" />
-      ) : (
-        <>
-          <div className={clsx("relative", size === "lg" ? "h-9 w-[52px]" : "h-6 w-9")}>
-            <span
-              className={clsx("absolute rounded-full opacity-90", shapeSize)}
-              style={{ backgroundColor: logoColor, left: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-            />
-            <span
-              className={clsx("absolute rounded-full opacity-80", shapeSize)}
-              style={{ backgroundColor: logoAccent ?? logoColor, right: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-            />
-            <span
-              className={clsx("absolute rounded-full opacity-70", shapeSize)}
-              style={{ backgroundColor: logoColor, left: size === "lg" ? 19 : 11, bottom: 0 }}
-            />
-          </div>
-          <span className={clsx("-mt-1 max-w-[58px] truncate font-medium", textSize)} style={{ color: logoColor }}>
-            {logoText}
-          </span>
-        </>
-      )}
-    </div>
-  );
-}
-
-function HeaderTag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3 py-1.5 text-[13px] font-normal text-[#4f5a66]">
-      {children}
-    </span>
-  );
-}
-
-function ActionIconButton({
-  label,
-  children,
-  onClick,
-  active,
-}: {
-  label: string;
-  children: React.ReactNode;
-  onClick: () => void;
-  active?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className={clsx(
-        "grid h-11 w-11 shrink-0 place-items-center border bg-white transition",
-        active
-          ? "border-brand text-brand shadow-[0_4px_14px_rgba(17,17,17,0.14)]"
-          : "border-border text-[#818b98] hover:border-brand hover:text-brand",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
-function DefaultCover({ job }: { job: Job }) {
-  return (
-    <div className="relative h-[286px] overflow-hidden rounded-[var(--radius)] border border-border bg-[#071115] max-[720px]:h-[210px]">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 88% 20%, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.18) 18%, transparent 19%), radial-gradient(circle at 82% 88%, rgba(255,255,255,0.10) 0, rgba(255,255,255,0.10) 16%, transparent 17%), linear-gradient(115deg, #071115 0%, #2b2f34 44%, #777b80 74%, #b7babd 100%)",
-        }}
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.54)_0%,rgba(0,0,0,0.22)_58%,rgba(0,0,0,0.04)_100%)]" />
-      <div className="absolute left-8 top-8 flex items-center gap-4 max-[720px]:left-5 max-[720px]:top-5">
-        <CompanyLogo
-          name={job.company}
-          logoText={job.logoText}
-          logoColor={job.logoColor}
-          logoAccent={job.logoAccent}
-          size="sm"
-        />
-        <div>
-          <p className="text-[14px] font-medium text-white">{job.company}</p>
-          <p className="mt-1 text-[12px] font-medium text-white/66">{job.industry ?? job.category} · {job.role ?? job.jobCategory ?? "채용"}</p>
-        </div>
-      </div>
-      <div className="absolute bottom-8 left-8 right-8 max-w-[720px] max-[720px]:bottom-6 max-[720px]:left-5 max-[720px]:right-5">
-        <p className="text-[15px] font-medium text-white/78">THE PHARMA Recruit</p>
-        <p className="mt-2 text-[28px] font-medium leading-[1.25] text-white max-[720px]:text-[22px]">{job.company}</p>
-      </div>
-    </div>
-  );
-}
-
-function OverviewCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3.5">
-      <p className="text-[12px] font-medium text-[#8893a2]">{label}</p>
-      <p className="mt-1.5 text-[15px] font-normal text-[#2f3845]">{value}</p>
-    </div>
-  );
-}
-
-function SectionShell({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-  return (
-    <section id={id} className="scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">{title}</h2>
-      <div className="mt-5">{children}</div>
-    </section>
-  );
-}
-
-function FormattedContentView({ content, fallback }: { content?: FormattedContent; fallback?: string[] }) {
-  const normalized = content ?? (fallback ? { format: "bullet" as const, items: fallback } : undefined);
-
-  if (!normalized || normalized.items.length === 0) {
-    return null;
-  }
-
-  if (normalized.format === "paragraph") {
-    return (
-      <div className="space-y-3 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
-        {normalized.items.map((item) => (
-          <p key={item}>{item}</p>
-        ))}
-      </div>
-    );
-  }
-
-  const ListTag = normalized.format === "numbered" ? "ol" : "ul";
-
-  return (
-    <ListTag className={clsx("space-y-3 text-[15px] font-normal leading-[1.75] text-[#3f4855]", normalized.format === "numbered" && "list-decimal pl-5")}>
-      {normalized.items.map((item, index) => (
-        <li key={`${item}-${index}`} className={normalized.format === "bullet" ? "flex gap-2.5" : undefined}>
-          {normalized.format === "bullet" ? <span className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#111111]" /> : null}
-          <span>{item}</span>
-        </li>
-      ))}
-    </ListTag>
-  );
 }
 
 function AdditionalMaterials({ job }: { job: Job }) {
@@ -489,28 +258,6 @@ function WorkConditions({ job }: { job: Job }) {
   );
 }
 
-function HiringProcess({ steps }: { steps?: string[] }) {
-  if (!steps?.length) {
-    return null;
-  }
-
-  return (
-    <div>
-      <div className="grid grid-cols-5 gap-2 max-[960px]:grid-cols-3 max-[640px]:grid-cols-1">
-        {steps.map((step, index) => (
-          <div key={step} className="relative rounded-[var(--radius)] border border-[#dfe7ee] bg-[#fbfcfd] px-3.5 py-4 text-center">
-            <span className="mx-auto grid h-8 w-8 place-items-center rounded-[var(--radius)] bg-brand text-[13px] font-medium text-white">
-              {index + 1}
-            </span>
-            <p className="mt-2.5 text-[13px] font-normal text-[#3f4855]">{step}</p>
-          </div>
-        ))}
-      </div>
-      <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">채용 절차와 일정은 기업 사정에 따라 변경될 수 있습니다.</p>
-    </div>
-  );
-}
-
 function CompanyNewsSection({ job }: { job: Job }) {
   const articles = getCompanyNewsForJob(job);
   const hasDirectCompanyNews = Boolean(job.companyNews?.some((article) => article.type === "company"));
@@ -563,22 +310,7 @@ function MapPlaceholder({ job, company }: { job: Job; company: Company | null })
 
   return (
     <div className="grid gap-4">
-      {address ? (
-        <div className="relative grid h-[190px] place-items-center overflow-hidden rounded-[var(--radius)] border border-dashed border-[#cbd8df] bg-[#f3f3f3]">
-          <div
-            className="absolute inset-0 opacity-[0.22]"
-            style={{
-              backgroundImage:
-                "linear-gradient(#dedede 1px, transparent 1px), linear-gradient(90deg, #dedede 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-          <div className="relative z-10 rounded-[var(--radius)] border border-[#d7dde5] bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
-            <MapPin className="mx-auto text-[#111111]" size={22} />
-            <p className="mt-1 text-[13px] font-medium text-[#3f4855]">지도 영역</p>
-          </div>
-        </div>
-      ) : null}
+      <MapBox address={address} />
       <div className="grid grid-cols-2 gap-3 max-[720px]:grid-cols-1">
         <OverviewCard label="근무지역" value={job.location} />
         {address ? <OverviewCard label={addressLabel} value={address} /> : <OverviewCard label="상세 주소" value="상세 주소는 지원 과정에서 기업을 통해 확인해 주세요." />}
@@ -865,101 +597,6 @@ function ReviewsSection({
   );
 }
 
-function getSimilarJobReasons(baseJob: Job, similarJob: Job) {
-  const reasons: string[] = [];
-
-  if ((baseJob.role ?? baseJob.jobCategory) && (baseJob.role ?? baseJob.jobCategory) === (similarJob.role ?? similarJob.jobCategory)) {
-    reasons.push(`${baseJob.role ?? baseJob.jobCategory} 직무 일치`);
-  } else if (similarJob.jobSubcategoryIds.some((id) => baseJob.jobSubcategoryIds.includes(id))) {
-    reasons.push("직무 분류 유사");
-  }
-
-  const sharedKeyword = similarJob.tags.find((tag) => [...baseJob.tags, ...(baseJob.coreKeywords ?? [])].includes(tag));
-  if (sharedKeyword) {
-    reasons.push(`${sharedKeyword} 키워드 일치`);
-  }
-
-  if ((baseJob.industry ?? baseJob.category) === (similarJob.industry ?? similarJob.category)) {
-    reasons.push(`${baseJob.industry ?? baseJob.category} 산업`);
-  }
-
-  if (baseJob.regionId === similarJob.regionId) {
-    reasons.push(`${similarJob.location.split(" ")[0]}권 근무지`);
-  }
-
-  return reasons.slice(0, 2);
-}
-
-function SimilarCompanyLogo({ job }: { job: Job }) {
-  const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
-
-  return (
-    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-medium text-[#2f3845]">
-      {job.logoUrl ? <img src={job.logoUrl} alt={`${job.company} 로고`} className="h-full w-full rounded-full object-contain p-1" /> : fallback}
-    </span>
-  );
-}
-
-function SimilarJobs({ baseJob, jobs, savedIds, onToggleSave }: { baseJob: Job; jobs: Job[]; savedIds: Set<number>; onToggleSave: (jobId: number) => void }) {
-  if (!jobs.length) {
-    return <p className="text-[14px] font-normal text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>;
-  }
-
-  return (
-    <div className="grid grid-cols-4 gap-3 max-[1180px]:grid-cols-2 max-[720px]:flex max-[720px]:overflow-x-auto">
-      {jobs.slice(0, 4).map((similarJob) => {
-        const reasons = getSimilarJobReasons(baseJob, similarJob);
-        const card = (
-          <article className="group h-full rounded-[var(--radius)] border border-border bg-white p-4 transition hover:border-brand/45 hover:bg-[#fbfbfb] max-[720px]:w-[270px] max-[720px]:shrink-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <SimilarCompanyLogo job={similarJob} />
-                <p className="min-w-0 truncate text-[12px] font-medium text-[#596373]">{similarJob.company}</p>
-              </div>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onToggleSave(similarJob.id);
-                }}
-                className={clsx("grid h-8 w-8 shrink-0 place-items-center", savedIds.has(similarJob.id) ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand")}
-                aria-label={`${similarJob.title} 저장`}
-              >
-                <Bookmark size={18} fill={savedIds.has(similarJob.id) ? "currentColor" : "none"} />
-              </button>
-            </div>
-            <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.4] text-[#2b3340]">{similarJob.title}</h3>
-            <p className="mt-2 text-[12px] font-medium text-[#7d8796]">
-              {careerLabel(similarJob)} · {similarJob.employmentType} · {similarJob.location}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {reasons.map((reason) => (
-                <span key={reason} className="rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f4f5f6] px-2 py-1 text-[11px] font-medium text-[#4f5a66]">
-                  {reason}
-                </span>
-              ))}
-              {similarJob.tags.slice(0, Math.max(0, 2 - reasons.length)).map((tag) => (
-                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-white px-2 py-1 text-[11px] font-medium text-[#777f8c]">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </article>
-        );
-
-        return similarJob.slug ? (
-          <Link key={similarJob.id} href={`/jobs/${similarJob.slug}`} className="block rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.2)]">
-            {card}
-          </Link>
-        ) : (
-          <div key={similarJob.id}>{card}</div>
-        );
-      })}
-    </div>
-  );
-}
-
 export function JobDetailClient({ job, company, similarJobs, reviews, reviewAccess }: JobDetailClientProps) {
   const [savedIds, setSavedIds] = useState<Set<number>>(() => new Set());
   const [activeSection, setActiveSection] = useState("intro");
@@ -1151,12 +788,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                           ) : (
                             <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
                           )}
-                          {company?.verified ? (
-                            <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
-                              <ShieldCheck size={13} />
-                              인증기업
-                            </span>
-                          ) : null}
+                          {company?.verified ? <VerifiedBadge /> : null}
                         </div>
                         <button
                           type="button"
@@ -1313,12 +945,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-[18px] font-bold text-[#252d39]">{company?.name ?? job.company}</h3>
-                      {company?.verified ? (
-                        <span className="inline-flex items-center gap-1 rounded-[var(--radius)] bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
-                          <ShieldCheck size={13} />
-                          인증기업
-                        </span>
-                      ) : null}
+                      {company?.verified ? <VerifiedBadge /> : null}
                     </div>
                     <p className="mt-2 text-[14px] font-normal leading-[1.75] text-[#566171]">{company?.description ?? job.companyDescription}</p>
                   </div>

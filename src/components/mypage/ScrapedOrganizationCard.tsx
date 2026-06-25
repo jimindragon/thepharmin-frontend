@@ -7,6 +7,7 @@ import type { ScrapedOrganization } from "@/data/scraps";
 
 const typeLabels: Record<ScrapedOrganization["type"], string> = {
   company: "기업",
+  research: "연구기관",
   hospital: "병원",
   pharmacy: "약국",
 };

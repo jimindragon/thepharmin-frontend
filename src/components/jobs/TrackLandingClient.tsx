@@ -26,7 +26,13 @@ export function TrackLandingClient({ track }: { track: JobTrack }) {
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={track} />
-          <FeaturedJobsSection jobs={featuredJobs.jobs} onNext={featuredJobs.onNext} />
+          <FeaturedJobsSection
+            jobs={featuredJobs.jobs}
+            onPrev={featuredJobs.onPrev}
+            onNext={featuredJobs.onNext}
+            canGoPrev={featuredJobs.canGoPrev}
+            canGoNext={featuredJobs.canGoNext}
+          />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={track} />
       </main>

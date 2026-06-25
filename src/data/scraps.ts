@@ -1,6 +1,6 @@
 import type { JobTrack } from "@/types/jobs";
 
-export type ScrapedOrganizationType = "company" | "hospital" | "pharmacy";
+export type ScrapedOrganizationType = "company" | "research" | "hospital" | "pharmacy";
 
 export interface ScrapedOrganization {
   id: string;
@@ -14,22 +14,24 @@ export interface ScrapedOrganization {
   href: string;
 }
 
-const typeTrack: Record<ScrapedOrganizationType, JobTrack> = {
+/** 스크랩한 기관의 유형을 채용공고 트랙과 매핑한다. 분야 필터 칩이 이 매핑을 그대로 사용한다. */
+export const scrapedOrganizationTypeTrack: Record<ScrapedOrganizationType, JobTrack> = {
   company: "industry",
+  research: "research",
   hospital: "hospital",
   pharmacy: "pharmacy",
 };
 
 function fallbackHref(name: string, type: ScrapedOrganizationType) {
-  return `/jobs?track=${typeTrack[type]}&keyword=${encodeURIComponent(name)}`;
+  return `/jobs?track=${scrapedOrganizationTypeTrack[type]}&keyword=${encodeURIComponent(name)}`;
 }
 
 /**
  * 마이페이지 스크랩 화면이 사용하는 목업 데이터.
  * 실제 백엔드 연동 전까지는 이 배열을 초기 상태로 쓰고, 이후에는 API 응답으로 교체하면 된다.
- * 상세 페이지 이동을 시연할 수 있도록 slug가 있는 공고(101, 102, 106, 108)로만 구성했다.
+ * 상세 페이지 이동을 시연할 수 있도록 slug가 있는 공고(101, 102, 106, 108, 307)로만 구성했다.
  */
-export const scrapedJobIds: number[] = [101, 102, 106, 108];
+export const scrapedJobIds: number[] = [101, 102, 106, 108, 307];
 
 export const scrapedOrganizations: ScrapedOrganization[] = [
   {

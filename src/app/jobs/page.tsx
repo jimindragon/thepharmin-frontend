@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { CategoryTabs } from "@/components/CategoryTabs";
 import { JobCard } from "@/components/JobCard";
@@ -14,9 +14,8 @@ import { PageTitle } from "@/components/ui/Typography";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import { siteConfig } from "@/config/site";
 import { jobs } from "@/data/jobs";
-import { defaultPreferenceScenario, mockUserPreferences } from "@/data/mockUserPreferences";
-import { recommendedJobs } from "@/data/recommendedJobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
+import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
 
@@ -38,45 +37,23 @@ export default function JobsPage() {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [recommendedOffset, setRecommendedOffset] = useState(0);
   const [activeQuickLink, setActiveQuickLink] = useState("preference");
-  const [preference, setPreferenceState] = useState<UserJobPreference | null>(
-    mockUserPreferences[defaultPreferenceScenario],
-  );
-  const initializedPreference = useRef(false);
+  const [preference, setPreferenceState] = useState<UserJobPreference | null>(null);
 
-  const filterState = useJobFilters(defaultPreferenceScenario === "applied");
+  const filterState = useJobFilters(false);
   const activeTrack = filterState.filters.track;
   const activeFilterConfig = trackFilterConfigs[activeTrack];
+  const featuredJobs = useFeaturedJobs(activeTrack);
 
+  // 트랙(페이지 분야)이 바뀔 때마다 그 분야의 저장된 관심조건만 불러온다 — 자동으로 적용하지는 않는다.
   useEffect(() => {
-    if (initializedPreference.current) return;
-
-    const stored = getStoredJobPreference();
-    if (stored) {
-      setPreferenceState(stored);
-      filterState.applyPreference(stored);
-      filterState.setPreferenceApplied(true);
-      initializedPreference.current = true;
-      return;
-    }
-
-    if (defaultPreferenceScenario === "applied" && preference) {
-      filterState.applyPreference(preference);
-      initializedPreference.current = true;
-    }
+    setPreferenceState(getStoredJobPreference(activeTrack));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeTrack]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [filterState.filters, sortOption]);
-
-  const visibleRecommendedJobs = useMemo(() => {
-    const trackRecommendedJobs = recommendedJobs.filter((job) => job.track === activeTrack);
-    if (trackRecommendedJobs.length === 0) return [];
-    return trackRecommendedJobs.map((_, index) => trackRecommendedJobs[(index + recommendedOffset) % trackRecommendedJobs.length]).slice(0, 3);
-  }, [activeTrack, recommendedOffset]);
 
   const filteredJobs = useMemo(() => {
     return filterJobsByFilters(jobs, filterState.filters);
@@ -141,8 +118,11 @@ export default function JobsPage() {
               />
 
               <RecommendedJobs
-                jobs={visibleRecommendedJobs}
-                onNext={() => setRecommendedOffset((current) => (current + 1) % recommendedJobs.length)}
+                jobs={featuredJobs.jobs}
+                onPrev={featuredJobs.onPrev}
+                onNext={featuredJobs.onNext}
+                canGoPrev={featuredJobs.canGoPrev}
+                canGoNext={featuredJobs.canGoNext}
               />
 
               <JobListToolbar
@@ -173,6 +153,7 @@ export default function JobsPage() {
             </div>
 
             <SidebarQuickLinks
+              track={activeTrack}
               savedCount={bookmarkedIds.length}
               preference={preference}
               preferenceApplied={filterState.preferenceApplied}

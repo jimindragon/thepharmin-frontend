@@ -198,6 +198,109 @@ function makeChip(kind: FilterKind, id: string, label: string): AppliedFilterChi
   };
 }
 
+/** `useJobFilters`의 적용된 칩 계산과 마이페이지 관심조건 설정 화면이 함께 쓰는 순수 함수. */
+export function buildAppliedChips(filters: JobFilters): AppliedFilterChip[] {
+  const chips: AppliedFilterChip[] = [];
+
+  chipDefinitions.forEach((definition) => {
+    const value = filters[definition.key];
+    if (definition.multiple) {
+      (value as string[]).forEach((id) => {
+        const label = optionLabelMaps[definition.labelMapKey]?.get(id) ?? id;
+        chips.push(makeChip(definition.kind, id, definition.kind === "jobCategory" ? `${label} 전체` : label));
+      });
+      return;
+    }
+
+    if (typeof value === "string" && value) {
+      chips.push(makeChip(definition.kind, value, optionLabelMaps[definition.labelMapKey]?.get(value) ?? value));
+    }
+  });
+
+  if (filters.keyword.trim()) {
+    chips.push(makeChip("keyword", filters.keyword.trim(), `검색어: ${filters.keyword.trim()}`));
+  }
+
+  if (filters.leaderOnly) {
+    chips.push(makeChip("leaderOnly", "true", "리더급 공고"));
+  }
+
+  if (filters.headhuntingOnly) {
+    chips.push(makeChip("headhuntingOnly", "true", "헤드헌팅 공고"));
+  }
+
+  if (filters.quickApplyOnly) {
+    chips.push(makeChip("quickApplyOnly", "true", "간편지원 공고"));
+  }
+
+  return chips;
+}
+
+/** 직무 1차 분류 토글의 순수 버전. 같은 트랙 안에서 분류를 켜고 끄면 하위 직무 선택도 함께 정리한다. */
+export function toggleJobCategoryInFilters(filters: JobFilters, id: string): JobFilters {
+  const subcategoryIds = subcategoryIdsForCategory(filters.track, id);
+  const selected = filters.jobCategoryIds.includes(id);
+
+  return {
+    ...filters,
+    jobCategoryIds: selected ? without(filters.jobCategoryIds, id) : [...filters.jobCategoryIds, id],
+    jobSubcategoryIds: filters.jobSubcategoryIds.filter((subcategoryId) => !subcategoryIds.includes(subcategoryId)),
+  };
+}
+
+/** 직무 2차 분류 토글의 순수 버전. */
+export function toggleJobSubcategoryInFilters(filters: JobFilters, id: string): JobFilters {
+  const categoryId = categoryIdForSubcategory(filters.track, id);
+
+  if (filters.jobSubcategoryIds.includes(id)) {
+    return { ...filters, jobSubcategoryIds: without(filters.jobSubcategoryIds, id) };
+  }
+
+  return {
+    ...filters,
+    jobCategoryIds: categoryId ? without(filters.jobCategoryIds, categoryId) : filters.jobCategoryIds,
+    jobSubcategoryIds: [...filters.jobSubcategoryIds, id],
+  };
+}
+
+/** 칩 하나를 걷어낸 필터를 돌려주는 순수 버전. `keyword` 칩은 호출부에서 `keywordInput` UI 상태도 함께 비워야 한다. */
+export function removeChipFromFilters(filters: JobFilters, chip: AppliedFilterChip): JobFilters {
+  if (chip.kind === "keyword") {
+    return { ...filters, keyword: "" };
+  }
+
+  if (chip.kind === "headhuntingOnly") {
+    return { ...filters, headhuntingOnly: false };
+  }
+
+  if (chip.kind === "leaderOnly") {
+    return { ...filters, leaderOnly: false };
+  }
+
+  if (chip.kind === "quickApplyOnly") {
+    return { ...filters, quickApplyOnly: false };
+  }
+
+  if (chip.kind === "jobCategory") {
+    const subcategoryIds = subcategoryIdsForCategory(filters.track, chip.id);
+    return {
+      ...filters,
+      jobCategoryIds: without(filters.jobCategoryIds, chip.id),
+      jobSubcategoryIds: filters.jobSubcategoryIds.filter((subcategoryId) => !subcategoryIds.includes(subcategoryId)),
+    };
+  }
+
+  const definition = chipDefinitions.find((item) => item.kind === chip.kind);
+  if (!definition) return filters;
+
+  if (definition.multiple) {
+    const key = definition.key as FilterStateKey;
+    return { ...filters, [key]: without(filters[key], chip.id) };
+  }
+
+  return { ...filters, [definition.key]: null };
+}
+
 function hasActiveFilters(filters: JobFilters) {
   return (
     filters.keyword.trim().length > 0 ||
@@ -324,42 +427,7 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     window.history.replaceState(null, "", nextUrl);
   }, [basePath, filters, queryReady, syncUrl]);
 
-  const appliedChips = useMemo(() => {
-    const chips: AppliedFilterChip[] = [];
-
-    chipDefinitions.forEach((definition) => {
-      const value = filters[definition.key];
-      if (definition.multiple) {
-        (value as string[]).forEach((id) => {
-          const label = optionLabelMaps[definition.labelMapKey]?.get(id) ?? id;
-          chips.push(makeChip(definition.kind, id, definition.kind === "jobCategory" ? `${label} 전체` : label));
-        });
-        return;
-      }
-
-      if (typeof value === "string" && value) {
-        chips.push(makeChip(definition.kind, value, optionLabelMaps[definition.labelMapKey]?.get(value) ?? value));
-      }
-    });
-
-    if (filters.keyword.trim()) {
-      chips.push(makeChip("keyword", filters.keyword.trim(), `검색어: ${filters.keyword.trim()}`));
-    }
-
-    if (filters.leaderOnly) {
-      chips.push(makeChip("leaderOnly", "true", "리더급 공고"));
-    }
-
-    if (filters.headhuntingOnly) {
-      chips.push(makeChip("headhuntingOnly", "true", "헤드헌팅 공고"));
-    }
-
-    if (filters.quickApplyOnly) {
-      chips.push(makeChip("quickApplyOnly", "true", "간편지원 공고"));
-    }
-
-    return chips;
-  }, [filters]);
+  const appliedChips = useMemo(() => buildAppliedChips(filters), [filters]);
 
   const markManualChange = () => {
     setPreferenceApplied(false);
@@ -367,6 +435,7 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
 
   const setTrack = (track: JobTrack) => {
     setJobLimitMessage("");
+    setPreferenceApplied(false);
     setFilters((current) => {
       const next = preserveCommonFiltersForTrackChange(current, track);
       setKeywordInput(next.keyword);
@@ -377,34 +446,13 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
   const toggleJobCategory = (id: string) => {
     setJobLimitMessage("");
     markManualChange();
-    setFilters((current) => {
-      const subcategoryIds = subcategoryIdsForCategory(current.track, id);
-      const selected = current.jobCategoryIds.includes(id);
-
-      return {
-        ...current,
-        jobCategoryIds: selected ? without(current.jobCategoryIds, id) : [...current.jobCategoryIds, id],
-        jobSubcategoryIds: current.jobSubcategoryIds.filter((subcategoryId) => !subcategoryIds.includes(subcategoryId)),
-      };
-    });
+    setFilters((current) => toggleJobCategoryInFilters(current, id));
   };
 
   const toggleJobSubcategory = (id: string) => {
     setJobLimitMessage("");
     markManualChange();
-    setFilters((current) => {
-      const categoryId = categoryIdForSubcategory(current.track, id);
-
-      if (current.jobSubcategoryIds.includes(id)) {
-        return { ...current, jobSubcategoryIds: without(current.jobSubcategoryIds, id) };
-      }
-
-      return {
-        ...current,
-        jobCategoryIds: categoryId ? without(current.jobCategoryIds, categoryId) : current.jobCategoryIds,
-        jobSubcategoryIds: [...current.jobSubcategoryIds, id],
-      };
-    });
+    setFilters((current) => toggleJobSubcategoryInFilters(current, id));
   };
 
   const toggleMultiFilter = (key: FilterStateKey, id: string) => {
@@ -456,43 +504,10 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
 
   const removeAppliedFilter = (chip: AppliedFilterChip) => {
     markManualChange();
-    setFilters((current) => {
-      if (chip.kind === "keyword") {
-        setKeywordInput("");
-        return { ...current, keyword: "" };
-      }
-
-      if (chip.kind === "headhuntingOnly") {
-        return { ...current, headhuntingOnly: false };
-      }
-
-      if (chip.kind === "leaderOnly") {
-        return { ...current, leaderOnly: false };
-      }
-
-      if (chip.kind === "quickApplyOnly") {
-        return { ...current, quickApplyOnly: false };
-      }
-
-      if (chip.kind === "jobCategory") {
-        const subcategoryIds = subcategoryIdsForCategory(current.track, chip.id);
-        return {
-          ...current,
-          jobCategoryIds: without(current.jobCategoryIds, chip.id),
-          jobSubcategoryIds: current.jobSubcategoryIds.filter((subcategoryId) => !subcategoryIds.includes(subcategoryId)),
-        };
-      }
-
-      const definition = chipDefinitions.find((item) => item.kind === chip.kind);
-      if (!definition) return current;
-
-      if (definition.multiple) {
-        const key = definition.key as FilterStateKey;
-        return { ...current, [key]: without(current[key], chip.id) };
-      }
-
-      return { ...current, [definition.key]: null };
-    });
+    if (chip.kind === "keyword") {
+      setKeywordInput("");
+    }
+    setFilters((current) => removeChipFromFilters(current, chip));
   };
 
   const resetFilters = () => {
@@ -502,22 +517,38 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     setPreferenceApplied(false);
   };
 
+  /**
+   * 관심조건을 현재 트랙의 필터에 덧씌운다. 트랙은 페이지의 기본 범위 조건이므로 절대 바꾸지 않고
+   * `current.track`을 그대로 유지한다 — 관심조건과 트랙 범위는 서로 분리된 별개의 조건이다.
+   */
   const applyPreference = (preference: UserJobPreference) => {
-    setFilters({
+    setFilters((current) => ({
       ...emptyJobFilters,
-      track: "industry",
+      track: current.track,
+      jobCategoryIds: preference.jobCategoryIds,
       jobSubcategoryIds: preference.jobSubcategoryIds,
       experienceId: preference.experienceId,
       educationId: preference.educationId,
-      regionIds: preference.regionIds,
+      regionIds: normalizeRegionIdsForTrack(current.track, preference.regionIds),
       employmentTypeIds: preference.employmentTypeIds,
+      salaryId: preference.salaryId,
       workModeIds: preference.workModeIds,
-    });
+      companyTypeIds: preference.companyTypeIds,
+      institutionTypeIds: preference.institutionTypeIds,
+      contractPeriodIds: preference.contractPeriodIds,
+      workTypeIds: preference.workTypeIds,
+      hourlyPayRangeId: preference.hourlyPayRangeId,
+      pharmacyFeatureIds: preference.pharmacyFeatureIds,
+      scheduleIds: preference.scheduleIds,
+      hospitalTypeIds: preference.hospitalTypeIds,
+      shiftTypeIds: preference.shiftTypeIds,
+    }));
     setKeywordInput("");
     setJobLimitMessage("");
     setPreferenceApplied(true);
   };
 
+  /** 관심조건으로 들어온 값만 걷어내고, 트랙을 포함한 나머지 상태는 그대로 둔다. */
   const clearPreferenceFilters = (preference: UserJobPreference | null) => {
     if (!preference) {
       setPreferenceApplied(false);
@@ -526,12 +557,23 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
 
     setFilters((current) => ({
       ...current,
+      jobCategoryIds: current.jobCategoryIds.filter((id) => !preference.jobCategoryIds.includes(id)),
       jobSubcategoryIds: current.jobSubcategoryIds.filter((id) => !preference.jobSubcategoryIds.includes(id)),
       experienceId: current.experienceId === preference.experienceId ? null : current.experienceId,
       educationId: current.educationId === preference.educationId ? null : current.educationId,
       regionIds: current.regionIds.filter((id) => !preference.regionIds.includes(id)),
       employmentTypeIds: current.employmentTypeIds.filter((id) => !preference.employmentTypeIds.includes(id)),
+      salaryId: current.salaryId === preference.salaryId ? null : current.salaryId,
       workModeIds: current.workModeIds.filter((id) => !preference.workModeIds.includes(id)),
+      companyTypeIds: current.companyTypeIds.filter((id) => !preference.companyTypeIds.includes(id)),
+      institutionTypeIds: current.institutionTypeIds.filter((id) => !preference.institutionTypeIds.includes(id)),
+      contractPeriodIds: current.contractPeriodIds.filter((id) => !preference.contractPeriodIds.includes(id)),
+      workTypeIds: current.workTypeIds.filter((id) => !preference.workTypeIds.includes(id)),
+      hourlyPayRangeId: current.hourlyPayRangeId === preference.hourlyPayRangeId ? null : current.hourlyPayRangeId,
+      pharmacyFeatureIds: current.pharmacyFeatureIds.filter((id) => !preference.pharmacyFeatureIds.includes(id)),
+      scheduleIds: current.scheduleIds.filter((id) => !preference.scheduleIds.includes(id)),
+      hospitalTypeIds: current.hospitalTypeIds.filter((id) => !preference.hospitalTypeIds.includes(id)),
+      shiftTypeIds: current.shiftTypeIds.filter((id) => !preference.shiftTypeIds.includes(id)),
     }));
     setPreferenceApplied(false);
   };
@@ -568,7 +610,13 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
   };
 }
 
-export function filterJobsByFilters(items: Job[], filters: JobFilters) {
+interface FilterJobsOptions {
+  /** 메인 홈의 "전체 분야" 목록처럼 트랙 구분 없이 모든 분야를 보여줄 때 false로 넘긴다. */
+  matchTrack?: boolean;
+}
+
+export function filterJobsByFilters(items: Job[], filters: JobFilters, options: FilterJobsOptions = {}) {
+  const matchTrack = options.matchTrack ?? true;
   const experience = filters.experienceId
     ? experienceOptions.find((option) => option.id === filters.experienceId)
     : null;
@@ -577,7 +625,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters) {
   const keyword = filters.keyword.trim().toLowerCase();
 
   return items.filter((job) => {
-    if (job.track !== filters.track) return false;
+    if (matchTrack && job.track !== filters.track) return false;
     if (filters.leaderOnly && (job.experienceMin ?? 0) < 5) return false;
     if (filters.headhuntingOnly && job.postingSource !== "headhunting") return false;
     if (filters.quickApplyOnly && job.applyMethod !== "간편 지원" && job.applyMethod !== "더파마 간편지원") return false;

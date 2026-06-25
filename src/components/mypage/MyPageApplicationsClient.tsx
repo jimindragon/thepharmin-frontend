@@ -136,7 +136,7 @@ export function MyPageApplicationsClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "지원한 공고" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원한 공고</h1>
-      <p className="mt-2.5 max-w-[640px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         지원완료부터 최종 결과까지 진행 상황을 확인합니다. 간편지원은 전형 단계를 실시간으로, 외부 지원은 기업이 관리하는 일정 기준으로 보여드립니다.
       </p>
 

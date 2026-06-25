@@ -42,11 +42,11 @@ const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string }> =
   { key: "quickApplyOnly", label: "간편지원 공고" },
 ];
 
-function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
+export function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
   return key.endsWith("Ids");
 }
 
-function selectedIds(filters: JobFilters, key: FilterStateKey | SingleFilterStateKey) {
+export function selectedIds(filters: JobFilters, key: FilterStateKey | SingleFilterStateKey) {
   const value = filters[key];
   return Array.isArray(value) ? value : value ? [value] : [];
 }
@@ -61,7 +61,7 @@ function summaryFromOptions(options: FilterOption[], ids: string[]) {
   return `${optionLabel(options, ids[0])} 외 ${ids.length - 1}개`;
 }
 
-function summaryForDefinition(definition: FilterDefinition, filters: JobFilters) {
+export function summaryForDefinition(definition: FilterDefinition, filters: JobFilters) {
   if (definition.kind === "job") {
     const categoryOptions = definition.categories.map((category) => ({
       ...category,
@@ -228,7 +228,7 @@ export function OptionsPanel({
   );
 }
 
-function GroupPanel({
+export function GroupPanel({
   sections,
   filters,
   onToggleMultiFilter,
