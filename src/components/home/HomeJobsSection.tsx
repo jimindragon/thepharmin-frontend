@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
+import { CategoryTabs } from "@/components/CategoryTabs";
 import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
 import { Pagination } from "@/components/Pagination";
@@ -31,7 +32,8 @@ function sortJobs(items: Job[], sortOption: SortOption) {
  *
  * 분야(트랙)는 페이지의 기본 범위 조건이라 항상 유지되고, 관심조건은 사용자가 사이드바에서
  * 직접 적용을 선택했을 때만 덧씌워지는 별개의 선택 필터다 — 진입 시 자동으로 적용하지 않는다.
- * 홈(activeTrack="all")은 분야 구분 없이 전체 공고를 보여주므로 트랙 일치 검사를 생략한다.
+ * 홈(activeTrack="all")에서만 산업/연구/병원/약국 트랙 탭을 노출해 사용자가 직접 트랙을 고르고,
+ * 고른 트랙에 맞는 필터와 공고만 보도록 한다. 분야별 랜딩 페이지는 이미 트랙이 고정돼 있어 탭이 없다.
  */
 export function HomeJobsSection({
   bookmarkedIds,
@@ -49,25 +51,24 @@ export function HomeJobsSection({
   const filterState = useJobFilters(false, { syncUrl: false });
   const activeJobTrack = filterState.filters.track;
   const activeFilterConfig = trackFilterConfigs[activeJobTrack];
-  const showAllTracks = selectedTrack === "all";
+  const showTrackTabs = selectedTrack === "all";
 
+  // 마운트 시 한 번만 분야를 동기화한다 — `selectedTrack`(prop)은 페이지당 고정값이라 이후 다시 바뀌지 않으므로,
+  // 여기서 `filterState.filters.track`까지 의존성에 넣으면 트랙 탭으로 사용자가 직접 고른 트랙을 매번 되돌리게 된다.
   useEffect(() => {
     const nextTrack = trackToJobTrack(selectedTrack);
     if (filterState.filters.track !== nextTrack) {
       filterState.setTrack(nextTrack);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTrack, filterState.filters.track]);
-
-  // 분야(또는 홈의 기본 분야)가 바뀔 때마다 해당 분야의 저장된 관심조건만 불러온다 — 자동 적용은 하지 않는다.
-  useEffect(() => {
-    setPreferenceState(getStoredJobPreference(trackToJobTrack(selectedTrack)));
   }, [selectedTrack]);
 
-  const filteredJobs = useMemo(
-    () => filterJobsByFilters(jobs, filterState.filters, { matchTrack: !showAllTracks }),
-    [filterState.filters, showAllTracks],
-  );
+  // 분야(트랙 탭으로 직접 고른 분야 포함)가 바뀔 때마다 해당 분야의 저장된 관심조건만 불러온다 — 자동 적용은 하지 않는다.
+  useEffect(() => {
+    setPreferenceState(getStoredJobPreference(activeJobTrack));
+  }, [activeJobTrack]);
+
+  const filteredJobs = useMemo(() => filterJobsByFilters(jobs, filterState.filters), [filterState.filters]);
 
   // 필터(분야 포함)나 정렬이 바뀌면 이전 페이지에 머물러 있지 않도록 1페이지로 되돌린다.
   useEffect(() => {
@@ -98,7 +99,9 @@ export function HomeJobsSection({
           <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>공고 둘러보기</h2>
         </div>
 
-        <div className="jobs-layout">
+        {showTrackTabs ? <CategoryTabs activeTrack={activeJobTrack} onChange={filterState.setTrack} /> : null}
+
+        <div className={clsx("jobs-layout", showTrackTabs && "mt-3.5")}>
           <div className="jobs-main">
             <SearchFilterPanel
               track={activeJobTrack}
