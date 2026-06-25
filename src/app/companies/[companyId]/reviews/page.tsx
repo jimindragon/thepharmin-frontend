@@ -27,6 +27,12 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
             <h1 className="mt-2 text-[34px] font-bold tracking-[-0.02em] text-[#202734]">
               {company?.name ?? "기업"} 후기
             </h1>
+            {reviews.length === 0 ? (
+              <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] text-center">
+                <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 리뷰가 없습니다.</p>
+                <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
+              </div>
+            ) : null}
             <div className="mt-6 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
               {reviews.map((review) => (
                 <article key={review.id} className="rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] p-4">

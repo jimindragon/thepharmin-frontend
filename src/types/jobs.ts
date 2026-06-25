@@ -518,6 +518,8 @@ export interface CompanyReview {
   writtenAt: string;
   helpfulCount: number;
   isRead?: boolean;
+  /** 면접 후기(type: "interview")의 합격 여부. 값이 없으면 미리보기에서 배지를 표시하지 않는다 */
+  outcome?: "합격" | "불합격";
 }
 
 export interface ReviewAccessState {
