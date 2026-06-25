@@ -1,4 +1,4 @@
-import { companyExampleImages } from "@/config/companyImages";
+import { companyExampleImages, companyLogos } from "@/config/companyImages";
 import type { Company, CompanyReview, ReviewAccessState } from "@/types/jobs";
 
 export const companies: Company[] = [
@@ -34,6 +34,62 @@ export const companies: Company[] = [
     website: "",
     activeJobCount: 1,
     address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",
+  },
+  {
+    id: "yuhan",
+    name: "(주)유한양행",
+    logoText: "YUHAN",
+    logoUrl: companyLogos["유한양행"],
+    logoColor: "#111111",
+    logoAccent: "#5a5a5a",
+    coverImage: companyExampleImages.hero,
+    defaultImage: companyExampleImages.primary,
+    verified: true,
+    description:
+      "유한양행은 1926년 설립된 국내 대표 제약기업으로, 신약 개발과 글로벌 진출을 통해 국가와 동포에 기여하는 것을 목표로 합니다. 항암·면역·대사질환 영역의 R&D와 의약품·생활용품 제조를 함께 운영하고 있습니다.",
+    industry: "완제 의약품 제조업",
+    employeeCount: "2,123명",
+    foundedYear: "1926년",
+    website: "https://www.yuhan.co.kr",
+    activeJobCount: 1,
+    address: "서울 동작구 노량진로 74 (유한양행빌딩)",
+  },
+  {
+    id: "samsung-biologics",
+    name: "삼성바이오로직스(주)",
+    logoText: "SBL",
+    logoUrl: companyLogos["삼성바이오로직스"],
+    logoColor: "#111111",
+    logoAccent: "#5a5a5a",
+    coverImage: companyExampleImages.hero,
+    defaultImage: companyExampleImages.primary,
+    verified: true,
+    description:
+      "삼성바이오로직스는 인천 송도에 위치한 글로벌 1위 바이오의약품 CDMO 기업입니다. 글로벌 제약사의 항체의약품 위탁개발생산을 중심으로 ADC 등 신규 모달리티 생산 역량을 확장하고 있습니다.",
+    industry: "생물학적 제제 제조업",
+    employeeCount: "5,455명",
+    foundedYear: "2011년",
+    website: "https://www.samsungbiologics.com",
+    activeJobCount: 0,
+    address: "인천 연수구 송도바이오대로 300 (송도동, 삼성바이오로직스)",
+  },
+  {
+    id: "hugel",
+    name: "휴젤(주)",
+    logoText: "HUGEL",
+    logoColor: "#111111",
+    logoAccent: "#5a5a5a",
+    coverImage: companyExampleImages.hero,
+    defaultImage: companyExampleImages.primary,
+    verified: true,
+    description:
+      "휴젤은 보툴리눔 톡신과 HA필러를 중심으로 글로벌 에스테틱 시장에 진출한 바이오의약품 전문기업입니다. 자체 R&D와 생산 역량을 바탕으로 25개국 이상에 제품을 수출하고 있습니다.",
+    industry: "제약·보건·바이오(생물학적 제제)",
+    employeeCount: "629명",
+    foundedYear: "2001년",
+    website: "https://www.hugel-inc.com",
+    activeJobCount: 5,
+    address: "강원 춘천시 동내면 거두단지1길 23 (거두리, 휴젤)",
   },
 ];
 
@@ -83,6 +139,31 @@ export const companyReviews: CompanyReview[] = [
     authorStatus: "전직자",
     writtenAt: "2025.12",
     helpfulCount: 9,
+  },
+  // 삼성바이오로직스·휴젤은 제공된 자료에 면접/기업 후기 본문이 없어 추가하지 않는다 — 빈 상태가 정확한 표현이다.
+  {
+    id: "review-interview-yuhan-1",
+    companyId: "yuhan",
+    type: "interview",
+    tags: ["AI 인적성", "PT 발표면접", "실무진 면접", "임원 면접"],
+    content: "임상개발 신입 채용 전형에서 AI 인적성검사와 PT 발표면접, 실무진 면접, 임원 면접까지 순차적으로 진행되었습니다. 전반적인 난이도는 보통이었습니다.",
+    jobRole: "임상개발",
+    authorStatus: "면접자",
+    writtenAt: "2025.10",
+    helpfulCount: 14,
+    outcome: "불합격",
+  },
+  {
+    id: "review-interview-yuhan-2",
+    companyId: "yuhan",
+    type: "interview",
+    tags: ["조별 면접", "편안한 분위기", "1인 1질문"],
+    content: "단순생산직 신입 전형은 조별 면접으로 진행되었고, 1인 1질문 방식으로 편안한 분위기에서 대화할 수 있었습니다.",
+    jobRole: "생산",
+    authorStatus: "면접자",
+    writtenAt: "2024.04",
+    helpfulCount: 9,
+    outcome: "합격",
   },
 ];
 

@@ -36,6 +36,9 @@ export interface CompanyDirectoryEntry {
 const trackById: Record<string, JobTrack> = {
   "thepharmin-pharma": "industry",
   "eunhaeng-pharmacy": "pharmacy",
+  yuhan: "industry",
+  "samsung-biologics": "industry",
+  hugel: "industry",
 };
 
 /**
@@ -45,6 +48,10 @@ const trackById: Record<string, JobTrack> = {
  */
 const industryGroupById: Record<string, IndustryGroup> = {
   "thepharmin-pharma": "pharma_bio",
+  yuhan: "pharma_bio",
+  // 배지·태그가 "바이오/CDMO"로 명시된 위탁개발생산 전문기업이라 CRO·CDMO 탭으로 분류한다
+  "samsung-biologics": "cro_cdmo",
+  hugel: "pharma_bio",
 };
 
 function regionFromAddress(address: string) {
