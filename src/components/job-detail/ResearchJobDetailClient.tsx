@@ -185,7 +185,7 @@ function ResearchLabSection({ job, otherLabJobsCount }: { job: Job; otherLabJobs
   return (
     <div>
       <div className="flex gap-4 max-[640px]:flex-col">
-        <CompanyLogo name={lab.institution} logoText={job.logoText} logoUrl={job.logoUrl} logoColor={job.logoColor} logoAccent={job.logoAccent} size="sm" />
+        <CompanyLogo name={lab.institution} logoText={job.logoText} logoUrl={job.logoUrl} size="sm" />
         <div className="min-w-0 flex-1">
           <h3 className="text-[18px] font-bold text-[#252d39]">{lab.institution}</h3>
           <p className="mt-1 text-[14px] font-medium text-[#667181]">{subtitle}</p>
@@ -370,7 +370,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
                 <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      <CompanyLogo name={lab?.institution ?? job.company} logoText={job.logoText} logoUrl={job.logoUrl} logoColor={job.logoColor} logoAccent={job.logoAccent} />
+                      <CompanyLogo name={lab?.institution ?? job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
                       <div className="flex min-w-0 flex-col items-start gap-1.5">
                         <p className="text-[15px] font-normal text-[#667181]">{lab ? `${lab.institution} · ${lab.institutionType}` : job.company}</p>
                         {lab?.labName || lab?.pi ? (

@@ -30,7 +30,6 @@ export function ScrapedOrganizationCard({
           name={organization.name}
           logoText={organization.logoText}
           size={48}
-          isPharmacy={organization.type === "pharmacy"}
         />
 
         <div className="min-w-0 flex-1">

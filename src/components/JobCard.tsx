@@ -53,7 +53,6 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
           logoUrl={job.logoUrl}
           size={48}
           className="mt-0.5"
-          isPharmacy={job.track === "pharmacy"}
         />
 
         <div className="min-w-0 flex-1">

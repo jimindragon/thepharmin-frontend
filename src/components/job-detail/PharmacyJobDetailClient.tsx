@@ -215,14 +215,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                 <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      <CompanyLogo
-                        name={job.company}
-                        logoText={job.logoText}
-                        logoUrl={company?.logoUrl ?? job.logoUrl}
-                        logoColor={job.logoColor}
-                        logoAccent={job.logoAccent}
-                        isPharmacy
-                      />
+                      <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={company?.logoUrl ?? job.logoUrl} />
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
@@ -374,10 +367,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                     name={company?.name ?? job.company}
                     logoText={company?.logoText ?? job.logoText}
                     logoUrl={company?.logoUrl ?? job.logoUrl}
-                    logoColor={company?.logoColor ?? job.logoColor}
-                    logoAccent={company?.logoAccent ?? job.logoAccent}
                     size="sm"
-                    isPharmacy
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useState } from "react";
 import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
-import { PharmacyLogo } from "@/components/ui/PharmacyLogo";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
@@ -100,29 +100,20 @@ export function CompanyLogo({
   name,
   logoText,
   logoUrl,
-  logoColor,
-  logoAccent,
   size = "lg",
-  /** 약국 전용 fallback. 로고가 없거나 이미지 로딩에 실패했을 때만 약국명 기반 자동 로고를 보여준다 */
-  isPharmacy,
 }: {
   name: string;
   logoText: string;
   logoUrl?: string;
-  logoColor: string;
-  logoAccent?: string;
   size?: "sm" | "lg";
-  isPharmacy?: boolean;
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(logoUrl) && !imageFailed;
   const boxSize = size === "lg" ? "h-[68px] w-[68px]" : "h-[46px] w-[46px]";
   const boxPx = size === "lg" ? 68 : 46;
-  const shapeSize = size === "lg" ? "h-[22px] w-[22px]" : "h-[16px] w-[16px]";
-  const textSize = size === "lg" ? "text-[12px]" : "text-[8px]";
 
-  if (!showImage && isPharmacy) {
-    return <PharmacyLogo name={name} size={boxPx} className="shrink-0" />;
+  if (!showImage) {
+    return <EntityLogo name={name} logoText={logoText} size={boxPx} className="shrink-0" />;
   }
 
   return (
@@ -133,29 +124,7 @@ export function CompanyLogo({
       )}
       aria-label={`${name} 로고`}
     >
-      {showImage ? (
-        <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
-      ) : (
-        <>
-          <div className={clsx("relative", size === "lg" ? "h-9 w-[52px]" : "h-6 w-9")}>
-            <span
-              className={clsx("absolute rounded-full opacity-90", shapeSize)}
-              style={{ backgroundColor: logoColor, left: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-            />
-            <span
-              className={clsx("absolute rounded-full opacity-80", shapeSize)}
-              style={{ backgroundColor: logoAccent ?? logoColor, right: size === "lg" ? 5 : 3, top: size === "lg" ? 8 : 5 }}
-            />
-            <span
-              className={clsx("absolute rounded-full opacity-70", shapeSize)}
-              style={{ backgroundColor: logoColor, left: size === "lg" ? 19 : 11, bottom: 0 }}
-            />
-          </div>
-          <span className={clsx("-mt-1 max-w-[58px] truncate font-medium", textSize)} style={{ color: logoColor }}>
-            {logoText}
-          </span>
-        </>
-      )}
+      <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
     </div>
   );
 }
@@ -218,13 +187,7 @@ export function DefaultCover({ job }: { job: Job }) {
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.54)_0%,rgba(0,0,0,0.22)_58%,rgba(0,0,0,0.04)_100%)]" />
       <div className="absolute left-8 top-8 flex items-center gap-4 max-[720px]:left-5 max-[720px]:top-5">
-        <CompanyLogo
-          name={job.company}
-          logoText={job.logoText}
-          logoColor={job.logoColor}
-          logoAccent={job.logoAccent}
-          size="sm"
-        />
+        <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size="sm" />
         <div>
           <p className="text-[14px] font-medium text-white">{job.company}</p>
           <p className="mt-1 text-[12px] font-medium text-white/66">{job.industry ?? job.category} · {job.role ?? job.jobCategory ?? "채용"}</p>
@@ -365,10 +328,6 @@ function SimilarCompanyLogo({ job }: { job: Job }) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(job.logoUrl) && !imageFailed;
   const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
-
-  if (!showImage && job.track === "pharmacy") {
-    return <PharmacyLogo name={job.company} size={32} rounded="circle" className="shrink-0" />;
-  }
 
   return (
     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-medium text-[#2f3845]">

@@ -766,18 +766,10 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                             name={company?.name ?? job.company}
                             logoText={company?.logoText ?? job.logoText}
                             logoUrl={company?.logoUrl ?? job.logoUrl}
-                            logoColor={company?.logoColor ?? job.logoColor}
-                            logoAccent={company?.logoAccent ?? job.logoAccent}
                           />
                         </Link>
                       ) : (
-                        <CompanyLogo
-                          name={job.company}
-                          logoText={job.logoText}
-                          logoUrl={job.logoUrl}
-                          logoColor={job.logoColor}
-                          logoAccent={job.logoAccent}
-                        />
+                        <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
                       )}
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
@@ -938,8 +930,6 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                     name={company?.name ?? job.company}
                     logoText={company?.logoText ?? job.logoText}
                     logoUrl={company?.logoUrl ?? job.logoUrl}
-                    logoColor={company?.logoColor ?? job.logoColor}
-                    logoAccent={company?.logoAccent ?? job.logoAccent}
                     size="sm"
                   />
                   <div className="min-w-0 flex-1">

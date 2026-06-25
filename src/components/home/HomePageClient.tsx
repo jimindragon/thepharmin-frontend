@@ -9,6 +9,7 @@ import { CarouselControl } from "@/components/RecommendedJobs";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
@@ -56,13 +57,8 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                     <img src={logoSrc} alt={company.name} className="h-full w-full object-contain" />
                   </div>
                 ) : (
-                  <div
-                    className={clsx(
-                      "mb-6 grid h-12 w-12 place-items-center border text-[14px] font-semibold",
-                      company.logoTone === "plus" ? "border-[#111111] bg-[#111111] text-white" : "border-[#e2e5e8] bg-white text-[#111111]",
-                    )}
-                  >
-                    {company.logoText}
+                  <div className="mb-6">
+                    <EntityLogo name={company.name} logoText={company.logoText} size={48} />
                   </div>
                 )}
                 <h3 className={clsx(typeScale.cardTitle, "text-[#15191f]")}>{company.name}</h3>
@@ -151,9 +147,7 @@ function HomeRecommendationCard({
       >
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
-      <div className="grid h-14 w-14 place-items-center border border-[#e3e6ea] bg-white text-center text-[13px] font-semibold leading-tight text-[#333333]">
-        {job.logoText.slice(0, 4)}
-      </div>
+      <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={56} />
       <div className="min-w-0">
         <p className="text-[12px] font-normal text-[#777777]">{job.company}</p>
         <h3 className={clsx(typeScale.cardTitle, "mt-1 truncate text-[#111111]")}>{job.title}</h3>

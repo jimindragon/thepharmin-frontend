@@ -136,7 +136,6 @@ function CompanyListItem({ entry, onRequestWriteReview }: { entry: CompanyDirect
         logoText={entry.logoText}
         logoUrl={entry.logoUrl}
         size={44}
-        isPharmacy={entry.track === "pharmacy"}
       />
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
