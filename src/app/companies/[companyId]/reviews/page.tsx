@@ -5,12 +5,15 @@ import { companies, companyReviews } from "@/data/companies";
 
 interface CompanyReviewsPageProps {
   params: Promise<{ companyId: string }>;
+  searchParams: Promise<{ type?: string }>;
 }
 
-export default async function CompanyReviewsPage({ params }: CompanyReviewsPageProps) {
+export default async function CompanyReviewsPage({ params, searchParams }: CompanyReviewsPageProps) {
   const { companyId } = await params;
+  const { type } = await searchParams;
   const company = companies.find((item) => item.id === companyId);
-  const reviews = companyReviews.filter((review) => review.companyId === companyId);
+  const interviewOnly = type === "interview";
+  const reviews = companyReviews.filter((review) => review.companyId === companyId && (!interviewOnly || review.type === "interview"));
 
   return (
     <>
@@ -25,11 +28,13 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
           <section className="mt-5 rounded-[var(--radius)] border border-border bg-white p-7 shadow-[var(--shadow)]">
             <p className="text-[13px] font-medium text-brand">기업정보·후기</p>
             <h1 className="mt-2 text-[34px] font-bold tracking-[-0.02em] text-[#202734]">
-              {company?.name ?? "기업"} 후기
+              {company?.name ?? "기업"} {interviewOnly ? "면접 후기" : "후기"}
             </h1>
             {reviews.length === 0 ? (
               <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] text-center">
-                <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 리뷰가 없습니다.</p>
+                <p className="text-[14px] font-semibold text-[#3d4653]">
+                  {interviewOnly ? "아직 등록된 면접 후기가 없습니다." : "아직 등록된 리뷰가 없습니다."}
+                </p>
                 <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
               </div>
             ) : null}

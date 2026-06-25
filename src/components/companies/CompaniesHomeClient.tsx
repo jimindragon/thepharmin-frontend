@@ -54,32 +54,6 @@ function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
   });
 }
 
-/**
- * 헤더 아래 기업정보 영역 서브 내비게이션. "기업 리뷰"·"면접 후기"는 아직 별도의 둘러보기
- * 페이지가 없어(기업별 상세 페이지만 존재) 임의의 빈 라우트를 만들지 않고 비활성 상태로
- * 둔다 — 홈 화면의 "테마별 공고" 카드와 동일한 처리 방식이다.
- */
-function CompanyInfoSubNav() {
-  return (
-    <nav className="border-b border-[#e4e7eb] bg-white" aria-label="기업정보 서브 내비게이션">
-      <div className="app-shell flex gap-7">
-        <Link
-          href="/companies"
-          className="relative inline-flex h-12 items-center text-[14px] font-semibold text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
-        >
-          기업 탐색
-        </Link>
-        <span className="inline-flex h-12 cursor-default items-center text-[14px] font-medium text-[#aaaaaa]" aria-disabled="true">
-          기업 리뷰
-        </span>
-        <span className="inline-flex h-12 cursor-default items-center text-[14px] font-medium text-[#aaaaaa]" aria-disabled="true">
-          면접 후기
-        </span>
-      </div>
-    </nav>
-  );
-}
-
 function CompanyInfoHero({
   keyword,
   onKeywordChange,
@@ -153,6 +127,19 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
   );
 }
 
+/** 카드 안의 보조 액션. 카드 전체 클릭(상세 페이지 이동)과 겹치지 않도록 항상 overlay Link보다 위(z-20)에 두고 클릭 버블링을 막는다. */
+function CompanyCardAction({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      onClick={(event) => event.stopPropagation()}
+      className="relative z-20 inline-flex h-7 items-center border border-[#dfe4ea] bg-white px-2.5 text-[11px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
+    >
+      {label}
+    </Link>
+  );
+}
+
 function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
   const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
   const statParts = [
@@ -162,10 +149,13 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
   ].filter((part): part is string => Boolean(part));
 
   return (
-    <Link
-      href={entry.detailHref}
-      className="grid min-h-[84px] grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-2 border border-[#e5e9ef] bg-white px-5 py-4 transition hover:border-[#111111] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111] max-[640px]:grid-cols-[44px_1fr]"
-    >
+    <article className="relative grid min-h-[84px] grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-3 border border-[#e5e9ef] bg-white px-5 py-4 transition hover:border-[#111111] max-[640px]:grid-cols-[44px_1fr]">
+      {/* 카드 전체 클릭 영역. 보조 액션 버튼은 relative z-20으로 이 위에 올려 클릭이 겹치지 않게 한다 */}
+      <Link
+        href={entry.detailHref}
+        aria-label={`${entry.name} 상세 보기`}
+        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
+      />
       <EntityLogo name={entry.name} logoText={entry.logoText} logoUrl={entry.logoUrl} size={44} />
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
@@ -174,8 +164,14 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
         </div>
         <p className="mt-1 truncate text-[13px] font-normal text-[#777777]">{metaParts.join(" · ")}</p>
       </div>
-      <p className="text-[13px] font-medium text-[#4f5967] max-[640px]:col-start-2 max-[640px]:row-start-2">{statParts.join(" · ")}</p>
-    </Link>
+      <div className="flex flex-col items-end gap-2 max-[640px]:col-start-2 max-[640px]:row-start-2 max-[640px]:items-start">
+        <p className="text-[13px] font-medium text-[#4f5967]">{statParts.join(" · ")}</p>
+        <div className="flex gap-1.5">
+          <CompanyCardAction href={entry.detailHref} label="기업 리뷰" />
+          <CompanyCardAction href={`${entry.detailHref}?type=interview`} label="면접 후기" />
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -287,14 +283,13 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
 
   return (
     <main className="bg-[#f7f8fa] pb-20">
-      <CompanyInfoSubNav />
       <CompanyInfoHero keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
       <TrackTabs active={trackFilter} onChange={setTrackFilter} />
 
       <div className="app-shell">
         <section id="company-directory" className="mt-10">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-            <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 탐색</h2>
+            <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
             <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
               {sortOptions.map((option) => (
                 <button
