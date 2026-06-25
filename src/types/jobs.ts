@@ -310,6 +310,59 @@ export interface JobApplyInfo {
   steps: string[];
 }
 
+export type ResearchRecruitType =
+  | "PostDoc"
+  | "연구교수"
+  | "전임연구원"
+  | "연구원"
+  | "석사연구원"
+  | "연구조교"
+  | "인턴연구원";
+
+export type ResearchDegree = "박사" | "박사수료" | "박사예정" | "석사" | "석사수료" | "석사예정";
+
+/** Lab.institutionType 전용 분류. 트랙 라우팅에 쓰이는 OrganizationType과는 별개로, 연구실 상세 페이지 표시용 분류다. */
+export type LabInstitutionType = "대학(의대제외)" | "의과대학" | "병원" | "정부출연연" | "기업부설연" | "기타";
+
+/** 기관 → 연구실 → PI 구조. 값이 없는 필드(홈페이지·채용페이지·소개 등)는 해당 행/버튼을 렌더링하지 않는다. */
+export interface ResearchLab {
+  institution: string;
+  institutionType: LabInstitutionType;
+  labName?: string;
+  pi: string;
+  homepage?: string;
+  careerPage?: string;
+  institutionIntro?: string;
+  labIntro?: string;
+  address?: string;
+}
+
+export type OverseasSupportType = "항공료" | "이주비" | "자녀학비" | "비자스폰서";
+
+/** 연구직 급여. 연봉 구간과 면접 후 협의를 모두 지원하고, 연구비·과제 지원 정보는 급여와 별도로 관리한다. */
+export interface ResearchSalaryInfo {
+  kind: "연봉" | "협의";
+  min?: number;
+  max?: number;
+  note?: string;
+  funding?: string[];
+  overseasSupport?: OverseasSupportType[];
+}
+
+/** 연구직 근무지. scope에 따라 노출 필드가 달라진다(국내: 시·도/주소/건물, 해외: 국가/영문주소/비자). */
+export interface ResearchLocationInfo {
+  scope: "국내" | "해외";
+  region?: string;
+  country?: string;
+  address?: string;
+  detail?: string;
+  secondment?: string;
+}
+
+export type ResearchEligibility = "내국인만" | "외국인가능" | "J-1영어요건" | "BrainPool" | "비자스폰서";
+
+export type ResearchApplyVia = "이메일" | "기관홈페이지" | "플랫폼";
+
 export interface Job {
   id: number;
   slug?: string;
@@ -416,6 +469,19 @@ export interface Job {
   hrTips?: JobHrTip[];
   /** 지원 채널이 여러 개이거나 차단 안내가 필요한 공고에서 사용 */
   applyInfo?: JobApplyInfo;
+
+  /** 연구 공고(기관→연구실→PI) 전용 구조. 값이 있을 때만 연구 상세 페이지에서 사용한다 */
+  researchLab?: ResearchLab;
+  researchRecruitType?: ResearchRecruitType;
+  researchDegree?: ResearchDegree;
+  researchSalaryInfo?: ResearchSalaryInfo;
+  researchLocationInfo?: ResearchLocationInfo;
+  researchEligibility?: ResearchEligibility[];
+  researchApplyVia?: ResearchApplyVia;
+  /** 연구 주제(연구 배경·기법·프로젝트 설명) 본문. 항목형/번호형/문단형을 모두 지원한다 */
+  researchTopicContent?: FormattedContent;
+  /** 제출서류 목록. 값이 없으면 제출서류 안내 자체를 숨긴다 */
+  researchDocuments?: string[];
 }
 
 export interface Company {

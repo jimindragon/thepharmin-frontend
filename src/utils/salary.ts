@@ -1,4 +1,4 @@
-import type { SalaryDetail } from "@/types/jobs";
+import type { ResearchSalaryInfo, SalaryDetail } from "@/types/jobs";
 
 /**
  * 원 단위 숫자를 화면 표시용 문자열로 변환한다.
@@ -51,5 +51,31 @@ export function formatSalaryDetail(detail: SalaryDetail): FormattedSalary {
     primary,
     diff: diffParts.length ? diffParts.join(" · ") : undefined,
     note: detail.note,
+  };
+}
+
+function formatManwonRange(min?: number, max?: number) {
+  if (min != null && max != null && min !== max) {
+    return `${min.toLocaleString("ko-KR")}만~${max.toLocaleString("ko-KR")}만원`;
+  }
+
+  const single = min ?? max;
+  return single != null ? `${single.toLocaleString("ko-KR")}만원` : undefined;
+}
+
+/**
+ * 연구직 급여(만원 단위로 저장된 연봉 구간 또는 면접 후 협의)를 화면 표시용 문자열로 변환한다.
+ * 연구비·과제 지원 정보(funding)는 급여와 별도 정보이므로 이 함수에서는 다루지 않는다.
+ */
+export function formatResearchSalaryInfo(info: ResearchSalaryInfo): FormattedSalary {
+  if (info.kind === "협의") {
+    return { primary: "면접 시 협의", note: info.note };
+  }
+
+  const range = formatManwonRange(info.min, info.max);
+
+  return {
+    primary: range ? `연봉 ${range}` : "연봉 협의",
+    note: info.note,
   };
 }

@@ -22,9 +22,8 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
     <section className="mt-14">
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>업계를 이끄는 기업</h2>
-        <Link href="/jobs" className="text-[13px] font-medium text-[#777777] hover:text-[#111111]">
-          전체보기 ›
-        </Link>
+        {/* 기업정보 홈 페이지가 아직 없어 연결을 비워둔다 — 추가되면 그 페이지로 다시 연결한다 */}
+        <span className="cursor-default text-[13px] font-medium text-[#aaaaaa]">전체보기 ›</span>
       </div>
       <div className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
         <div className="flex min-w-max">
@@ -94,20 +93,20 @@ function ThemeCuration() {
         </div>
       </div>
       <div className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
+        {/*
+          테마별 전용 페이지가 아직 없어 카드 클릭 이동은 비활성화한다. card.href(목적지 데이터)는
+          그대로 두고 렌더링만 비클릭형 div로 바꿔, 페이지가 준비되면 다시 Link로 감싸기만 하면 된다.
+        */}
         {themeCurationCards.map((card) => (
-          <Link
-            key={card.id}
-            href={card.href}
-            className="group min-w-[254px] overflow-hidden border border-[#dddddd] bg-white transition hover:border-[#111111]"
-          >
+          <div key={card.id} className="min-w-[254px] cursor-default overflow-hidden border border-[#dddddd] bg-white">
             <div className="h-[120px] overflow-hidden bg-[#f2f3f4]">
-              <img src={card.image} alt="" className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]" />
+              <img src={card.image} alt="" className="h-full w-full object-cover" />
             </div>
             <div className="px-5 py-4">
               <h3 className={clsx(typeScale.cardTitle, "truncate text-[#222222]")}>{card.title}</h3>
               <p className="mt-2 text-[12px] font-normal text-[#8a8a8a]">{card.subtitle}</p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </section>

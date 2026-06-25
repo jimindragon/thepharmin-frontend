@@ -30,7 +30,7 @@ const tabs = [
   { id: "jobs", label: "채용공고" },
   { id: "interviews", label: "면접 후기" },
   { id: "reviews", label: "기업 후기" },
-  { id: "news", label: "더파마뉴스에서 본 이 기업" },
+  { id: "news", label: "관련 뉴스" },
   { id: "salary", label: "연봉 정보" },
   { id: "culture", label: "복지 및 문화" },
 ];
@@ -415,7 +415,7 @@ function CompanyNewsSection({ profile }: { profile: CompanyProfile }) {
   return (
     <SectionShell
       id="news"
-      title="더파마뉴스에서 본 이 기업"
+      title="관련 뉴스"
       description="더파마뉴스에 보도된 기업 관련 기사와 산업 뉴스를 지원자 관점에서 확인해 보세요."
       action={<button className="text-[13px] font-medium text-[#596373] hover:text-[#111111]">더보기</button>}
     >

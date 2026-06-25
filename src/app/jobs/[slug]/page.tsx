@@ -3,6 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
 import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
+import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
 import { jobs } from "@/data/jobs";
 import type { Job } from "@/types/jobs";
@@ -29,6 +30,15 @@ function getSimilarJobs(job: Job) {
   });
 
   return [...byConfiguredIds, ...byContext].slice(0, 4);
+}
+
+/** Company 엔티티가 없는 연구 공고는 기관·연구실 정보의 "현재 등록된 다른 공고 수"를 같은 기관 이름으로 직접 집계한다. */
+function getOtherLabJobsCount(job: Job) {
+  if (!job.researchLab) {
+    return 0;
+  }
+
+  return jobs.filter((item) => item.id !== job.id && item.researchLab?.institution === job.researchLab?.institution).length;
 }
 
 function MissingJob() {
@@ -70,6 +80,15 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       <>
         <Header />
         <PharmacyJobDetailClient job={job} company={company} similarJobs={getSimilarJobs(job)} />
+      </>
+    );
+  }
+
+  if (job.track === "research") {
+    return (
+      <>
+        <Header />
+        <ResearchJobDetailClient job={job} similarJobs={getSimilarJobs(job)} otherLabJobsCount={getOtherLabJobsCount(job)} />
       </>
     );
   }

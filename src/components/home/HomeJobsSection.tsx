@@ -1,10 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { JobCard } from "@/components/JobCard";
 import { JobListToolbar } from "@/components/JobListToolbar";
+import { Pagination } from "@/components/Pagination";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
 import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
 import { typeScale } from "@/components/ui/Typography";
@@ -14,6 +14,8 @@ import { jobs } from "@/data/jobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
+
+const PAGE_SIZE = 6;
 
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
@@ -41,6 +43,7 @@ export function HomeJobsSection({
   activeTrack: HomeTrackFilter;
 }) {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
+  const [currentPage, setCurrentPage] = useState(1);
   const [activeQuickLink, setActiveQuickLink] = useState("preference");
   const [preference, setPreferenceState] = useState<UserJobPreference | null>(null);
   const filterState = useJobFilters(false, { syncUrl: false });
@@ -65,17 +68,23 @@ export function HomeJobsSection({
     () => filterJobsByFilters(jobs, filterState.filters, { matchTrack: !showAllTracks }),
     [filterState.filters, showAllTracks],
   );
-  const visibleJobs = useMemo(() => sortJobs(filteredJobs, sortOption).slice(0, 6), [filteredJobs, sortOption]);
-  const moreHref = showAllTracks ? "/jobs" : `/jobs?track=${activeJobTrack}`;
 
-  const setPreference = (nextPreference: UserJobPreference | null) => {
+  // 필터(분야 포함)나 정렬이 바뀌면 이전 페이지에 머물러 있지 않도록 1페이지로 되돌린다.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterState.filters, sortOption]);
+
+  const visibleJobs = useMemo(() => {
+    const sorted = sortJobs(filteredJobs, sortOption);
+    if (sorted.length === 0) return [];
+
+    const pageOffset = ((currentPage - 1) * PAGE_SIZE) % sorted.length;
+    return [...sorted.slice(pageOffset), ...sorted.slice(0, pageOffset)].slice(0, PAGE_SIZE);
+  }, [currentPage, filteredJobs, sortOption]);
+
+  const applyPreference = (nextPreference: UserJobPreference) => {
     setPreferenceState(nextPreference);
-    filterState.setPreferenceApplied(false);
-  };
-
-  const applyPreference = () => {
-    if (!preference) return;
-    filterState.applyPreference(preference);
+    filterState.applyPreference(nextPreference);
   };
 
   const clearPreferenceFilters = () => {
@@ -114,17 +123,20 @@ export function HomeJobsSection({
               onSortChange={setSortOption}
             />
 
-            <div className="flex flex-col gap-1.5">
-              {visibleJobs.map((job) => (
-                <JobCard key={`home-${job.id}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
-              ))}
-            </div>
+            {visibleJobs.length ? (
+              <div className="flex flex-col gap-1.5">
+                {visibleJobs.map((job) => (
+                  <JobCard key={`home-${job.id}-${currentPage}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
+                ))}
+              </div>
+            ) : (
+              <div className="surface flex h-[164px] flex-col items-center justify-center text-center">
+                <p className="text-[17px] font-semibold text-[#3d4653]">조건에 맞는 공고가 없습니다.</p>
+                <p className="mt-2 text-[13px] font-normal text-[#8791a0]">필터를 줄이거나 검색어를 다시 입력해보세요.</p>
+              </div>
+            )}
 
-            <div className="mt-7 flex justify-center">
-              <Link href={moreHref} className="inline-flex h-11 min-w-[160px] items-center justify-center border border-[#d8dce2] bg-white px-7 text-[14px] font-medium text-[#3b4450] hover:border-[#111111] hover:text-[#111111]">
-                공고 더 보기
-              </Link>
-            </div>
+            <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
           </div>
 
           <SidebarQuickLinks
@@ -134,7 +146,6 @@ export function HomeJobsSection({
             preferenceApplied={filterState.preferenceApplied}
             activeQuickLink={activeQuickLink}
             onQuickLinkClick={setActiveQuickLink}
-            onSetPreference={setPreference}
             onApplyPreference={applyPreference}
             onClearPreferenceFilters={clearPreferenceFilters}
           />

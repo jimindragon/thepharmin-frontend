@@ -67,14 +67,9 @@ export default function JobsPage() {
     return [...sorted.slice(pageOffset), ...sorted.slice(0, pageOffset)].slice(0, 8);
   }, [currentPage, filteredJobs, sortOption]);
 
-  const setPreference = (nextPreference: UserJobPreference | null) => {
+  const applyPreference = (nextPreference: UserJobPreference) => {
     setPreferenceState(nextPreference);
-    filterState.setPreferenceApplied(false);
-  };
-
-  const applyPreference = () => {
-    if (!preference) return;
-    filterState.applyPreference(preference);
+    filterState.applyPreference(nextPreference);
   };
 
   const clearPreferenceFilters = () => {
@@ -159,7 +154,6 @@ export default function JobsPage() {
               preferenceApplied={filterState.preferenceApplied}
               activeQuickLink={activeQuickLink}
               onQuickLinkClick={setActiveQuickLink}
-              onSetPreference={setPreference}
               onApplyPreference={applyPreference}
               onClearPreferenceFilters={clearPreferenceFilters}
             />

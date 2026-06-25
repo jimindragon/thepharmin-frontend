@@ -23,8 +23,10 @@ export const emptyUserPreference: UserJobPreference = {
 };
 
 /**
- * "관심 조건 설정하기" 버튼이 미리 채워 보여주는 예시값. 트랙별로 독립이라 산업 외 트랙은
- * 아직 예시가 없으면 비워두고(임의로 채우지 않음), 해당 트랙은 관심조건 설정 페이지에서 직접 구성한다.
+ * 데모 사용자가 분야별로 이미 저장해둔 관심조건. 실제 백엔드/계정이 없는 목업이라 이 값이
+ * "저장된 관심조건"의 기준이 된다(저장 전이라면 `getStoredJobPreference`의 실제 localStorage
+ * 값이 우선한다). 산업·약국만 간단히 채우고, 연구·병원은 의도적으로 비워 "설정된 조건 없음"
+ * 상태를 보여준다 — 트랙마다 일부러 균일하게 채우지 않는다.
  */
 export const mockUserPreferences: TrackPreferences = {
   industry: {
@@ -37,5 +39,11 @@ export const mockUserPreferences: TrackPreferences = {
     workModeIds: ["onsite", "hybrid"],
     emailAlertEnabled: true,
     emailFrequency: "daily",
+  },
+  pharmacy: {
+    ...emptyUserPreference,
+    jobSubcategoryIds: ["staff_pharmacist"],
+    regionIds: ["seoul"],
+    workTypeIds: ["full_time"],
   },
 };
