@@ -8,7 +8,7 @@ export const trackNavigationItems = [
 export const navigationItems = [
   { label: "캘린더", href: "/calendar" },
   { label: "기업정보", href: "/companies" },
-  { label: "커뮤니티", href: "#" },
+  { label: "QNA", href: "/qna" },
   { label: "자료실", href: "/resources", highlight: true },
 ];
 

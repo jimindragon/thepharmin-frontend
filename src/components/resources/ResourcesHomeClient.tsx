@@ -194,8 +194,8 @@ export function ResourcesHomeClient() {
 
   return (
     <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell--default pt-8">
-        <PageBreadcrumb items={[{ label: "자료실" }]} />
+      <div className="app-shell pt-8">
+        <PageBreadcrumb className="mb-5" items={[{ label: "자료실" }]} />
         <Eyebrow>THE PHARMA LIBRARY</Eyebrow>
         <PageTitle>자료실</PageTitle>
         <p className={clsx("mt-3 max-w-[640px]", typeScale.body, "text-[#596373]")}>

@@ -47,7 +47,14 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
       ) : null}
 
       <div className="flex items-start gap-4 max-[560px]:gap-3">
-        <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={48} className="mt-0.5" />
+        <EntityLogo
+          name={job.company}
+          logoText={job.logoText}
+          logoUrl={job.logoUrl}
+          size={48}
+          className="mt-0.5"
+          isPharmacy={job.track === "pharmacy"}
+        />
 
         <div className="min-w-0 flex-1">
           {hasCompanyProfile ? (

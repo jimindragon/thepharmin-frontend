@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Heart, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { Pagination } from "@/components/Pagination";
 import { LockedContent } from "@/components/companies/LockedContent";
 import { EntityLogo } from "@/components/ui/EntityLogo";
@@ -148,7 +149,13 @@ function CompanyListItem({ entry, onRequestWriteReview }: { entry: CompanyDirect
         aria-label={`${entry.name} 상세 보기`}
         className="absolute inset-0 z-10 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
       />
-      <EntityLogo name={entry.name} logoText={entry.logoText} logoUrl={entry.logoUrl} size={44} />
+      <EntityLogo
+        name={entry.name}
+        logoText={entry.logoText}
+        logoUrl={entry.logoUrl}
+        size={44}
+        isPharmacy={entry.track === "pharmacy"}
+      />
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
           <h3 className="truncate text-[16px] font-bold text-[#171d26]">{entry.name}</h3>
@@ -314,7 +321,8 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
       <CompanyInfoHero keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
       <TrackTabs active={trackFilter} onChange={setTrackFilter} />
 
-      <div className="app-shell">
+      <div className="app-shell pt-8">
+        <PageBreadcrumb className="mb-5" items={[{ label: "기업정보" }]} />
         <section id="company-directory" className="mt-10">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>

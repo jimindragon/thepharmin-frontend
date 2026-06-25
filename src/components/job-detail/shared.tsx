@@ -2,7 +2,10 @@
 
 import clsx from "clsx";
 import Link from "next/link";
+import { useState } from "react";
 import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
+import { PharmacyLogo } from "@/components/ui/PharmacyLogo";
+import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
 /**
@@ -72,19 +75,25 @@ export function deadlineDetail(job: Job) {
 }
 
 export function getCoverImage(job: Job, company: Company | null) {
-  if (job.coverImageMode === "upload" && job.coverImageUrl) {
-    return job.coverImageUrl;
+  const explicitCover =
+    job.coverImageMode === "upload"
+      ? job.coverImageUrl
+      : job.coverImageMode === "company"
+        ? company?.coverImage ?? company?.defaultImage ?? job.coverImage
+        : job.coverImageMode === "none"
+          ? undefined
+          : job.coverImageUrl ?? job.coverImage ?? company?.coverImage ?? company?.defaultImage;
+
+  if (explicitCover) {
+    return explicitCover;
   }
 
-  if (job.coverImageMode === "company") {
-    return company?.coverImage ?? company?.defaultImage ?? job.coverImage;
+  /** 대표 이미지가 없는 약국 공고(coverImageMode가 "none"인 경우 포함)는 약국명 기준으로 결정론적으로 배정된 예시 사진을 대신 보여준다 */
+  if (job.track === "pharmacy") {
+    return getPharmacyCoverImage(job.company);
   }
 
-  if (job.coverImageMode === "none") {
-    return undefined;
-  }
-
-  return job.coverImageUrl ?? job.coverImage ?? company?.coverImage ?? company?.defaultImage;
+  return undefined;
 }
 
 export function CompanyLogo({
@@ -94,6 +103,8 @@ export function CompanyLogo({
   logoColor,
   logoAccent,
   size = "lg",
+  /** 약국 전용 fallback. 로고가 없거나 이미지 로딩에 실패했을 때만 약국명 기반 자동 로고를 보여준다 */
+  isPharmacy,
 }: {
   name: string;
   logoText: string;
@@ -101,10 +112,18 @@ export function CompanyLogo({
   logoColor: string;
   logoAccent?: string;
   size?: "sm" | "lg";
+  isPharmacy?: boolean;
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(logoUrl) && !imageFailed;
   const boxSize = size === "lg" ? "h-[68px] w-[68px]" : "h-[46px] w-[46px]";
+  const boxPx = size === "lg" ? 68 : 46;
   const shapeSize = size === "lg" ? "h-[22px] w-[22px]" : "h-[16px] w-[16px]";
   const textSize = size === "lg" ? "text-[12px]" : "text-[8px]";
+
+  if (!showImage && isPharmacy) {
+    return <PharmacyLogo name={name} size={boxPx} className="shrink-0" />;
+  }
 
   return (
     <div
@@ -114,8 +133,8 @@ export function CompanyLogo({
       )}
       aria-label={`${name} 로고`}
     >
-      {logoUrl ? (
-        <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" />
+      {showImage ? (
+        <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
       ) : (
         <>
           <div className={clsx("relative", size === "lg" ? "h-9 w-[52px]" : "h-6 w-9")}>
@@ -343,11 +362,21 @@ function getSimilarJobReasons(baseJob: Job, similarJob: Job) {
 }
 
 function SimilarCompanyLogo({ job }: { job: Job }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(job.logoUrl) && !imageFailed;
   const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
+
+  if (!showImage && job.track === "pharmacy") {
+    return <PharmacyLogo name={job.company} size={32} rounded="circle" className="shrink-0" />;
+  }
 
   return (
     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-medium text-[#2f3845]">
-      {job.logoUrl ? <img src={job.logoUrl} alt={`${job.company} 로고`} className="h-full w-full rounded-full object-contain p-1" /> : fallback}
+      {showImage ? (
+        <img src={job.logoUrl} alt={`${job.company} 로고`} className="h-full w-full rounded-full object-contain p-1" onError={() => setImageFailed(true)} />
+      ) : (
+        fallback
+      )}
     </span>
   );
 }

@@ -215,7 +215,14 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                 <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      <CompanyLogo name={job.company} logoText={job.logoText} logoColor={job.logoColor} logoAccent={job.logoAccent} />
+                      <CompanyLogo
+                        name={job.company}
+                        logoText={job.logoText}
+                        logoUrl={company?.logoUrl ?? job.logoUrl}
+                        logoColor={job.logoColor}
+                        logoAccent={job.logoAccent}
+                        isPharmacy
+                      />
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
@@ -363,7 +370,15 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
 
               <SectionShell id="company" title="기업정보">
                 <div className="flex gap-4 max-[640px]:flex-col">
-                  <CompanyLogo name={company?.name ?? job.company} logoText={company?.logoText ?? job.logoText} logoUrl={company?.logoUrl ?? job.logoUrl} logoColor={company?.logoColor ?? job.logoColor} logoAccent={company?.logoAccent ?? job.logoAccent} size="sm" />
+                  <CompanyLogo
+                    name={company?.name ?? job.company}
+                    logoText={company?.logoText ?? job.logoText}
+                    logoUrl={company?.logoUrl ?? job.logoUrl}
+                    logoColor={company?.logoColor ?? job.logoColor}
+                    logoAccent={company?.logoAccent ?? job.logoAccent}
+                    size="sm"
+                    isPharmacy
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-[18px] font-bold text-[#252d39]">{company?.name ?? job.company}</h3>

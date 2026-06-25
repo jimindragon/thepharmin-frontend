@@ -835,9 +835,9 @@ export function RecruitmentCalendarClient() {
 
   return (
     <>
-      <main className="min-h-screen bg-white pb-9 pt-[18px]">
-        <div className="app-shell">
-          <PageBreadcrumb items={[{ label: "채용 캘린더" }]} />
+      <main className="min-h-screen bg-[#f7f8fa] pb-9">
+        <div className="app-shell pt-8">
+          <PageBreadcrumb className="mb-5" items={[{ label: "채용 캘린더" }]} />
 
           <PageTitle>채용 캘린더</PageTitle>
           <p className="mt-4 text-[14px] font-medium text-[#8a94a3]">

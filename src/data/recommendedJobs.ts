@@ -1,4 +1,5 @@
 import { companyExampleImages } from "@/config/companyImages";
+import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import type { RecommendedJob } from "@/types/jobs";
 
 export const recommendedJobs: RecommendedJob[] = [
@@ -47,7 +48,7 @@ export const recommendedJobs: RecommendedJob[] = [
     tags: ["근무약사", "파트타임", "처방조제"],
     dDay: "D-7",
     applyMethod: "간편 지원",
-    image: companyExampleImages.primary,
+    image: getPharmacyCoverImage("그린약국"),
     track: "pharmacy",
     postingSource: "direct",
   },
