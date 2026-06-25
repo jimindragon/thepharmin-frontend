@@ -271,7 +271,7 @@ export interface JobWorkShift {
 /** 근무지 교통편. 항목이 없으면 해당 행을 렌더링하지 않는다. */
 export interface JobCommute {
   subway?: string[];
-  bus?: string;
+  bus?: string[];
   car?: string;
   parking?: "가능" | "불가" | "지원";
 }

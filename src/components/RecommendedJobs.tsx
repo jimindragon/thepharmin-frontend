@@ -24,11 +24,15 @@ export function CarouselControl({
   onNext,
   canGoPrev,
   canGoNext,
+  prevLabel = "이전 추천 공고",
+  nextLabel = "다음 추천 공고",
 }: {
   onPrev: () => void;
   onNext: () => void;
   canGoPrev: boolean;
   canGoNext: boolean;
+  prevLabel?: string;
+  nextLabel?: string;
 }) {
   return (
     <div className="ml-auto flex gap-1">
@@ -36,7 +40,7 @@ export function CarouselControl({
         type="button"
         onClick={onPrev}
         disabled={!canGoPrev}
-        aria-label="이전 추천 공고"
+        aria-label={prevLabel}
         className="grid h-8 w-8 place-items-center border border-[#d8dce2] text-[#333333] transition-colors hover:border-[#111111] disabled:cursor-not-allowed disabled:text-[#9aa3af] disabled:hover:border-[#d8dce2]"
       >
         <ChevronLeft size={16} />
@@ -45,7 +49,7 @@ export function CarouselControl({
         type="button"
         onClick={onNext}
         disabled={!canGoNext}
-        aria-label="다음 추천 공고"
+        aria-label={nextLabel}
         className="grid h-8 w-8 place-items-center border border-[#d8dce2] text-[#333333] transition-colors hover:border-[#111111] disabled:cursor-not-allowed disabled:text-[#9aa3af] disabled:hover:border-[#d8dce2]"
       >
         <ChevronRight size={16} />

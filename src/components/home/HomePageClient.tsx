@@ -1,10 +1,11 @@
 "use client";
 
 import clsx from "clsx";
-import { Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Header } from "@/components/Header";
+import { CarouselControl } from "@/components/RecommendedJobs";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
@@ -13,19 +14,33 @@ import { companyLogos } from "@/config/companyImages";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
+import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const visibleCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
+  const { containerRef, canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useHorizontalCarousel<HTMLDivElement>();
 
   return (
     <section className="mt-14">
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>업계를 이끄는 기업</h2>
-        {/* 기업정보 홈 페이지가 아직 없어 연결을 비워둔다 — 추가되면 그 페이지로 다시 연결한다 */}
-        <span className="cursor-default text-[13px] font-medium text-[#aaaaaa]">전체보기 ›</span>
+        <div className="flex items-center gap-3">
+          {/* 기업정보 홈 페이지가 아직 없어 연결을 비워둔다 — 추가되면 그 페이지로 다시 연결한다 */}
+          <span className="cursor-default text-[13px] font-medium text-[#aaaaaa]">전체보기 ›</span>
+          <div className="hidden md:block">
+            <CarouselControl
+              onPrev={scrollPrev}
+              onNext={scrollNext}
+              canGoPrev={canScrollPrev}
+              canGoNext={canScrollNext}
+              prevLabel="이전 기업"
+              nextLabel="다음 기업"
+            />
+          </div>
+        </div>
       </div>
-      <div className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
+      <div ref={containerRef} className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => {
             const logoSrc = companyLogos[company.name];
@@ -33,7 +48,8 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
               <Link
                 key={company.id}
                 href={company.track === "all" ? "/jobs" : `/jobs?track=${company.track}`}
-                className="min-h-[188px] w-[330px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0"
+                data-carousel-item
+                className="min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0"
               >
                 {logoSrc ? (
                   <div className="mb-6 grid h-12 w-20 place-items-center border border-[#e2e5e8] bg-white p-1.5">
@@ -79,26 +95,30 @@ function RecruiterSolutionBanner() {
 }
 
 function ThemeCuration() {
+  const { containerRef, canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useHorizontalCarousel<HTMLDivElement>();
+
   return (
     <section className="mt-16">
       <div className="mb-5 flex items-center justify-between">
         <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>테마별 공고</h2>
-        <div className="hidden gap-1 md:flex">
-          <button type="button" className="grid h-8 w-8 place-items-center border border-[#d8dce2] text-[#9aa3af]" aria-label="이전 테마">
-            <ChevronLeft size={16} />
-          </button>
-          <button type="button" className="grid h-8 w-8 place-items-center border border-[#d8dce2] text-[#333333]" aria-label="다음 테마">
-            <ChevronRight size={16} />
-          </button>
+        <div className="hidden md:block">
+          <CarouselControl
+            onPrev={scrollPrev}
+            onNext={scrollNext}
+            canGoPrev={canScrollPrev}
+            canGoNext={canScrollNext}
+            prevLabel="이전 테마"
+            nextLabel="다음 테마"
+          />
         </div>
       </div>
-      <div className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
+      <div ref={containerRef} className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
         {/*
           테마별 전용 페이지가 아직 없어 카드 클릭 이동은 비활성화한다. card.href(목적지 데이터)는
           그대로 두고 렌더링만 비클릭형 div로 바꿔, 페이지가 준비되면 다시 Link로 감싸기만 하면 된다.
         */}
         {themeCurationCards.map((card) => (
-          <div key={card.id} className="min-w-[254px] cursor-default overflow-hidden border border-[#dddddd] bg-white">
+          <div key={card.id} data-carousel-item className="min-w-[254px] cursor-default overflow-hidden border border-[#dddddd] bg-white">
             <div className="h-[120px] overflow-hidden bg-[#f2f3f4]">
               <img src={card.image} alt="" className="h-full w-full object-cover" />
             </div>
