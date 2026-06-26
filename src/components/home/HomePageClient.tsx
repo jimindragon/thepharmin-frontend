@@ -18,6 +18,9 @@ import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 
+/** 실제 기업 상세 페이지(`/companies/{id}`)가 구현된 기업만 카드 클릭을 허용한다. 나머지는 상세 페이지가 없으므로 비클릭형으로 둔다 */
+const premiumCompanyDetailIds = new Set(["yuhan", "samsung-biologics"]);
+
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const visibleCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
   const { containerRef, canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useHorizontalCarousel<HTMLDivElement>();
@@ -45,13 +48,9 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => {
             const logoSrc = companyLogos[company.name];
-            return (
-              <Link
-                key={company.id}
-                href={company.track === "all" ? "/jobs" : `/jobs?track=${company.track}`}
-                data-carousel-item
-                className="min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0"
-              >
+            const cardClassName = "min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0";
+            const cardContent = (
+              <>
                 {logoSrc ? (
                   <div className="mb-6 grid h-12 w-20 place-items-center border border-[#e2e5e8] bg-white p-1.5">
                     <img src={logoSrc} alt={company.name} className="h-full w-full object-contain" />
@@ -70,7 +69,17 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                   ))}
                 </p>
                 <p className="mt-5 text-[13px] font-semibold text-[#111111]">{company.positionCount}</p>
+              </>
+            );
+
+            return premiumCompanyDetailIds.has(company.id) ? (
+              <Link key={company.id} href={`/companies/${company.id}`} data-carousel-item className={cardClassName}>
+                {cardContent}
               </Link>
+            ) : (
+              <div key={company.id} data-carousel-item className={cardClassName}>
+                {cardContent}
+              </div>
             );
           })}
         </div>
@@ -82,7 +91,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 function RecruiterSolutionBanner() {
   return (
     <section className="mt-6 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
-      <Link href="/business/jobs/new" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
+      <Link href="/business" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
         <p className="text-[14px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
         <span className="text-[13px] font-medium text-[#111111] hover:underline">더파마 리크루트 채용 솔루션 알아보기 ›</span>
       </Link>

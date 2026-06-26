@@ -29,7 +29,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
   const hasCompanyProfile = Boolean(job.companyId && companies.some((item) => item.id === job.companyId));
 
   return (
-    <article className="surface group relative border-[#dedede] p-5 shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[560px]:p-4">
+    <article className="surface group relative border-[#dedede] px-5 py-3 shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[560px]:p-4">
       {job.slug ? (
         <Link
           href={`/jobs/${job.slug}`}
@@ -46,21 +46,15 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
         </Link>
       ) : null}
 
-      <div className="flex items-start gap-4 max-[560px]:gap-3">
-        <EntityLogo
-          name={job.company}
-          logoText={job.logoText}
-          logoUrl={job.logoUrl}
-          size={48}
-          className="mt-0.5"
-        />
+      <div className="flex items-start gap-3">
+        <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={56} />
 
         <div className="min-w-0 flex-1">
           {hasCompanyProfile ? (
             <Link
               href={`/companies/${job.companyId}`}
               onClick={(event) => event.stopPropagation()}
-              className="relative z-20 inline-block max-w-full truncate text-[13px] font-medium text-[#5b6472] hover:text-brand"
+              className="relative z-20 block max-w-full truncate text-[13px] font-medium text-[#5b6472] hover:text-brand"
             >
               {job.company}
             </Link>
@@ -68,7 +62,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
             <p className="truncate text-[13px] font-medium text-[#5b6472]">{job.company}</p>
           )}
 
-          <div className="mt-2 flex min-w-0 items-center gap-2">
+          <div className="mt-1.5 flex min-w-0 items-center gap-2">
             {job.postingSource === "headhunting" ? (
               <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-medium text-[#535c68]">
                 헤드헌팅
@@ -77,7 +71,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
             <h3 className="truncate text-[16px] font-bold text-[#242b36]">{job.title}</h3>
           </div>
 
-          <p className="mt-2 truncate text-[12px] font-normal text-[#737d8a]">
+          <p className="mt-1.5 truncate text-[12px] font-normal text-[#737d8a]">
             {job.career}
             <span className="px-2 text-[#c2c8d1]">·</span>
             {job.education}
@@ -97,7 +91,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
             onToggleBookmark(job.id);
           }}
           className={clsx(
-            "relative z-20 grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius)] transition-colors",
+            "relative z-20 grid h-10 w-10 shrink-0 translate-x-[13.875px] place-items-center rounded-[var(--radius)] transition-colors",
             isBookmarked ? "text-brand" : "text-[#a0a9b7] hover:bg-[#f4f7f9] hover:text-brand",
           )}
           aria-label={isScrapContext ? `${job.title} 스크랩 해제` : `${job.title} 북마크 ${isBookmarked ? "해제" : "저장"}`}
@@ -106,7 +100,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
         </button>
       </div>
 
-      <div className="mt-2.5 flex flex-wrap items-start gap-3 pl-16 max-[560px]:pl-0">
+      <div className="mt-1.5 flex flex-wrap items-start gap-3 pl-[68px] max-[560px]:pl-0">
         <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
           {job.tags.map((tag) => (
             <span
@@ -118,7 +112,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
           ))}
         </div>
 
-        <div className="ml-auto shrink-0 text-right">
+        <div className="ml-auto shrink-0 -mt-[26.5px] text-right">
           <strong className={clsx("block text-[15px] font-bold leading-none", danger ? "text-danger" : "text-brand")}>{deadlineText}</strong>
           <span
             className={clsx(
