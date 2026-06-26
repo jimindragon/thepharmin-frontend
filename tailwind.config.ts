@@ -17,6 +17,9 @@ const config: Config = {
         border: "var(--color-border)",
         danger: "var(--color-danger)",
       },
+      backgroundImage: {
+        "gradient-cta": "var(--gradient-cta)",
+      },
       boxShadow: {
         app: "var(--shadow)",
       },

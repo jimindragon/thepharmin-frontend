@@ -34,6 +34,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import { deriveJobTrack } from "@/config/trackMapping";
@@ -674,6 +675,7 @@ export function JobPostingRegistrationForm() {
   const [applicationEmail, setApplicationEmail] = useState("");
   const [applicationGuide, setApplicationGuide] = useState("");
   const [deadlineMode, setDeadlineMode] = useState<"date" | "always">("date");
+  const [deadlineDate, setDeadlineDate] = useState("2026-06-30");
   const [workLocationMode, setWorkLocationMode] = useState<WorkLocationMode>("company");
   const [workLocationName, setWorkLocationName] = useState("서울 강남구");
   const [workAddress, setWorkAddress] = useState(mockCompanyProfile.representativeAddress);
@@ -688,6 +690,7 @@ export function JobPostingRegistrationForm() {
   const [saveStatus, setSaveStatus] = useState("저장 전");
   const [notice, setNotice] = useState("");
   const [hiringSteps, setHiringSteps] = useState(["서류 검토", "1차 면접", "최종 면접"]);
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const responsibilityEditorRef = useRef<StructuredEditorHandle | null>(null);
   const requirementEditorRef = useRef<StructuredEditorHandle | null>(null);
@@ -818,6 +821,24 @@ export function JobPostingRegistrationForm() {
 
   const showPreview = () => {
     setNotice("미리보기 화면을 열 준비가 되었습니다. 현재 입력된 구조화 정보 기준으로 표시됩니다.");
+  };
+
+  const publishJob = () => {
+    if (!canRequestPublish) {
+      const missing = [...missingItems, ...companyMissingItems.map((i) => `기업정보: ${i}`)];
+      setNotice(
+        `게시하려면 ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ` 외 ${missing.length - 3}개` : ""}을(를) 입력해 주세요.`,
+      );
+      return;
+    }
+    const params = new URLSearchParams({
+      title,
+      jobRole,
+      deadline: deadlineMode === "always" ? "채용 시 마감" : deadlineDate,
+      company: mockCompanyProfile.name,
+      track: mockDerivedTrack,
+    });
+    router.push(`/business/jobs/new/complete?${params.toString()}`);
   };
 
   return (
@@ -1427,7 +1448,8 @@ export function JobPostingRegistrationForm() {
                   <div className="grid grid-cols-[minmax(0,1fr)_180px] items-center gap-4 max-[760px]:grid-cols-1">
                     <input
                       type="date"
-                      defaultValue="2026-06-30"
+                      value={deadlineDate}
+                      onChange={(e) => setDeadlineDate(e.target.value)}
                       disabled={deadlineMode === "always"}
                       className="h-11 w-full rounded-[8px] border border-border px-3.5 text-[14px] font-medium outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:bg-[#f3f5f7] disabled:text-[#9aa4b2]"
                     />
@@ -1475,6 +1497,26 @@ export function JobPostingRegistrationForm() {
                   >
                     임시 저장
                   </button>
+                  <div className={clsx("relative max-[640px]:flex-1", process.env.NODE_ENV === "development" && "group")}>
+                    <button
+                      type="button"
+                      onClick={publishJob}
+                      className={clsx(
+                        "inline-flex h-11 w-full items-center justify-center px-9 text-[13px] font-bold transition",
+                        canRequestPublish
+                          ? "bg-[#111111] text-white hover:bg-[#2a2a2a] ring-2 ring-[#111111] ring-offset-2"
+                          : "border border-[#c8d0d9] bg-[#f3f5f7] text-[#9aa4b2]",
+                      )}
+                    >
+                      등록하기
+                    </button>
+                    {process.env.NODE_ENV === "development" && (
+                      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2.5 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#17202c] px-2.5 py-1.5 text-[11px] font-medium leading-none text-white opacity-0 shadow transition-opacity group-hover:opacity-100">
+                        완료 화면: /business/jobs/new/complete
+                        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-[#17202c]" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

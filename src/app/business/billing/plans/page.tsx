@@ -1,5 +1,5 @@
-import { BusinessCenterMockPage } from "@/components/business/BusinessPages";
+import { BusinessBillingPlansClient } from "@/components/business/BusinessBillingPlansClient";
 
 export default function BusinessBillingPlansPage() {
-  return <BusinessCenterMockPage title="요금제 관리" description="기업 채용상품, 공고 노출권, 헤드헌팅 이용권을 관리하는 화면입니다." />;
+  return <BusinessBillingPlansClient />;
 }
