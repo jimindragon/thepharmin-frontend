@@ -4,8 +4,8 @@ import clsx from "clsx";
 import { ChevronDown, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ReactNode } from "react";
-import { Header } from "@/components/Header";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { SupportHeader } from "@/components/support/SupportHeader";
 import { Button, LinkButton } from "@/components/ui/Button";
 
 type MemberType = "personal" | "business";
@@ -64,7 +64,7 @@ export function SupportContactClient() {
   if (submitted) {
     return (
       <>
-        <Header />
+        <SupportHeader />
         <main className="bg-[#f5f6f7] pb-20 pt-[18px]">
           <div className="app-shell--text">
             <PageBreadcrumb items={[{ label: "고객센터", href: "/support" }, { label: "1:1 문의하기" }]} />
@@ -88,7 +88,7 @@ export function SupportContactClient() {
 
   return (
     <>
-      <Header />
+      <SupportHeader />
       <main className="bg-[#f5f6f7] pb-20 pt-[18px]">
         <div className="app-shell--text">
           <PageBreadcrumb items={[{ label: "고객센터", href: "/support" }, { label: "1:1 문의하기" }]} />

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
+import { getIndustryJobCoverImage } from "@/utils/industryImage";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
 /**
@@ -91,6 +92,11 @@ export function getCoverImage(job: Job, company: Company | null) {
   /** 대표 이미지가 없는 약국 공고(coverImageMode가 "none"인 경우 포함)는 약국명 기준으로 결정론적으로 배정된 예시 사진을 대신 보여준다 */
   if (job.track === "pharmacy") {
     return getPharmacyCoverImage(job.company);
+  }
+
+  /** 대표 이미지가 없는 산업 트랙 공고는 slug 기준으로 결정론적으로 배정된 예시 사진을 대신 보여준다 */
+  if (job.track === "industry") {
+    return getIndustryJobCoverImage(job.slug ?? String(job.id));
   }
 
   return undefined;

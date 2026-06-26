@@ -5,6 +5,31 @@ import type { SortOption } from "@/types/jobs";
 
 const sortOptions: SortOption[] = ["추천순", "최신순", "마감임박순"];
 
+interface SortButtonsProps {
+  sortOption: SortOption;
+  onChange: (sortOption: SortOption) => void;
+}
+
+export function SortButtons({ sortOption, onChange }: SortButtonsProps) {
+  return (
+    <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+      {sortOptions.map((option) => (
+        <button
+          key={option}
+          type="button"
+          onClick={() => onChange(option)}
+          className={clsx(
+            "min-w-[96px] border-r border-[#dce2ea] px-3.5 text-[12px] font-medium last:border-r-0",
+            sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+          )}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 interface JobListToolbarProps {
   totalCount: number;
   sortOption: SortOption;
@@ -23,21 +48,7 @@ export function JobListToolbar({
           총 <span className="text-brand">{totalCount}개</span> 공고
         </p>
       </div>
-      <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
-        {sortOptions.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => onSortChange(option)}
-            className={clsx(
-              "min-w-[96px] border-r border-[#dce2ea] px-3.5 text-[12px] font-medium last:border-r-0",
-              sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
-            )}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+      <SortButtons sortOption={sortOption} onChange={onSortChange} />
     </div>
   );
 }

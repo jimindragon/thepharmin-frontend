@@ -65,7 +65,7 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
  * 동일한 인터랙션(useDropdownMenu)을 쓰되, 메뉴 내용은 기업센터 사이드바 구성
  * (businessCenterMenuGroups)을 그대로 가져와 둘이 항상 같은 목적지를 가리키게 한다.
  */
-function BusinessAccountMenu() {
+export function BusinessAccountMenu() {
   const pathname = usePathname();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const isHomeActive = pathname === businessCenterHomeItem.href;

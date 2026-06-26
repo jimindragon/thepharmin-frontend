@@ -118,12 +118,8 @@ function ThemeCuration() {
         </div>
       </div>
       <div ref={containerRef} className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
-        {/*
-          테마별 전용 페이지가 아직 없어 카드 클릭 이동은 비활성화한다. card.href(목적지 데이터)는
-          그대로 두고 렌더링만 비클릭형 div로 바꿔, 페이지가 준비되면 다시 Link로 감싸기만 하면 된다.
-        */}
         {themeCurationCards.map((card) => (
-          <div key={card.id} data-carousel-item className="min-w-[254px] cursor-default overflow-hidden border border-[#dddddd] bg-white">
+          <Link key={card.id} href={card.href} data-carousel-item className="min-w-[254px] overflow-hidden border border-[#dddddd] bg-white transition hover:border-[#111111] hover:shadow-sm">
             <div className="h-[120px] overflow-hidden bg-[#f2f3f4]">
               <img src={card.image} alt="" className="h-full w-full object-cover" />
             </div>
@@ -131,7 +127,7 @@ function ThemeCuration() {
               <h3 className={clsx(typeScale.cardTitle, "truncate text-[#222222]")}>{card.title}</h3>
               <p className="mt-2 text-[12px] font-normal text-[#8a8a8a]">{card.subtitle}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

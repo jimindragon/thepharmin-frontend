@@ -11,7 +11,7 @@ import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
-function AccountMenu() {
+export function AccountMenu() {
   const pathname = usePathname();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
 

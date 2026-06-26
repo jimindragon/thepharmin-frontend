@@ -3,8 +3,8 @@
 import clsx from "clsx";
 import { ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Header } from "@/components/Header";
 import { BusinessImageBand } from "@/components/business/BusinessMarketingSections";
+import { SupportHeader } from "@/components/support/SupportHeader";
 import { LinkButton } from "@/components/ui/Button";
 import { Eyebrow, typeScale } from "@/components/ui/Typography";
 import { heroImages } from "@/config/companyImages";
@@ -166,7 +166,7 @@ export function SupportHomeClient() {
 
   return (
     <>
-      <Header />
+      <SupportHeader />
       <main className="bg-white pb-20">
         <BusinessImageBand image={heroImages.support} gradient="vertical" align="center" variant="hero">
           <Eyebrow tone="dark" align="center">
