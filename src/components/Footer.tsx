@@ -2,15 +2,7 @@
 
 import { ChevronUp } from "lucide-react";
 
-const footerMenuItems = [
-  "매체소개",
-  "고객센터",
-  "이용약관",
-  "개인정보처리방침",
-  "청소년보호정책",
-  "저작권 및 콘텐츠 이용 정책",
-  "이메일무단수집거부",
-];
+const footerMenuItems = ["서비스 소개", "고객센터", "이용약관", "개인정보처리방침", "이메일무단수집거부"];
 
 type MetaToken = { label?: string; value: string };
 
@@ -75,9 +67,7 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="mt-8 text-[12px] text-[#888888]">
-          © 더파마뉴스. All rights reserved. 무단전재·재배포·수집·크롤링·AI학습 이용 금지.
-        </p>
+        <p className="mt-8 text-[12px] text-[#888888]">© 주식회사 더파마뉴스. All rights reserved.</p>
       </div>
 
       <button
