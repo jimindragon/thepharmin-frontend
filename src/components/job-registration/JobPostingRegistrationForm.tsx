@@ -45,7 +45,6 @@ type FormatMode = "paragraph" | "bullet" | "number";
 type ImageMode = "upload" | "company" | "none";
 type BlockType = "image" | "file";
 type ApplicationMethod = "quick" | "homepage" | "email" | "custom";
-type PositionEditorKey = "responsibilities" | "requirements" | "preferred";
 type WorkLocationMode = "company" | "manual" | "remote";
 
 const mockOrganizationType: OrganizationType = "pharmaceutical_company";
@@ -95,7 +94,6 @@ interface StructuredEditorProps {
   defaultMode: FormatMode;
   initialItems: string[];
   onContentChange: (content: string) => void;
-  onFocusEditor?: () => void;
 }
 
 interface StructuredEditorHandle {
@@ -180,40 +178,12 @@ function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
   return nextItems;
 }
 
-
-function PageStepper() {
-  const steps = [
-    { label: "기본정보", state: "done" },
-    { label: "포지션 정보", state: "active" },
-    { label: "근무·지원", state: "todo" },
-    { label: "미리보기", state: "todo" },
-  ];
-
-  return (
-    <div className="registration-stepper mt-10 grid grid-cols-[1fr_1fr_1fr_1fr] items-center gap-0">
-      {steps.map((step, index) => (
-        <div key={step.label} className="flex items-center">
-          <div className="flex items-center gap-3">
-            <span
-              className={clsx(
-                "registration-step-circle grid h-11 w-11 place-items-center rounded-full text-[18px] font-medium",
-                step.state === "done" && "bg-[#e8e8e8] text-brand",
-                step.state === "active" && "bg-brand text-white",
-                step.state === "todo" && "bg-[#eef1f4] text-[#8b95a3]",
-              )}
-            >
-              {step.state === "done" ? "✓" : index + 1}
-            </span>
-            <span className={clsx("registration-step-label text-[18px] font-medium", step.state === "active" ? "text-brand" : "text-[#6d7683]")}>
-              {step.label}
-            </span>
-          </div>
-          {index < steps.length - 1 ? <span className="mx-6 h-px flex-1 bg-[#dfe5ec]" /> : null}
-        </div>
-      ))}
-    </div>
-  );
-}
+const sectionCompletionFields: Record<string, string[]> = {
+  "기본 정보": ["공고 제목", "모집 직무"],
+  "포지션 소개": ["포지션 소개", "주요업무", "자격요건"],
+  근무조건: ["근무지명", "주소", "근무 방식"],
+  지원방법: ["지원 URL", "접수 이메일", "지원 안내 문구"],
+};
 
 function CompanySummaryCard() {
   const hasMissingCompanyInfo = companyMissingItems.length > 0;
@@ -222,12 +192,8 @@ function CompanySummaryCard() {
     <section className="registration-company-card surface mt-7 px-7 py-6">
       <div className="flex items-center justify-between gap-6 max-[860px]:flex-col max-[860px]:items-stretch">
         <div className="flex min-w-0 flex-1 items-center gap-5">
-          <div className="registration-company-logo grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full border border-[#e2eceb] bg-[#f4f4f4]">
-            <div className="relative h-11 w-11">
-              <span className="absolute left-0 top-2 h-6 w-6 rounded-full bg-brand opacity-90" />
-              <span className="absolute right-0 top-2 h-6 w-6 rounded-full bg-[#6f747b] opacity-80" />
-              <span className="absolute bottom-0 left-[11px] h-6 w-6 rounded-full bg-brand opacity-70" />
-            </div>
+          <div className="registration-company-logo grid h-[82px] w-[82px] shrink-0 place-items-center border border-[#e5e9ef] bg-[#f7f8fa] text-[15px] font-bold text-[#4f5968]">
+            {mockCompanyProfile.logoText.slice(0, 2)}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -248,8 +214,8 @@ function CompanySummaryCard() {
           </div>
         </div>
         <Link
-          href="/companies/thepharmin-pharma"
-          className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap border border-[#d8e0e8] bg-white px-5 text-[14px] font-medium text-[#3c4655] transition hover:border-brand hover:text-brand"
+          href="/business/company/profile"
+          className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap border border-[#d8e0e8] bg-white px-5 text-[13px] font-medium text-[#3c4655] transition hover:border-[#111111] hover:text-[#111111]"
         >
           기업정보 수정하러 가기
         </Link>
@@ -297,7 +263,6 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
   defaultMode,
   initialItems,
   onContentChange,
-  onFocusEditor,
 }, ref) {
   const [mode, setMode] = useState<FormatMode>(defaultMode);
   const [items, setItems] = useState<EditorItem[]>(() => toEditorItems(initialItems));
@@ -514,10 +479,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                 setItems(nextItems);
                 emitContent(nextItems);
               }}
-              onFocus={() => {
-                setFocusedId(items[0]?.id ?? "");
-                onFocusEditor?.();
-              }}
+              onFocus={() => setFocusedId(items[0]?.id ?? "")}
               rows={5}
               className={clsx(
                 "min-h-[94px] w-full resize-y border-0 bg-white px-5 py-4 pb-9 text-[15px] font-normal leading-[1.75] text-[#333c49] outline-none placeholder:text-[#a3adba]",
@@ -557,10 +519,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                 </span>
                 <textarea
                   value={item.text}
-                  onFocus={() => {
-                    setFocusedId(item.id);
-                    onFocusEditor?.();
-                  }}
+                  onFocus={() => setFocusedId(item.id)}
                   onKeyDown={(event) => onItemKeyDown(event, item.id)}
                   onPaste={(event) => onItemPaste(event, item.id)}
                   onChange={(event) => updateText(item.id, event.target.value)}
@@ -608,7 +567,6 @@ function KeywordPanel({
 
   return (
     <SectionCard
-      index={3}
       title="핵심 키워드"
       description="검색, 추천 공고, 후보자 매칭에 활용되는 키워드를 선택합니다."
       status="작성 중"
@@ -729,12 +687,11 @@ export function JobPostingRegistrationForm() {
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState("저장 전");
   const [notice, setNotice] = useState("");
+  const [hiringSteps, setHiringSteps] = useState(["서류 검토", "1차 면접", "최종 면접"]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const responsibilityEditorRef = useRef<StructuredEditorHandle | null>(null);
   const requirementEditorRef = useRef<StructuredEditorHandle | null>(null);
   const preferredEditorRef = useRef<StructuredEditorHandle | null>(null);
-  const [activeEditorKey, setActiveEditorKey] = useState<PositionEditorKey>("responsibilities");
-
   const dynamicSuggestions = useMemo(() => {
     const content = `${jobRole} ${responsibilityContent} ${requirementContent}`.toLowerCase();
     const base = jobRole.includes("RA") ? ["IND/NDA", "FDA", "EMA", "글로벌 인허가", "CMC RA"] : ["GMP", "허가심사 대응"];
@@ -786,6 +743,24 @@ export function JobPostingRegistrationForm() {
 
   const canRequestPublish = missingItems.length === 0 && companyMissingItems.length === 0;
 
+  const incompleteSectionNames = useMemo(
+    () =>
+      Object.entries(sectionCompletionFields)
+        .filter(([, fields]) => fields.some((f) => missingItems.includes(f)))
+        .map(([name]) => name),
+    [missingItems],
+  );
+
+  const completedSectionNames = useMemo(
+    () => [
+      ...Object.keys(sectionCompletionFields).filter((name) => !incompleteSectionNames.includes(name)),
+      "핵심 키워드",
+      "이미지·첨부 자료",
+      "채용 절차",
+    ],
+    [incompleteSectionNames],
+  );
+
   const addStandardKeyword = (rawKeyword: string) => {
     const keyword = canonicalKeyword(rawKeyword);
     if (!keyword) return;
@@ -808,26 +783,6 @@ export function JobPostingRegistrationForm() {
 
   const removeKeyword = (keyword: string) => {
     setSelectedStandard((current) => current.filter((item) => item !== keyword));
-  };
-
-  const addItemToActiveEditor = () => {
-    const editorMap = {
-      responsibilities: responsibilityEditorRef,
-      requirements: requirementEditorRef,
-      preferred: preferredEditorRef,
-    };
-    const labelMap = {
-      responsibilities: "주요업무",
-      requirements: "자격요건",
-      preferred: "우대사항",
-    };
-
-    const added = editorMap[activeEditorKey].current?.addItem();
-    setNotice(
-      added
-        ? `${labelMap[activeEditorKey]}에 새 항목을 추가했습니다.`
-        : `${labelMap[activeEditorKey]}이 문단형일 때는 항목을 추가하지 않습니다.`,
-    );
   };
 
   const onImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -865,41 +820,19 @@ export function JobPostingRegistrationForm() {
     setNotice("미리보기 화면을 열 준비가 되었습니다. 현재 입력된 구조화 정보 기준으로 표시됩니다.");
   };
 
-  const goNext = () => {
-    if (missingItems.length) {
-      setNotice(`필수 항목을 먼저 입력해 주세요: ${missingItems.join(", ")}`);
-      return;
-    }
-    if (companyMissingItems.length) {
-      setNotice(`공고 상세에 필요한 기업정보를 먼저 보완해 주세요: ${companyMissingItems.join(", ")}`);
-      return;
-    }
-    setNotice("다음 단계로 이동할 수 있습니다.");
-  };
-
   return (
-    <main className="registration-page bg-[#f6f8fa] pb-28 pt-10">
+    <main className="registration-page bg-[#f6f8fa] pt-10">
       <div className="registration-container mx-auto">
-        <div className="flex items-start justify-between gap-5">
+        <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
           <div>
-            <PageBreadcrumb items={[{ label: "기업 서비스" }, { label: "공고 등록" }]} />
-            <h1 className="registration-page-title mt-5 text-[#111827]">공고 등록</h1>
-            <p className="registration-page-subtitle mt-3 text-[18px] font-medium text-[#747f8f]">
+            <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "채용관리" }, { label: "공고 등록" }]} />
+            <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">공고 등록</h1>
+            <p className="mt-2 text-[13px] font-normal text-[#68717e]">
               채용 공고를 손쉽게 등록하세요.
             </p>
           </div>
-          <div className="hidden gap-2 xl:flex">
-            <button
-              type="button"
-              onClick={saveDraft}
-              className="h-11 border border-[#d8e0e8] bg-white px-5 text-[14px] font-medium text-[#44505f] transition hover:border-brand hover:text-brand"
-            >
-              임시 저장
-            </button>
-          </div>
         </div>
 
-        <PageStepper />
         <CompanySummaryCard />
 
         {notice ? (
@@ -913,7 +846,7 @@ export function JobPostingRegistrationForm() {
 
         <div className="registration-layout mt-7 grid grid-cols-[minmax(0,1fr)_300px] gap-5 max-[1180px]:grid-cols-1">
           <div className="registration-main-stack min-w-0 space-y-6">
-            <SectionCard index={1} title="기본 정보" description="공고 제목과 직무, 채용 조건을 입력합니다." status="완료">
+            <SectionCard title="기본 정보" description="공고 제목과 직무, 채용 조건을 입력합니다." status="완료">
               <div>
                 <FormRow label="공고 제목" required align="center">
                   <input
@@ -990,7 +923,6 @@ export function JobPostingRegistrationForm() {
             </SectionCard>
 
             <SectionCard
-              index={2}
               title="포지션 소개"
               description="입력한 내용은 검색, 추천 공고, 후보자 매칭에 활용됩니다. 이미지나 포스터만 등록하지 말고 핵심 내용을 항목별로 입력해 주세요."
               status="작성 중"
@@ -1022,8 +954,15 @@ export function JobPostingRegistrationForm() {
                   defaultMode="bullet"
                   initialItems={initialResponsibilities}
                   onContentChange={setResponsibilityContent}
-                  onFocusEditor={() => setActiveEditorKey("responsibilities")}
                 />
+                <button
+                  type="button"
+                  onClick={() => responsibilityEditorRef.current?.addItem()}
+                  className="mt-2 inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-4 text-[13px] font-medium text-[#4f5968] transition hover:border-brand hover:text-brand"
+                >
+                  <Plus size={15} />
+                  항목 추가
+                </button>
                 <StructuredEditor
                   ref={requirementEditorRef}
                   label="자격요건"
@@ -1031,16 +970,30 @@ export function JobPostingRegistrationForm() {
                   defaultMode="bullet"
                   initialItems={initialRequirements}
                   onContentChange={setRequirementContent}
-                  onFocusEditor={() => setActiveEditorKey("requirements")}
                 />
+                <button
+                  type="button"
+                  onClick={() => requirementEditorRef.current?.addItem()}
+                  className="mt-2 inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-4 text-[13px] font-medium text-[#4f5968] transition hover:border-brand hover:text-brand"
+                >
+                  <Plus size={15} />
+                  항목 추가
+                </button>
                 <StructuredEditor
                   ref={preferredEditorRef}
                   label="우대사항"
                   defaultMode="bullet"
                   initialItems={initialPreferredQualifications}
                   onContentChange={setPreferredContent}
-                  onFocusEditor={() => setActiveEditorKey("preferred")}
                 />
+                <button
+                  type="button"
+                  onClick={() => preferredEditorRef.current?.addItem()}
+                  className="mt-2 inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-4 text-[13px] font-medium text-[#4f5968] transition hover:border-brand hover:text-brand"
+                >
+                  <Plus size={15} />
+                  항목 추가
+                </button>
               </div>
             </SectionCard>
 
@@ -1053,149 +1006,196 @@ export function JobPostingRegistrationForm() {
             />
 
             <SectionCard
-              index={4}
-              title="대표 이미지"
-              description="공고 상세 상단에 노출되는 이미지입니다. 등록하지 않아도 공고를 게시할 수 있습니다."
+              title="이미지·첨부 자료"
+              description="공고 대표 이미지와 추가 소개 자료를 등록합니다. 이미지·파일 없이도 공고를 게시할 수 있습니다."
               status="선택 사항"
             >
-              <div className="mb-4 grid grid-cols-3 gap-2 max-[760px]:grid-cols-1">
-                {[
-                  { mode: "company" as ImageMode, label: "기업 기본 이미지 사용", icon: ImageIcon },
-                  { mode: "upload" as ImageMode, label: "새 이미지 업로드", icon: Upload },
-                  { mode: "none" as ImageMode, label: "이미지 없이 등록", icon: ImageOff },
-                ].map((option) => {
-                  const Icon = option.icon;
-                  return (
-                    <button
-                      key={option.mode}
-                      type="button"
-                      onClick={() => {
-                        setImageMode(option.mode);
-                        setImagePreview(option.mode === "company" ? companyDefaultImage : "");
-                      }}
-                      className={clsx(
-                        "inline-flex h-11 items-center justify-center gap-2 border px-3.5 text-[13px] font-medium transition",
-                        imageMode === option.mode
-                          ? "border-[#252d39] bg-white text-[#252d39]"
-                          : "border-border bg-white text-[#536071] hover:border-brand hover:text-brand",
-                      )}
-                    >
-                      <Icon size={16} />
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onImageUpload} />
-
-              {imageMode === "none" ? (
-                <div className="rounded-[10px] border border-[#dfe7ee] bg-[#fbfcfd] px-5 py-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
-                  이미지 없이 등록합니다. 상세 페이지에서는 기업 로고와 브랜드 컬러로 기본 커버가 표시됩니다.
+              <div>
+                <h3 className="mb-2 text-[15px] font-bold text-[#364050]">대표 이미지</h3>
+                <p className="mb-3 text-[12px] font-medium text-[#7d8796]">공고 상세 상단에 노출되는 커버 이미지입니다.</p>
+                <div className="mb-4 grid grid-cols-3 gap-2 max-[760px]:grid-cols-1">
+                  {[
+                    { mode: "company" as ImageMode, label: "기업 기본 이미지 사용", icon: ImageIcon },
+                    { mode: "upload" as ImageMode, label: "새 이미지 업로드", icon: Upload },
+                    { mode: "none" as ImageMode, label: "이미지 없이 등록", icon: ImageOff },
+                  ].map((option) => {
+                    const Icon = option.icon;
+                    return (
+                      <button
+                        key={option.mode}
+                        type="button"
+                        onClick={() => {
+                          setImageMode(option.mode);
+                          setImagePreview(option.mode === "company" ? companyDefaultImage : "");
+                        }}
+                        className={clsx(
+                          "inline-flex h-11 items-center justify-center gap-2 border px-3.5 text-[13px] font-medium transition",
+                          imageMode === option.mode
+                            ? "border-[#252d39] bg-white text-[#252d39]"
+                            : "border-border bg-white text-[#536071] hover:border-brand hover:text-brand",
+                        )}
+                      >
+                        <Icon size={16} />
+                        {option.label}
+                      </button>
+                    );
+                  })}
                 </div>
-              ) : imagePreview ? (
-                <div className="rounded-[10px] border border-[#dfe7ee] bg-white p-3">
-                  <img src={imagePreview} alt="공고 대표 이미지 미리보기" className="h-[190px] w-full rounded-[8px] object-cover" />
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-[12px] font-medium text-[#7a8594]">상세 페이지 상단 커버와 추천 공고 카드에 우선 노출됩니다.</p>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-[#536071] hover:border-brand hover:text-brand"
-                      >
-                        이미지 변경
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setImagePreview("")}
-                        className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-danger hover:border-danger"
-                      >
-                        삭제
-                      </button>
+
+                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onImageUpload} />
+
+                {imageMode === "none" ? (
+                  <div className="border border-[#dfe7ee] bg-[#fbfcfd] px-5 py-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
+                    이미지 없이 등록합니다. 상세 페이지에서는 기업 로고와 브랜드 컬러로 기본 커버가 표시됩니다.
+                  </div>
+                ) : imagePreview ? (
+                  <div className="border border-[#dfe7ee] bg-white p-3">
+                    <img src={imagePreview} alt="공고 대표 이미지 미리보기" className="h-[190px] w-full object-cover" />
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[12px] font-medium text-[#7a8594]">상세 페이지 상단 커버와 추천 공고 카드에 우선 노출됩니다.</p>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-[#536071] hover:border-brand hover:text-brand"
+                        >
+                          이미지 변경
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setImagePreview("")}
+                          className="h-9 border border-border bg-white px-3 text-[13px] font-medium text-danger hover:border-danger"
+                        >
+                          삭제
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="grid min-h-[174px] w-full place-items-center border border-dashed border-[#bfcbd7] bg-[#fbfcfd] px-6 text-center transition hover:border-brand hover:bg-brand-soft"
-                >
-                  <span>
-                    <Upload className="mx-auto text-brand" size={32} />
-                    <span className="mt-3 block text-[15px] font-medium text-[#364050]">이미지를 업로드하세요</span>
-                    <span className="mt-2 block text-[12px] font-normal leading-[1.7] text-[#7d8796]">
-                      권장 비율: 가로형 · 권장 크기: 1600×560px · JPG, PNG, WebP · 최대 5MB
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="grid min-h-[174px] w-full place-items-center border border-dashed border-[#bfcbd7] bg-[#fbfcfd] px-6 text-center transition hover:border-brand hover:bg-brand-soft"
+                  >
+                    <span>
+                      <Upload className="mx-auto text-brand" size={32} />
+                      <span className="mt-3 block text-[15px] font-medium text-[#364050]">이미지를 업로드하세요</span>
+                      <span className="mt-2 block text-[12px] font-normal leading-[1.7] text-[#7d8796]">
+                        권장 비율: 가로형 · 권장 크기: 1600×560px · JPG, PNG, WebP · 최대 5MB
+                      </span>
                     </span>
-                  </span>
-                </button>
-              )}
+                  </button>
+                )}
+              </div>
+
+              <div className="my-6 border-t border-[#edf1f5]" />
+
+              <div>
+                <h3 className="mb-2 text-[15px] font-bold text-[#364050]">추가 소개 자료</h3>
+                <p className="mb-3 text-[12px] font-medium text-[#7d8796]">회사 소개, 조직도, 복리후생 자료 등 이미지·파일을 첨부합니다.</p>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={() => addBlock("image")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
+                    이미지 추가
+                  </button>
+                  <button type="button" onClick={() => addBlock("file")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
+                    파일 추가
+                  </button>
+                </div>
+
+                <div className="mt-4 flex items-start gap-2 border border-[#dfe5ec] bg-[#f7f8fa] px-4 py-3 text-[12px] font-medium leading-[1.65] text-[#667181]">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#7b8492]" />
+                  <span>주요업무, 자격요건, 근무조건, 지원방법 등 핵심 정보는 이미지로만 대체할 수 없습니다.</span>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {detailBlocks.length ? (
+                    detailBlocks.map((block) => (
+                      <div
+                        key={block.id}
+                        draggable
+                        onDragStart={(event) => {
+                          setDraggingBlockId(block.id);
+                          event.dataTransfer.effectAllowed = "move";
+                        }}
+                        onDragEnd={() => setDraggingBlockId(null)}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDrop={(event) => onBlockDrop(event, block.id)}
+                        className={clsx(
+                          "flex items-center gap-3 border bg-white px-3.5 py-3 transition",
+                          draggingBlockId === block.id ? "border-brand bg-brand-soft" : "border-[#e1e8ee]",
+                        )}
+                      >
+                        <GripVertical size={18} className="text-[#a0a9b7]" />
+                        {block.type === "image" ? <ImageIcon size={20} className="text-brand" /> : <FileText size={20} className="text-brand" />}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[14px] font-medium text-[#364050]">{block.title}</p>
+                          <p className="truncate text-[12px] font-normal text-[#7d8796]">{block.description}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setDetailBlocks((current) => current.filter((item) => item.id !== block.id))}
+                          className="grid h-8 w-8 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
+                          aria-label={`${block.title} 블록 삭제`}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="grid min-h-[90px] place-items-center border border-dashed border-[#cfd9e2] bg-[#fbfcfd] text-[13px] font-normal text-[#8a95a5]">
+                      추가된 상세 자료가 없습니다.
+                    </div>
+                  )}
+                </div>
+              </div>
             </SectionCard>
 
             <SectionCard
-              index={5}
-              title="추가 소개 자료"
-              description="회사 소개, 조직도, 채용 절차, 복리후생 자료 등을 추가할 수 있습니다."
+              title="채용 절차"
+              description="전형 단계를 순서대로 입력합니다. 공고 상세 페이지에 단계별로 표시됩니다."
               status="선택 사항"
             >
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => addBlock("image")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
-                  이미지 추가
-                </button>
-                <button type="button" onClick={() => addBlock("file")} className="subtle-button h-10 px-3.5 text-[13px] font-medium">
-                  파일 추가
-                </button>
-              </div>
-
-              <div className="mt-4 flex items-start gap-2 border border-[#dfe5ec] bg-[#f7f8fa] px-4 py-3 text-[12px] font-medium leading-[1.65] text-[#667181]">
-                <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#7b8492]" />
-                <span>주요업무, 자격요건, 근무조건, 지원방법 등 핵심 정보는 이미지로만 대체할 수 없습니다.</span>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                {detailBlocks.length ? (
-                  detailBlocks.map((block) => (
-                    <div
-                      key={block.id}
-                      draggable
-                      onDragStart={(event) => {
-                        setDraggingBlockId(block.id);
-                        event.dataTransfer.effectAllowed = "move";
-                      }}
-                      onDragEnd={() => setDraggingBlockId(null)}
-                      onDragOver={(event) => event.preventDefault()}
-                      onDrop={(event) => onBlockDrop(event, block.id)}
-                      className={clsx(
-                        "flex items-center gap-3 rounded-[9px] border bg-white px-3.5 py-3 transition",
-                        draggingBlockId === block.id ? "border-brand bg-brand-soft" : "border-[#e1e8ee]",
-                      )}
+              <div className="space-y-3">
+                {hiringSteps.map((step, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center bg-[#f4f5f6] text-[13px] font-medium text-[#596373]">
+                      {index + 1}
+                    </span>
+                    <input
+                      value={step}
+                      onChange={(event) =>
+                        setHiringSteps((current) => current.map((s, i) => (i === index ? event.target.value : s)))
+                      }
+                      placeholder={`전형 단계 ${index + 1}`}
+                      className="h-11 flex-1 border border-border px-3 text-[14px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setHiringSteps((current) => current.filter((_, i) => i !== index))}
+                      disabled={hiringSteps.length <= 1}
+                      className="grid h-7 w-7 place-items-center text-[#b1bac6] transition hover:bg-[#fff0f0] hover:text-danger disabled:cursor-not-allowed disabled:opacity-35"
+                      aria-label={`${index + 1}번째 단계 삭제`}
                     >
-                      <GripVertical size={18} className="text-[#a0a9b7]" />
-                      {block.type === "image" ? <ImageIcon size={20} className="text-brand" /> : <FileText size={20} className="text-brand" />}
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[14px] font-medium text-[#364050]">{block.title}</p>
-                        <p className="truncate text-[12px] font-normal text-[#7d8796]">{block.description}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setDetailBlocks((current) => current.filter((item) => item.id !== block.id))}
-                        className="grid h-8 w-8 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
-                        aria-label={`${block.title} 블록 삭제`}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <div className="grid min-h-[90px] place-items-center rounded-[9px] border border-dashed border-[#cfd9e2] bg-[#fbfcfd] text-[13px] font-normal text-[#8a95a5]">
-                    추가된 상세 자료가 없습니다.
+                      <Trash2 size={15} />
+                    </button>
                   </div>
-                )}
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setHiringSteps((current) => [...current, ""])}
+                  className="mt-1 inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-4 text-[13px] font-medium text-[#4f5968] transition hover:border-brand hover:text-brand"
+                >
+                  <Plus size={15} />
+                  단계 추가
+                </button>
+                <div className="flex items-start gap-2 border border-[#dfe5ec] bg-[#f7f8fa] px-4 py-3 text-[12px] font-medium leading-[1.65] text-[#667181]">
+                  <AlertCircle size={15} className="mt-0.5 shrink-0 text-[#7b8492]" />
+                  <span>채용 절차 저장 기능은 추후 연결 예정입니다. 현재 입력한 내용은 저장되지 않습니다.</span>
+                </div>
               </div>
             </SectionCard>
 
-            <SectionCard index={6} title="근무조건" description="근무지, 근무 방식, 급여와 복리후생을 입력합니다." status="완료">
+            <SectionCard title="근무조건" description="근무지, 근무 방식, 급여와 복리후생을 입력합니다." status="완료">
               <div>
                 <FormRow label="근무지 입력" required>
                   <div className="grid gap-3">
@@ -1362,7 +1362,7 @@ export function JobPostingRegistrationForm() {
               </div>
             </SectionCard>
 
-            <SectionCard index={7} title="지원방법 및 마감일" description="지원 방식에 따라 공고 상세 페이지에 필요한 정보가 노출됩니다." status="필수 입력 필요">
+            <SectionCard title="지원방법 및 마감일" description="지원 방식에 따라 공고 상세 페이지에 필요한 정보가 노출됩니다." status="필수 입력 필요">
               <div>
                 <FormRow label="지원 방식" required align="center">
                   <SelectShell value={applicationMethod} onChange={(value) => setApplicationMethod(value as ApplicationMethod)}>
@@ -1453,6 +1453,31 @@ export function JobPostingRegistrationForm() {
                 </p>
               </div>
             </div>
+
+            <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
+              <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
+                <div className="flex items-center gap-2 text-[13px] font-medium text-[#667181]">
+                  <RotateCcw size={16} />
+                  {saveStatus}
+                </div>
+                <div className="flex gap-2 max-[640px]:w-full">
+                  <button
+                    type="button"
+                    onClick={showPreview}
+                    className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1"
+                  >
+                    미리보기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveDraft}
+                    className="inline-flex h-11 items-center justify-center border border-[#111111] bg-[#111111] px-9 text-[13px] font-medium text-white hover:bg-[#2a2a2a] max-[640px]:flex-1"
+                  >
+                    임시 저장
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <aside className="registration-sidebar sticky top-[84px] self-start h-fit space-y-4 max-[1180px]:static">
@@ -1460,22 +1485,23 @@ export function JobPostingRegistrationForm() {
               <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">등록 진행 상황</h2>
               <div className="mt-5 border border-[#e0e6ee] bg-[#f8fafb] p-4">
                 <div className="flex items-end justify-between">
-                  <div>
-                    <p className="mt-1 text-[24px] font-medium text-[#111827]">5 / 7</p>
-                  </div>
+                  <p className="text-[24px] font-medium text-[#111827]">{completedSectionNames.length} / 7</p>
                   <span className="text-[13px] font-medium text-[#5f6876]">
                     {canRequestPublish ? "게시 요청 가능" : "게시 전 확인 필요"}
                   </span>
                 </div>
                 <div className="mt-4 h-2 overflow-hidden bg-[#e3e8ef]">
-                  <span className="block h-full w-[72%] bg-[#111111]" />
+                  <span
+                    className="block h-full bg-[#111111] transition-[width]"
+                    style={{ width: `${Math.round((completedSectionNames.length / 7) * 100)}%` }}
+                  />
                 </div>
               </div>
 
               <div className="mt-5">
                 <h3 className="text-[13px] font-bold text-[#364050]">완료 항목</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {["기본 정보", "포지션 소개", "핵심 키워드", "근무조건"].map((item) => (
+                  {completedSectionNames.map((item) => (
                     <span key={item} className="border border-[#d9dee6] bg-white px-2.5 py-1 text-[11px] font-medium text-[#596373]">
                       {item}
                     </span>
@@ -1484,18 +1510,7 @@ export function JobPostingRegistrationForm() {
               </div>
 
               <div className="mt-5">
-                <h3 className="text-[13px] font-bold text-[#364050]">작성 중</h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {["지원방법 및 마감일", "대표 이미지"].map((item) => (
-                    <span key={item} className="border border-[#d9dee6] bg-[#f7f8fa] px-2.5 py-1 text-[11px] font-medium text-[#596373]">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <h3 className="text-[13px] font-bold text-[#364050]">미완료 항목</h3>
+                <h3 className="text-[13px] font-bold text-[#364050]">필수 입력 필요</h3>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {(
                     missingItems.length || companyMissingItems.length
@@ -1504,10 +1519,10 @@ export function JobPostingRegistrationForm() {
                   )
                     .slice(0, 6)
                     .map((item) => (
-                    <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-medium text-[#9b3a2d]">
-                      {item === "지원 URL" ? "지원 URL 입력 필요" : item}
-                    </span>
-                  ))}
+                      <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-medium text-[#9b3a2d]">
+                        {item === "지원 URL" ? "지원 URL 입력 필요" : item}
+                      </span>
+                    ))}
                 </div>
               </div>
             </section>
@@ -1515,33 +1530,6 @@ export function JobPostingRegistrationForm() {
         </div>
       </div>
 
-      <div className="registration-bottom-bar fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur">
-        <div className="app-shell flex h-[72px] items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-[13px] font-medium text-[#667181]">
-            <RotateCcw size={16} />
-            {saveStatus}
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={addItemToActiveEditor}
-              className="inline-flex h-11 items-center gap-1.5 border border-[#111111] bg-white px-4 text-[14px] font-medium text-[#111111] hover:bg-[#f4f4f4]"
-            >
-              <Plus size={16} />
-              항목 추가
-            </button>
-            <button type="button" className="h-11 border border-border bg-white px-4 text-[14px] font-medium text-[#536071] hover:border-brand hover:text-brand">
-              이전
-            </button>
-            <button type="button" onClick={showPreview} className="h-11 border border-border bg-white px-4 text-[14px] font-medium text-[#536071] hover:border-brand hover:text-brand">
-              미리보기
-            </button>
-            <button type="button" onClick={goNext} className="h-11 bg-brand px-5 text-[14px] font-medium text-white hover:bg-[var(--color-brand-dark)]">
-              다음
-            </button>
-          </div>
-        </div>
-      </div>
     </main>
   );
 }

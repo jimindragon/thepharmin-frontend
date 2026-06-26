@@ -12,7 +12,6 @@ import {
   Info,
   Lock,
   Plus,
-  Save,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -35,19 +34,6 @@ import {
   type EmployeeCountRange,
   type FileStatus,
 } from "@/data/businessCompanyProfile";
-
-const tabs = [
-  { id: "basic", label: "기본 정보" },
-  { id: "profile", label: "회사 소개" },
-  { id: "business", label: "사업·채용 정보" },
-  { id: "files", label: "첨부 파일" },
-  { id: "manager", label: "담당자 정보" },
-  { id: "account", label: "계정 정보" },
-];
-
-function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 function Segmented<T extends string>({
   value,
@@ -126,10 +112,8 @@ function LogoMark({ profile }: { profile: CompanyProfileMaster }) {
   }
 
   return (
-    <div className="relative h-full w-full">
-      <span className="absolute left-[22%] top-1/2 h-[42%] w-[42%] -translate-y-1/2 rounded-full bg-[#111111] opacity-95" />
-      <span className="absolute right-[22%] top-1/2 h-[42%] w-[42%] -translate-y-1/2 rounded-full bg-[#6c737d] opacity-78" />
-      <span className="absolute left-1/2 top-[58%] h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#111111] opacity-70" />
+    <div className="grid h-full w-full place-items-center bg-[#f7f8fa] text-[13px] font-bold text-[#4f5968]">
+      {profile.displayName.slice(0, 2)}
     </div>
   );
 }
@@ -153,6 +137,7 @@ export function BusinessCompanyProfileClient() {
     { label: "담당자 인증", detail: `${businessCompanyManager.managerName} · ${businessCompanyManager.phone}`, done: true },
     { label: "사업자 인증", detail: "인증기업 · 승인 완료", done: businessCompanyVerification.verificationStatus === "approved" },
   ];
+  const sectionStatus = (label: string) => completionItems.find((i) => i.label === label)?.done ? "완료" : "작성 중";
   const completedItems = completionItems.filter((item) => item.done);
   const remainingItems = completionItems.filter((item) => !item.done);
   const computedCompletion = Math.round((completedItems.length / completionItems.length) * 100);
@@ -217,7 +202,7 @@ export function BusinessCompanyProfileClient() {
 
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
-          <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업 관리" }, { label: "기업정보 관리" }]} />
+          <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "기업정보 관리" }]} />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
           <p className="mt-2 text-[13px] font-normal text-[#68717e]">공고 상세와 기업 상세 페이지에 노출되는 회사 정보를 관리합니다.</p>
         </div>
@@ -226,32 +211,12 @@ export function BusinessCompanyProfileClient() {
             브랜드 페이지 미리보기
             <ExternalLink size={15} />
           </Link>
-          <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center gap-2 border border-[#111111] bg-[#111111] px-6 text-[13px] font-medium text-white hover:bg-[#2a2a2a] max-[760px]:flex-1">
-            <Save size={15} />
-            저장하기
-          </button>
         </div>
       </div>
 
-      <nav className="mt-7 flex overflow-x-auto border-b border-[#dfe4ea] bg-white" aria-label="기업정보 관리 탭">
-        {tabs.map((tab, index) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => scrollToSection(tab.id)}
-            className={clsx(
-              "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-medium transition hover:bg-[#f7f8fa] hover:text-[#111111]",
-              index === 0 ? "text-[#111111] shadow-[inset_0_-2px_0_#111111]" : "text-[#4f5967]",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_292px] gap-6 max-[1180px]:grid-cols-1">
+      <div className="mt-8 grid grid-cols-[minmax(0,1fr)_292px] gap-6 max-[1180px]:grid-cols-1">
         <div className="space-y-5">
-          <SectionCard id="verification" title="인증 정보" description="인증 정보는 운영팀 검토 후 변경됩니다. 공고 신뢰도와 인증 배지에 영향을 줄 수 있습니다.">
+          <SectionCard id="verification" title="인증 정보" description="인증 정보는 운영팀 검토 후 변경됩니다. 공고 신뢰도와 인증 배지에 영향을 줄 수 있습니다." status="완료">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">
                 인증기업 · 승인 완료
@@ -274,12 +239,12 @@ export function BusinessCompanyProfileClient() {
               ))}
             </div>
             <div className="mt-4 flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-              <Info size={15} className="mt-0.5 shrink-0" />
+              <Info size={15} className="mt-0.5 shrink-0 text-[#7b8491]" />
               사업자등록번호, 법인명, 대표자명은 직접 수정할 수 없으며 변경 요청 후 운영팀 검토가 필요합니다.
             </div>
           </SectionCard>
 
-          <SectionCard id="basic" title="기본 정보" description="기업의 공식 정보와 연락처를 관리합니다.">
+          <SectionCard id="basic" title="기본 정보" description="기업의 공식 정보와 연락처를 관리합니다." status={sectionStatus("기본 정보")}>
             <div className="grid grid-cols-2 gap-x-5 gap-y-5 max-[820px]:grid-cols-1">
               <div className="space-y-2">
                 <FieldLabel required>회사(법인) 이름</FieldLabel>
@@ -344,7 +309,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <SectionCard id="profile" title="공개 프로필" description="개인 사용자에게 직접 노출되는 기업 소개 정보입니다.">
+          <SectionCard id="profile" title="공개 프로필" description="개인 사용자에게 직접 노출되는 기업 소개 정보입니다." status={sectionStatus("공개 프로필")}>
             <div className="grid grid-cols-[230px_minmax(0,1fr)] gap-6 max-[820px]:grid-cols-1">
               <div>
                 <FieldLabel required>기업 로고</FieldLabel>
@@ -362,7 +327,7 @@ export function BusinessCompanyProfileClient() {
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <FieldLabel required>회사 소개 요약, 즉 한 줄 소개</FieldLabel>
+                  <FieldLabel required>한 줄 소개</FieldLabel>
                   <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value)} placeholder="예: 제약·바이오 산업 전문 채용 플랫폼" />
                 </div>
                 <div className="space-y-2">
@@ -371,7 +336,7 @@ export function BusinessCompanyProfileClient() {
                     value={profile.fullIntro}
                     onChange={(event) => updateProfile("fullIntro", event.target.value)}
                     maxLength={1000}
-                    className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none focus:border-[#111111]"
+                    className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
                   />
                   <p className="text-right text-[11px] font-medium text-[#8a94a3]">{profile.fullIntro.length} / 1000</p>
                 </div>
@@ -417,7 +382,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <SectionCard id="business" title="사업·채용 정보" description="더파마 리크루트의 전문 검색과 추천에 활용되는 기업 데이터입니다.">
+          <SectionCard id="business" title="사업·채용 정보" description="더파마 리크루트의 전문 검색과 추천에 활용되는 기업 데이터입니다." status={sectionStatus("사업·채용 정보")}>
             <div className="space-y-6">
               <div>
                 <FieldLabel>주요 사업 영역</FieldLabel>
@@ -458,9 +423,9 @@ export function BusinessCompanyProfileClient() {
                       }
                     }}
                     placeholder="대표 제품/서비스 입력"
-                    className="h-10 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none focus:border-[#111111]"
+                    className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
                   />
-                  <button type="button" onClick={addProduct} className="inline-flex h-10 items-center gap-1 border-y border-r border-[#d8e0e8] px-3 text-[12px] font-medium text-[#303946]">
+                  <button type="button" onClick={addProduct} className="inline-flex h-11 items-center gap-1 border-y border-r border-[#d8e0e8] px-3 text-[12px] font-medium text-[#303946]">
                     <Plus size={14} />
                     추가
                   </button>
@@ -477,7 +442,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <SectionCard id="files" title="첨부 파일" description="인증 서류는 운영팀 검토 후 상태가 변경됩니다.">
+          <SectionCard id="files" title="첨부 파일" description="인증 서류는 운영팀 검토 후 상태가 변경됩니다." status={sectionStatus("첨부 파일")}>
             <div className="divide-y divide-[#e5e9ef] border border-[#dfe4ea]">
               {verificationFiles.map(({ label, name, status }) => (
                 <div key={`${label}-${name}`} className="grid grid-cols-[180px_minmax(0,1fr)_120px_100px] items-center gap-4 px-4 py-4 max-[760px]:grid-cols-1">
@@ -490,7 +455,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <SectionCard id="manager" title="담당자 정보" description="지원자 문의와 운영팀 안내를 받을 담당자 정보입니다.">
+          <SectionCard id="manager" title="담당자 정보" description="지원자 문의와 운영팀 안내를 받을 담당자 정보입니다." status={sectionStatus("담당자 정보")}>
             <div className="grid grid-cols-2 gap-5 max-[820px]:grid-cols-1">
               {[
                 ["담당자명", businessCompanyManager.managerName],
@@ -508,7 +473,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다.">
+          <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다." status={sectionStatus("계정 정보")}>
             <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
               <div>
                 <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
@@ -549,7 +514,7 @@ export function BusinessCompanyProfileClient() {
             </div>
           </SectionCard>
 
-          <div className="sticky bottom-0 z-20 border border-[#dfe4ea] bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
+          <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
             <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
               <p className="text-[12px] font-normal text-[#7b8491]">저장 시 개인 사용자에게 표시될 기업 정보에 반영됩니다.</p>
               <div className="flex gap-2 max-[640px]:w-full">
@@ -564,8 +529,7 @@ export function BusinessCompanyProfileClient() {
           </div>
         </div>
 
-        <aside className="self-start">
-          <div className="sticky top-[88px] max-h-[calc(100vh-112px)] space-y-5 overflow-y-auto pr-1 business-sidebar-scroll">
+        <aside className="sticky top-[88px] self-start space-y-5 max-[1180px]:static">
             <section className="border border-[#dfe4ea] bg-white p-5">
               <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 등록 현황</h2>
               <div className="mt-4">
@@ -576,7 +540,7 @@ export function BusinessCompanyProfileClient() {
                   </p>
                 </div>
                 <div className="mt-3 h-2.5 w-full border border-[#dfe4ea] bg-[#f3f5f7]">
-                  <div className="h-full bg-[#111111]" style={{ width: `${computedCompletion}%` }} />
+                  <div className="h-full bg-[#111111] transition-[width]" style={{ width: `${computedCompletion}%` }} />
                 </div>
                 <p className="mt-3 text-[13px] font-medium text-[#303946]">{progressMessage}</p>
                 <p className="mt-1 text-[12px] font-normal leading-[1.55] text-[#7b8491]">
@@ -602,8 +566,8 @@ export function BusinessCompanyProfileClient() {
                 <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">남은 항목</p>
                 <div className="mt-3 space-y-2">
                   {remainingItems.map((item) => (
-                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-[#8a94a3]">
-                      <span className="h-5 w-5 shrink-0 border border-[#cbd5e1] bg-[#f8fafc]" />
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-[#9b3a2d]">
+                      <span className="h-5 w-5 shrink-0 border border-[#f1c9bf] bg-[#fff3f0]" />
                       <span>{item.label}</span>
                     </div>
                   ))}
@@ -703,7 +667,6 @@ export function BusinessCompanyProfileClient() {
               </div>
               <p className="mt-3 text-[11px] font-normal leading-[1.6] text-[#8a94a3]">관심기업 수, 후기, 뉴스, 진행 중 공고 수는 기업이 직접 입력하는 값이 아닙니다.</p>
             </section>
-          </div>
         </aside>
       </div>
     </div>

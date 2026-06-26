@@ -11,7 +11,8 @@ import { useState, type ReactNode } from "react";
 export function SectionCard({
   title,
   description,
-  index,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  index: _index,
   status = "작성 중",
   collapsible = false,
   defaultOpen = true,
@@ -39,11 +40,6 @@ export function SectionCard({
         {...(collapsible ? { "data-collapsible-header": true, "aria-expanded": isOpen } : {})}
       >
         <div className="min-w-0 flex items-start gap-3">
-          {index ? (
-            <span className="registration-section-index mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-[15px] font-medium text-white">
-              {index}
-            </span>
-          ) : null}
           <div className="min-w-0">
             <h2 className="registration-section-title font-bold tracking-[-0.02em] text-[#242b36]">{title}</h2>
             {description ? <p className="registration-section-description mt-1.5 text-[13px] font-normal text-[#768190]">{description}</p> : null}
