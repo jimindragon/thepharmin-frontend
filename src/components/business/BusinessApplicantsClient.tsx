@@ -2,19 +2,16 @@
 
 import clsx from "clsx";
 import {
-  Calendar,
-  CheckCircle,
   ChevronDown,
   ChevronRight,
   Download,
   MoreHorizontal,
-  Plus,
   Search,
-  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import {
   applicantJobPostings,
   applicants,
@@ -165,65 +162,31 @@ export function BusinessApplicantsClient() {
         </div>
 
         {/* 통계 4분할 */}
-        <div className="mt-6 grid grid-cols-4 gap-4 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <Plus size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">신규 지원</p>
-              <div className="mt-0.5 flex items-baseline gap-1.5">
-                <p className="text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                  {newCount}명
-                </p>
-                <span className="text-[12px] font-medium text-[#8a94a3]">최근 7일</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <Users size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">검토 진행 중</p>
-              <p className="mt-0.5 text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                {reviewCount}명
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <Calendar size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">면접 예정</p>
-              <div className="mt-0.5 flex items-baseline gap-1.5">
-                <p className="text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                  {interviewCount}명
-                </p>
-                {nearInterviewCount > 0 && (
-                  <span className="text-[12px] font-medium text-[#00746c]">
-                    D-2 이내 {nearInterviewCount}명
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <CheckCircle size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">합격 제안</p>
-              <p className="mt-0.5 text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                {offerCount}명
-              </p>
-            </div>
-          </div>
-        </div>
+        <BusinessStatGrid cols={4}>
+          <BusinessStatCard
+            label="신규 지원"
+            value={String(newCount)}
+            unit="명"
+            sub="최근 7일"
+          />
+          <BusinessStatCard
+            label="검토 진행 중"
+            value={String(reviewCount)}
+            unit="명"
+          />
+          <BusinessStatCard
+            label="면접 예정"
+            value={String(interviewCount)}
+            unit="명"
+            subEmphasis={nearInterviewCount > 0 ? `D-2 이내 ${nearInterviewCount}명` : undefined}
+            emphasisVariant="urgent"
+          />
+          <BusinessStatCard
+            label="합격 제안"
+            value={String(offerCount)}
+            unit="명"
+          />
+        </BusinessStatGrid>
 
         {/* 지원자 목록 */}
         <section className="mt-6 border border-[#dfe4ea] bg-white shadow-[var(--shadow)]">

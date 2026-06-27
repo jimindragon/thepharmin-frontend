@@ -6,9 +6,11 @@ import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { BoostModal } from "@/components/business/BoostModal";
 import {
   activeBoosts,
+  billingRecords,
   billingStats,
   boostStatusClass,
   boostStatusLabel,
@@ -18,6 +20,27 @@ import {
 function formatKrw(amount: number): string {
   return amount.toLocaleString("ko-KR") + "원";
 }
+
+// ── 통계 카드 보조 문구용 파생 값 ────────────────────────────────────────────
+
+const urgentBoosts = activeBoosts.filter((b) => b.status === "ending_soon");
+const mostUrgentDays = urgentBoosts.length > 0
+  ? Math.min(...urgentBoosts.map((b) => b.daysLeft))
+  : null;
+
+const thisYM = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+})();
+const monthlyPaymentCount = billingRecords.filter(
+  (r) => r.paidAt.startsWith(thisYM) && r.status === "completed",
+).length;
+
+const latestAppliedAt = billingRecords
+  .filter((r) => r.status === "completed")
+  .map((r) => r.paidAt)
+  .sort()
+  .at(-1) ?? null;
 
 export function BusinessBillingPlansClient() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,29 +77,28 @@ export function BusinessBillingPlansClient() {
         </div>
 
         {/* 통계 3분할 */}
-        <div className="mt-6 grid grid-cols-3 gap-4 max-[760px]:grid-cols-1 max-[500px]:grid-cols-1">
-          <div className="border border-[#dfe4ea] bg-white p-5">
-            <p className="text-[12px] font-normal text-[#8a94a3]">진행 중인 부스트</p>
-            <p className="mt-2 text-[28px] font-bold tracking-[-0.03em] text-[#17202c]">
-              {stats.activeBoostCount}
-              <span className="ml-0.5 text-[18px] font-medium">건</span>
-            </p>
-          </div>
-          <div className="border border-[#dfe4ea] bg-white p-5">
-            <p className="text-[12px] font-normal text-[#8a94a3]">이번 달 부스트 결제</p>
-            <p className="mt-2 text-[28px] font-bold tracking-[-0.03em] text-[#17202c]">
-              {hasBoosts ? stats.monthlyPaymentKrw.toLocaleString("ko-KR") : "0"}
-              <span className="ml-0.5 text-[18px] font-medium">원</span>
-            </p>
-          </div>
-          <div className="border border-[#dfe4ea] bg-white p-5">
-            <p className="text-[12px] font-normal text-[#8a94a3]">누적 부스트</p>
-            <p className="mt-2 text-[28px] font-bold tracking-[-0.03em] text-[#17202c]">
-              {stats.cumulativeBoostCount}
-              <span className="ml-0.5 text-[18px] font-medium">건</span>
-            </p>
-          </div>
-        </div>
+        <BusinessStatGrid cols={3}>
+          <BusinessStatCard
+            label="진행 중인 부스트"
+            value={String(stats.activeBoostCount)}
+            unit="건"
+            subEmphasis={mostUrgentDays !== null ? `D-${mostUrgentDays} 종료 임박 ${urgentBoosts.length}건` : undefined}
+            emphasisVariant={mostUrgentDays !== null ? "urgent" : "neutral"}
+            sub={mostUrgentDays === null ? "종료 임박 없음" : undefined}
+          />
+          <BusinessStatCard
+            label="이번 달 부스트 결제"
+            value={hasBoosts ? stats.monthlyPaymentKrw.toLocaleString("ko-KR") : "0"}
+            unit="원"
+            sub={`이번 달 결제 ${monthlyPaymentCount}건`}
+          />
+          <BusinessStatCard
+            label="누적 부스트"
+            value={String(stats.cumulativeBoostCount)}
+            unit="건"
+            sub={latestAppliedAt ? `최근 적용 ${latestAppliedAt}` : undefined}
+          />
+        </BusinessStatGrid>
 
         {/* 진행 중인 부스트 섹션 */}
         <div className="mt-5">

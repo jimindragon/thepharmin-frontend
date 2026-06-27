@@ -1,12 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, ClipboardList, MoreHorizontal, Plus, Search, User, UserCheck, Users, X } from "lucide-react";
+import { ChevronDown, MoreHorizontal, Plus, Search, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { Pagination } from "@/components/Pagination";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import {
   candidateStatusClass,
@@ -154,48 +155,24 @@ export function BusinessHeadhuntingManageClient() {
         </div>
 
         {/* 통계 3분할 */}
-        <div className="mt-6 grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <ClipboardList size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">진행 중인 의뢰</p>
-              <p className="mt-0.5 text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                {activeCount}건
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <Users size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">추천 후보자</p>
-              <div className="mt-0.5 flex items-baseline gap-2">
-                <p className="text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                  {totalCandidates}명
-                </p>
-                {pendingReviewCount > 0 && (
-                  <span className="text-[12px] font-medium text-[#00746c]">
-                    검토 대기 {pendingReviewCount}명
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 border border-[#dfe4ea] bg-white p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#46505f]">
-              <UserCheck size={18} />
-            </span>
-            <div>
-              <p className="text-[12px] font-normal text-[#8a94a3]">입사 확정</p>
-              <p className="mt-0.5 text-[19px] font-bold tracking-[-0.02em] text-[#17202c]">
-                {hiredCount}명
-              </p>
-            </div>
-          </div>
-        </div>
+        <BusinessStatGrid cols={3}>
+          <BusinessStatCard
+            label="진행 중인 의뢰"
+            value={String(activeCount)}
+            unit="건"
+          />
+          <BusinessStatCard
+            label="추천 후보자"
+            value={String(totalCandidates)}
+            unit="명"
+            sub={pendingReviewCount > 0 ? `검토 대기 ${pendingReviewCount}명` : undefined}
+          />
+          <BusinessStatCard
+            label="입사 확정"
+            value={String(hiredCount)}
+            unit="명"
+          />
+        </BusinessStatGrid>
 
         {/* 의뢰 목록 */}
         <div className="mt-6">

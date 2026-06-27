@@ -195,7 +195,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
   return (
     <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell--default pt-8">
+      <div className="app-shell pt-8">
         <Link href={backHref} className="inline-flex h-9 items-center gap-1.5 text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
           <ArrowLeft size={14} aria-hidden="true" />
           채용 QNA

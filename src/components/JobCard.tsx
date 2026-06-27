@@ -29,7 +29,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
   const hasCompanyProfile = Boolean(job.companyId && companies.some((item) => item.id === job.companyId));
 
   return (
-    <article className="surface group relative border-[#dedede] px-5 py-3 shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[560px]:p-4">
+    <article className="surface group relative border-[#dedede] px-5 py-4 shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[560px]:p-4">
       {job.slug ? (
         <Link
           href={`/jobs/${job.slug}`}
