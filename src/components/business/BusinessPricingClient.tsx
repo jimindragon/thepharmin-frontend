@@ -5,7 +5,8 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
-import { LinkButton } from "@/components/ui/Button";
+import { BoostModal } from "@/components/business/BoostModal";
+import { Button, LinkButton } from "@/components/ui/Button";
 import { Eyebrow, SectionIntro, typeScale } from "@/components/ui/Typography";
 import { companyExampleImages } from "@/config/companyImages";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
@@ -52,6 +53,7 @@ const faqItems = [
 export function BusinessPricingClient() {
   const isMember = useBusinessMember();
   const [selectedBoost, setSelectedBoost] = useState("none");
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
 
   const primaryCta = isMember ? { href: "/business/jobs/new", label: "무료로 공고 등록하기" } : { href: "/business/signup", label: "무료로 공고 등록하기" };
   const secondaryCta = isMember ? { href: "/support/contact", label: "고객센터에 문의하기" } : { href: "/business/support", label: "고객센터에 문의하기" };
@@ -124,20 +126,17 @@ export function BusinessPricingClient() {
 
               <div className="mt-5 space-y-2">
                 {boostTiers.map((tier) => (
-                  <label
+                  <div
                     key={tier.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedBoost(tier.id)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedBoost(tier.id); }}
                     className={clsx(
-                      "flex cursor-pointer items-center gap-3 border px-4 py-3 transition",
+                      "flex cursor-pointer items-center border px-4 py-3 transition",
                       selectedBoost === tier.id ? "border-[#111111] bg-[#fbfcfd]" : "border-[#e1e6ec] bg-white hover:border-[#bcc5cf]",
                     )}
                   >
-                    <input
-                      type="radio"
-                      name="boost"
-                      checked={selectedBoost === tier.id}
-                      onChange={() => setSelectedBoost(tier.id)}
-                      className="h-4 w-4 accent-[#111111]"
-                    />
                     <span className="min-w-0 flex-1">
                       <span className="block text-[14px] font-medium text-[#303946]">{tier.label}</span>
                       <span className="block text-[13px] font-normal text-[#8a94a3]">{tier.description}</span>
@@ -147,7 +146,7 @@ export function BusinessPricingClient() {
                       {tier.originalPrice ? <span className="mr-1.5 text-[13px] font-normal text-[#b6bec9] line-through">{tier.originalPrice}</span> : null}
                       <span className="text-[16px] font-bold text-[#17202c]">{tier.price}</span>
                     </span>
-                  </label>
+                  </div>
                 ))}
               </div>
 
@@ -158,6 +157,21 @@ export function BusinessPricingClient() {
                     {item}
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-5 border-t border-[#edf1f5] pt-4">
+                {isMember ? (
+                  <Button variant="gradient" size="md" className="w-full" onClick={() => setBoostModalOpen(true)}>
+                    공고에 적용하러 가기 →
+                  </Button>
+                ) : (
+                  <LinkButton href="/business/signup" variant="gradient" size="md" className="w-full">
+                    공고에 적용하러 가기 →
+                  </LinkButton>
+                )}
+                <p className="mt-3 text-center text-[13px] font-normal leading-[1.7] text-[#8a94a3]">
+                  부스트는 공고를 선택해 적용합니다. 공고가 없다면 먼저 등록해 주세요.
+                </p>
               </div>
             </BusinessCard>
           </div>
@@ -209,6 +223,8 @@ export function BusinessPricingClient() {
           <p className="mt-5 text-[12px] font-normal text-white/50">표시된 금액은 VAT 별도이며, 서비스 오픈 1년 입점 할인 혜택이 반영된 가격입니다.</p>
         </BusinessImageBand>
       </main>
+
+      <BoostModal open={boostModalOpen} onClose={() => setBoostModalOpen(false)} />
     </>
   );
 }
