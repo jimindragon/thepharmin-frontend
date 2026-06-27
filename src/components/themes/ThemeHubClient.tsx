@@ -294,7 +294,7 @@ export function ThemeHubClient({ themeId, theme }: { themeId: ThemeId; theme: Th
                   현재 채용 중인 공고가 없습니다.
                 </div>
               ) : (
-                <div className="flex flex-col divide-y divide-[#eeeeee] border-t border-[#eeeeee]">
+                <div className="flex flex-col gap-1.5">
                   {sortedJobs.map((job) => (
                     <JobCard
                       key={job.id}
