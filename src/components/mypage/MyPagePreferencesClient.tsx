@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { CategoryTabs } from "@/components/CategoryTabs";
@@ -46,12 +46,6 @@ const emailFrequencyOptions: { id: EmailFrequency; label: string }[] = [
 
 function isJobTrack(value: string | null): value is JobTrack {
   return value === "industry" || value === "research" || value === "pharmacy" || value === "hospital";
-}
-
-function getTrackFromUrl(): JobTrack {
-  if (typeof window === "undefined") return "industry";
-  const value = new URLSearchParams(window.location.search).get("track");
-  return isJobTrack(value) ? value : "industry";
 }
 
 /** 관심조건(트랙별 단일 객체)을 해당 트랙의 `JobFilters` 모양으로 펼쳐서, 공고 목록과 동일한 필터 패널 컴포넌트를 그대로 재사용한다. */
@@ -137,14 +131,15 @@ function FilterPillButton({
 
 export function MyPagePreferencesClient() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<JobTrack>("industry");
+  const searchParams = useSearchParams();
+  const rawTrack = searchParams.get("track");
+  const [activeTab, setActiveTab] = useState<JobTrack>(isJobTrack(rawTrack) ? rawTrack : "industry");
   const [openFilterId, setOpenFilterId] = useState<string | null>("job");
   const [drafts, setDrafts] = useState<TrackPreferences>({});
   const [savedSnapshots, setSavedSnapshots] = useState<TrackPreferences>({});
   const [showSavedToast, setShowSavedToast] = useState(false);
 
   useEffect(() => {
-    setActiveTab(getTrackFromUrl());
     const stored = getAllStoredJobPreferences();
     setDrafts(stored);
     setSavedSnapshots(stored);

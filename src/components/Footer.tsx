@@ -45,7 +45,7 @@ export function Footer() {
           {footerMenuItems.map((item) => (
             <span
               key={item}
-              className={item === "개인정보처리방침" ? "cursor-default font-medium text-white" : "cursor-default text-[#cfcfcf]"}
+              className="cursor-default text-[#cfcfcf]"
             >
               {item}
             </span>

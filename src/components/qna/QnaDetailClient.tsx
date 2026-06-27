@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Bookmark, Flag, Heart, Share2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { myPageUser } from "@/config/myPageMenu";
 import { getEntryCommentCount, getRelatedQnaEntries, isQnaPost } from "@/data/qna";
 import type { QnaComment, QnaPost, QnaReply } from "@/types/qna";
@@ -154,15 +155,16 @@ function CommentComposer({ isLoggedIn, onSubmit }: { isLoggedIn: boolean; onSubm
         />
       </div>
       <div className="mt-3 flex items-center justify-end border-t border-[#edf1f5] pt-3">
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="sm"
           onClick={onSubmit}
           disabled={!isLoggedIn}
-          className="inline-flex h-9 items-center px-5 text-[13px] font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ backgroundImage: "var(--gradient-cta)" }}
+          className="disabled:cursor-not-allowed disabled:opacity-50"
         >
           등록
-        </button>
+        </Button>
       </div>
     </div>
   );
