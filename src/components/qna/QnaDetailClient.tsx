@@ -18,6 +18,11 @@ import {
 
 type CommentSortOption = "인기순" | "최신순";
 
+function displayAuthorName(authorType: QnaComment["authorType"], authorName: string): string {
+  if (authorType === "anonymous") return authorName.replace(/^익명\s*·\s*/, "");
+  return authorName;
+}
+
 function ReactionRow({
   likeCount,
   onLike,
@@ -111,7 +116,7 @@ function CommentRow({
       <QnaAvatar authorType={authorType} initial={avatarInitial} size={32} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[13px] font-bold text-[#171d26]">{authorName}</span>
+          <span className="text-[13px] font-bold text-[#171d26]">{displayAuthorName(authorType, authorName)}</span>
           {authorLabel ? <QnaAuthorLabelBadge>{authorLabel}</QnaAuthorLabelBadge> : null}
           {isPostAuthor && !authorLabel ? <QnaAuthorLabelBadge>작성자</QnaAuthorLabelBadge> : null}
         </div>
@@ -148,11 +153,7 @@ function CommentComposer({ isLoggedIn, onSubmit }: { isLoggedIn: boolean; onSubm
           className="flex-1 resize-none bg-transparent text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] disabled:cursor-not-allowed"
         />
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-[#edf1f5] pt-3">
-        <label className="flex items-center gap-1.5 text-[13px] font-medium text-[#596373]">
-          <span className="grid h-4 w-4 place-items-center border border-[#111111] bg-[#111111] text-[10px] leading-none text-white">✓</span>
-          익명
-        </label>
+      <div className="mt-3 flex items-center justify-end border-t border-[#edf1f5] pt-3">
         <button
           type="button"
           onClick={onSubmit}
@@ -214,7 +215,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <QnaAvatar authorType={post.authorType} initial={post.avatarInitial} size={40} />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-[14px] font-bold text-[#171d26]">{post.authorName}</span>
+                    <span className="truncate text-[14px] font-bold text-[#171d26]">{displayAuthorName(post.authorType, post.authorName)}</span>
                     {post.authorLabel ? <QnaAuthorLabelBadge>{post.authorLabel}</QnaAuthorLabelBadge> : null}
                   </div>
                   <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
@@ -308,22 +309,22 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <div className="mt-3 divide-y divide-[#edf1f5]">
                   {relatedEntries.map((entry) => {
                     const clickable = isQnaPost(entry);
-                    const row = (
-                      <div className="py-3 first:pt-0 last:pb-0">
+                    const itemContent = (
+                      <>
                         <QnaTagChip muted>{entry.tags[0]}</QnaTagChip>
                         <p className="mt-1.5 line-clamp-2 text-[13px] font-medium leading-[1.5] text-[#303946]">{entry.title}</p>
                         <p className="mt-1 text-[11px] font-normal text-[#a0a9b7]">
                           댓글 {getEntryCommentCount(entry)} · 공감 {entry.likeCount}
                         </p>
-                      </div>
+                      </>
                     );
                     return clickable ? (
-                      <Link key={entry.id} href={`/qna/${entry.id}${previewQuery}`} className="block transition hover:opacity-70">
-                        {row}
+                      <Link key={entry.id} href={`/qna/${entry.id}${previewQuery}`} className="block py-4 first:pt-0 last:pb-0 transition hover:opacity-70">
+                        {itemContent}
                       </Link>
                     ) : (
-                      <div key={entry.id} className="cursor-default">
-                        {row}
+                      <div key={entry.id} className="cursor-default py-4 first:pt-0 last:pb-0">
+                        {itemContent}
                       </div>
                     );
                   })}

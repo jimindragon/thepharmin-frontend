@@ -71,17 +71,18 @@ export interface HeadhuntingCandidate {
   code: string;
   matchedRequestId: string;
   experienceSummary: string;
+  fitScore: number;
   status: HeadhuntingCandidateStatus;
   recommendedAt: string;
 }
 
 export const headhuntingCandidates: HeadhuntingCandidate[] = [
-  { id: "cand-1", code: "CAND-014", matchedRequestId: "hh-1", experienceSummary: "임상CRO 9년 · CRA 팀 리드 경력", status: "interview_scheduled", recommendedAt: "2026.06.10" },
-  { id: "cand-2", code: "CAND-021", matchedRequestId: "hh-1", experienceSummary: "글로벌 제약사 임상운영 7년", status: "interview_proposed", recommendedAt: "2026.06.12" },
-  { id: "cand-3", code: "CAND-030", matchedRequestId: "hh-1", experienceSummary: "바이오텍 임상개발 PM 6년", status: "recommended", recommendedAt: "2026.06.18" },
-  { id: "cand-4", code: "CAND-008", matchedRequestId: "hh-2", experienceSummary: "RA 11년 · 식약처 허가 다수 경험", status: "recommended", recommendedAt: "2026.06.05" },
-  { id: "cand-5", code: "CAND-009", matchedRequestId: "hh-2", experienceSummary: "글로벌 RA 8년 · 해외 허가 전문", status: "offer", recommendedAt: "2026.06.08" },
-  { id: "cand-6", code: "CAND-045", matchedRequestId: "hh-4", experienceSummary: "PV 시니어 10년", status: "hired", recommendedAt: "2026.04.22" },
+  { id: "cand-1", code: "CAND-014", matchedRequestId: "hh-1", experienceSummary: "임상CRO 9년 · CRA 팀 리드 경력", fitScore: 90, status: "interview_scheduled", recommendedAt: "2026.06.10" },
+  { id: "cand-2", code: "CAND-021", matchedRequestId: "hh-1", experienceSummary: "글로벌 제약사 임상운영 7년", fitScore: 82, status: "interview_proposed", recommendedAt: "2026.06.12" },
+  { id: "cand-3", code: "CAND-030", matchedRequestId: "hh-1", experienceSummary: "바이오텍 임상개발 PM 6년", fitScore: 74, status: "recommended", recommendedAt: "2026.06.18" },
+  { id: "cand-4", code: "CAND-008", matchedRequestId: "hh-2", experienceSummary: "RA 11년 · 식약처 허가 다수 경험", fitScore: 88, status: "recommended", recommendedAt: "2026.06.05" },
+  { id: "cand-5", code: "CAND-009", matchedRequestId: "hh-2", experienceSummary: "글로벌 RA 8년 · 해외 허가 전문", fitScore: 85, status: "offer", recommendedAt: "2026.06.08" },
+  { id: "cand-6", code: "CAND-045", matchedRequestId: "hh-4", experienceSummary: "PV 시니어 10년", fitScore: 91, status: "hired", recommendedAt: "2026.04.22" },
 ];
 
 export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
