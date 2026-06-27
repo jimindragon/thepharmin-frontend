@@ -4,11 +4,10 @@ import clsx from "clsx";
 import { Bell, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { headerActions, navigationItems, trackNavigationItems } from "@/config/navigation";
+import { navigationItems, trackNavigationItems } from "@/config/navigation";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
 import { headerNavItemClassName } from "@/components/headerNavStyles";
-import { LinkButton } from "@/components/ui/Button";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 export function AccountMenu() {
@@ -81,7 +80,6 @@ export function AccountMenu() {
 
 export function Header() {
   const pathname = usePathname();
-
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
@@ -95,43 +93,36 @@ export function Header() {
           />
         </a>
 
-        <nav className="flex min-w-0 flex-1 items-center justify-center gap-6 text-[14px] max-[1120px]:hidden">
-          {trackNavigationItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-
-            return (
-              <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
-                {item.label}
-              </a>
-            );
-          })}
-
-          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-white/15" />
-
-          {navigationItems.map((item) => {
-            const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(`${item.href}/`));
-
-            return (
-              <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
-                {item.label}
-              </a>
-            );
-          })}
+        <nav className="flex min-w-0 flex-1 items-center justify-center gap-12 text-[14px] max-[1120px]:hidden">
+          <div className="flex items-center gap-6">
+            {trackNavigationItems.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+                  {item.label}
+                </a>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-6">
+            {navigationItems.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+                  {item.label}
+                </a>
+              );
+            })}
+          </div>
         </nav>
 
-        <div className="flex items-center gap-2.5 max-[1120px]:hidden">
-          {headerActions.map((action) => (
-            <LinkButton
-              key={action.label}
-              href={action.href}
-              variant={action.tone === "brand" ? "gradient" : "secondary"}
-              tone="dark"
-              size="sm"
-            >
-              {action.label}
-            </LinkButton>
-          ))}
-        </div>
+        {/* 기업 서비스 진입 — 낮은 비중의 보조 텍스트 링크, 1120px 미만에서는 숨김 */}
+        <a
+          href="/business"
+          className="hidden shrink-0 items-center whitespace-nowrap rounded-full border border-white/20 px-3 py-1 text-[11px] font-medium text-white/45 transition-colors hover:border-white/35 hover:text-white/65 min-[1120px]:inline-flex"
+        >
+          기업 서비스
+        </a>
 
         <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/82 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
           <button className="relative grid h-9 w-9 place-items-center hover:bg-white/10" aria-label="알림">

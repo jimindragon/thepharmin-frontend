@@ -220,10 +220,14 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
             disabled={!canPay}
             onClick={() => { onClose(); }}
             className={clsx(
-              "w-full py-4 text-[15px] font-bold text-white transition",
-              canPay ? "cursor-pointer hover:brightness-105" : "cursor-not-allowed opacity-50",
+              "w-full py-4 text-[15px] font-bold transition",
+              canPay ? "cursor-pointer text-white hover:brightness-110 active:brightness-90" : "cursor-not-allowed opacity-60",
             )}
-            style={canPay ? { backgroundImage: "var(--gradient-cta)" } : { background: "#c0c8d2" }}
+            style={
+              canPay
+                ? { backgroundImage: "var(--gradient-cta)", transition: "filter 160ms ease", textShadow: "0 1px 3px rgba(5,60,55,0.28)" }
+                : { background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" }
+            }
           >
             {formatKrw(selectedBoost.discountedKrw)} 결제하기
           </button>

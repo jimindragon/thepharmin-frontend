@@ -135,8 +135,8 @@ export function BusinessHeadhuntingManageClient() {
             <PageBreadcrumb
               items={[
                 { label: "기업센터", href: "/business/dashboard" },
-                { label: "채용관리" },
-                { label: "헤드헌팅 관리" },
+                { label: "헤드헌팅" },
+                { label: "의뢰 관리" },
               ]}
             />
             <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">

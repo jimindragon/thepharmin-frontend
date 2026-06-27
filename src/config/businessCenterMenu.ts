@@ -21,7 +21,13 @@ export const businessCenterMenuGroups: BusinessCenterMenuGroup[] = [
       { label: "공고 등록", href: "/business/jobs/new" },
       { label: "공고 관리", href: "/business/jobs" },
       { label: "지원자 관리", href: "/business/applicants" },
-      { label: "헤드헌팅 관리", href: "/business/headhunting/manage" },
+    ],
+  },
+  {
+    title: "헤드헌팅",
+    items: [
+      { label: "의뢰 등록", href: "/business/headhunting/manage/new" },
+      { label: "의뢰 관리", href: "/business/headhunting/manage" },
     ],
   },
   {

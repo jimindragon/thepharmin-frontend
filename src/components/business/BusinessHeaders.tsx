@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Bell, ChevronDown, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
@@ -12,37 +11,24 @@ import { businessCompanyManager, initialBusinessCompanyProfile } from "@/data/bu
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
-/**
- * 기업센터 내부 페이지(로그인 필요 영역) 경로 목록.
- * 좌측 사이드바(BusinessSidebar)가 다루는 영역과 동일한 기준으로,
- * 헤더의 `기업센터` 메뉴 활성 상태를 판단할 때 사용한다.
- */
-const businessCenterPathPrefixes = [
-  "/business/dashboard",
-  "/business/jobs",
-  "/business/applicants",
-  "/business/company",
-  "/business/billing",
-  "/business/headhunting/manage",
-];
-
-function isBusinessCenterPath(pathname: string) {
-  return businessCenterPathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-}
-
+// 가운데 nav: 요금제 · 고객센터만 유지.
+// 기업센터는 BusinessAccountMenu 드롭다운 안에 이미 있어 중복을 피함.
+// 헤드헌팅 의뢰는 우측 아웃라인 버튼으로 승격.
 const businessNavItems = [
   { label: "요금제", href: "/business/pricing" },
-  { label: "헤드헌팅 의뢰", href: "/business/headhunting" },
   { label: "고객센터", href: sharedRoutes.support },
 ];
 
-function navLinkClassName(active: boolean) {
-  return clsx("whitespace-nowrap transition", headerNavItemClassName(active, "light"));
+function lightNavItemClassName(active: boolean) {
+  return clsx(
+    "whitespace-nowrap transition text-[13px]",
+    active ? "font-medium text-[#303946]" : "font-normal text-[#8a94a3] hover:text-[#303946]",
+  );
 }
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
-    <div className="flex shrink-0 items-center gap-3">
+    <div className="flex shrink-0 items-center gap-4">
       <Link href="/" aria-label="더파마 리크루트 개인회원 홈으로 이동">
         <img
           src="/images/logo_biz.svg"
@@ -52,8 +38,10 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
           className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
         />
       </Link>
-      <span className="h-5 w-px bg-[#d7dde5]" aria-hidden="true" />
-      <Link href={homeHref} className="whitespace-nowrap text-[13px] font-medium text-[#68717e] hover:text-[#111111] max-[420px]:text-[12px]">
+      <Link
+        href={homeHref}
+        className="border border-[#d0d6de] px-2.5 py-1 text-[12px] font-medium text-[#303946] transition-colors hover:border-[#303946] hover:text-[#111111] max-[420px]:text-[11px]"
+      >
         기업 센터
       </Link>
     </div>
@@ -140,53 +128,75 @@ export function BusinessAccountMenu() {
 }
 
 /**
- * 기업 영역 공용 헤더. 로그인 여부와 관계없이 동일한 메뉴 구성·디자인을 유지하고,
- * 우측 계정 영역과 `기업센터` 메뉴의 목적지만 인증 상태(useBusinessMember)에 따라 분기한다.
+ * 기업 영역 공용 헤더.
+ *
+ * 우측 행동 영역 위계 (로그인 상태 기준):
+ *   [헤드헌팅 의뢰 — 아웃라인] [공고 등록 — 그라데이션 솔리드] [알림] [프로필 드롭다운]
  */
 export function BusinessHeader() {
   const pathname = usePathname();
   const isMember = useBusinessMember();
-  const centerHref = isMember ? "/business/dashboard" : "/business/login?redirect=/business/dashboard";
-  const centerActive = isBusinessCenterPath(pathname);
 
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#dfe4ea] bg-white text-[#17202c]">
-      <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
-        <BusinessBrand homeHref={isMember ? "/business/dashboard" : "/business"} />
-        <nav className="flex min-w-0 flex-1 items-center justify-center gap-8 text-[14px] max-[1120px]:hidden">
-          {businessNavItems.map((item) => (
-            <Link key={item.href} href={item.href} className={navLinkClassName(pathname === item.href)}>
-              {item.label}
-            </Link>
-          ))}
-          <Link href={centerHref} className={navLinkClassName(centerActive)}>
-            기업센터
-          </Link>
-        </nav>
-        <div className="ml-auto flex items-center gap-2.5 max-[520px]:gap-1.5">
+      <div className="app-shell flex h-full items-center justify-between">
+        {/* 좌측: 로고 | 기업 센터 | 요금제 · 고객센터 */}
+        <div className="flex min-w-0 items-center gap-5">
+          <BusinessBrand homeHref={isMember ? "/business/dashboard" : "/business"} />
+          <nav className="flex items-center gap-7 max-[1120px]:hidden">
+            {businessNavItems.map((item) => (
+              <Link key={item.href} href={item.href} className={lightNavItemClassName(pathname === item.href)}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* 우측: 버튼 그룹 + 아이콘 그룹 */}
+        <div className="flex shrink-0 items-center gap-4 max-[520px]:gap-2">
           {isMember ? (
             <>
-              <button type="button" className="relative grid h-9 w-9 place-items-center text-[#303946] hover:bg-[#f4f5f6]" aria-label="알림">
-                <Bell size={18} />
-                <span className="absolute right-2 top-2 h-2 w-2 bg-danger ring-2 ring-white" />
-              </button>
-              <BusinessAccountMenu />
-              <LinkButton href="/business/jobs/new" variant="gradient" size="sm">
-                <Plus size={15} />
-                <span className="max-[520px]:sr-only">공고 등록</span>
-              </LinkButton>
+              {/* 버튼 그룹 */}
+              <div className="flex items-center gap-2.5">
+                {/* 2순위 — 아웃라인 버튼, 760px 미만에서 숨김 */}
+                <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden">
+                  헤드헌팅 의뢰
+                </LinkButton>
+                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼 */}
+                <LinkButton href="/business/jobs/new" variant="gradient" size="sm">
+                  <Plus size={15} />
+                  <span className="max-[520px]:sr-only">공고 등록</span>
+                </LinkButton>
+              </div>
+              {/* 아이콘 그룹 */}
+              <div className="flex items-center gap-1">
+                <button type="button" className="relative grid h-9 w-9 place-items-center text-[#303946] hover:bg-[#f4f5f6]" aria-label="알림">
+                  <Bell size={18} />
+                  <span className="absolute right-2 top-2 h-2 w-2 bg-danger ring-2 ring-white" />
+                </button>
+                <BusinessAccountMenu />
+              </div>
             </>
           ) : (
             <>
-              <Link href="/business/login" className="hidden h-10 items-center px-3 text-[12px] font-medium text-[#4f5967] hover:text-[#111111] sm:inline-flex">
-                로그인
-              </Link>
-              <Link href="/business/signup" className="hidden h-10 items-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111] md:inline-flex">
-                기업 계정 신청
-              </Link>
-              <LinkButton href="/business/login" variant="gradient" size="sm" className="max-[520px]:hidden">
-                공고 등록하기
-              </LinkButton>
+              <div className="flex items-center gap-2">
+                <Link href="/business/login" className="hidden h-10 items-center px-3 text-[12px] font-medium text-[#4f5967] hover:text-[#111111] sm:inline-flex">
+                  로그인
+                </Link>
+                <Link href="/business/signup" className="hidden h-10 items-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111] md:inline-flex">
+                  기업 계정 신청
+                </Link>
+              </div>
+              <div className="flex items-center gap-2.5">
+                {/* 2순위 — 아웃라인 버튼, 760px 미만에서 숨김 */}
+                <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden">
+                  헤드헌팅 의뢰
+                </LinkButton>
+                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼 */}
+                <LinkButton href="/business/login" variant="gradient" size="sm" className="max-[520px]:hidden">
+                  공고 등록하기
+                </LinkButton>
+              </div>
             </>
           )}
         </div>

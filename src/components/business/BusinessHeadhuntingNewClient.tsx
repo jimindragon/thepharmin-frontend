@@ -42,7 +42,7 @@ export function BusinessHeadhuntingNewClient() {
   return (
     <BusinessCenterShell>
       <div>
-        <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "헤드헌팅", href: "/business/headhunting/manage" }, { label: "새 헤드헌팅 의뢰" }]} />
+        <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "헤드헌팅" }, { label: "의뢰 등록" }]} />
         <div className="mt-5 flex items-center justify-between gap-4">
           <h1 className="text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">새 헤드헌팅 의뢰</h1>
           <Link
