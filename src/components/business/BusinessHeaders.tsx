@@ -30,7 +30,7 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
     <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex shrink-0 items-center gap-3 hover:opacity-80 transition-opacity">
       <img
-        src="/images/logo_biz.svg"
+        src="/images/color_logo_1.svg"
         alt="더파마 리크루트"
         width={284}
         height={28}

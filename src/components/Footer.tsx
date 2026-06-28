@@ -56,7 +56,7 @@ export function Footer() {
 
         <div className="mt-10 flex gap-12 max-[760px]:flex-col max-[760px]:gap-8">
           <div className="w-[210px] shrink-0 max-[760px]:w-full">
-            <img src="/images/new_logo.svg" alt="더파마 리크루트" width={254} height={25} className="h-5 w-auto" />
+            <img src="/images/white_logo_1.svg" alt="더파마 리크루트" width={254} height={25} className="h-5 w-auto" />
             <p className="mt-3 text-[11px] text-[#8a8a8a]">대한민국 No.1 바이오/헬스케어 채용</p>
           </div>
 

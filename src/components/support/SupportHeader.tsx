@@ -125,7 +125,7 @@ export function SupportHeader() {
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
         <a href="/" className="flex shrink-0 items-center" aria-label="THE PHARMA Recruit. 홈으로 이동">
           <img
-            src="/images/new_logo.svg"
+            src="/images/white_logo_1.svg"
             alt="THE PHARMA Recruit."
             width={254}
             height={25}

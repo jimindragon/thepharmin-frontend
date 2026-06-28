@@ -85,7 +85,7 @@ export function Header() {
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
         <a href="/" className="flex shrink-0 items-center" aria-label="더파마 리크루트 홈으로 이동">
           <img
-            src="/images/new_logo.svg"
+            src="/images/white_logo_1.svg"
             alt="더파마 리크루트"
             width={254}
             height={25}

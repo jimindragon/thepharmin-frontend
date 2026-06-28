@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_레이어_2" data-name="레이어 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1232.62 131.74">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        isolation: isolate;
+      }
+
+      .cls-3 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-4, .cls-5, .cls-2, .cls-6 {
+        fill: #fff;
+      }
+
+      .cls-4, .cls-2, .cls-6 {
+        font-weight: 700;
+      }
+
+      .cls-4, .cls-6 {
+        font-family: NovantiqueSerif-Bold, 'Novantique Serif';
+        font-size: 112.89px;
+      }
+
+      .cls-2 {
+        font-family: PlayfairDisplay-BoldItalic, 'Playfair Display';
+        font-size: 92px;
+        font-style: italic;
+      }
+
+      .cls-6 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-7 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <polygon class="cls-5" points="82.99 10.06 9.23 10.06 0 10.06 0 10.06 0 102.41 9.23 102.41 9.23 19.3 82.99 19.3 82.99 102.41 92.22 102.41 92.22 19.3 92.22 10.06 82.99 10.06"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <polygon class="cls-5" points="66.34 27.6 59.44 27.6 50.21 27.6 50.21 36.84 50.21 93.17 42.14 93.17 42.14 36.84 42.14 27.6 32.91 27.6 26.01 27.6 16.78 27.6 16.78 36.84 16.78 102.41 26.01 102.41 26.01 36.84 32.91 36.84 32.91 102.41 32.92 102.41 42.14 102.41 50.21 102.41 59.44 102.41 59.44 102.41 59.44 36.84 66.34 36.84 66.34 102.41 75.57 102.41 75.57 36.84 75.57 27.6 66.34 27.6"/>
+    </clipPath>
+  </defs>
+  <g id="_레이어_1-2" data-name="레이어 1">
+    <g>
+      <g>
+        <polygon class="cls-5" points="82.99 10.06 9.23 10.06 0 10.06 0 10.06 0 102.41 9.23 102.41 9.23 19.3 82.99 19.3 82.99 102.41 92.22 102.41 92.22 19.3 92.22 10.06 82.99 10.06"/>
+        <g class="cls-7">
+          <rect class="cls-5" x="0" y="10.06" width="92.35" height="92.35"/>
+        </g>
+      </g>
+      <g>
+        <polygon class="cls-5" points="66.34 27.6 59.44 27.6 50.21 27.6 50.21 36.84 50.21 93.17 42.14 93.17 42.14 36.84 42.14 27.6 32.91 27.6 26.01 27.6 16.78 27.6 16.78 36.84 16.78 102.41 26.01 102.41 26.01 36.84 32.91 36.84 32.91 102.41 32.92 102.41 42.14 102.41 50.21 102.41 59.44 102.41 59.44 102.41 59.44 36.84 66.34 36.84 66.34 102.41 75.57 102.41 75.57 36.84 75.57 27.6 66.34 27.6"/>
+        <g class="cls-3">
+          <rect class="cls-5" x="0" y="10.58" width="92.35" height="92.35"/>
+        </g>
+      </g>
+    </g>
+    <g>
+      <text class="cls-4" transform="translate(117.42 95.39)"><tspan x="0" y="0">THE </tspan></text>
+      <text class="cls-6" transform="translate(398.74 95.39) scale(.9 1)"><tspan x="0" y="0">PHARMA</tspan></text>
+      <circle class="cls-5" cx="1226.75" cy="91.26" r="5.87"/>
+    </g>
+    <g class="cls-1">
+      <g class="cls-1">
+        <g class="cls-1">
+          <g class="cls-1">
+            <g class="cls-1">
+              <g class="cls-1">
+                <g class="cls-1">
+                  <g class="cls-1">
+                    <text class="cls-2" transform="translate(906.88 95.36)"><tspan x="0" y="0">Recruit</tspan></text>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
