@@ -28,23 +28,19 @@ function lightNavItemClassName(active: boolean) {
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
-    <div className="flex shrink-0 items-center gap-4">
-      <Link href="/" aria-label="더파마 리크루트 개인회원 홈으로 이동">
-        <img
-          src="/images/logo_biz.svg"
-          alt="더파마 리크루트"
-          width={284}
-          height={28}
-          className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
-        />
-      </Link>
-      <Link
-        href={homeHref}
-        className="border border-[#d0d6de] px-2.5 py-1 text-[12px] font-medium text-[#303946] transition-colors hover:border-[#303946] hover:text-[#111111] max-[420px]:text-[11px]"
-      >
+    <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex shrink-0 items-center gap-3 hover:opacity-80 transition-opacity">
+      <img
+        src="/images/logo_biz.svg"
+        alt="더파마 리크루트"
+        width={284}
+        height={28}
+        className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
+      />
+      <span className="h-[16px] w-px shrink-0 bg-[#c8ced8]" aria-hidden="true" />
+      <span className="whitespace-nowrap text-[13px] font-bold text-[#111111] max-[420px]:text-[11px]">
         기업 센터
-      </Link>
-    </div>
+      </span>
+    </Link>
   );
 }
 
@@ -121,6 +117,16 @@ export function BusinessAccountMenu() {
               </div>
             ))}
           </div>
+          <div className="h-px bg-[#edf1f5]" />
+          <div className="px-1 py-1.5">
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              className="flex items-center px-2 py-2 text-[13px] font-medium text-[#a0a9b7] transition-colors hover:text-[#4f5967]"
+            >
+              개인 홈으로 전환
+            </Link>
+          </div>
         </div>
       ) : null}
     </div>
@@ -170,6 +176,12 @@ export function BusinessHeader() {
               </div>
               {/* 아이콘 그룹 */}
               <div className="flex items-center gap-1">
+                <Link
+                  href="/"
+                  className="whitespace-nowrap px-2 text-[12px] font-medium text-[#b0bac7] transition-colors hover:text-[#4f5967] max-[760px]:hidden"
+                >
+                  개인 서비스
+                </Link>
                 <button type="button" className="relative grid h-9 w-9 place-items-center text-[#303946] hover:bg-[#f4f5f6]" aria-label="알림">
                   <Bell size={18} />
                   <span className="absolute right-2 top-2 h-2 w-2 bg-danger ring-2 ring-white" />

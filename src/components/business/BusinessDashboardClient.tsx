@@ -206,7 +206,7 @@ export function BusinessDashboardClient() {
           <div>
             <h1 className="text-[26px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[22px]">
               안녕하세요,{" "}
-              <span className="text-status-positive">{COMPANY_NAME}</span>님
+              <span className="text-gradient-cta">{COMPANY_NAME}</span>님
               <br />
               오늘 처리할 항목이 있어요.
             </h1>

@@ -100,6 +100,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
   const [savedIds, setSavedIds] = useState<Set<number>>(() => new Set());
   const [activeSection, setActiveSection] = useState("intro");
   const [shareMessage, setShareMessage] = useState("");
+  const [benefitsExpanded, setBenefitsExpanded] = useState(false);
 
   useEffect(() => {
     setSavedIds(readSavedJobs());
@@ -128,15 +129,17 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
 
   const sections: SectionItem[] = [
     { id: "intro", label: "포지션 소개", visible: Boolean(job.introduction || job.oneLineIntro) },
+    { id: "details", label: "상세 모집 내용", visible: Boolean(job.details) },
     {
       id: "qualifications",
       label: "업무·자격",
       visible: Boolean(
-        job.responsibilitiesContent?.items.length || job.requirementsContent?.items.length || job.preferredContent?.items.length || job.preferredQualifications?.length,
+        job.responsibilitiesContent?.items.length || job.requirementsContent?.items.length || job.preferredContent?.items.length || job.preferredQualifications?.length || job.benefits?.length,
       ),
     },
     { id: "keywords", label: "핵심 키워드", visible: Boolean(bodyKeywords.length) },
     { id: "work", label: "근무조건", visible: true },
+    { id: "workenv", label: "근무 환경 안내", visible: Boolean(job.hrTips?.some((qa) => qa.answer)) },
     { id: "company", label: "기업정보", visible: true },
     { id: "similar", label: "비슷한 공고", visible: true },
   ].filter((section) => section.visible);
@@ -289,7 +292,17 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                 </SectionShell>
               ) : null}
 
-              {job.responsibilitiesContent?.items.length || job.requirementsContent?.items.length || job.preferredContent?.items.length || job.preferredQualifications?.length ? (
+              {job.details ? (
+                <SectionShell id="details" title="상세 모집 내용">
+                  <div className="max-w-[760px] space-y-4 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                    {job.details.split("\n").map((paragraph, index) =>
+                      paragraph ? <p key={index}>{paragraph}</p> : null,
+                    )}
+                  </div>
+                </SectionShell>
+              ) : null}
+
+              {job.responsibilitiesContent?.items.length || job.requirementsContent?.items.length || job.preferredContent?.items.length || job.preferredQualifications?.length || job.benefits?.length ? (
                 <SectionShell id="qualifications" title="업무·자격">
                   <div className="space-y-7">
                     {job.responsibilitiesContent?.items.length ? (
@@ -313,6 +326,27 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                         <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">우대사항</h3>
                         <div className="mt-3">
                           <FormattedContentView content={job.preferredContent} fallback={job.preferredQualifications} />
+                        </div>
+                      </div>
+                    ) : null}
+                    {job.benefits?.length ? (
+                      <div>
+                        <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">복리후생</h3>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {(benefitsExpanded ? job.benefits : job.benefits.slice(0, 5)).map((benefit) => (
+                            <span key={benefit} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3.5 py-2 text-[13px] font-normal text-[#4f5a66]">
+                              {benefit}
+                            </span>
+                          ))}
+                          {job.benefits.length > 5 ? (
+                            <button
+                              type="button"
+                              onClick={() => setBenefitsExpanded((v) => !v)}
+                              className="border border-brand bg-white px-3.5 py-2 text-[13px] font-medium text-brand transition hover:bg-brand-soft"
+                            >
+                              {benefitsExpanded ? "접기" : `더 보기 ${job.benefits.length - 5}개`}
+                            </button>
+                          ) : null}
                         </div>
                       </div>
                     ) : null}
@@ -360,6 +394,19 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                   </div>
                 </div>
               </SectionShell>
+
+              {job.hrTips?.some((qa) => qa.answer) ? (
+                <SectionShell id="workenv" title="근무 환경 안내">
+                  <div className="space-y-5">
+                    {job.hrTips.filter((qa) => qa.answer).map((qa) => (
+                      <div key={qa.question}>
+                        <p className="text-[15px] font-bold text-[#2f3845]">{qa.question}</p>
+                        <p className="mt-1.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">{qa.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </SectionShell>
+              ) : null}
 
               <SectionShell id="company" title="기업정보">
                 <div className="flex gap-4 max-[640px]:flex-col">

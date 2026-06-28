@@ -475,7 +475,9 @@ export interface Job {
   pharmacyEnv?: PharmacyEnv;
   /** 모집부문 및 자격요건 표. 복수 모집부문을 지원한다 */
   recruitTable?: PharmacyRecruitRow[];
-  /** 상세 모집 내용(포지션 소개와 별개의 본문) */
+  /** 상세 모집 내용(포지션 소개와 별개의 본문). 줄바꿈(\n)으로 단락을 구분한다. */
+  details?: string;
+  /** 상세 모집 내용 구조화 버전(FormattedContent). details와 별개로 항목형/번호형 본문이 필요한 경우 사용 */
   recruitDetails?: FormattedContent;
   hrTips?: JobHrTip[];
   /** 지원 채널이 여러 개이거나 차단 안내가 필요한 공고에서 사용 */

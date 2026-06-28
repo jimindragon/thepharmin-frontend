@@ -172,6 +172,15 @@ input:focus-visible {
   transform: translateY(1px);
 }
 
+/* 브랜드 그라데이션 텍스트 — var(--gradient-cta)를 글자 색으로 적용.
+   background-clip: text 패턴이므로 이 클래스를 쓰는 요소엔 별도 background-color를 주지 않는다. */
+.text-gradient-cta {
+  background: var(--gradient-cta);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* 화살표 컨트롤로 대체된 캐러셀(업계를 이끄는 기업/테마별 공고)의 가로 스크롤바를 숨긴다.
    마우스·트랙패드 가로 스크롤과 터치 스와이프 자체는 그대로 동작하고, 스크롤바만 비표시한다. */
 .premium-scrollbar {
