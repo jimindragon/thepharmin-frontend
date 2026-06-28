@@ -530,7 +530,7 @@ function ApplicationStepper({ stage }: { stage?: CalendarJobStage }) {
 
 function ApplicationStatusCard({ job }: { job: CalendarJob }) {
   return (
-    <Link href={job.href} className="block border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
+    <Link href="/mypage/applications" className="block border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-[14px] font-medium text-[#1e232b]">{job.companyName}</p>

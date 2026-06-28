@@ -35,7 +35,6 @@ export interface CompanyProfileMaster {
     exposeOnJobs: boolean;
     exposeOnSearch: boolean;
   };
-  profileCompletion: number;
 }
 
 export interface CompanyVerification {
@@ -150,7 +149,6 @@ export const initialBusinessCompanyProfile: CompanyProfileMaster = {
     exposeOnJobs: true,
     exposeOnSearch: true,
   },
-  profileCompletion: 83,
 };
 
 export const businessCompanyVerification: CompanyVerification = {

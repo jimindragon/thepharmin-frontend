@@ -141,7 +141,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "계열사", value: "더파마헬스케어, 더파마바이오" },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "도전과 혁신", "환자 중심", "전문성 존중"],
-    jobCount: 12,
+    jobCount: 4,
     jobs: [
       { id: "ra", title: "RA Specialist", href: "/jobs/ra-specialist", dDay: "D-12", tags: ["RA"], career: "경력 3~5년", location: "서울" },
       { id: "cra", title: "Clinical Research Associate", href: "/jobs?keyword=CRA", dDay: "D-18", tags: ["CRA"], career: "경력 2~4년", location: "전국" },
@@ -261,10 +261,10 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "1,245",
-      responseRate: "92%",
-      averageResponseTime: "1.2일",
-      followers: "3,452",
-      reviewKeywordCount: "42개",
+      responseRate: "88%",
+      averageResponseTime: "1.8일",
+      followers: "1,892",
+      reviewKeywordCount: "26개",
       products: [
         { name: "나보타", description: "전문의약품" },
         { name: "펙수클루", description: "위식도역류질환 치료제" },
@@ -428,10 +428,10 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "25,000+",
-      responseRate: "90%",
-      averageResponseTime: "1.5일",
+      responseRate: "95%",
+      averageResponseTime: "0.8일",
       followers: "25,000+",
-      reviewKeywordCount: "30+",
+      reviewKeywordCount: "54개",
       industryRank: "완제 의약품 제조업 1위",
       products: [
         { name: "렉라자", description: "비소세포폐암 표적항암제" },
@@ -571,10 +571,10 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "17,000+",
-      responseRate: "90%",
-      averageResponseTime: "1.5일",
+      responseRate: "82%",
+      averageResponseTime: "2.3일",
       followers: "17,000+",
-      reviewKeywordCount: "40+",
+      reviewKeywordCount: "37개",
       industryRank: "생물학적 제제 제조업 1위",
       products: [
         { name: "CDMO", description: "항체의약품 위탁개발생산" },
@@ -756,10 +756,10 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "3,100+",
-      responseRate: "90%",
-      averageResponseTime: "1.5일",
+      responseRate: "78%",
+      averageResponseTime: "2.8일",
       followers: "3,100+",
-      reviewKeywordCount: "20+",
+      reviewKeywordCount: "15개",
       industryRank: "생물학적 제제 제조업 2위",
       products: [
         { name: "보툴렉스", description: "보툴리눔 톡신(수출명 Letybo)" },

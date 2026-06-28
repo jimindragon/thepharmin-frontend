@@ -233,7 +233,7 @@ function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) {
       <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
         <div className="flex items-start justify-between gap-4 max-[640px]:flex-col">
           <div>
-            <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">더파마 리크루트 기업 요약</h2>
+            <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">기업 요약</h2>
             <p className="mt-3 text-[14px] font-normal leading-[1.85] text-[#596373]">{profile.recruitSummary}</p>
           </div>
           <a

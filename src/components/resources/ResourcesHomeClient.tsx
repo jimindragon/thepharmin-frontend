@@ -57,7 +57,9 @@ function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onP
             </div>
           ) : null}
 
-          <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-[#edf1f5] pt-5 max-[640px]:flex-col max-[640px]:items-start">
+          <div className="min-h-[28px] flex-1" />
+
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#edf1f5] pt-5 max-[640px]:flex-col max-[640px]:items-start">
             <div>
               {pkg.originalPrice ? (
                 <span className="mr-2 text-[14px] font-normal text-[#b6bec9] line-through">{pkg.originalPrice.toLocaleString("ko-KR")}원</span>
@@ -145,7 +147,7 @@ function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
               <span className="min-w-0">
                 <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#8a94a3]">
                   {item.category}
-                  <span className={clsx("border px-1.5 py-0.5 text-[10px] font-medium", item.isFree ? "border-[#cfd8e3] text-[#596373]" : "border-[#111111] text-[#111111]")}>
+                  <span className={clsx("px-1 py-px text-[9px] font-medium", item.isFree ? "bg-[#f0f1f3] text-[#4a5261]" : "bg-[#e2e5e9] text-[#6b7280]")}>
                     {item.isFree ? "무료" : "유료"}
                   </span>
                 </span>
