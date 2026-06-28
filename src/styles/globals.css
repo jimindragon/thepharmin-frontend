@@ -54,7 +54,7 @@
   --status-error-border: #f1c9bf;
 
   /* 긴급 — 종료 임박, 긴급 공고 (--color-danger와 시각적으로 거의 동일하나 의미 분리 유지) */
-  --status-urgent: #e04a2a;
+  --status-urgent: #E14B2D;
 
   --radius: 3px;
   --shadow: 0 1px 0 rgba(18, 24, 30, 0.04);
