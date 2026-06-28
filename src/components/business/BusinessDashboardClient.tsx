@@ -41,7 +41,7 @@ const TASKS: Array<{
     id: "t1",
     Icon: User,
     title: "신규 지원자 3명이 검토를 기다려요",
-    badge: { label: "미검토", className: "border-[#f1c9bf] bg-[#fff3f0] text-[#a43f31]" },
+    badge: { label: "미검토", className: "border-status-error-border bg-status-error-subtle text-status-error" },
     desc: "제제연구 선임연구원 모집 · 가장 오래된 지원 3일 경과",
     action: { label: "지원자 검토", href: "/business/applicants" },
   },
@@ -49,7 +49,7 @@ const TASKS: Array<{
     id: "t2",
     Icon: Clock,
     title: "임상개발 PM 채용 공고가 곧 마감돼요",
-    badge: { label: "D-2", className: "border-[#f1c9bf] bg-[#fff3f0] text-[#a43f31]" },
+    badge: { label: "D-2", className: "border-status-error-border bg-status-error-subtle text-status-error" },
     desc: "2026.07.21 마감 · 현재 지원자 4명 · 연장하거나 마감 처리하세요",
     action: { label: "공고 연장", href: "/business/jobs" },
   },
@@ -57,7 +57,7 @@ const TASKS: Array<{
     id: "t3",
     Icon: MessageSquare,
     title: "헤드헌팅 후보자 CAND-008이 검토를 기다려요",
-    badge: { label: "검토 대기", className: "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]" },
+    badge: { label: "검토 대기", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
     desc: "RA 팀장급 (허가 전략) · 적합도 88% · 6월 5일 추천됨",
     action: { label: "후보자 확인", href: "/business/headhunting/manage" },
   },
@@ -65,7 +65,7 @@ const TASKS: Array<{
     id: "t4",
     Icon: CalendarDays,
     title: "정수민님 최종 면접 일정을 확정하세요",
-    badge: { label: "D-2", className: "border-[#f1c9bf] bg-[#fff3f0] text-[#a43f31]" },
+    badge: { label: "D-2", className: "border-status-error-border bg-status-error-subtle text-status-error" },
     desc: "제제연구 선임연구원 · 6월 29일(일) 14:00 제안됨",
     action: { label: "일정 확정", href: "/business/applicants" },
   },
@@ -73,7 +73,7 @@ const TASKS: Array<{
     id: "t5",
     Icon: FileText,
     title: "CAND-009 처우 협의가 진행 중이에요",
-    badge: { label: "처우 협의", className: "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]" },
+    badge: { label: "처우 협의", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
     desc: "RA 팀장급 (허가 전략) · 헤드헌터 회신 필요",
     action: { label: "협의 보기", href: "/business/headhunting/manage" },
   },
@@ -88,7 +88,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "정수민",
     stage: "최종 면접",
     posting: "제제연구 선임연구원 모집",
-    badge: { label: "일정 확정 대기", className: "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]" },
+    badge: { label: "일정 확정 대기", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
   },
   {
     id: "i2",
@@ -98,7 +98,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "CAND-014",
     stage: "1차 면접",
     posting: "임상개발 PM (CRA 총괄) · 헤드헌팅",
-    badge: { label: "확정", className: "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]" },
+    badge: { label: "확정", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
   },
 ];
 
@@ -206,7 +206,7 @@ export function BusinessDashboardClient() {
           <div>
             <h1 className="text-[26px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[22px]">
               안녕하세요,{" "}
-              <span className="text-[#00746c]">{COMPANY_NAME}</span>님
+              <span className="text-status-positive">{COMPANY_NAME}</span>님
               <br />
               오늘 처리할 항목이 있어요.
             </h1>
@@ -269,7 +269,7 @@ export function BusinessDashboardClient() {
               <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">
                   처리할 항목
-                  <span className="ml-2 text-[#00746c]">5</span>
+                  <span className="ml-2 text-status-positive">5</span>
                 </h2>
                 <Link
                   href="/business/applicants"
@@ -327,7 +327,7 @@ export function BusinessDashboardClient() {
                         <span
                           className={clsx(
                             "text-[13px] font-bold",
-                            dday.isUrgent ? "text-[#e04a2a]" : "text-[#4f5967]",
+                            dday.isUrgent ? "text-status-urgent" : "text-[#4f5967]",
                           )}
                         >
                           D-{dday.value}
@@ -364,7 +364,7 @@ export function BusinessDashboardClient() {
               <div className="divide-y divide-[#e5e9ef]">
                 {RECENT_ACTIVITIES.map((act) => (
                   <div key={act.id} className="flex items-start gap-3 px-5 py-3">
-                    <div className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-[#00746c]" />
+                    <div className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-status-positive" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] leading-[1.5] text-[#17202c]">{act.text}</p>
                       <p className="mt-0.5 text-[12px] text-[#8a94a3]">{act.time}</p>

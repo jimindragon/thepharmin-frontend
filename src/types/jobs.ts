@@ -287,6 +287,14 @@ export interface PharmacyEnv {
   mainHospital?: string;
 }
 
+export interface HospitalDepartment {
+  name: string;
+  headcount: string;
+  schedule: string;
+  duties: string;
+  requirements: string;
+}
+
 export interface PharmacyRecruitRow {
   part: string;
   duty: string;
@@ -472,6 +480,9 @@ export interface Job {
   hrTips?: JobHrTip[];
   /** 지원 채널이 여러 개이거나 차단 안내가 필요한 공고에서 사용 */
   applyInfo?: JobApplyInfo;
+
+  /** 병원약사 공고 복수 모집부문 비교 테이블. 값이 있을 때만 병원 상세 페이지에서 사용한다 */
+  hospitalDepartments?: HospitalDepartment[];
 
   /** 연구 공고(기관→연구실→PI) 전용 구조. 값이 있을 때만 연구 상세 페이지에서 사용한다 */
   researchLab?: ResearchLab;

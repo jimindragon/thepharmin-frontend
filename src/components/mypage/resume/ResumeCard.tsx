@@ -37,7 +37,7 @@ export function ResumeCard({
             <span
               className={clsx(
                 "inline-flex h-[22px] items-center gap-1 px-2 text-[11px] font-medium",
-                complete ? "text-[#1a8f5c]" : "text-[#8a6d1f]",
+                complete ? "text-status-complete" : "text-[#8a6d1f]",
               )}
             >
               {complete ? <CheckCircle2 size={13} /> : <PencilLine size={13} />}

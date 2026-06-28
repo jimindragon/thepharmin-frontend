@@ -194,7 +194,7 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-normal text-[#8a94a3]">입점 할인</span>
-                  <span className="text-[13px] font-semibold text-[#e04a2a]">
+                  <span className="text-[13px] font-semibold text-status-urgent">
                     -{formatKrw(discountAmount)}
                   </span>
                 </div>

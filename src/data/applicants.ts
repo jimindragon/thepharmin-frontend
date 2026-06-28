@@ -239,9 +239,9 @@ export function applicantStageLabel(stage: ApplicantStage): string {
 
 export function applicantStageClass(stage: ApplicantStage): string {
   if (stage === "new") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (stage === "screening") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
-  if (stage === "first_interview") return "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]";
-  if (stage === "final_interview") return "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]";
+  if (stage === "screening") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
+  if (stage === "first_interview") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
+  if (stage === "final_interview") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
   if (stage === "offer") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
   return "border-[#cfd8e3] bg-[#f7f8fa] text-[#596373]";
 }

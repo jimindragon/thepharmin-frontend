@@ -856,7 +856,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       className={clsx(
                         "h-14 shrink-0 border-r border-[#edf1f5] px-6 text-[13px] font-medium transition",
                         activeSection === section.id
-                          ? "text-brand shadow-[inset_0_-2px_0_#00746C]"
+                          ? "text-brand shadow-[inset_0_-2px_0_var(--status-positive)]"
                           : "text-[#4f5967] hover:bg-[#f7f8fa] hover:text-[#111111]",
                       )}
                     >

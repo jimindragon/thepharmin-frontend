@@ -326,7 +326,7 @@ export function BusinessApplicantsClient() {
                         <div className="flex items-center gap-1.5">
                           <span className="font-medium text-[#17202c]">{applicant.name}</span>
                           {applicant.isNew && (
-                            <span className="inline-flex h-[18px] items-center justify-center border border-[#bfe7e2] bg-[#eafbf8] px-1.5 text-[10px] font-bold uppercase tracking-wide text-[#00746c]">
+                            <span className="inline-flex h-[18px] items-center justify-center border border-status-positive-border bg-status-positive-subtle px-1.5 text-[10px] font-bold uppercase tracking-wide text-status-positive">
                               NEW
                             </span>
                           )}

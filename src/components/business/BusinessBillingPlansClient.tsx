@@ -180,7 +180,7 @@ export function BusinessBillingPlansClient() {
           </div>
           <Link
             href="/business/pricing"
-            className="shrink-0 text-[13px] font-medium text-[#00746C] transition hover:underline"
+            className="shrink-0 text-[13px] font-medium text-status-positive transition hover:underline"
           >
             요금제 안내 보기 →
           </Link>

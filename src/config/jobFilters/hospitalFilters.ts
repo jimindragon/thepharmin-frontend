@@ -6,8 +6,8 @@ export const hospitalJobCategoryOptions: JobCategoryOption[] = [
     id: "hospital-pharmacist",
     label: "약사 직무",
     subcategories: [
-      { id: "hospital_pharmacist", label: "병원 약사", categoryId: "hospital-pharmacist" },
-      { id: "clinical_pharmacist", label: "임상약사", categoryId: "hospital-pharmacist" },
+      { id: "hospital_pharmacist", label: "입원·조제 약사", categoryId: "hospital-pharmacist" },
+      { id: "clinical_pharmacist", label: "임상·전문약사", categoryId: "hospital-pharmacist" },
       { id: "clinical_trial_pharmacist", label: "임상시험 약사", categoryId: "hospital-pharmacist" },
     ],
   },

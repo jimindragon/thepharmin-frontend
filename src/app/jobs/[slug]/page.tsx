@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
+import { HospitalJobDetailClient } from "@/components/job-detail/HospitalJobDetailClient";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
 import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
 import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
@@ -74,6 +75,15 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   const company = companies.find((item) => item.id === job.companyId) ?? null;
+
+  if (job.track === "hospital") {
+    return (
+      <>
+        <Header />
+        <HospitalJobDetailClient job={job} company={company} similarJobs={getSimilarJobs(job)} />
+      </>
+    );
+  }
 
   if (job.track === "pharmacy") {
     return (

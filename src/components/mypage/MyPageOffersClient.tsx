@@ -52,7 +52,7 @@ const OFFER_TABS: Array<{ id: OfferTabFilter; label: string }> = [
 function OfferTypeBadge({ type }: { type: OfferType }) {
   if (type === "headhunting") {
     return (
-      <span className="inline-flex shrink-0 items-center border border-[#b8dad8] bg-[#e8f5f4] px-2 py-0.5 text-[11px] font-medium text-[#005f59]">
+      <span className="inline-flex shrink-0 items-center border border-status-positive-border bg-status-positive-subtle px-2 py-0.5 text-[11px] font-medium text-status-positive">
         헤드헌팅 제안
       </span>
     );
@@ -67,7 +67,7 @@ function OfferTypeBadge({ type }: { type: OfferType }) {
 function OfferStatusBadge({ status }: { status: OfferStatus }) {
   if (status === "new") {
     return (
-      <span className="inline-flex h-5 shrink-0 items-center border border-[#9ecec9] bg-[#e8f5f4] px-1.5 text-[11px] font-medium text-[#00746C]">
+      <span className="inline-flex h-5 shrink-0 items-center border border-[#9ecec9] bg-status-positive-subtle px-1.5 text-[11px] font-medium text-status-positive">
         신규
       </span>
     );
@@ -106,8 +106,8 @@ export function MyPageOffersClient() {
 
       {/* 상단 상태 칩 */}
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <span className="inline-flex h-6 items-center gap-1.5 border border-[#b8dad8] bg-[#e8f5f4] px-2.5 text-[11px] font-medium text-[#00746C]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00746C]" />
+        <span className="inline-flex h-6 items-center gap-1.5 border border-status-positive-border bg-status-positive-subtle px-2.5 text-[11px] font-medium text-status-positive">
+          <span className="h-1.5 w-1.5 rounded-full bg-status-positive" />
           제안 받기 켜짐
         </span>
         <span className="inline-flex h-6 items-center border border-[#e0e4ea] bg-[#f7f8fa] px-2.5 text-[11px] font-medium text-[#68717e]">

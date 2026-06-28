@@ -28,8 +28,8 @@ export function boostStatusLabel(status: BoostStatus, daysLeft: number): string 
 }
 
 export function boostStatusClass(status: BoostStatus): string {
-  if (status === "ending_soon") return "text-[#e04a2a] font-semibold";
-  if (status === "active") return "text-[#00746C] font-semibold";
+  if (status === "ending_soon") return "text-status-urgent font-semibold";
+  if (status === "active") return "text-status-positive font-semibold";
   return "text-[#8a94a3]";
 }
 
@@ -96,7 +96,7 @@ export function paymentStatusLabel(status: PaymentStatus): string {
 }
 
 export function paymentStatusClass(status: PaymentStatus): string {
-  if (status === "completed") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
+  if (status === "completed") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
   return "border-[#d8dee7] bg-[#f7f8fa] text-[#8a94a3]";
 }
 

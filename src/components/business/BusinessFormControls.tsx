@@ -72,7 +72,7 @@ export function SectionCard({
                   "whitespace-nowrap rounded-full border px-3 py-1.5 text-[12px] font-medium",
                   status === "완료" && "border-[#d7dde5] bg-[#f4f5f6] text-[#252d39]",
                   status === "작성 중" && "border-[#d7dde5] bg-white text-[#5f6876]",
-                  status === "필수 입력 필요" && "border-[#f1c9bf] bg-[#fff3f0] text-danger",
+                  status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-danger",
                   status === "선택 사항" && "border-[#d7dde5] bg-[#f8f9fa] text-[#7a8493]",
                 )}
               >

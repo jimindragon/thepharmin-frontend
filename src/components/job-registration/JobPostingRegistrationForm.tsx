@@ -223,7 +223,7 @@ function CompanySummaryCard() {
       </div>
       {hasMissingCompanyInfo ? (
         <div className="mt-5 border border-[#ead8d3] bg-[#fffafa] px-4 py-3">
-          <p className="text-[13px] font-medium text-[#9b3a2d]">공고 상세에 노출될 기업정보가 부족합니다.</p>
+          <p className="text-[13px] font-medium text-status-error">공고 상세에 노출될 기업정보가 부족합니다.</p>
           <p className="mt-1 text-[13px] font-medium text-[#6f5960]">부족한 정보: {companyMissingItems.join(", ")}</p>
         </div>
       ) : (
@@ -534,7 +534,7 @@ const StructuredEditor = forwardRef<StructuredEditorHandle, StructuredEditorProp
                 <button
                   type="button"
                   onClick={() => removeItem(item.id)}
-                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center text-[#b1bac6] transition hover:bg-[#fff0f0] hover:text-danger"
+                  className="mt-1 grid h-7 w-7 shrink-0 place-items-center text-[#b1bac6] transition hover:bg-status-error-subtle hover:text-danger"
                   aria-label={`${label} ${index + 1}번째 항목 삭제`}
                 >
                   <Trash2 size={15} />
@@ -1155,7 +1155,7 @@ export function JobPostingRegistrationForm() {
                         <button
                           type="button"
                           onClick={() => setDetailBlocks((current) => current.filter((item) => item.id !== block.id))}
-                          className="grid h-8 w-8 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
+                          className="grid h-8 w-8 place-items-center text-[#a0a9b7] hover:bg-status-error-subtle hover:text-danger"
                           aria-label={`${block.title} 블록 삭제`}
                         >
                           <Trash2 size={16} />
@@ -1194,7 +1194,7 @@ export function JobPostingRegistrationForm() {
                       type="button"
                       onClick={() => setHiringSteps((current) => current.filter((_, i) => i !== index))}
                       disabled={hiringSteps.length <= 1}
-                      className="grid h-7 w-7 place-items-center text-[#b1bac6] transition hover:bg-[#fff0f0] hover:text-danger disabled:cursor-not-allowed disabled:opacity-35"
+                      className="grid h-7 w-7 place-items-center text-[#b1bac6] transition hover:bg-status-error-subtle hover:text-danger disabled:cursor-not-allowed disabled:opacity-35"
                       aria-label={`${index + 1}번째 단계 삭제`}
                     >
                       <Trash2 size={15} />
@@ -1561,7 +1561,7 @@ export function JobPostingRegistrationForm() {
                   )
                     .slice(0, 6)
                     .map((item) => (
-                      <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-medium text-[#9b3a2d]">
+                      <span key={item} className="border border-[#e4d7d3] bg-[#fffafa] px-2.5 py-1 text-[11px] font-medium text-status-error">
                         {item === "지원 URL" ? "지원 URL 입력 필요" : item}
                       </span>
                     ))}

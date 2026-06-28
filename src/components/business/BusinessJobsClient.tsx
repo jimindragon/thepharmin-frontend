@@ -118,7 +118,7 @@ export function BusinessJobsClient() {
                             "inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium",
                             isClosed
                               ? "border-[#d8dee7] bg-[#f7f8fa] text-[#8a94a3]"
-                              : "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]",
+                              : "border-status-positive-border bg-status-positive-subtle text-status-positive",
                           )}
                         >
                           {isClosed ? "마감" : "게시중"}
@@ -139,7 +139,7 @@ export function BusinessJobsClient() {
                           <span
                             className={clsx(
                               "text-[13px] font-semibold",
-                              boost.isUrgent ? "text-[#e04a2a]" : "text-[#00746c]",
+                              boost.isUrgent ? "text-status-urgent" : "text-status-positive",
                             )}
                           >
                             D-{boost.daysLeft}

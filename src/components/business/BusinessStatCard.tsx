@@ -36,7 +36,7 @@ export function BusinessStatCard({
           <span
             className={clsx(
               "font-semibold",
-              emphasisVariant === "urgent" ? "text-[#e04a2a]" : "text-[#68717e]",
+              emphasisVariant === "urgent" ? "text-status-urgent" : "text-[#68717e]",
             )}
           >
             {subEmphasis}

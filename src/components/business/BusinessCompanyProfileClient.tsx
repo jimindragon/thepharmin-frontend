@@ -102,7 +102,7 @@ function statusClass(status: FileStatus | null) {
   if (status === "approved") return "border-[#cfd8e3] bg-[#f7f8fa] text-[#303946]";
   if (status === "pending") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
   if (status === "rejected") return "border-[#ead8d3] bg-[#fffafa] text-[#a43f31]";
-  if (status === "change_requested") return "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]";
+  if (status === "change_requested") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
   return "border-[#e3e7ed] bg-[#f7f8fa] text-[#9aa3af]";
 }
 
@@ -566,8 +566,8 @@ export function BusinessCompanyProfileClient() {
                 <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">남은 항목</p>
                 <div className="mt-3 space-y-2">
                   {remainingItems.map((item) => (
-                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-[#9b3a2d]">
-                      <span className="h-5 w-5 shrink-0 border border-[#f1c9bf] bg-[#fff3f0]" />
+                    <div key={item.label} className="flex items-center gap-2 text-[13px] font-medium text-status-error">
+                      <span className="h-5 w-5 shrink-0 border border-status-error-border bg-status-error-subtle" />
                       <span>{item.label}</span>
                     </div>
                   ))}
@@ -591,7 +591,7 @@ export function BusinessCompanyProfileClient() {
 
               {missingItems.length ? (
                 <div className="mt-3 border border-[#ead8d3] bg-[#fffafa] p-3">
-                  <p className="text-[12px] font-medium text-[#a43f31]">부족한 필수 항목</p>
+                  <p className="text-[12px] font-medium text-status-error">부족한 필수 항목</p>
                   <p className="mt-1 text-[12px] font-medium leading-[1.6] text-[#7d5960]">{missingItems.join(", ")}</p>
                 </div>
               ) : null}

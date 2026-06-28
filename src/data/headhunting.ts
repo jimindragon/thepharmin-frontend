@@ -95,10 +95,10 @@ export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
 
 export function headhuntingStatusClass(status: HeadhuntingRequestStatus) {
   if (status === "consulting") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (status === "sourcing") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
-  if (status === "interviewing") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
+  if (status === "sourcing") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
+  if (status === "interviewing") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
   if (status === "completed") return "border-[#cfd8e3] bg-[#f7f8fa] text-[#303946]";
-  return "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]";
+  return "border-status-warning-border bg-status-warning-subtle text-status-warning";
 }
 
 export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
@@ -112,9 +112,9 @@ export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
 
 export function candidateStatusClass(status: HeadhuntingCandidateStatus) {
   if (status === "recommended") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (status === "interview_proposed") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
-  if (status === "interview_scheduled") return "border-[#bfe7e2] bg-[#eafbf8] text-[#00746c]";
-  if (status === "offer") return "border-[#f1dcb7] bg-[#fff9ef] text-[#9a6500]";
+  if (status === "interview_proposed") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
+  if (status === "interview_scheduled") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
+  if (status === "offer") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
   if (status === "hired") return "border-[#111111] bg-[#111111] text-white";
   return "border-[#ead8d3] bg-[#fffafa] text-[#a43f31]";
 }
