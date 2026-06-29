@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BusinessLandingPage } from "@/components/business/BusinessPages";
+import { BusinessPricingClient } from "@/components/business/BusinessPricingClient";
 
 export const metadata: Metadata = {
   title: "기업 서비스 | 더파마 리크루트",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function BusinessPage() {
-  return <BusinessLandingPage />;
+  return <BusinessPricingClient />;
 }

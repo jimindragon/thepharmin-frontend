@@ -1,5 +1,5 @@
-import { BusinessPricingClient } from "@/components/business/BusinessPricingClient";
+import { redirect } from "next/navigation";
 
 export default function BusinessPricingPage() {
-  return <BusinessPricingClient />;
+  redirect("/business");
 }

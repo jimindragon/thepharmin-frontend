@@ -86,6 +86,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -179,6 +180,20 @@ input:focus-visible {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* 스크롤 페이드인 — IntersectionObserver로 .in 클래스 추가 시 등장. prefers-reduced-motion에선 비활성화 */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
 
 /* 화살표 컨트롤로 대체된 캐러셀(업계를 이끄는 기업/테마별 공고)의 가로 스크롤바를 숨긴다.

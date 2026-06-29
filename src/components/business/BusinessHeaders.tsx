@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LinkButton } from "@/components/ui/Button";
 import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
-import { sharedRoutes } from "@/config/routes";
 import { businessCompanyManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
@@ -15,8 +14,9 @@ import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 // 기업센터는 BusinessAccountMenu 드롭다운 안에 이미 있어 중복을 피함.
 // 헤드헌팅 의뢰는 우측 아웃라인 버튼으로 승격.
 const businessNavItems = [
-  { label: "요금제", href: "/business/pricing" },
-  { label: "고객센터", href: sharedRoutes.support },
+  { label: "상품안내", href: "/business#pricing" },
+  { label: "대시보드", href: "/business/dashboard" },
+  { label: "기업관리", href: "/business/company/profile" },
 ];
 
 function lightNavItemClassName(active: boolean) {
@@ -148,7 +148,7 @@ export function BusinessHeader() {
       <div className="app-shell flex h-full items-center justify-between">
         {/* 좌측: 로고 | 기업 센터 | 요금제 · 고객센터 */}
         <div className="flex min-w-0 items-center gap-5">
-          <BusinessBrand homeHref={isMember ? "/business/dashboard" : "/business"} />
+          <BusinessBrand homeHref="/business" />
           <nav className="flex items-center gap-7 max-[1120px]:hidden">
             {businessNavItems.map((item) => (
               <Link key={item.href} href={item.href} className={lightNavItemClassName(pathname === item.href)}>
@@ -165,7 +165,7 @@ export function BusinessHeader() {
               {/* 버튼 그룹 */}
               <div className="flex items-center gap-2.5">
                 {/* 2순위 — 아웃라인 버튼, 760px 미만에서 숨김 */}
-                <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden">
+                <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden border-[#d4d4d4] text-[#555555]">
                   헤드헌팅 의뢰
                 </LinkButton>
                 {/* 1순위 — 브랜드 그라데이션 솔리드 버튼 */}
