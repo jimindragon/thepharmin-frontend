@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
@@ -40,6 +41,28 @@ const processSteps = [
   { number: "03", title: "후보자 추천", description: "경력과 역량, 조직 적합도와 이직 의사를 검증한 인재를 엄선해 추천합니다." },
   { number: "04", title: "면접 및 입사 지원", description: "면접 일정과 피드백 조율부터 처우 협의, 최종 입사까지 전 과정을 세심하게 지원합니다." },
 ];
+
+function ClosingCtaRow({ isMember }: { isMember: boolean }) {
+  const hrefs = isMember
+    ? { primary: "/business/headhunting/manage/new", secondary: "/business/headhunting/manage" }
+    : { primary: "/business/signup", secondary: "/business/support" };
+  return (
+    <>
+      <Link
+        href={hrefs.primary}
+        className="inline-flex items-center bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[30px] py-[15px] text-[15px] font-semibold text-white transition-[filter] hover:brightness-[1.08]"
+      >
+        인재추천 의뢰하기
+      </Link>
+      <Link
+        href={hrefs.secondary}
+        className="inline-flex items-center border border-white/40 px-[30px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+      >
+        서비스 소개자료 받기
+      </Link>
+    </>
+  );
+}
 
 function HeroCtaRow({ isMember }: { isMember: boolean }) {
   if (isMember) {
@@ -209,24 +232,44 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
         </BusinessSection>
 
-        <BusinessImageBand image={companyExampleImages.workspace} gradient="vertical" align="center">
-          <h2 className="font-bold tracking-[-0.02em] text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
-            채용공고만으로 찾기 어려운 인재,
-            <br />
-            더파마와 함께 찾아보세요.
-          </h2>
-          <p className="mx-auto mt-4 max-w-[480px] text-[14px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
-            채용 직무와 필요한 경력을 남겨주시면{" "}
-            <br className="max-[640px]:hidden" />
-            담당자가 확인 후 적합한 진행 방법을 안내드립니다.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <HeroCtaRow isMember={isMember} />
+        {/* ══ CLOSING CTA ══════════════════════════════════════ */}
+        <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-cover bg-center opacity-[.32]"
+            style={{
+              backgroundImage: "url(/images/headhunting-hero.jpg)",
+              WebkitMaskImage: "linear-gradient(180deg,transparent,#000 40%,#000 70%,transparent)",
+              maskImage: "linear-gradient(180deg,transparent,#000 40%,#000 70%,transparent)",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[3px] opacity-[.65]"
+            style={{ background: "var(--gradient-cta)" }}
+          />
+          <div className="app-shell--default relative z-10 w-full py-[96px] max-[760px]:py-16">
+            <h2
+              className="font-semibold text-white"
+              style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.04em", lineHeight: 1.22 }}
+            >
+              채용공고만으로 찾기 어려운 인재,
+              <br />
+              더파마와 함께 찾아보세요.
+            </h2>
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6]">
+              채용 직무와 필요한 경력을 남겨주시면{" "}
+              <br className="max-[640px]:hidden" />
+              담당자가 확인 후 적합한 진행 방법을 안내드립니다.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <ClosingCtaRow isMember={isMember} />
+            </div>
+            <p className="mt-5 text-[12px] font-normal text-white/50">
+              상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
+            </p>
           </div>
-          <p className="mt-5 text-[12px] font-normal text-white/50">
-            상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
-          </p>
-        </BusinessImageBand>
+        </section>
       </main>
     </>
   );
