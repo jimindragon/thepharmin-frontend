@@ -644,3 +644,78 @@ input:focus-visible {
     padding-top: 0;
   }
 }
+
+/* ── 공고 등록 STEP1 — 트랙 선택 카드 ───────────────────────── */
+.track-card {
+  position: relative;
+  background: white;
+  border: 1px solid #dfe4ea;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+/* 상단 그라데이션 라인: hover/focus 시 scaleX 0→1 */
+.track-card-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-cta);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.26s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* 우하단 화살표: hover/focus 시 opacity 0→1 */
+.track-card-arrow {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  color: #596373;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+/* 터치 환경: 흑백 + 밝게 (또렷하게 보이는 정도) */
+@media (hover: none) {
+  .track-card-img {
+    filter: grayscale(1) brightness(0.82);
+  }
+}
+
+/* 데스크탑 hover 환경 */
+@media (hover: hover) {
+  .track-card-img {
+    filter: grayscale(1) brightness(0.6);
+    transition: filter 0.25s ease;
+  }
+
+  .track-card:hover .track-card-img,
+  .track-card:focus-visible .track-card-img {
+    filter: grayscale(0) brightness(1);
+  }
+
+  .track-card:hover,
+  .track-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
+    border-color: #b8c2ce;
+    outline: none;
+    z-index: 1;
+  }
+
+  .track-card:hover .track-card-line,
+  .track-card:focus-visible .track-card-line {
+    transform: scaleX(1);
+  }
+
+  .track-card:hover .track-card-arrow,
+  .track-card:focus-visible .track-card-arrow {
+    opacity: 1;
+  }
+}

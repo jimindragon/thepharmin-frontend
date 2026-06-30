@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
@@ -12,17 +13,17 @@ const reasons = [
   {
     number: "01",
     title: "제약·바이오 산업 전문성",
-    description: "기업의 사업 영역과 개발 단계, 채용 직무의 특성을 이해하고 후보자를 탐색합니다.",
+    description: "제약·바이오 산업을 깊이 이해하고 후보자를 탐색합니다.",
   },
   {
     number: "02",
     title: "업계 네트워크 기반 탐색",
-    description: "더파마뉴스와 더파마 리크루트를 통해 형성된 산업 접점을 기반으로 인재를 찾습니다.",
+    description: "더파마뉴스로 형성된 산업 접점을 기반으로 인재를 찾습니다.",
   },
   {
     number: "03",
     title: "적합도 중심의 인재추천",
-    description: "경력과 직무 경험, 이직 의사를 확인한 후보자를 선별해 추천합니다.",
+    description: "경력과 직무 경험을 확인한 후보자를 선별해 추천합니다.",
   },
 ];
 
@@ -92,6 +93,24 @@ function HeroCtaRow({ isMember }: { isMember: boolean }) {
 export function BusinessHeadhuntingIntroClient() {
   const isMember = useBusinessMember();
 
+  // 스크롤 페이드인
+  useEffect(() => {
+    if (!("IntersectionObserver" in window)) {
+      document.querySelectorAll<HTMLElement>(".reveal").forEach((el) => el.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    document.querySelectorAll<HTMLElement>(".reveal").forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
     <>
       <BusinessHeader />
@@ -116,23 +135,50 @@ export function BusinessHeadhuntingIntroClient() {
           <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
         </BusinessImageBand>
 
-        <BusinessSection tone="light">
+        <BusinessSection tone="light" className="reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>WHY THE PHARMA</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
           </div>
-          <div className="mt-10 grid grid-cols-3 gap-5 max-[900px]:grid-cols-1">
-            {reasons.map((reason) => (
-              <BusinessCard key={reason.number} padding="lg" className="!bg-[#fafafa] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-                <p className="text-[22px] font-bold text-[#b8c2d0]">{reason.number}</p>
-                <h3 className="mt-3 text-[20px] font-bold tracking-[-0.02em] text-[#17202c]">{reason.title}</h3>
-                <p className="mt-2 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
-              </BusinessCard>
-            ))}
+          <div className="mt-10 grid grid-cols-3 max-[900px]:grid-cols-1 max-[900px]:gap-8">
+            {reasons.map((reason, index) => {
+              const isFirst = index === 0;
+              const isLast = index === reasons.length - 1;
+              return (
+                <div
+                  key={reason.number}
+                  className={[
+                    isFirst ? "pr-8 max-[900px]:pr-0" : "",
+                    isLast ? "pl-8 max-[900px]:pl-0" : "",
+                    !isFirst && !isLast ? "pl-8 pr-8 max-[900px]:pl-0 max-[900px]:pr-0" : "",
+                    index > 0 ? "border-l-[0.5px] border-[#e0e0e0] max-[900px]:border-l-0" : "",
+                  ].filter(Boolean).join(" ")}
+                >
+                  <h3 className="mt-0 text-[22px] font-bold leading-[1.3] tracking-[-0.02em] text-[#17202c]">{reason.title}</h3>
+                  <p className="mt-2 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="relative mt-9 h-[200px] max-[640px]:h-[140px] overflow-hidden"
+            style={{ width: "100vw", marginLeft: "calc(50% - 50vw)" }}
+          >
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url(/images/why-visual.jpg)",
+                filter: "grayscale(1)",
+                opacity: 0.35,
+                WebkitMaskImage: "linear-gradient(180deg,transparent 0%,#000 25%,#000 100%)",
+                maskImage: "linear-gradient(180deg,transparent 0%,#000 25%,#000 100%)",
+              }}
+            />
           </div>
         </BusinessSection>
 
-        <BusinessSection tone="muted" className="!bg-[#fafafa]">
+        <BusinessSection tone="muted" className="!bg-[#fafafa] reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>SPECIALIZED POSITIONS</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
@@ -164,7 +210,7 @@ export function BusinessHeadhuntingIntroClient() {
           </p>
         </BusinessSection>
 
-        <BusinessSection tone="dark" className="!bg-[#1a1d1c]">
+        <BusinessSection tone="dark" className="!bg-[#1a1d1c] reveal">
           <div className="text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
             <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.02em" }}>
