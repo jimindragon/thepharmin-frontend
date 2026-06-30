@@ -46,10 +46,10 @@ function HeroCtaRow({ isMember }: { isMember: boolean }) {
     return (
       <div className="flex flex-wrap gap-3">
         <LinkButton href="/business/headhunting/manage/new" variant="gradient" size="lg">
-          새 헤드헌팅 의뢰
+          인재추천 의뢰하기
         </LinkButton>
         <LinkButton href="/business/headhunting/manage" variant="secondary" tone="dark" size="lg">
-          내 의뢰 현황 보기
+          서비스 소개자료 받기
         </LinkButton>
       </div>
     );
@@ -73,15 +73,19 @@ export function BusinessHeadhuntingIntroClient() {
     <>
       <BusinessHeader />
       <main>
-        <BusinessImageBand image={companyExampleImages.culture} gradient="horizontal" variant="hero">
-          <Eyebrow tone="dark">THE PHARMA HEADHUNTING</Eyebrow>
-          <h1 className={`mt-4 max-w-[980px] text-white ${typeScale.heroTitle}`}>
-            제약·바이오 채용은
+        <BusinessImageBand image={companyExampleImages.headhuntingHero} gradient="horizontal" variant="hero">
+          <p className="text-[12px] font-medium uppercase tracking-[0.08em]" style={{ color: "#7fcdb9" }}>THE PHARMA HEADHUNTING</p>
+          <h1
+            className="mt-4 max-w-[980px] text-white"
+            style={{ fontSize: "clamp(36px, 5.2vw, 58px)", fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.045em" }}
+          >
+            제약·바이오·약국·병원 채용은
             <br />
             산업을 이해하는 파트너에게 맡기세요.
           </h1>
-          <p className="mt-5 max-w-[560px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
-            채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다. 연구개발부터 임상, 허가, 사업개발, 생산·품질까지 기업이 찾는 인재를 이해하고 직접 발굴해 연결합니다.
+          <p className="mt-6 max-w-[75ch] text-[17px] font-normal leading-[1.7] text-[#c4c8c6]">
+            채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다.<br />
+            연구개발부터 임상, 사업개발, 생산·품질까지 기업이 찾는 인재를 직접 발굴해 연결합니다.
           </p>
           <div className="mt-9">
             <HeroCtaRow isMember={isMember} />
@@ -90,7 +94,10 @@ export function BusinessHeadhuntingIntroClient() {
         </BusinessImageBand>
 
         <BusinessSection tone="light">
-          <SectionIntro eyebrow="WHY THE PHARMA" title="더파마 헤드헌팅이 특별한 이유" />
+          <div className="text-center">
+            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>WHY THE PHARMA</p>
+            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
+          </div>
           <div className="mt-10 grid grid-cols-3 gap-5 max-[900px]:grid-cols-1">
             {reasons.map((reason) => (
               <BusinessCard key={reason.number} padding="lg">
@@ -102,24 +109,20 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
         </BusinessSection>
 
-        <BusinessSection tone="muted">
-          <SectionIntro
-            eyebrow="SPECIALIZED POSITIONS"
-            title={
-              <>
-                제약·바이오 주요 직무의
-                <br className="max-[640px]:hidden" />
-                전문인재를 연결합니다.
-              </>
-            }
-            description={
-              <>
-                산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해{" "}
-                <br className="max-[640px]:hidden" />
-                실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
-              </>
-            }
-          />
+        <BusinessSection tone="muted" className="!bg-[#fafafa]">
+          <div className="text-center">
+            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>SPECIALIZED POSITIONS</p>
+            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
+              제약·바이오 주요 직무의
+              <br className="max-[640px]:hidden" />
+              전문인재를 연결합니다.
+            </h2>
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] font-normal leading-[1.6] text-[#737373]">
+              산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해{" "}
+              <br className="max-[640px]:hidden" />
+              실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
+            </p>
+          </div>
           <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
             {specializedPositions.map((position) => (
               <BusinessCard key={position.title} padding="none" className="overflow-hidden transition hover:border-[#111111]">
@@ -139,17 +142,14 @@ export function BusinessHeadhuntingIntroClient() {
         </BusinessSection>
 
         <BusinessSection tone="dark">
-          <SectionIntro
-            tone="dark"
-            eyebrow="PROCESS"
-            title={
-              <>
-                채용 의뢰부터 입사까지
-                <br className="max-[640px]:hidden" />
-                더파마가 함께합니다.
-              </>
-            }
-          />
+          <div className="text-center">
+            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
+            <h2 className="mt-[14px] font-bold text-white tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
+              채용 의뢰부터 입사까지
+              <br className="max-[640px]:hidden" />
+              더파마가 함께합니다.
+            </h2>
+          </div>
           <div className="mt-10 grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1">
             {processSteps.map((step) => (
               <BusinessCard key={step.number}>
@@ -162,7 +162,7 @@ export function BusinessHeadhuntingIntroClient() {
         </BusinessSection>
 
         <BusinessImageBand image={companyExampleImages.workspace} gradient="vertical" align="center">
-          <h2 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-white max-[640px]:text-[21px]">
+          <h2 className="font-bold tracking-[-0.02em] text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
             채용공고만으로 찾기 어려운 인재,
             <br />
             더파마와 함께 찾아보세요.

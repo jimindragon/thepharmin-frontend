@@ -7,6 +7,7 @@ export const companyExampleImages = {
   meeting: "/images/company/company_pic_example_5.jpg",
   office: "/images/company/company_pic_example_6.jpg",
   research: "/images/company/company_pic_example_7.jpg",
+  headhuntingHero: "/images/headhunting-hero.jpg",
 } as const;
 
 export const companyExampleImageList = [

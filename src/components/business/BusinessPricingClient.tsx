@@ -198,7 +198,7 @@ export function BusinessPricingClient() {
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center opacity-[.4]"
-            style={{ backgroundImage: "url(/images/business-hero-skyline.jpg)" }}
+            style={{ backgroundImage: "url(/images/business-hero.jpg)" }}
           />
           {/* 어둠 오버레이 — 왼쪽(글씨 영역) 진하게, 오른쪽으로 페이드 */}
           <div
@@ -687,7 +687,7 @@ export function BusinessPricingClient() {
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center opacity-[.32]"
             style={{
-              backgroundImage: "url(/images/business-hero-skyline.jpg)",
+              backgroundImage: "url(/images/business-hero.jpg)",
               WebkitMaskImage: "linear-gradient(180deg,transparent,#000 40%,#000 70%,transparent)",
               maskImage: "linear-gradient(180deg,transparent,#000 40%,#000 70%,transparent)",
             }}
