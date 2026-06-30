@@ -197,22 +197,16 @@ export function BusinessPricingClient() {
           {/* 배경 사진 */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-center opacity-[.4]"
+            className="absolute inset-0 bg-cover bg-center opacity-[.55]"
             style={{ backgroundImage: "url(/images/business-hero.jpg)" }}
           />
           {/* 어둠 오버레이 — 왼쪽(글씨 영역) 진하게, 오른쪽으로 페이드 */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
-            style={{ background: "linear-gradient(90deg,rgba(12,12,12,.78) 0%,rgba(12,12,12,.72) 30%,rgba(12,12,12,.3) 75%,rgba(12,12,12,.15) 100%)" }}
+            style={{ background: "linear-gradient(90deg,rgba(12,12,12,.68) 0%,rgba(12,12,12,.62) 30%,rgba(12,12,12,.3) 75%,rgba(12,12,12,.15) 100%)" }}
           />
-          {/* 그린 글로우 */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{ background: "radial-gradient(120% 80% at 88% 8%,rgba(35,217,165,.05),transparent 55%)" }}
-          />
-          <div className="app-shell--default relative z-10 w-full py-[100px] max-[760px]:py-16">
+<div className="app-shell--default relative z-10 w-full py-[100px] max-[760px]:py-16">
             <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9]">결국, 사람이 경쟁력입니다</p>
             <h1
               className="mt-5 font-semibold text-white"

@@ -100,10 +100,10 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
           <div className="mt-10 grid grid-cols-3 gap-5 max-[900px]:grid-cols-1">
             {reasons.map((reason) => (
-              <BusinessCard key={reason.number} padding="lg">
-                <p className="text-[22px] font-bold text-[#cfd8e3]">{reason.number}</p>
-                <h3 className={`mt-3 text-[#17202c] ${typeScale.cardTitle}`}>{reason.title}</h3>
-                <p className="mt-2 text-[13px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
+              <BusinessCard key={reason.number} padding="lg" className="!bg-[#fafafa] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                <p className="text-[22px] font-bold text-[#b8c2d0]">{reason.number}</p>
+                <h3 className="mt-3 text-[20px] font-bold tracking-[-0.02em] text-[#17202c]">{reason.title}</h3>
+                <p className="mt-2 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
               </BusinessCard>
             ))}
           </div>
@@ -125,13 +125,13 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
           <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
             {specializedPositions.map((position) => (
-              <BusinessCard key={position.title} padding="none" className="overflow-hidden transition hover:border-[#111111]">
+              <BusinessCard key={position.title} padding="none" className="overflow-hidden transition-[transform,box-shadow,border-color] duration-[220ms] hover:-translate-y-0.5 hover:border-[#111111] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
                 <div className="h-[140px] overflow-hidden bg-[#f2f3f4]">
                   <img src={position.image} alt="" className="h-full w-full object-cover" />
                 </div>
                 <div className="px-5 py-4">
-                  <h3 className={`text-[#17202c] ${typeScale.cardTitle}`}>{position.title}</h3>
-                  <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#8a94a3]">{position.tags}</p>
+                  <h3 className="text-[20px] font-bold tracking-[-0.02em] text-[#17202c]">{position.title}</h3>
+                  <p className="mt-2 text-[13px] font-normal leading-[1.7] tracking-[-0.01em] text-[#8a94a3]">{position.tags}</p>
                 </div>
               </BusinessCard>
             ))}
@@ -152,7 +152,7 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
           <div className="mt-10 grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1">
             {processSteps.map((step) => (
-              <BusinessCard key={step.number}>
+              <BusinessCard key={step.number} className="transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,255,255,0.06)]">
                 <p className="text-[20px] font-bold text-[#111111]">{step.number}</p>
                 <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#17202c]">{step.title}</h3>
                 <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{step.description}</p>
