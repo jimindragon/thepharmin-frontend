@@ -106,8 +106,8 @@ export function TrackSelectionClient() {
         ))}
       </div>
 
-      {/* 부스트 helper — 기존 폭 유지 */}
-      <div className="mt-6 max-w-[620px] border-t border-[#e8ecf0] pt-5">
+      {/* 부스트 helper — 카드 그리드와 동일 폭 */}
+      <div className="mt-6 border-t border-[#e8ecf0] pt-5">
         <div className="flex items-start justify-between gap-6">
           <div>
             <p className="text-[13px] font-medium text-[#303946]">

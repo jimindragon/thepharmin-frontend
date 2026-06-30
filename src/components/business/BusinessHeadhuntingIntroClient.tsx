@@ -171,8 +171,8 @@ export function BusinessHeadhuntingIntroClient() {
                 backgroundImage: "url(/images/why-visual.jpg)",
                 filter: "grayscale(1)",
                 opacity: 0.35,
-                WebkitMaskImage: "linear-gradient(180deg,transparent 0%,#000 25%,#000 100%)",
-                maskImage: "linear-gradient(180deg,transparent 0%,#000 25%,#000 100%)",
+                WebkitMaskImage: "linear-gradient(180deg,transparent 0%,#000 55%,#000 100%)",
+                maskImage: "linear-gradient(180deg,transparent 0%,#000 55%,#000 100%)",
               }}
             />
           </div>
