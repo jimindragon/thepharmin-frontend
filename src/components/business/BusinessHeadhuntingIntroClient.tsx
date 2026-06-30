@@ -35,10 +35,10 @@ const specializedPositions = [
 ];
 
 const processSteps = [
-  { number: "01", title: "채용 상담", description: "채용 배경, 주요 업무와 필요한 경력을 확인합니다." },
-  { number: "02", title: "후보자 탐색", description: "인재풀과 업계 네트워크를 통해 적합한 후보자를 발굴합니다." },
-  { number: "03", title: "후보자 추천", description: "경력과 포지션 적합도, 이직 의사를 확인한 인재를 추천합니다." },
-  { number: "04", title: "면접 및 채용", description: "면접 일정과 피드백, 처우 협의와 입사 과정을 지원합니다." },
+  { number: "01", title: "채용 컨설팅", description: "채용 배경과 조직의 상황을 이해하고, 포지션의 역할과 핵심 역량을 구체화합니다." },
+  { number: "02", title: "후보자 탐색", description: "축적된 인재풀과 업계 네트워크를 바탕으로 포지션에 적합한 후보자를 발굴합니다." },
+  { number: "03", title: "후보자 추천", description: "경력과 역량, 조직 적합도와 이직 의사를 검증한 인재를 엄선해 추천합니다." },
+  { number: "04", title: "면접 및 입사 지원", description: "면접 일정과 피드백 조율부터 처우 협의, 최종 입사까지 전 과정을 세심하게 지원합니다." },
 ];
 
 function HeroCtaRow({ isMember }: { isMember: boolean }) {
@@ -141,23 +141,71 @@ export function BusinessHeadhuntingIntroClient() {
           </p>
         </BusinessSection>
 
-        <BusinessSection tone="dark">
+        <BusinessSection tone="dark" className="!bg-[#1a1d1c]">
           <div className="text-center">
-            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
-            <h2 className="mt-[14px] font-bold text-white tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
-              채용 의뢰부터 입사까지
-              <br className="max-[640px]:hidden" />
-              더파마가 함께합니다.
+            <p className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
+            <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.02em" }}>
+              인재 채용의 시작부터 최종 입사까지
+              <br />
+              더파마가 전 과정을 정교하게 설계합니다.
             </h2>
           </div>
-          <div className="mt-10 grid grid-cols-4 gap-5 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1">
-            {processSteps.map((step) => (
-              <BusinessCard key={step.number} className="transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,255,255,0.06)]">
-                <p className="text-[20px] font-bold text-[#111111]">{step.number}</p>
-                <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#17202c]">{step.title}</h3>
-                <p className="mt-2 text-[12px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{step.description}</p>
-              </BusinessCard>
-            ))}
+
+          <div className="relative mt-[54px]">
+            {/* Horizontal connecting line — desktop only */}
+            <div
+              className="pointer-events-none absolute hidden md:block"
+              style={{
+                top: "12px",
+                left: "calc(12.5% - 7.5px)",
+                right: "calc(12.5% - 7.5px)",
+                height: "1px",
+                background: "linear-gradient(90deg, rgba(31,191,146,0.5) 0%, rgba(255,255,255,0.16) 18%, rgba(255,255,255,0.16) 82%, rgba(31,191,146,0.5) 100%)",
+                zIndex: 0,
+              }}
+            />
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-5">
+              {processSteps.map((step, index) => {
+                const isLast = index === processSteps.length - 1;
+                return (
+                  <div key={step.number} className="flex flex-col items-center">
+                    <div
+                      className="relative z-10 flex items-center justify-center"
+                      style={{
+                        width: 25,
+                        height: 25,
+                        background: "#1FBF92",
+                        borderRadius: 0,
+                        boxShadow: isLast
+                          ? "0 0 0 5px rgba(31,191,146,0.18)"
+                          : "0 0 0 5px rgba(31,191,146,0.12)",
+                      }}
+                    >
+                      {isLast ? (
+                        <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                          <path d="M1 4.5L4.5 8L11 1" stroke="#1a1d1c" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter" />
+                        </svg>
+                      ) : (
+                        <div style={{ width: 7, height: 7, background: "#1a1d1c" }} />
+                      )}
+                    </div>
+
+                    <div className="mt-5 text-center">
+                      <p style={{ color: "#23D9A5", fontSize: 11, fontWeight: 500, letterSpacing: "0.1em" }}>
+                        STEP {step.number}
+                      </p>
+                      <h3 className="mt-2" style={{ color: "#ffffff", fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em" }}>
+                        {step.title}
+                      </h3>
+                      <p className="mt-1.5" style={{ color: "#aeb4b2", fontSize: 13, lineHeight: 1.7 }}>
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </BusinessSection>
 

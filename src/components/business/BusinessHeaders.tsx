@@ -178,7 +178,7 @@ export function BusinessHeader() {
               <div className="flex items-center gap-1">
                 <Link
                   href="/"
-                  className="whitespace-nowrap px-2 text-[12px] font-medium text-[#b0bac7] transition-colors hover:text-[#4f5967] max-[760px]:hidden"
+                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[12px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[760px]:hidden"
                 >
                   개인 서비스
                 </Link>

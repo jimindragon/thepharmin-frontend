@@ -119,7 +119,7 @@ export function Header() {
         {/* 기업 서비스 진입 — 낮은 비중의 보조 텍스트 링크, 1120px 미만에서는 숨김 */}
         <a
           href="/business"
-          className="hidden shrink-0 items-center whitespace-nowrap rounded-full border border-white/20 px-3 py-1 text-[11px] font-medium text-white/45 transition-colors hover:border-white/35 hover:text-white/65 min-[1120px]:inline-flex"
+          className="hidden shrink-0 items-center whitespace-nowrap rounded-full border border-white/35 px-3 py-1 text-[11px] font-medium text-white/65 transition-colors hover:border-white/50 hover:text-white/80 min-[1120px]:inline-flex"
         >
           기업 서비스
         </a>
