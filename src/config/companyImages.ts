@@ -44,7 +44,7 @@ export const companyLogos: Record<string, string> = {
   오래온: "/images/companies/오래온.jpeg",
   "(주)덴티움": "/images/companies/dentium.png",
   아주약품: "/images/companies/아주약품.png",
-  삼오제약: "/images/companies/삼오제약.jpg",
+  "(주)삼오제약": "/images/companies/삼오제약.jpg",
   코오롱바이오텍: "/images/companies/코오롱바이오텍.png",
   셀트리온제약: "/images/companies/셀트리온제약.jpg",
   "GSK(글락소스미스클라인)": "/images/companies/gsk.png",

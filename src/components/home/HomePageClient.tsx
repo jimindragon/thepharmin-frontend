@@ -143,8 +143,9 @@ function HomeRecommendationCard({
   isBookmarked: boolean;
   onToggleBookmark: (jobId: number) => void;
 }) {
+  const logoUrl = job.logoUrl ?? companyLogos[job.company];
   return (
-    <article className="group relative z-0 grid h-full min-h-[156px] grid-cols-[68px_1fr_auto] gap-4 border border-[#e5e5e5] bg-white px-5 py-5 transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc]">
+    <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc]">
       <Link
         href={job.slug ? `/jobs/${job.slug}` : "/jobs"}
         className="absolute inset-0 z-10"
@@ -152,37 +153,49 @@ function HomeRecommendationCard({
       >
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
-      <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={56} />
-      <div className="flex min-w-0 flex-col">
-        <p className="text-[12px] font-normal text-[#6b7280]">{job.company}</p>
-        <h3 className={clsx(typeScale.cardTitle, "mt-1 truncate text-[#111111]")}>{job.title}</h3>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {job.tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
-              {tag}
-            </span>
-          ))}
-        </div>
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-          {job.postingSource === "headhunting" ? <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-medium text-white">헤드헌팅</span> : null}
-          <span className="text-[11px] font-medium text-[#6b7481]">
-            {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
-          </span>
-        </div>
+      {/* 로고 영역: 박스 없이 이미지만, 없으면 이니셜 */}
+      <div className="flex w-[130px] shrink-0 items-center justify-center px-5">
+        {logoUrl ? (
+          <img src={logoUrl} alt={job.company} className="max-h-10 w-full object-contain" />
+        ) : (
+          <span className="text-[13px] font-semibold text-[#596373]">{job.company.slice(0, 2)}</span>
+        )}
       </div>
-      <div className="flex flex-col items-end justify-between">
+      {/* 세로 구분선 */}
+      <div className="w-px shrink-0 self-stretch bg-[#eeeeee]" />
+      {/* 정보 영역 */}
+      <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px]">
         <button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onToggleBookmark(job.id);
           }}
-          className={clsx("relative z-20 grid h-8 w-8 place-items-center text-[#b4bac3] hover:text-[#111111]", isBookmarked && "text-[#111111]")}
+          className={clsx("absolute right-[14px] top-[14px] z-20 grid h-8 w-8 place-items-center text-[#b4bac3] hover:text-[#111111]", isBookmarked && "text-[#111111]")}
           aria-label={`${job.title} 저장 ${isBookmarked ? "해제" : "추가"}`}
         >
           <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
-        <strong className="text-[13px] font-medium text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
+        <p className="pr-8 text-[12px] font-normal text-[#6b7280]">{job.company}</p>
+        <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111]")}>{job.title}</h3>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {job.tags.slice(0, 4).map((tag) => (
+            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <div className="flex items-center gap-2">
+            {job.postingSource === "headhunting" ? (
+              <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-medium text-white">헤드헌팅</span>
+            ) : null}
+            <span className="text-[11px] font-medium text-[#6b7481]">
+              {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
+            </span>
+          </div>
+          <strong className="text-[13px] font-medium text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
+        </div>
       </div>
     </article>
   );

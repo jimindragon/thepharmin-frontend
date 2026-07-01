@@ -7,6 +7,7 @@ import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
+import { companyLogos } from "@/config/companyImages";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
 /**
@@ -114,7 +115,8 @@ export function CompanyLogo({
   size?: "sm" | "lg";
 }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(logoUrl) && !imageFailed;
+  const resolvedLogoUrl = logoUrl ?? companyLogos[name];
+  const showImage = Boolean(resolvedLogoUrl) && !imageFailed;
   const boxSize = size === "lg" ? "h-[68px] w-[68px]" : "h-[46px] w-[46px]";
   const boxPx = size === "lg" ? 68 : 46;
 
@@ -130,7 +132,7 @@ export function CompanyLogo({
       )}
       aria-label={`${name} 로고`}
     >
-      <img src={logoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
+      <img src={resolvedLogoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
     </div>
   );
 }
