@@ -27,7 +27,7 @@ export interface SalaryRange {
   max: number | null;
 }
 
-export type SortOption = "추천순" | "최신순" | "마감임박순";
+export type SortOption = "추천순" | "최신순" | "마감임박순" | "시급 높은순";
 
 export type ClosingStatus = "dDay" | "today" | "always";
 
@@ -108,9 +108,10 @@ export type FilterKind =
   | "shiftType"
   | "leaderOnly"
   | "quickApplyOnly"
-  | "headhuntingOnly";
+  | "headhuntingOnly"
+  | "hourlyIncludeUnknown";
 
-export type SpecialJobFilterKey = "leaderOnly" | "headhuntingOnly" | "quickApplyOnly";
+export type SpecialJobFilterKey = "leaderOnly" | "headhuntingOnly" | "quickApplyOnly" | "hourlyIncludeUnknown";
 
 export interface FilterOption {
   id: string;
@@ -239,6 +240,8 @@ export interface JobFilters {
   leaderOnly: boolean;
   headhuntingOnly: boolean;
   quickApplyOnly: boolean;
+  /** 시급 필터 적용 시 hourlyComputed=null 공고(면접후결정·주당시간 미입력 등)를 결과에 포함할지 */
+  hourlyIncludeUnknown: boolean;
 }
 
 export interface AppliedFilterChip {
@@ -248,7 +251,15 @@ export interface AppliedFilterChip {
   label: string;
 }
 
-export type SalaryKind = "월급" | "일급" | "시급" | "면접후결정";
+export type SalaryKind = "월급" | "일급" | "시급" | "연봉" | "면접후결정";
+
+/** 시급 필터·상세 노출용 환산 결과. convertToHourly에서 파생되며 저장 시 함께 기록된다. */
+export interface HourlyComputed {
+  min?: number;
+  max?: number;
+  /** exact = 원래 시급, estimated = weeklyHours 기반 환산 */
+  status: "exact" | "estimated";
+}
 
 /** 원 단위로 정규화된 급여 표시 정보. min/max/note는 kind에 맞는 단위로 화면에서 포맷팅한다. */
 export interface SalaryDetail {
@@ -259,6 +270,12 @@ export interface SalaryDetail {
   /** 시급제 등에서 평일/주말처럼 요일별 차등이 있는 경우 */
   weekdayNet?: number;
   weekendNet?: number;
+  /** 월급·연봉·일급을 시급으로 환산할 때 사용. 비워두면 환산 생략 */
+  weeklyHours?: number;
+  /** 필터용 환산 시급. 항상 저장, 등록자가 비활성화 불가. 환산 불가면 null */
+  hourlyComputed?: HourlyComputed | null;
+  /** 환산 시급을 공고 상세페이지에 노출할지. 기본 true. 필터 저장과는 무관 */
+  showHourlyOnDetail?: boolean;
 }
 
 export interface JobWorkShift {
@@ -311,9 +328,16 @@ export type JobApplyChannel = "간편지원" | "전화" | "문자" | "이메일"
 /** 지원 채널·전형절차 상세. 기존 applyMethod(단일 라벨)와 별개로 채널이 여러 개인 공고에서 사용한다. */
 export interface JobApplyInfo {
   channels: JobApplyChannel[];
+  /** 채널 제한 안내. 예: "간편지원 불가, 이메일·전화만 가능" */
   blocked?: string;
+  /** 연락 안내 문구. 예: "문자로 간단한 자기소개를 보내주세요" */
+  note?: string;
   phone?: string;
   email?: string;
+  /** 담당자 정보 (모두 선택). 상세에서 마스킹 처리 후 노출 */
+  managerName?: string;
+  managerPhone?: string;
+  managerEmail?: string;
   documents?: string[];
   steps: string[];
 }

@@ -13,13 +13,15 @@ interface JobCardProps {
   onToggleBookmark: (jobId: number) => void;
   /** 스크랩 화면처럼 보조기술 라벨이 "스크랩"이라는 의미를 가져야 할 때 사용. 시각적 표시는 동일하다. */
   isScrapContext?: boolean;
+  /** 약국 시급 필터가 활성화된 상태에서 환산 시급이 조건을 충족할 때 표시하는 배지. */
+  showHourlyBadge?: boolean;
 }
 
 /**
  * 가로형 일반 공고 카드. 홈/트랙별 목록/검색·둘러보기/스크랩 화면이 모두 이 컴포넌트 하나를 공유한다.
  * 페이지별로 다른 변형을 만들지 말고 이 컴포넌트를 확장할 것.
  */
-export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }: JobCardProps) {
+export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, showHourlyBadge }: JobCardProps) {
   const danger = job.closingStatus === "today" || job.deadlineOrder <= 7;
   const always = job.closingStatus === "always";
   const deadlineText =
@@ -108,6 +110,9 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext }:
                 </span>
               ))}
             </div>
+            {showHourlyBadge ? (
+              <p className="mt-0.5 text-[11px] text-[#0d7369]">시급 조건 충족</p>
+            ) : null}
           </div>
 
           {/* 우측 side: 북마크(상단) + D-day·지원방법(mt-auto 바닥 고정) */}

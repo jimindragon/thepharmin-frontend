@@ -36,10 +36,11 @@ interface SearchFilterPanelProps {
   onResetAll: () => void;
 }
 
-const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string }> = [
+const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string; tracks?: JobTrack[] }> = [
   { key: "leaderOnly", label: "리더급 공고" },
   { key: "headhuntingOnly", label: "헤드헌팅 공고" },
   { key: "quickApplyOnly", label: "간편지원 공고" },
+  { key: "hourlyIncludeUnknown", label: "시급 미표기 포함", tracks: ["pharmacy"] },
 ];
 
 export function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
@@ -356,7 +357,7 @@ export function SearchFilterPanel({
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2 border-t border-[#e3e5e8] pt-3">
-          {specialFilterOptions.map((option) => (
+          {specialFilterOptions.filter((option) => !option.tracks || option.tracks.includes(track)).map((option) => (
             <label
               key={option.key}
               className="inline-flex h-[34px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[12px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"

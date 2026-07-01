@@ -3,17 +3,21 @@
 import clsx from "clsx";
 import type { SortOption } from "@/types/jobs";
 
-const sortOptions: SortOption[] = ["추천순", "최신순", "마감임박순"];
+const defaultSortOptions: SortOption[] = ["추천순", "최신순", "마감임박순"];
 
 interface SortButtonsProps {
+  options?: SortOption[];
   sortOption: SortOption;
   onChange: (sortOption: SortOption) => void;
 }
 
-export function SortButtons({ sortOption, onChange }: SortButtonsProps) {
+export function SortButtons({ options = defaultSortOptions, sortOption, onChange }: SortButtonsProps) {
   return (
-    <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
-      {sortOptions.map((option) => (
+    <div
+      className="grid h-[34px] overflow-hidden border border-[#dce2ea] bg-white"
+      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+    >
+      {options.map((option) => (
         <button
           key={option}
           type="button"
@@ -33,12 +37,14 @@ export function SortButtons({ sortOption, onChange }: SortButtonsProps) {
 interface JobListToolbarProps {
   totalCount: number;
   sortOption: SortOption;
+  sortOptions?: SortOption[];
   onSortChange: (sortOption: SortOption) => void;
 }
 
 export function JobListToolbar({
   totalCount,
   sortOption,
+  sortOptions,
   onSortChange,
 }: JobListToolbarProps) {
   return (
@@ -48,7 +54,7 @@ export function JobListToolbar({
           총 <span className="text-brand">{totalCount}개</span> 공고
         </p>
       </div>
-      <SortButtons sortOption={sortOption} onChange={onSortChange} />
+      <SortButtons options={sortOptions} sortOption={sortOption} onChange={onSortChange} />
     </div>
   );
 }

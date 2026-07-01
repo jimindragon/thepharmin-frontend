@@ -1,4 +1,4 @@
-import type { ResearchSalaryInfo, SalaryDetail } from "@/types/jobs";
+import type { JobWorkShift, ResearchSalaryInfo, SalaryDetail } from "@/types/jobs";
 
 /**
  * 원 단위 숫자를 화면 표시용 문자열로 변환한다.
@@ -61,6 +61,70 @@ function formatManwonRange(min?: number, max?: number) {
 
   const single = min ?? max;
   return single != null ? `${single.toLocaleString("ko-KR")}만원` : undefined;
+}
+
+/** 시급 환산 결과의 신뢰 수준 */
+export type HourlyStatus =
+  | "exact"       // 이미 시급 — 그대로 사용
+  | "estimated"   // weeklyHours 기반 환산 — "약 시급 ○○원(추정)" 표시 권장
+  | "unavailable"; // 환산 불가 — 금액 없음 또는 필요 데이터 부족
+
+export interface HourlyResult {
+  status: HourlyStatus;
+  /** 환산된 최소 시급 (원 단위) */
+  min?: number;
+  /** 환산된 최대 시급 (원 단위) */
+  max?: number;
+  /** kind=시급인 경우 평일 세후 시급 */
+  weekday?: number;
+  /** kind=시급인 경우 주말 세후 시급 */
+  weekend?: number;
+}
+
+/**
+ * 임의 급여 형태를 시급으로 환산한다.
+ * - 시급 → exact, 그대로 반환
+ * - 월급/연봉 + weeklyHours → estimated, 공식으로 환산
+ * - 일급은 1일 근무시간이 필요하므로 weeklyHours만으로는 환산 불가
+ * - 면접후결정 또는 weeklyHours 없음 → unavailable
+ *
+ * @param _shifts 향후 1일 근무시간 자동 추출 확장용 (현재 미사용)
+ */
+export function convertToHourly(salary: SalaryDetail, _shifts?: JobWorkShift[]): HourlyResult {
+  if (salary.kind === "시급") {
+    return {
+      status: "exact",
+      min: salary.min,
+      max: salary.max,
+      weekday: salary.weekdayNet,
+      weekend: salary.weekendNet,
+    };
+  }
+
+  if (salary.kind === "면접후결정" || !salary.weeklyHours) {
+    return { status: "unavailable" };
+  }
+
+  const wh = salary.weeklyHours;
+
+  if (salary.kind === "월급") {
+    return {
+      status: "estimated",
+      min: salary.min != null ? Math.round(salary.min / (wh * 4.345)) : undefined,
+      max: salary.max != null ? Math.round(salary.max / (wh * 4.345)) : undefined,
+    };
+  }
+
+  if (salary.kind === "연봉") {
+    return {
+      status: "estimated",
+      min: salary.min != null ? Math.round(salary.min / (wh * 52)) : undefined,
+      max: salary.max != null ? Math.round(salary.max / (wh * 52)) : undefined,
+    };
+  }
+
+  // 일급: 1일 근무시간을 shifts 자유 텍스트에서 신뢰성 있게 추출 불가 → 환산 생략
+  return { status: "unavailable" };
 }
 
 /**

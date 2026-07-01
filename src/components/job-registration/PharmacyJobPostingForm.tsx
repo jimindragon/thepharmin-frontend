@@ -8,12 +8,12 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import type { SalaryDetail } from "@/types/jobs";
-import { formatSalaryDetail } from "@/utils/salary";
+import { convertToHourly, formatSalaryDetail, formatWon } from "@/utils/salary";
 
 // ── Local types ────────────────────────────────────────────────────────────────
 
 type Simpyeong = "필요" | "불필요" | "";
-type SalaryKind = "월급" | "일급" | "시급" | "면접후결정";
+type SalaryKind = "월급" | "일급" | "시급" | "연봉" | "면접후결정";
 type ParkingOpt = "가능" | "불가" | "지원" | "";
 
 interface ShiftRow { id: number; label: string; days: string; time: string; note: string; }
@@ -174,12 +174,14 @@ export function PharmacyJobPostingForm() {
   ]);
 
   // §5 급여
-  const [salaryKind,  setSalaryKind]  = useState<SalaryKind>("시급");
-  const [salaryMin,   setSalaryMin]   = useState("");
-  const [salaryMax,   setSalaryMax]   = useState("");
-  const [weekdayNet,  setWeekdayNet]  = useState("");
-  const [weekendNet,  setWeekendNet]  = useState("");
-  const [salaryNote,  setSalaryNote]  = useState("");
+  const [salaryKind,          setSalaryKind]          = useState<SalaryKind>("시급");
+  const [salaryMin,           setSalaryMin]           = useState("");
+  const [salaryMax,           setSalaryMax]           = useState("");
+  const [weekdayNet,          setWeekdayNet]          = useState("");
+  const [weekendNet,          setWeekendNet]          = useState("");
+  const [salaryNote,          setSalaryNote]          = useState("");
+  const [weeklyHours,         setWeeklyHours]         = useState("");
+  const [showHourlyOnDetail,  setShowHourlyOnDetail]  = useState(true);
 
   // §6 약국 환경
   const [selectedSoftware,    setSelectedSoftware]    = useState<Set<string>>(new Set());
@@ -216,10 +218,18 @@ export function PharmacyJobPostingForm() {
 
   // §10 접수방법
   const nextStepId = useRef(4);
-  const [applyChannels,    setApplyChannels]    = useState<Set<string>>(new Set(["간편지원"]));
-  const [blocked,          setBlocked]          = useState("");
-  const [applyPhone,       setApplyPhone]       = useState("");
-  const [applyEmail,       setApplyEmail]       = useState("");
+  const [applyChannels,       setApplyChannels]       = useState<Set<string>>(new Set(["간편지원"]));
+  const [blocked,             setBlocked]             = useState("");
+  const [applyNote,           setApplyNote]           = useState("");
+  const [applyPhone,          setApplyPhone]          = useState("");
+  const [applyEmail,          setApplyEmail]          = useState("");
+  const applyPhoneTouched = useRef(false);
+  const applyEmailTouched = useRef(false);
+  const [applyPhoneAutofilled, setApplyPhoneAutofilled] = useState(false);
+  const [applyEmailAutofilled, setApplyEmailAutofilled] = useState(false);
+  const [managerName,         setManagerName]         = useState("");
+  const [managerPhone,        setManagerPhone]        = useState("");
+  const [managerEmail,        setManagerEmail]        = useState("");
   const [selectedDocs,     setSelectedDocs]     = useState<Set<string>>(new Set());
   const [customDocItems,   setCustomDocItems]   = useState<string[]>([]);
   const [customDocInput,   setCustomDocInput]   = useState("");
@@ -252,29 +262,59 @@ export function PharmacyJobPostingForm() {
 
   // ── Derived ──────────────────────────────────────────────────────────────────
 
-  const salaryPreview = useMemo((): string | null => {
-    if (!salaryKind) return null;
+  const currentSalaryDetail = useMemo((): SalaryDetail => {
     const isHourly = salaryKind === "시급";
     const factor = isHourly ? 1 : 10000;
     const minNum = salaryMin ? parseInt(salaryMin.replace(/,/g, ""), 10) * factor : undefined;
     const maxNum = salaryMax ? parseInt(salaryMax.replace(/,/g, ""), 10) * factor : undefined;
-    const detail: SalaryDetail = {
+    return {
       kind: salaryKind,
       min: minNum && !isNaN(minNum) ? minNum : undefined,
       max: maxNum && !isNaN(maxNum) ? maxNum : undefined,
       note: salaryNote || undefined,
       weekdayNet: isHourly && weekdayNet ? parseInt(weekdayNet, 10) : undefined,
       weekendNet: isHourly && weekendNet ? parseInt(weekendNet, 10) : undefined,
+      weeklyHours: weeklyHours ? parseInt(weeklyHours, 10) : undefined,
     };
-    const { primary, diff } = formatSalaryDetail(detail);
+  }, [salaryKind, salaryMin, salaryMax, salaryNote, weekdayNet, weekendNet, weeklyHours]);
+
+  const salaryPreview = useMemo((): string => {
+    const { primary, diff } = formatSalaryDetail(currentSalaryDetail);
     return diff ? `${primary} (${diff})` : primary;
-  }, [salaryKind, salaryMin, salaryMax, salaryNote, weekdayNet, weekendNet]);
+  }, [currentSalaryDetail]);
+
+  const hourlyResult = useMemo(() => convertToHourly(currentSalaryDetail), [currentSalaryDetail]);
+
+  const hourlyPreviewText = useMemo((): string => {
+    if (hourlyResult.status === "estimated") {
+      const { min, max } = hourlyResult;
+      if (min != null && max != null && min !== max) return `약 ${formatWon(min)}~${formatWon(max)} (추정)`;
+      const single = min ?? max;
+      return single != null ? `약 ${formatWon(single)} (추정)` : "(추정)";
+    }
+    return salaryKind === "일급" ? "1일 근무시간 입력 시 환산" : "주당 근무시간 입력 시 환산";
+  }, [hourlyResult, salaryKind]);
 
   // ── Effects ───────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (!recruitPartTouched.current && role) setRecruitPart(`약국 > ${role}`);
   }, [role]);
+
+  // 담당자 연락처 → 채널 연락처 자동채움 (단방향, 등록자가 직접 수정한 경우 제외)
+  useEffect(() => {
+    if (applyPhoneTouched.current) return;
+    if (!(applyChannels.has("전화") || applyChannels.has("문자"))) return;
+    setApplyPhone(managerPhone);
+    setApplyPhoneAutofilled(!!managerPhone);
+  }, [managerPhone, applyChannels]);
+
+  useEffect(() => {
+    if (applyEmailTouched.current) return;
+    if (!applyChannels.has("이메일")) return;
+    setApplyEmail(managerEmail);
+    setApplyEmailAutofilled(!!managerEmail);
+  }, [managerEmail, applyChannels]);
 
   // ── Validation ────────────────────────────────────────────────────────────────
 
@@ -621,7 +661,7 @@ export function PharmacyJobPostingForm() {
         {/* ── §5 급여 ───────────────────────────────────────────────────────────── */}
         <SectionCard title="급여" description="급여 표기 방식과 금액을 입력합니다." status="작성 중">
           <div className="mb-5">
-            <SegControl label="급여 표기 방식" required options={["월급","일급","시급","면접후결정"]}
+            <SegControl label="급여 표기 방식" required options={["월급","일급","시급","연봉","면접후결정"]}
               value={salaryKind} onChange={v => setSalaryKind(v as SalaryKind)} noDeselect />
           </div>
 
@@ -676,17 +716,67 @@ export function PharmacyJobPostingForm() {
             </div>
           )}
 
+          {/* [근무시간 | 환산 시급] 2열 — 월급·연봉·일급에만 */}
+          {(salaryKind === "월급" || salaryKind === "연봉" || salaryKind === "일급") && (
+            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+              {/* 좌: 근무시간 입력 */}
+              <div>
+                <label htmlFor="p-weekly-hours" className={LBL}>
+                  {salaryKind === "일급" ? "1일 근무시간" : "주당 근무시간"}
+                  <span className="ml-1 text-[12px] font-normal text-[#7b8491]">시급 환산용, 선택</span>
+                </label>
+                <div className="relative">
+                  <input id="p-weekly-hours" value={weeklyHours} onChange={e => setWeeklyHours(e.target.value)}
+                    className={`${IN} pr-10`} placeholder={salaryKind === "일급" ? "예: 8" : "예: 40"}
+                    type="number" min="1" max="168" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>시간</span>
+                </div>
+                <p className={HINT}>입력하면 시급으로 환산되어 시급 필터에 반영됩니다. 비워두면 필터에서 제외됩니다.</p>
+              </div>
+              {/* 우: 환산 시급 (자동 계산 결과) */}
+              <div>
+                <p className={LBL}>
+                  환산 시급
+                  <span className="ml-1 text-[12px] font-normal text-[#7b8491]">자동 계산</span>
+                </p>
+                {hourlyResult.status === "estimated" ? (
+                  <div className="flex h-11 items-center border border-[#c5e8e3] bg-[#edf7f5] px-3.5">
+                    <span className="text-[13px] font-semibold text-[#0d7369]">{hourlyPreviewText}</span>
+                  </div>
+                ) : (
+                  <div className="flex h-11 items-center border border-[#dfe4ea] bg-[#f7f8fa] px-3.5">
+                    <span className="text-[13px] text-[#a4adba]">{hourlyPreviewText}</span>
+                  </div>
+                )}
+                {hourlyResult.status === "estimated" && weeklyHours && (
+                  <p className={HINT}>
+                    {salaryKind === "월급"
+                      ? `월급 ÷ 주 ${weeklyHours}시간 × 4.35주 기준`
+                      : `연봉 ÷ 주 ${weeklyHours}시간 × 52주 기준`}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="mb-4">
             <label htmlFor="p-salnote" className={LBL}>급여 비고</label>
             <input id="p-salnote" value={salaryNote} onChange={e => setSalaryNote(e.target.value)} className={IN}
               placeholder="예: 신입 기준, 경력·근무 횟수에 따라 상이" />
+            {salaryKind === "면접후결정" && (
+              <p className={HINT}>"실수령 연봉 7,500만원", "식대 포함" 같은 참고 정보를 입력할 수 있습니다.</p>
+            )}
           </div>
 
-          {salaryPreview && (
-            <div className="flex items-center gap-2 border border-[#dfe4ea] bg-[#f7f8fa] px-3.5 py-2.5">
-              <span className="text-[11.5px] font-medium text-[#7b8491]">미리보기</span>
-              <span className="text-[13px] font-semibold text-[#1f2733]">{salaryPreview}</span>
-            </div>
+          {/* 노출 토글 — 단독 행, 월급·연봉·일급에만 */}
+          {(salaryKind === "월급" || salaryKind === "연봉" || salaryKind === "일급") && (
+            <ToggleRow
+              title="환산 시급을 공고 상세에 표시"
+              description="끄더라도 시급 필터에는 계속 반영됩니다."
+              checked={showHourlyOnDetail}
+              onChange={setShowHourlyOnDetail}
+              ariaLabel="환산 시급 상세 노출"
+            />
           )}
         </SectionCard>
 
@@ -941,30 +1031,76 @@ export function PharmacyJobPostingForm() {
             <FieldError message={errors.applyChannels} />
           </div>
 
-          {/* 전화·이메일 */}
+          {/* 채널 연락처 */}
           {(applyChannels.has("전화") || applyChannels.has("문자")) && (
             <div className="mb-5">
-              <label htmlFor="p-phone" className={LBL}>연락처</label>
-              <input id="p-phone" value={applyPhone} onChange={e => setApplyPhone(e.target.value)} className={IN}
-                placeholder="예: 02-1234-5678" type="tel" />
-              <p className={HINT}>지원자에게는 로그인 후 확인 안내로 노출됩니다.</p>
+              <label htmlFor="p-phone" className={LBL}>접수 연락처</label>
+              <p className={`${HINT} mb-1.5`}>지원자가 실제로 지원·접수하는 연락처입니다.</p>
+              <input id="p-phone" value={applyPhone}
+                onChange={e => { applyPhoneTouched.current = true; setApplyPhoneAutofilled(false); setApplyPhone(e.target.value); }}
+                className={IN} placeholder="예: 02-1234-5678" type="tel" />
+              {applyPhoneAutofilled
+                ? <p className={HINT}>담당자 정보에서 가져옴 · 수정 가능 · 로그인 후 확인 안내로 노출됩니다.</p>
+                : <p className={HINT}>로그인 후 확인 안내로 노출됩니다.</p>
+              }
             </div>
           )}
           {applyChannels.has("이메일") && (
             <div className="mb-5">
-              <label htmlFor="p-email" className={LBL}>이메일</label>
-              <input id="p-email" value={applyEmail} onChange={e => setApplyEmail(e.target.value)} className={IN}
-                placeholder="예: recruit@pharmacy.kr" type="email" />
-              <p className={HINT}>지원자에게는 로그인 후 확인 안내로 노출됩니다.</p>
+              <label htmlFor="p-email" className={LBL}>접수 이메일</label>
+              <p className={`${HINT} mb-1.5`}>지원자가 실제로 지원·접수하는 이메일입니다.</p>
+              <input id="p-email" value={applyEmail}
+                onChange={e => { applyEmailTouched.current = true; setApplyEmailAutofilled(false); setApplyEmail(e.target.value); }}
+                className={IN} placeholder="예: recruit@pharmacy.kr" type="email" />
+              {applyEmailAutofilled
+                ? <p className={HINT}>담당자 정보에서 가져옴 · 수정 가능 · 로그인 후 확인 안내로 노출됩니다.</p>
+                : <p className={HINT}>로그인 후 확인 안내로 노출됩니다.</p>
+              }
             </div>
           )}
 
-          {/* 차단 안내 */}
-          <div className="mb-5">
-            <label htmlFor="p-blocked" className={LBL}>연락 안내 문구</label>
+          {/* 담당자 정보 */}
+          <div className="mb-5 border border-[#dfe4ea] p-4">
+            <p className="mb-0.5 text-[13px] font-medium text-[#2f3845]">담당자 정보 <span className="ml-1 text-[12px] font-normal text-[#7b8491]">선택 — 전부 선택 입력</span></p>
+            <p className={`${HINT} mb-3`}>공고 문의·관리 담당자 정보입니다. 접수 연락처와 다를 경우 별도로 입력하세요. 전화·이메일 채널이 켜져 있고 접수 연락처가 비어 있으면 자동으로 채워집니다.</p>
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="p-mgr-name" className="mb-1 block text-[12px] font-medium text-[#6b7280]">담당자명</label>
+                <input id="p-mgr-name" value={managerName} onChange={e => setManagerName(e.target.value)} className={IN}
+                  placeholder="예: 홍길동" />
+                <p className={HINT}>지원자에게는 마스킹 처리되어 노출됩니다.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
+                <div>
+                  <label htmlFor="p-mgr-phone" className="mb-1 block text-[12px] font-medium text-[#6b7280]">담당자 연락처</label>
+                  <input id="p-mgr-phone" value={managerPhone} onChange={e => setManagerPhone(e.target.value)} className={IN}
+                    placeholder="예: 010-1234-5678" type="tel" />
+                  <p className={HINT}>로그인 후 확인 안내로 노출됩니다.</p>
+                </div>
+                <div>
+                  <label htmlFor="p-mgr-email" className="mb-1 block text-[12px] font-medium text-[#6b7280]">담당자 이메일</label>
+                  <input id="p-mgr-email" value={managerEmail} onChange={e => setManagerEmail(e.target.value)} className={IN}
+                    placeholder="예: manager@pharmacy.kr" type="email" />
+                  <p className={HINT}>로그인 후 확인 안내로 노출됩니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 지원 제한 안내 (blocked) */}
+          <div className="mb-3">
+            <label htmlFor="p-blocked" className={LBL}>지원 제한 안내</label>
             <input id="p-blocked" value={blocked} onChange={e => setBlocked(e.target.value)} className={IN}
               placeholder="예: 간편지원 불가. 이메일·전화 지원만 가능합니다." />
-            <p className={HINT}>지원 방법 제한이 있을 때만 입력하세요.</p>
+            <p className={HINT}>특정 채널을 제한하거나 간편지원이 불가한 경우에만 입력하세요.</p>
+          </div>
+
+          {/* 연락 안내 문구 (note) */}
+          <div className="mb-5">
+            <label htmlFor="p-apply-note" className={LBL}>연락 안내 문구</label>
+            <input id="p-apply-note" value={applyNote} onChange={e => setApplyNote(e.target.value)} className={IN}
+              placeholder="예: 문자로 간단한 자기소개와 희망 근무시간을 보내주세요." />
+            <p className={HINT}>지원자에게 전달할 연락 안내나 유의사항을 입력하세요.</p>
           </div>
 
           <div className="my-5 border-t border-[#f0f2f5]" />

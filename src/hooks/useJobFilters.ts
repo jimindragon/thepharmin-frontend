@@ -107,6 +107,7 @@ export const emptyJobFilters: JobFilters = {
   leaderOnly: false,
   headhuntingOnly: false,
   quickApplyOnly: false,
+  hourlyIncludeUnknown: false,
 };
 
 function without<T>(items: T[], value: T) {
@@ -160,6 +161,7 @@ function parseFiltersFromQuery(): JobFilters {
     leaderOnly: params.get("leader") === "true",
     headhuntingOnly: params.get("headhunting") === "true",
     quickApplyOnly: params.get("quickApply") === "true",
+    hourlyIncludeUnknown: params.get("hourlyUnknown") === "true",
   };
 
   arrayFilterKeys.forEach((key) => {
@@ -233,6 +235,10 @@ export function buildAppliedChips(filters: JobFilters): AppliedFilterChip[] {
     chips.push(makeChip("quickApplyOnly", "true", "간편지원 공고"));
   }
 
+  if (filters.hourlyIncludeUnknown) {
+    chips.push(makeChip("hourlyIncludeUnknown", "true", "시급 미표기 포함"));
+  }
+
   return chips;
 }
 
@@ -281,6 +287,10 @@ export function removeChipFromFilters(filters: JobFilters, chip: AppliedFilterCh
     return { ...filters, quickApplyOnly: false };
   }
 
+  if (chip.kind === "hourlyIncludeUnknown") {
+    return { ...filters, hourlyIncludeUnknown: false };
+  }
+
   if (chip.kind === "jobCategory") {
     const subcategoryIds = subcategoryIdsForCategory(filters.track, chip.id);
     return {
@@ -323,7 +333,8 @@ function hasActiveFilters(filters: JobFilters) {
     filters.shiftTypeIds.length > 0 ||
     filters.leaderOnly ||
     filters.headhuntingOnly ||
-    filters.quickApplyOnly
+    filters.quickApplyOnly ||
+    filters.hourlyIncludeUnknown
   );
 }
 
@@ -337,6 +348,7 @@ function toQuery(filters: JobFilters) {
   if (filters.leaderOnly) params.set("leader", "true");
   if (filters.headhuntingOnly) params.set("headhunting", "true");
   if (filters.quickApplyOnly) params.set("quickApply", "true");
+  if (filters.hourlyIncludeUnknown) params.set("hourlyUnknown", "true");
 
   arrayFilterKeys.forEach((key) => {
     if (filters[key].length) params.set(queryKeys[key], filters[key].join(","));
@@ -378,17 +390,19 @@ function hourlyPayRange(id: string | null) {
   return null;
 }
 
-function hourlyPayMatches(job: Job, hourlyPayRangeId: string | null) {
+function hourlyPayMatches(job: Job, hourlyPayRangeId: string | null, includeUnknown: boolean) {
   const selected = hourlyPayRange(hourlyPayRangeId);
   if (!selected) return true;
-  if (job.salaryRange?.payType !== "hourly") return false;
 
-  const min = job.salaryRange.min ?? 0;
-  const max = job.salaryRange.max ?? min;
+  const computed = job.salaryDetail?.hourlyComputed;
+  if (!computed) return includeUnknown;
+
+  const jobMin = computed.min ?? computed.max ?? 0;
+  const jobMax = computed.max ?? computed.min ?? jobMin;
   const selectedMin = selected.min ?? 0;
   const selectedMax = selected.max ?? Number.POSITIVE_INFINITY;
 
-  return min < selectedMax && max > selectedMin;
+  return jobMin <= selectedMax && jobMax >= selectedMin;
 }
 
 function jobCategoryMatches(job: Job, filters: JobFilters) {
@@ -641,7 +655,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
     if (filters.scheduleIds.length && !includesAny(job.scheduleIds, filters.scheduleIds)) return false;
     if (filters.hospitalTypeIds.length && !includesAny(job.hospitalTypeIds ?? (job.hospitalTypeId ? [job.hospitalTypeId] : []), filters.hospitalTypeIds)) return false;
     if (filters.shiftTypeIds.length && !includesAny(job.shiftTypeIds, filters.shiftTypeIds)) return false;
-    if (!hourlyPayMatches(job, filters.hourlyPayRangeId)) return false;
+    if (!hourlyPayMatches(job, filters.hourlyPayRangeId, filters.hourlyIncludeUnknown)) return false;
 
     if (experience && !rangeOverlaps(job.experienceMin, job.experienceMax, experience.min, experience.max)) {
       return false;

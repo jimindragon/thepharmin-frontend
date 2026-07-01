@@ -22,9 +22,16 @@ function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
     if (sortOption === "최신순") return b.dateOrder - a.dateOrder;
     if (sortOption === "마감임박순") return a.deadlineOrder - b.deadlineOrder;
+    if (sortOption === "시급 높은순") {
+      const aMax = a.salaryDetail?.hourlyComputed?.max ?? a.salaryDetail?.hourlyComputed?.min ?? 0;
+      const bMax = b.salaryDetail?.hourlyComputed?.max ?? b.salaryDetail?.hourlyComputed?.min ?? 0;
+      return bMax - aMax;
+    }
     return Number(b.isRecommended) - Number(a.isRecommended) || b.dateOrder - a.dateOrder;
   });
 }
+
+const pharmacySortOptions: SortOption[] = ["추천순", "최신순", "마감임박순", "시급 높은순"];
 
 /**
  * 홈 화면과 산업·연구·병원·약국 분야별 랜딩 페이지가 공유하는 "공고 둘러보기" 섹션.
@@ -69,6 +76,7 @@ export function HomeJobsSection({
   }, [activeJobTrack]);
 
   const filteredJobs = useMemo(() => filterJobsByFilters(jobs, filterState.filters), [filterState.filters]);
+  const hourlyFilterActive = filterState.filters.hourlyPayRangeId !== null;
 
   // 필터(분야 포함)나 정렬이 바뀌면 이전 페이지에 머물러 있지 않도록 1페이지로 되돌린다.
   useEffect(() => {
@@ -123,13 +131,20 @@ export function HomeJobsSection({
             <JobListToolbar
               totalCount={filteredJobs.length}
               sortOption={sortOption}
+              sortOptions={activeJobTrack === "pharmacy" ? pharmacySortOptions : undefined}
               onSortChange={setSortOption}
             />
 
             {visibleJobs.length ? (
               <div className="flex flex-col gap-1.5">
                 {visibleJobs.map((job) => (
-                  <JobCard key={`home-${job.id}-${currentPage}-${sortOption}`} job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
+                  <JobCard
+                    key={`home-${job.id}-${currentPage}-${sortOption}`}
+                    job={job}
+                    isBookmarked={bookmarkedIds.includes(job.id)}
+                    onToggleBookmark={onToggleBookmark}
+                    showHourlyBadge={hourlyFilterActive && activeJobTrack === "pharmacy" && Boolean(job.salaryDetail?.hourlyComputed)}
+                  />
                 ))}
               </div>
             ) : (
