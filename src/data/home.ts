@@ -218,4 +218,4 @@ export const themeCurationCards: Array<{
   },
 ];
 
-export const homeRecommendationJobIds = [102, 103, 104, 109];
+export const homeRecommendationJobIds = [123, 122, 120, 126]; // celltrionph-bd, kolonbiotech-qaqc, samo-bd, gsk-vaccine-msl-cvmd

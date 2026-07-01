@@ -14,7 +14,7 @@ import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
-import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
+import { recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 
@@ -48,7 +48,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => {
             const logoSrc = companyLogos[company.name];
-            const cardClassName = "min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition hover:bg-[#fafafa] last:border-r-0";
+            const cardClassName = "min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition duration-[180ms] hover:bg-[#f7f7f7] last:border-r-0";
             const cardContent = (
               <>
                 {logoSrc ? (
@@ -119,7 +119,7 @@ function ThemeCuration() {
       </div>
       <div ref={containerRef} className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
         {themeCurationCards.map((card) => (
-          <Link key={card.id} href={card.href} data-carousel-item className="min-w-[254px] overflow-hidden border border-[#dddddd] bg-white transition hover:border-[#111111] hover:shadow-sm">
+          <Link key={card.id} href={card.href} data-carousel-item className="min-w-[254px] overflow-hidden border border-[#e5e5e5] bg-white transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)]">
             <div className="h-[120px] overflow-hidden bg-[#f2f3f4]">
               <img src={card.image} alt="" className="h-full w-full object-cover" />
             </div>
@@ -144,7 +144,7 @@ function HomeRecommendationCard({
   onToggleBookmark: (jobId: number) => void;
 }) {
   return (
-    <article className="group relative z-0 grid min-h-[156px] grid-cols-[68px_1fr_auto] gap-4 border border-[#dddddd] bg-white px-5 py-5 transition hover:z-10 hover:border-[#111111] focus-within:z-10 focus-within:border-[#111111]">
+    <article className="group relative z-0 grid h-full min-h-[156px] grid-cols-[68px_1fr_auto] gap-4 border border-[#e5e5e5] bg-white px-5 py-5 transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc]">
       <Link
         href={job.slug ? `/jobs/${job.slug}` : "/jobs"}
         className="absolute inset-0 z-10"
@@ -153,19 +153,19 @@ function HomeRecommendationCard({
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
       <EntityLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size={56} />
-      <div className="min-w-0">
-        <p className="text-[12px] font-normal text-[#777777]">{job.company}</p>
+      <div className="flex min-w-0 flex-col">
+        <p className="text-[12px] font-normal text-[#6b7280]">{job.company}</p>
         <h3 className={clsx(typeScale.cardTitle, "mt-1 truncate text-[#111111]")}>{job.title}</h3>
         <div className="mt-4 flex flex-wrap gap-2">
           {job.tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="bg-[#f3f3f3] px-2.5 py-1 text-[12px] font-medium text-[#555555]">
+            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
               {tag}
             </span>
           ))}
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
           {job.postingSource === "headhunting" ? <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-medium text-white">헤드헌팅</span> : null}
-          <span className="border border-[#dddddd] px-2.5 py-1 text-[11px] font-medium text-[#555555]">
+          <span className="text-[11px] font-medium text-[#6b7481]">
             {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
           </span>
         </div>
@@ -182,7 +182,7 @@ function HomeRecommendationCard({
         >
           <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
-        <strong className="text-[15px] font-semibold text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
+        <strong className="text-[13px] font-medium text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
       </div>
     </article>
   );
@@ -213,7 +213,7 @@ function PersonalRecommendationSection({
       </div>
       <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[900px]:grid-cols-1">
         {visibleJobs.map((job) => (
-          <div key={job.id} className="-ml-px -mt-px">
+          <div key={job.id} className="-ml-px -mt-px h-full">
             <HomeRecommendationCard job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
           </div>
         ))}
@@ -225,7 +225,6 @@ function PersonalRecommendationSection({
 export function HomePageClient() {
   const activeTrack: HomeTrackFilter = "all";
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
-  const featuredJobs = useFeaturedJobs(activeTrack);
 
   const toggleBookmark = (jobId: number) => {
     setBookmarkedIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
@@ -241,13 +240,7 @@ export function HomePageClient() {
           <RecruiterSolutionBanner />
           <ThemeCuration />
           <PersonalRecommendationSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
-          <FeaturedJobsSection
-            jobs={featuredJobs.jobs}
-            onPrev={featuredJobs.onPrev}
-            onNext={featuredJobs.onNext}
-            canGoPrev={featuredJobs.canGoPrev}
-            canGoNext={featuredJobs.canGoNext}
-          />
+          <FeaturedJobsSection jobs={recommendedJobs} />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>

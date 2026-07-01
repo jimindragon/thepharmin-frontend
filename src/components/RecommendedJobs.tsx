@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import type { RecommendedJob } from "@/types/jobs";
@@ -94,64 +95,198 @@ export function JobNoticePopover() {
   );
 }
 
-export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
-  const renderCard = (job: RecommendedJob) => (
-    <article className="surface h-full overflow-hidden border-[#dedede] shadow-none transition duration-150 hover:border-[#111111]/55 hover:shadow-[0_8px_22px_rgba(12,18,24,0.08)]">
-      <div className="relative h-[82px] overflow-hidden bg-[linear-gradient(120deg,#070707_0%,#242424_48%,#8f9397_100%)]">
+// Premium · Standard: 로고 + 세로 구분선 + 회사명 한 줄
+function LogoLine({
+  company,
+  logoUrl,
+  width,
+  height,
+}: {
+  company: string;
+  logoUrl: string | undefined;
+  width: number;
+  height: number;
+}) {
+  return (
+    <div className="flex items-center">
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt={company}
+          className="shrink-0 object-contain"
+          style={{ width, height }}
+        />
+      ) : (
+        <span
+          className="flex shrink-0 items-center justify-center text-[13px] font-semibold text-[#596373]"
+          style={{ width, height }}
+        >
+          {company.slice(0, 2)}
+        </span>
+      )}
+      <div className="mx-[10px] w-px shrink-0 bg-[#eeeeee]" style={{ height }} />
+      <p className="min-w-0 truncate text-[12px] font-medium text-[#6f7785]">{company}</p>
+    </div>
+  );
+}
+
+// Featured: 흰색 둥근 패치 위에 로고
+function LogoPatch({
+  company,
+  logoUrl,
+}: {
+  company: string;
+  logoUrl: string | undefined;
+}) {
+  return (
+    <div
+      className="flex shrink-0 items-center justify-center rounded-[5px] bg-white p-1"
+      style={{ width: 88, height: 34 }}
+    >
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt={company}
+          className="h-full w-full object-contain"
+        />
+      ) : (
+        <span className="text-[13px] font-semibold text-[#596373]">
+          {company.slice(0, 2)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// D-day / 지원방법 축약 유틸
+function shortApplyMethod(method: string): string {
+  if (method.includes("홈페이지")) return "홈페이지";
+  if (method.includes("간편")) return "간편";
+  return method;
+}
+function shortDDay(dDay: string): string {
+  if (dDay === "상시채용") return "상시";
+  return dDay;
+}
+
+function PremiumCard({ job }: { job: RecommendedJob }) {
+  return (
+    <article className="flex h-full flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-none transition duration-[180ms] hover:border-[#d5d5d5] hover:shadow-[0_6px_18px_rgba(12,18,24,0.07)]">
+      <div className="relative aspect-[19/6] overflow-hidden bg-[linear-gradient(120deg,#070707_0%,#242424_48%,#8f9397_100%)]">
         <img src={job.image} alt="" className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.46)_55%,rgba(255,255,255,0.08)_100%)]" />
-        <span className="absolute left-3 top-3 rounded-[var(--radius)] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#111111]">
-          추천
-        </span>
       </div>
-      <div className="px-3.5 pb-3 pt-3">
-        <p className="mb-1 text-[12px] font-normal text-[#6f7785]">{job.company}</p>
-        <h3 className="truncate text-[15px] font-bold text-[#202734]">{job.title}</h3>
-        <p className="mt-1 truncate text-[11px] font-normal text-[#7d8796]">{job.condition}</p>
+      <div className="flex flex-1 flex-col px-[22px] pb-[20px] pt-[22px]">
+        <div className="mb-2.5">
+          <LogoLine company={job.company} logoUrl={job.logoUrl} width={82} height={32} />
+        </div>
+        <h3 className="line-clamp-2 text-[19px] font-bold text-[#202734]">{job.title}</h3>
+        <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
-          {job.postingSource === "headhunting" ? (
-            <span className="rounded-[var(--radius)] border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-medium text-[#535c68]">
-              헤드헌팅
-            </span>
-          ) : null}
           {job.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-[var(--radius)] border border-[#e4e8ef] bg-[#f7f9fb] px-2 py-0.5 text-[11px] font-medium text-[#777f8c]"
-            >
+            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
               {tag}
             </span>
           ))}
         </div>
-        <div className="mt-3 flex items-center justify-between">
-          <strong className="text-[15px] font-semibold text-danger">{job.dDay}</strong>
-          <span className="text-[11px] font-normal text-[#6b7481]">{job.applyMethod}</span>
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
+          <span className="text-[11px] font-medium text-[#6b7481]">{job.applyMethod}</span>
         </div>
       </div>
     </article>
   );
+}
+
+function FeaturedCard({ job }: { job: RecommendedJob }) {
+  return (
+    <article className="flex h-full flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-none transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_6px_18px_rgba(12,18,24,0.06)]">
+      <div className="flex items-center gap-2.5 bg-[#fafafa] px-[18px] py-[14px]">
+        <LogoPatch company={job.company} logoUrl={job.logoUrl} />
+        <p className="min-w-0 truncate text-[12px] font-medium text-[#4b5563]">{job.company}</p>
+      </div>
+      <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[18px]">
+        <h3 className="line-clamp-2 text-[16px] font-bold text-[#202734]">{job.title}</h3>
+        <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
+          <span className="text-[11px] font-medium text-[#6b7481]">{job.applyMethod}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function StandardCard({ job }: { job: RecommendedJob }) {
+  const dDayShort = shortDDay(job.dDay);
+  const isJangsi = dDayShort === "상시";
+  return (
+    <article className="flex h-full min-h-[130px] flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-sm transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_6px_18px_rgba(12,18,24,0.06)]">
+      <div className="flex flex-1 flex-col px-5 pb-5 pt-5">
+        <div className="mb-2">
+          <LogoLine company={job.company} logoUrl={job.logoUrl} width={74} height={30} />
+        </div>
+        <h3 className="truncate text-[15px] font-bold text-[#202734]">{job.title}</h3>
+        <div className="mt-auto flex items-center justify-between pt-2">
+          <strong className={`text-[13px] font-medium ${isJangsi ? "text-[#6b7280]" : "text-danger"}`}>
+            {dDayShort}
+          </strong>
+          <span className="text-[11px] font-medium text-[#6b7481]">{shortApplyMethod(job.applyMethod)}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+const ZONE_LABEL_CLASS = "mb-3 text-[11px] font-semibold tracking-[0.12em] text-[#c2c2c2]";
+const LINK_CLASS = "block cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]";
+const onSpaceKey = (e: React.KeyboardEvent<HTMLAnchorElement>) => {
+  if (e.key === " ") { e.preventDefault(); e.currentTarget.click(); }
+};
+
+function cardLink(id: number, slug: string | undefined, children: React.ReactNode) {
+  return slug ? (
+    <Link key={id} href={`/jobs/${slug}`} className={LINK_CLASS} onKeyDown={onSpaceKey}>
+      {children}
+    </Link>
+  ) : (
+    <div key={id}>{children}</div>
+  );
+}
+
+export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
+  const premiumJobs = jobs.filter((j) => j.adTier === "premium");
+  const featuredJobs = jobs.filter((j) => j.adTier === "featured");
+  const standardJobs = jobs.filter((j) => j.adTier === "standard");
 
   return (
-    <div className="grid grid-cols-3 gap-[14px]">
-      {jobs.map((job) => (
-        job.jobSlug ? (
-          <Link
-            key={job.id}
-            href={`/jobs/${job.jobSlug}`}
-            className="block cursor-pointer rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
-            onKeyDown={(event) => {
-              if (event.key === " ") {
-                event.preventDefault();
-                event.currentTarget.click();
-              }
-            }}
-          >
-            {renderCard(job)}
-          </Link>
-        ) : (
-          <div key={job.id}>{renderCard(job)}</div>
-        )
-      ))}
+    <div>
+      {premiumJobs.length > 0 && (
+        <div>
+          <p className={ZONE_LABEL_CLASS}>PREMIUM</p>
+          <div className="grid grid-cols-3 gap-[14px]">
+            {premiumJobs.map((job) => cardLink(job.id, job.jobSlug, <PremiumCard job={job} />))}
+          </div>
+        </div>
+      )}
+
+      {featuredJobs.length > 0 && (
+        <div className="mt-[34px]">
+          <p className={ZONE_LABEL_CLASS}>FEATURED</p>
+          <div className="grid grid-cols-4 gap-[14px]">
+            {featuredJobs.map((job) => cardLink(job.id, job.jobSlug, <FeaturedCard job={job} />))}
+          </div>
+        </div>
+      )}
+
+      {standardJobs.length > 0 && (
+        <div className="mt-[34px]">
+          <p className={ZONE_LABEL_CLASS}>STANDARD</p>
+          <div className="grid grid-cols-5 gap-[14px]">
+            {standardJobs.map((job) => cardLink(job.id, job.jobSlug, <StandardCard job={job} />))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

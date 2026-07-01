@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
-import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
+import { recommendedJobs } from "@/data/recommendedJobs";
 import type { JobTrack } from "@/types/jobs";
 
 /**
@@ -14,7 +14,7 @@ import type { JobTrack } from "@/types/jobs";
  */
 export function TrackLandingClient({ track }: { track: JobTrack }) {
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
-  const featuredJobs = useFeaturedJobs(track);
+  const trackJobs = recommendedJobs.filter((j) => j.track === track);
 
   const toggleBookmark = (jobId: number) => {
     setBookmarkedIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
@@ -26,13 +26,7 @@ export function TrackLandingClient({ track }: { track: JobTrack }) {
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={track} />
-          <FeaturedJobsSection
-            jobs={featuredJobs.jobs}
-            onPrev={featuredJobs.onPrev}
-            onNext={featuredJobs.onNext}
-            canGoPrev={featuredJobs.canGoPrev}
-            canGoNext={featuredJobs.canGoNext}
-          />
+          <FeaturedJobsSection jobs={trackJobs} />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={track} />
       </main>

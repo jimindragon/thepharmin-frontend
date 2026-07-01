@@ -551,6 +551,8 @@ export interface RecommendedJob {
   id: number;
   jobSlug?: string;
   company: string;
+  logoText?: string;
+  logoUrl?: string;
   title: string;
   condition: string;
   tags: string[];
@@ -559,4 +561,5 @@ export interface RecommendedJob {
   image: string;
   track: JobTrack;
   postingSource?: PostingSource;
+  adTier: "premium" | "featured" | "standard";
 }

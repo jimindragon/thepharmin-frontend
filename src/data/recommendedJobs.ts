@@ -1,67 +1,52 @@
-import { companyExampleImages } from "@/config/companyImages";
-import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
+import { companyExampleImages, companyLogos } from "@/config/companyImages";
+import { jobs } from "@/data/jobs";
 import type { RecommendedJob } from "@/types/jobs";
 
-export const recommendedJobs: RecommendedJob[] = [
-  {
-    id: 201,
-    jobSlug: "ra-specialist",
-    company: "더팜인제약(주)",
-    title: "RA Specialist (제약·바이오 인허가 담당)",
-    condition: "경력 3~5년 · 학사 이상 · 서울 강남구",
-    tags: ["RA", "CTD", "글로벌 인허가"],
-    dDay: "D-12",
-    applyMethod: "기업 홈페이지 지원",
-    image: companyExampleImages.workspace,
-    track: "industry",
-    postingSource: "direct",
-  },
-  {
-    id: 202,
-    company: "바이오넥스(주)",
-    title: "Regulatory Affairs Associate",
-    condition: "경력 2~4년 · 학사 이상 · 서울 서초구",
-    tags: ["RA", "허가 전략", "헤드헌팅"],
-    dDay: "D-4",
-    applyMethod: "간편 지원",
-    image: companyExampleImages.hero,
-    track: "industry",
-    postingSource: "headhunting",
-  },
-  {
-    id: 203,
-    company: "서울의대 면역질환 연구실",
-    title: "박사후연구원·포닥",
-    condition: "박사 · 계약직 · 서울 종로구",
-    tags: ["포닥", "면역학", "논문"],
-    dDay: "D-14",
-    applyMethod: "기업 홈페이지 지원",
-    image: companyExampleImages.culture,
-    track: "research",
-    postingSource: "direct",
-  },
-  {
-    id: 204,
-    company: "그린약국",
-    title: "근무약사 주 4일 파트타임",
-    condition: "약사 면허 · 서울 강남구 · 시급 3~3.5만원",
-    tags: ["근무약사", "파트타임", "처방조제"],
-    dDay: "D-7",
-    applyMethod: "간편 지원",
-    image: getPharmacyCoverImage("그린약국"),
-    track: "pharmacy",
-    postingSource: "direct",
-  },
-  {
-    id: 205,
-    company: "서울상급종합병원",
-    title: "임상약사",
-    condition: "경력 3~7년 · 약사 면허 · 서울 서초구",
-    tags: ["임상약사", "상급종합병원", "헤드헌팅"],
-    dDay: "D-16",
-    applyMethod: "간편 지원",
-    image: companyExampleImages.hero,
-    track: "hospital",
-    postingSource: "headhunting",
-  },
-];
+// slug → 광고 등급 매핑 (데이터에 없는 공고는 노출하지 않음)
+const tierMap: Record<string, "premium" | "featured" | "standard"> = {
+  "samsungbio-bioprocess": "premium",
+  "gsk-oncology-msl":      "premium",
+  "roche-cmc-qa":          "premium",
+  "otsuka-mi-pv":          "featured",
+  "celltrionph-ra":        "featured",
+  "lgchem-mfg-pharmacist": "featured",
+  "aju-clinical-pm":       "featured",
+  "bukwang-bd-lead":       "standard",
+  "yuyu-ma-formulation":   "standard",
+  "cellbion-qaqc":         "standard",
+  "dentium-device-ra":     "standard",
+  "samsung-pharma-qc":     "standard",
+};
+
+// 노출 순서: premium 3 → featured 4 → standard 5
+const orderedSlugs = [
+  "samsungbio-bioprocess", "gsk-oncology-msl",      "roche-cmc-qa",
+  "otsuka-mi-pv",          "celltrionph-ra",         "lgchem-mfg-pharmacist", "aju-clinical-pm",
+  "bukwang-bd-lead",       "yuyu-ma-formulation",    "cellbion-qaqc",         "dentium-device-ra", "samsung-pharma-qc",
+] as const;
+
+const jobsBySlug = new Map(
+  jobs.filter((j) => j.slug != null).map((j) => [j.slug!, j])
+);
+
+export const recommendedJobs: RecommendedJob[] = orderedSlugs.flatMap<RecommendedJob>((slug) => {
+  const job = jobsBySlug.get(slug);
+  if (!job) return [];
+
+  return [{
+    id: job.id,
+    jobSlug: job.slug,
+    company: job.company,
+    logoText: job.logoText,
+    logoUrl: (companyLogos as Record<string, string | undefined>)[job.company],
+    title: job.title,
+    condition: `${job.career} · ${job.education} · ${job.location}`,
+    tags: job.tags,
+    dDay: job.deadlineLabel.replace("마감 ", ""),
+    applyMethod: job.applyMethod,
+    image: job.coverImage ?? job.coverImageUrl ?? companyExampleImages.workspace,
+    track: job.track,
+    postingSource: job.postingSource,
+    adTier: tierMap[slug],
+  }];
+});
