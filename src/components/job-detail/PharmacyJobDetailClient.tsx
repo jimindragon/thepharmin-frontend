@@ -512,10 +512,16 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                     {shareMessage}
                   </p>
                 ) : null}
-                {job.applyInfo?.blocked ? (
-                  <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">
-                    {job.applyInfo.blocked} 면접 및 합격 여부는 대상자에게 개별 안내드립니다.
+                {job.applyInfo?.note ? (
+                  <p className="mt-4 bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">
+                    {job.applyInfo.note}
                   </p>
+                ) : null}
+                {job.applyInfo?.blocked ? (
+                  <div className={`bg-[#f7f7f7] px-3 py-3 text-[12px] leading-[1.65] ${job.applyInfo.note ? "mt-2" : "mt-4"}`}>
+                    <p className="font-medium text-[#4f5967]">{job.applyInfo.blocked}</p>
+                    <p className="mt-1.5 font-normal text-[#8993a1]">면접 및 합격 여부는 대상자에게 개별 안내드립니다.</p>
+                  </div>
                 ) : null}
               </section>
 

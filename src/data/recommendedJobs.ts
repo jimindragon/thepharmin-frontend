@@ -16,6 +16,13 @@ const tierMap: Record<string, "premium" | "featured" | "standard"> = {
   "cellbion-qaqc":         "standard",
   "dentium-device-ra":     "standard",
   "samsung-pharma-qc":     "standard",
+
+  // 약국 트랙: PREMIUM/FEATURED 광고 수요가 없어 STANDARD만 사용
+  "eunhaeng-pharmacy-part-time-pharmacist":        "standard",
+  "hyundai-pharmacy-fulltime-pharmacist":          "standard",
+  "hwagok-gibeum-pharmacy-short-term-pharmacist":  "standard",
+  "yeongdong-365-pharmacy-wed-parttime":           "standard",
+  "buldang-central-pharmacy-fulltime":             "standard",
 };
 
 // 노출 순서: premium 3 → featured 4 → standard 5
@@ -23,6 +30,9 @@ const orderedSlugs = [
   "samsungbio-bioprocess", "gsk-oncology-msl",      "roche-cmc-qa",
   "otsuka-mi-pv",          "celltrionph-ra",         "lgchem-mfg-pharmacist", "aju-clinical-pm",
   "bukwang-bd-lead",       "yuyu-ma-formulation",    "cellbion-qaqc",         "dentium-device-ra", "samsung-pharma-qc",
+  "eunhaeng-pharmacy-part-time-pharmacist", "hyundai-pharmacy-fulltime-pharmacist",
+  "hwagok-gibeum-pharmacy-short-term-pharmacist", "yeongdong-365-pharmacy-wed-parttime",
+  "buldang-central-pharmacy-fulltime",
 ] as const;
 
 const jobsBySlug = new Map(
