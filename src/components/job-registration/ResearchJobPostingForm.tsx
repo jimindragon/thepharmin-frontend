@@ -14,7 +14,7 @@ import type { LabInstitutionType, ResearchApplyVia } from "@/types/jobs";
 
 type FieldGroup = (typeof researchFieldCategoryOptions)[number]["id"];
 type LocationScope = "국내" | "해외";
-type SalaryKindR = "연봉" | "협의";
+type SalaryKindR = "연봉" | "월급" | "협의";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ const DOMESTIC_REGIONS = [
   "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
 ] as const;
 
-const INSTITUTION_TYPES: LabInstitutionType[] = ["대학(의대제외)", "의과대학", "병원", "정부출연연", "기업부설연", "기타"];
+const INSTITUTION_TYPES: LabInstitutionType[] = ["대학", "의과대학", "병원", "정부출연연구기관", "기업부설연구소", "기타"];
 
 const APPLY_VIA_OPTIONS: ResearchApplyVia[] = ["이메일", "기관홈페이지", "플랫폼"];
 
@@ -369,7 +369,8 @@ export function ResearchJobPostingForm() {
     if (!requirements.trim())     next.requirements     = "지원 자격을 입력해 주세요.";
     if (!locationAddress.trim())  next.locationAddress  = "기관 주소를 입력해 주세요.";
     if (!salaryKind)              next.salaryKind       = "급여 표기를 선택해 주세요.";
-    if (salaryKind === "연봉" && !salaryMin.trim()) next.salaryMin = "최소 연봉을 입력해 주세요.";
+    if ((salaryKind === "연봉" || salaryKind === "월급") && !salaryMin.trim())
+      next.salaryMin = `최소 ${salaryKind}을 입력해 주세요.`;
     if (!researchDocuments.trim()) next.researchDocuments = "제출서류를 입력해 주세요.";
     if (!labInstitution.trim())   next.labInstitution   = "기관명을 입력해 주세요.";
     if (!labInstitutionType)      next.labInstitutionType = "기관 분류를 선택해 주세요.";
@@ -661,7 +662,7 @@ export function ResearchJobPostingForm() {
             <div className="mb-4" ref={setRef("salaryKind")}>
               <p id={salaryKindId} className={LBL}>급여 표기{REQ}</p>
               <div role="radiogroup" aria-labelledby={salaryKindId} className="inline-flex overflow-hidden border border-[#d8e0e8]">
-                {(["연봉", "협의"] as const).map((kind) => (
+                {(["연봉", "월급", "협의"] as const).map((kind) => (
                   <button key={kind} type="button" role="radio" aria-checked={salaryKind === kind}
                     onClick={() => setSalaryKind(kind)}
                     className={clsx("h-11 border-r border-[#d8e0e8] px-8 text-[13px] font-medium last:border-r-0 transition-colors",
@@ -673,16 +674,16 @@ export function ResearchJobPostingForm() {
               <FieldError message={errors.salaryKind} />
             </div>
 
-            {salaryKind === "연봉" && (
+            {(salaryKind === "연봉" || salaryKind === "월급") && (
               <div className="mb-4 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div ref={setRef("salaryMin")}>
-                  <label htmlFor="r-sal-min" className={LBL}>최소 연봉 (만원){REQ}</label>
+                  <label htmlFor="r-sal-min" className={LBL}>최소 {salaryKind} (만원){REQ}</label>
                   <input id="r-sal-min" type="number" min={0} value={salaryMin} onChange={(e) => setSalaryMin(e.target.value)}
                     placeholder="예: 4000" className={IN} aria-required="true" />
                   <FieldError message={errors.salaryMin} />
                 </div>
                 <div>
-                  <label htmlFor="r-sal-max" className={LBL}>최대 연봉 (만원)
+                  <label htmlFor="r-sal-max" className={LBL}>최대 {salaryKind} (만원)
                     <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
                   </label>
                   <input id="r-sal-max" type="number" min={0} value={salaryMax} onChange={(e) => setSalaryMax(e.target.value)}

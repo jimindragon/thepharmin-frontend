@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/Header";
 import { CompaniesHomeClient } from "@/components/companies/CompaniesHomeClient";
 import { companies, companyReviews } from "@/data/companies";
 import { companyDirectory } from "@/data/companyDirectory";
@@ -49,10 +48,5 @@ export default async function CompaniesPage({ searchParams }: CompaniesPageProps
       };
     });
 
-  return (
-    <>
-      <Header />
-      <CompaniesHomeClient directory={companyDirectory} recentInterviewReviews={recentInterviewReviews} isLoggedIn={isLoggedIn} />
-    </>
-  );
+  return <CompaniesHomeClient directory={companyDirectory} recentInterviewReviews={recentInterviewReviews} isLoggedIn={isLoggedIn} />;
 }

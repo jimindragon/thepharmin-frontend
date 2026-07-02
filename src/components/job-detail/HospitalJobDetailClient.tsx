@@ -18,6 +18,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { Company, HospitalDepartment, Job } from "@/types/jobs";
+import { formatHeadcount } from "@/utils/headcount";
+import { formatHospitalSalary } from "@/utils/salary";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import {
   ActionIconButton,
@@ -297,10 +299,10 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
     () => [
       { label: "근무 형태", value: shiftSummary(job.shiftTypeIds) },
       { label: "고용형태", value: job.employmentType },
-      { label: "모집인원", value: job.headcount ?? "1명" },
+      { label: "모집인원", value: job.headcount ?? formatHeadcount([]) },
       { label: "경력", value: careerLabel(job) },
       { label: "학력", value: job.education },
-      { label: "급여", value: job.salary },
+      { label: "급여", value: formatHospitalSalary(job.salaryRange, job.salaryNote) },
       { label: "접수마감", value: deadlineDetail(job) },
       { label: "지원방법", value: job.applyMethod },
     ],
@@ -309,7 +311,7 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
 
   const sections: SectionItem[] = [
     { id: "intro", label: "포지션 소개", visible: Boolean(job.introduction || job.oneLineIntro) },
-    { id: "departments", label: "모집부문", visible: Boolean(job.hospitalDepartments?.length) },
+    { id: "departments", label: "모집부문", visible: (job.hospitalDepartments?.length ?? 0) >= 2 },
     {
       id: "qualifications",
       label: "업무·자격",
@@ -389,14 +391,18 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
     window.open(applyUrl, "_blank", "noopener,noreferrer");
   };
 
-  const topTags = [
-    job.jobCategory ?? job.tags[0],
-    hospitalTypeLabel(job.hospitalTypeId ?? job.hospitalTypeIds?.[0]),
-    careerLabel(job),
-    job.education,
-    job.employmentType,
-    job.location,
-  ].filter(Boolean).slice(0, 6) as string[];
+  const topTags = Array.from(
+    new Set(
+      [
+        job.jobCategory ?? job.tags[0],
+        hospitalTypeLabel(job.hospitalTypeId ?? job.hospitalTypeIds?.[0]),
+        careerLabel(job),
+        job.education,
+        job.employmentType,
+        job.location,
+      ].filter(Boolean) as string[],
+    ),
+  ).slice(0, 6);
 
   const bodyKeywords = (job.coreKeywords?.length ? job.coreKeywords : job.tags).slice(0, 8);
 
@@ -522,10 +528,10 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
                 </SectionShell>
               )}
 
-              {/* 모집부문 비교 테이블 */}
-              {job.hospitalDepartments?.length ? (
+              {/* 모집부문 비교 테이블 — 부문이 2개 이상일 때만 노출 */}
+              {(job.hospitalDepartments?.length ?? 0) >= 2 ? (
                 <SectionShell id="departments" title="모집부문">
-                  <DepartmentTable departments={job.hospitalDepartments} />
+                  <DepartmentTable departments={job.hospitalDepartments!} />
                 </SectionShell>
               ) : null}
 

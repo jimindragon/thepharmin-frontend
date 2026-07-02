@@ -4,7 +4,6 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Heart, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { LockedContent } from "@/components/companies/LockedContent";
 import { EntityLogo } from "@/components/ui/EntityLogo";
@@ -298,94 +297,87 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
   };
 
   return (
-    <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell pt-8">
-        <PageHeader
-          breadcrumbLabel="기업정보"
-          eyebrow="THE PHARMA COMPANIES"
-          title="기업정보"
-          description="현직자·전직자가 남긴 기업 리뷰와 면접 후기를 살펴보세요."
-        />
+    <>
+      <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
+      <TrackTabs active={trackFilter} onChange={setTrackFilter} />
 
-        <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
-        <TrackTabs active={trackFilter} onChange={setTrackFilter} />
-
-        <section id="company-directory" className="mt-8">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-            <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
-            <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
-              {sortOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setSortOption(option)}
-                  className={clsx(
-                    "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-                    sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
-                  )}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+      <section id="company-directory" className="mt-8">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
+          <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+            {sortOptions.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setSortOption(option)}
+                className={clsx(
+                  "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
+                  sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+                )}
+              >
+                {option}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {visibleDirectory.length ? (
-            <div className="flex flex-col gap-2">
-              {visibleDirectory.map((entry) => (
-                <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} onRequestWriteReview={handleRequestWriteCompanyReview} />
-              ))}
-            </div>
-          ) : (
-            <DirectoryEmptyState />
-          )}
-
-          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
-          {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
-        </section>
-
-        <section className="mt-12">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 면접 후기</h2>
-            <span className="cursor-default text-[13px] font-medium text-[#aaaaaa]">전체 보기 ›</span>
+        {visibleDirectory.length ? (
+          <div className="flex flex-col gap-2">
+            {visibleDirectory.map((entry) => (
+              <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} onRequestWriteReview={handleRequestWriteCompanyReview} />
+            ))}
           </div>
+        ) : (
+          <DirectoryEmptyState />
+        )}
 
-          {filteredInterviewReviews.length ? (
-            <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
-              {filteredInterviewReviews.map((review) => (
-                <InterviewReviewCard
-                  key={review.id}
-                  review={review}
-                  isLoggedIn={isLoggedIn}
-                  onRequestWriteReview={handleRequestWriteInterviewReview}
-                />
-              ))}
-            </div>
-          ) : (
-            <DirectoryEmptyState />
-          )}
-          {interviewReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
-        </section>
+        <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+        {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
+      </section>
 
-        <section className="mt-14 border border-[#e5e9ef] bg-[#fbfcfd] px-7 py-10 text-center max-[640px]:px-5 max-[640px]:py-8">
-          <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#171d26]">경험을 공유하고 더 많은 리뷰를 확인해보세요</h2>
-          <p className="mx-auto mt-3 max-w-[420px] text-[13px] font-normal leading-[1.7] text-[#596373]">기업 리뷰는 로그인 후 확인할 수 있습니다.</p>
-          <p className="mx-auto text-[13px] font-normal leading-[1.7] text-[#596373]">면접 후기를 작성하면 다른 사용자의 상세 면접 후기를 열람할 수 있습니다.</p>
-          {isLoggedIn ? (
-            <button
-              type="button"
-              onClick={handleScrollToDirectory}
-              className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]"
-            >
-              리뷰 작성하기
-            </button>
-          ) : (
-            <Link href={LOGIN_HREF} className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]">
-              리뷰 작성하기
-            </Link>
-          )}
-        </section>
-      </div>
-    </main>
+      <section className="mt-12">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 면접 후기</h2>
+          <Link href="/companies/interviews" className="text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
+            전체 보기 ›
+          </Link>
+        </div>
+
+        {filteredInterviewReviews.length ? (
+          <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
+            {filteredInterviewReviews.map((review) => (
+              <InterviewReviewCard
+                key={review.id}
+                review={review}
+                isLoggedIn={isLoggedIn}
+                onRequestWriteReview={handleRequestWriteInterviewReview}
+              />
+            ))}
+          </div>
+        ) : (
+          <DirectoryEmptyState />
+        )}
+        {interviewReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
+      </section>
+
+      <section className="mt-14 border border-[#e5e9ef] bg-[#fbfcfd] px-7 py-10 text-center max-[640px]:px-5 max-[640px]:py-8">
+        <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#171d26]">경험을 공유하고 더 많은 리뷰를 확인해보세요</h2>
+        <p className="mx-auto mt-3 max-w-[420px] text-[13px] font-normal leading-[1.7] text-[#596373]">기업 리뷰는 로그인 후 확인할 수 있습니다.</p>
+        <p className="mx-auto text-[13px] font-normal leading-[1.7] text-[#596373]">면접 후기를 작성하면 다른 사용자의 상세 면접 후기를 열람할 수 있습니다.</p>
+        {isLoggedIn ? (
+          <button
+            type="button"
+            onClick={handleScrollToDirectory}
+            className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]"
+          >
+            리뷰 작성하기
+          </button>
+        ) : (
+          <Link href={LOGIN_HREF} className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]">
+            리뷰 작성하기
+          </Link>
+        )}
+      </section>
+    </>
   );
 }

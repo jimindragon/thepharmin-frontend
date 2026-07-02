@@ -109,9 +109,15 @@ export type FilterKind =
   | "leaderOnly"
   | "quickApplyOnly"
   | "headhuntingOnly"
-  | "hourlyIncludeUnknown";
+  | "hourlyIncludeUnknown"
+  | "salaryIncludeUnknown";
 
-export type SpecialJobFilterKey = "leaderOnly" | "headhuntingOnly" | "quickApplyOnly" | "hourlyIncludeUnknown";
+export type SpecialJobFilterKey =
+  | "leaderOnly"
+  | "headhuntingOnly"
+  | "quickApplyOnly"
+  | "hourlyIncludeUnknown"
+  | "salaryIncludeUnknown";
 
 export interface FilterOption {
   id: string;
@@ -242,6 +248,8 @@ export interface JobFilters {
   quickApplyOnly: boolean;
   /** 시급 필터 적용 시 hourlyComputed=null 공고(면접후결정·주당시간 미입력 등)를 결과에 포함할지 */
   hourlyIncludeUnknown: boolean;
+  /** 병원 급여 필터 적용 시 salaryMin=null 공고(면접후결정 등)를 결과에 포함할지 */
+  salaryIncludeUnknown: boolean;
 }
 
 export interface AppliedFilterChip {
@@ -354,7 +362,7 @@ export type ResearchRecruitType =
 export type ResearchDegree = "박사" | "박사수료" | "박사예정" | "석사" | "석사수료" | "석사예정";
 
 /** Lab.institutionType 전용 분류. 트랙 라우팅에 쓰이는 OrganizationType과는 별개로, 연구실 상세 페이지 표시용 분류다. */
-export type LabInstitutionType = "대학(의대제외)" | "의과대학" | "병원" | "정부출연연" | "기업부설연" | "기타";
+export type LabInstitutionType = "대학" | "의과대학" | "병원" | "정부출연연구기관" | "기업부설연구소" | "기타";
 
 /** 기관 → 연구실 → PI 구조. 값이 없는 필드(홈페이지·채용페이지·소개 등)는 해당 행/버튼을 렌더링하지 않는다. */
 export interface ResearchLab {
@@ -371,10 +379,12 @@ export interface ResearchLab {
 
 export type OverseasSupportType = "항공료" | "이주비" | "자녀학비" | "비자스폰서";
 
-/** 연구직 급여. 연봉 구간과 면접 후 협의를 모두 지원하고, 연구비·과제 지원 정보는 급여와 별도로 관리한다. */
+/** 연구직 급여. 연봉/월급 구간과 면접 후 협의를 모두 지원하고, 연구비·과제 지원 정보는 급여와 별도로 관리한다. */
 export interface ResearchSalaryInfo {
-  kind: "연봉" | "협의";
+  kind: "연봉" | "월급" | "협의";
+  /** kind가 "연봉"이면 연 기준 만원, "월급"이면 월 기준 만원 */
   min?: number;
+  /** kind가 "연봉"이면 연 기준 만원, "월급"이면 월 기준 만원 */
   max?: number;
   note?: string;
   funding?: string[];
@@ -439,9 +449,13 @@ export interface Job {
   educationId: string;
   regionId: string;
   employmentTypeId: string;
+  /** 병원 트랙: 원본 입력값. "면접 후 결정"은 salaryRange 자체가 없는(null/undefined) 상태로 표현한다 */
   salaryRange?: SalaryRange | null;
+  /** 필터 전용 연 환산값. annual은 그대로, monthly는 ×12, hourly/daily·미정은 null */
   salaryMin: number | null;
   salaryMax: number | null;
+  /** 병원 트랙 급여 부가 설명. salaryRange만으로 표현하기 어려운 조건을 병기할 때 사용 */
+  salaryNote?: string;
   workModeIds: string[];
   companyTypeId: string;
   researchInstitutionTypeIds?: string[];
@@ -544,7 +558,6 @@ export interface Company {
   website: string;
   /** 마스킹된 대표자명(예: "정*래"). 실명 노출이 어려운 업종에서 사용 */
   repName?: string;
-  activeJobCount: number;
   address: string;
 }
 

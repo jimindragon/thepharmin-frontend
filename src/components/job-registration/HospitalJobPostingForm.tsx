@@ -3,10 +3,14 @@
 import clsx from "clsx";
 import { AlertCircle, Info, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import type { PayType, SalaryRange } from "@/types/jobs";
+import { formatHeadcount } from "@/utils/headcount";
+import { formatHospitalSalary } from "@/utils/salary";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -14,7 +18,8 @@ interface Dept {
   id: number;
   name: string;
   headcount: string;
-  hours: string;
+  headcountUndetermined: boolean;
+  schedule: string;
   duties: string;
   requirements: string;
 }
@@ -24,6 +29,14 @@ interface HiringStep {
   label: string;
 }
 
+interface ExtraWorkItem {
+  id: number;
+  label: string;
+  value: string;
+}
+
+const MAX_EXTRA_WORK_ITEMS = 4;
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function toggleSet<T>(set: Set<T>, item: T): Set<T> {
@@ -31,6 +44,40 @@ function toggleSet<T>(set: Set<T>, item: T): Set<T> {
   if (next.has(item)) next.delete(item);
   else next.add(item);
   return next;
+}
+
+type SalaryTypeOption = "연봉" | "월급" | "시급" | "일급·회당" | "면접 후 결정";
+const SALARY_TYPE_OPTIONS: SalaryTypeOption[] = ["연봉", "월급", "시급", "일급·회당", "면접 후 결정"];
+
+const SALARY_TYPE_TO_PAY_TYPE: Partial<Record<SalaryTypeOption, PayType>> = {
+  "연봉": "annual",
+  "월급": "monthly",
+  "시급": "hourly",
+  "일급·회당": "daily",
+};
+
+function parseSalaryAmount(value: string): number | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed.replace(/,/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseCount(value: string): number | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) && parsed >= 0 ? Math.trunc(parsed) : null;
+}
+
+function makeBlankDept(id: number): Dept {
+  return { id, name: "", headcount: "", headcountUndetermined: false, schedule: "", duties: "", requirements: "" };
+}
+
+function buildSalaryRange(salaryType: string, min: string, max: string): SalaryRange | null {
+  const payType = SALARY_TYPE_TO_PAY_TYPE[salaryType as SalaryTypeOption];
+  if (!payType) return null;
+  return { payType, min: parseSalaryAmount(min), max: parseSalaryAmount(max) };
 }
 
 // ── Shared field components ────────────────────────────────────────────────────
@@ -212,13 +259,33 @@ export function HospitalJobPostingForm() {
   const [employmentType, setEmploymentType] = useState("정규직");
   const [careerType, setCareerType] = useState("경력무관");
   const [educationType, setEducationType] = useState("학력무관");
+  const [basicHeadcount, setBasicHeadcount] = useState("");
+  const [basicHeadcountUndetermined, setBasicHeadcountUndetermined] = useState(false);
 
-  // §2 모집부문
-  const nextDeptId = useRef(3);
-  const [departments, setDepartments] = useState<Dept[]>([
-    { id: 1, name: "", headcount: "", hours: "", duties: "", requirements: "" },
-    { id: 2, name: "ASP팀 감염전문약사", headcount: "", hours: "", duties: "", requirements: "" },
-  ]);
+  // §2 모집부문 — 기본값은 미분할(단일). "+모집부문 나누기"로 전환한다.
+  const [isSplitByDept, setIsSplitByDept] = useState(false);
+  const [showMergeConfirm, setShowMergeConfirm] = useState(false);
+  const nextDeptId = useRef(1);
+  const [departments, setDepartments] = useState<Dept[]>([]);
+
+  const aggregateHeadcount = useMemo(
+    () => formatHeadcount(departments.map((dept) => (dept.headcountUndetermined ? null : parseCount(dept.headcount)))),
+    [departments],
+  );
+
+  function handleSplitByDept() {
+    setIsSplitByDept(true);
+    setDepartments((prev) => (prev.length > 0 ? prev : [makeBlankDept(nextDeptId.current++), makeBlankDept(nextDeptId.current++)]));
+  }
+
+  function handleConfirmMerge() {
+    setIsSplitByDept(false);
+    setDepartments([]);
+    nextDeptId.current = 1;
+    setBasicHeadcount("");
+    setBasicHeadcountUndetermined(false);
+    setShowMergeConfirm(false);
+  }
 
   // §3 업무·자격
   const [summary, setSummary] = useState("");
@@ -231,14 +298,36 @@ export function HospitalJobPostingForm() {
   const [workSchedule, setWorkSchedule] = useState("");
   const [nightShift, setNightShift] = useState("");
   const [overtimeToggle, setOvertimeToggle] = useState(true);
-  const [salaryType, setSalaryType] = useState("연봉");
-  const [salaryAmount, setSalaryAmount] = useState("");
+  const [salaryType, setSalaryType] = useState<SalaryTypeOption>("연봉");
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
   const [salaryNote, setSalaryNote] = useState("");
+  const salaryPreview = useMemo(
+    () => formatHospitalSalary(buildSalaryRange(salaryType, salaryMin, salaryMax), salaryNote.trim() || undefined),
+    [salaryType, salaryMin, salaryMax, salaryNote],
+  );
   const [welfare, setWelfare] = useState<Set<string>>(new Set(["4대보험", "퇴직연금", "본인·가족 의료비", "교육비 지원"]));
   const [workCondDetail, setWorkCondDetail] = useState("");
+  const nextExtraWorkItemId = useRef(1);
+  const [extraWorkItems, setExtraWorkItems] = useState<ExtraWorkItem[]>([]);
   const [workplaceName, setWorkplaceName] = useState("더파마병원");
   const [nearStation, setNearStation] = useState("");
   const [address, setAddress] = useState("서울 강남구 테헤란로 123, 8층");
+
+  const workConditionItemsPreview = useMemo(() => {
+    const items: { label: string; value: string }[] = [
+      { label: "근무일정", value: workSchedule.trim() },
+      { label: "급여", value: salaryPreview },
+    ];
+    if (nightShift.trim()) items.push({ label: "당직", value: nightShift.trim() });
+    if (overtimeToggle) items.push({ label: "연장·휴일 수당", value: "발생 시 별도 지급" });
+    extraWorkItems.forEach((item) => {
+      if (item.label.trim() && item.value.trim()) {
+        items.push({ label: item.label.trim(), value: item.value.trim() });
+      }
+    });
+    return items;
+  }, [workSchedule, salaryPreview, nightShift, overtimeToggle, extraWorkItems]);
 
   // §5 전형·서류
   const nextStepId = useRef(6);
@@ -278,11 +367,15 @@ export function HospitalJobPostingForm() {
     if (!jobCategory) next.jobCategory = "직무 분류를 선택해 주세요.";
     if (!workplaceCategory) next.workplaceCategory = "사업장 분류를 선택해 주세요.";
     if (workTypes.size === 0) next.workTypes = "근무형태를 하나 이상 선택해 주세요.";
-    departments.forEach((dept, i) => {
-      if (!dept.name.trim()) next[`dept_${i}_name`] = "부문명을 입력해 주세요.";
-      if (!dept.headcount.trim()) next[`dept_${i}_headcount`] = "모집인원을 입력해 주세요.";
-      if (!dept.hours.trim()) next[`dept_${i}_hours`] = "근무시간을 입력해 주세요.";
-    });
+    if (isSplitByDept) {
+      departments.forEach((dept, i) => {
+        if (!dept.name.trim()) next[`dept_${i}_name`] = "부문명을 입력해 주세요.";
+        if (!dept.headcountUndetermined && !dept.headcount.trim()) next[`dept_${i}_headcount`] = "모집인원을 입력하거나 '인원 미정'을 선택해 주세요.";
+        if (!dept.schedule.trim()) next[`dept_${i}_schedule`] = "근무시간을 입력해 주세요.";
+      });
+    } else if (!basicHeadcountUndetermined && !basicHeadcount.trim()) {
+      next.basicHeadcount = "모집인원을 입력하거나 '인원 미정'을 선택해 주세요.";
+    }
     if (!summary.trim()) next.summary = "한 줄 요약을 입력해 주세요.";
     if (!mainDuties.trim()) next.mainDuties = "주요업무를 입력해 주세요.";
     if (!requiredQual.trim()) next.requiredQual = "필수 자격조건을 입력해 주세요.";
@@ -311,13 +404,10 @@ export function HospitalJobPostingForm() {
 
   // Dept helpers
   function addDept() {
-    setDepartments((prev) => [
-      ...prev,
-      { id: nextDeptId.current++, name: "", headcount: "", hours: "", duties: "", requirements: "" },
-    ]);
+    setDepartments((prev) => [...prev, makeBlankDept(nextDeptId.current++)]);
   }
   function removeDept(id: number) { setDepartments((prev) => prev.filter((d) => d.id !== id)); }
-  function updateDept(id: number, field: keyof Omit<Dept, "id">, value: string) {
+  function updateDept<K extends keyof Omit<Dept, "id">>(id: number, field: K, value: Dept[K]) {
     setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, [field]: value } : d)));
   }
 
@@ -325,6 +415,15 @@ export function HospitalJobPostingForm() {
   function addStep() { setSteps((prev) => [...prev, { id: nextStepId.current++, label: "" }]); }
   function removeStep(id: number) { setSteps((prev) => prev.filter((s) => s.id !== id)); }
   function updateStep(id: number, label: string) { setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, label } : s))); }
+
+  // Extra work item helpers
+  function addExtraWorkItem() {
+    setExtraWorkItems((prev) => (prev.length >= MAX_EXTRA_WORK_ITEMS ? prev : [...prev, { id: nextExtraWorkItemId.current++, label: "", value: "" }]));
+  }
+  function removeExtraWorkItem(id: number) { setExtraWorkItems((prev) => prev.filter((item) => item.id !== id)); }
+  function updateExtraWorkItem(id: number, field: keyof Omit<ExtraWorkItem, "id">, value: string) {
+    setExtraWorkItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  }
 
   // Keyword helpers
   function toggleKeyword(kw: string) {
@@ -437,75 +536,142 @@ export function HospitalJobPostingForm() {
               </select>
             </div>
           </div>
-          <p className={HINT} style={{ marginTop: 8 }}>모집인원은 아래 '모집부문'에서 부문별로 입력합니다.</p>
+
+          <div className="mt-5" ref={setRef("basicHeadcount")}>
+            <label htmlFor="h-headcount" className={LBL}>모집인원{!isSplitByDept && REQ}</label>
+            {isSplitByDept ? (
+              <>
+                <div className={`${IN} flex items-center bg-[#f5f6f8] text-[#4f5967]`}>{aggregateHeadcount}</div>
+                <p className={HINT}>모집부문별 인원의 합계입니다. 부문에서 수정하세요.</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-3">
+                  <input id="h-headcount" type="number" min={0} inputMode="numeric" value={basicHeadcount}
+                    onChange={(e) => setBasicHeadcount(e.target.value)}
+                    disabled={basicHeadcountUndetermined}
+                    className={clsx(IN, "flex-1", basicHeadcountUndetermined && "bg-[#f5f6f8] text-[#a4adba] cursor-not-allowed")}
+                    placeholder="예: 2" aria-required="true" />
+                  <label className="inline-flex h-11 shrink-0 items-center gap-2 text-[13px] font-medium text-[#4c5665] whitespace-nowrap">
+                    <input type="checkbox" checked={basicHeadcountUndetermined}
+                      onChange={(e) => setBasicHeadcountUndetermined(e.target.checked)}
+                      className="h-4 w-4 accent-[#111111]" />
+                    인원 미정
+                  </label>
+                </div>
+                <FieldError message={errors.basicHeadcount} />
+              </>
+            )}
+          </div>
+
+          <div className="mt-4">
+            {!isSplitByDept ? (
+              <button type="button" onClick={handleSplitByDept}
+                className="h-9 px-4 border border-dashed border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-[#111111] hover:text-[#111111] transition-colors">
+                <Plus size={13} aria-hidden /> 모집부문 나누기
+              </button>
+            ) : (
+              <button type="button" onClick={() => setShowMergeConfirm(true)}
+                className="h-9 px-4 border border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-danger hover:text-danger transition-colors">
+                부문 합치기
+              </button>
+            )}
+            <p className={HINT}>
+              {isSplitByDept
+                ? "부문을 합치면 아래 모집부문에 입력한 내용이 모두 삭제됩니다."
+                : "모집부문마다 인원·근무시간·자격요건이 다르면 부문을 나눠 입력하세요."}
+            </p>
+          </div>
         </SectionCard>
 
-        {/* ── §2 모집부문 ───────────────────────────────────────────────────────── */}
-        <SectionCard
-          title="모집부문"
-          description="모집하는 부문을 부문별로 입력합니다. 부문이 2개 이상이면 공고 상세에서 비교 표로 노출됩니다. 모집인원은 여기에서만 입력합니다."
-          status="작성 중"
-        >
-          {departments.map((dept, i) => (
-            <div key={dept.id} className="border border-[#dfe4ea] p-5 mb-4">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[12px] font-black text-white bg-[#111111] px-3 py-1">부문 {i + 1}</span>
-                {departments.length > 1 && (
-                  <button type="button" onClick={() => removeDept(dept.id)} aria-label={`부문 ${i + 1} 삭제`}
-                    className="h-7 px-3 border border-[#dfe4ea] text-[12px] font-medium text-danger bg-white hover:bg-[#fff3f0] transition-colors">
-                    삭제
-                  </button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4 max-[640px]:grid-cols-1">
-                <div ref={setRef(`dept_${i}_name`)}>
-                  <label htmlFor={`h-dept-${dept.id}-name`} className={LBL}>부문명{REQ}</label>
-                  <input id={`h-dept-${dept.id}-name`} value={dept.name}
-                    onChange={(e) => updateDept(dept.id, "name", e.target.value)}
-                    className={IN} placeholder="예: 약제팀 평일약사" aria-required="true" />
-                  <FieldError message={errors[`dept_${i}_name`]} />
+        {/* ── §2 모집부문 — "모집부문 나누기"로 전환했을 때만 노출 ──────────────── */}
+        {isSplitByDept && (
+          <SectionCard
+            title="모집부문"
+            description="모집하는 부문을 부문별로 입력합니다. 부문이 2개 이상이면 공고 상세에서 비교 표로 노출됩니다."
+            status="작성 중"
+          >
+            {departments.map((dept, i) => (
+              <div key={dept.id} className="border border-[#dfe4ea] p-5 mb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[12px] font-black text-white bg-[#111111] px-3 py-1">부문 {i + 1}</span>
+                  {departments.length > 1 && (
+                    <button type="button" onClick={() => removeDept(dept.id)} aria-label={`부문 ${i + 1} 삭제`}
+                      className="h-7 px-3 border border-[#dfe4ea] text-[12px] font-medium text-danger bg-white hover:bg-[#fff3f0] transition-colors">
+                      삭제
+                    </button>
+                  )}
                 </div>
-                <div ref={setRef(`dept_${i}_headcount`)}>
-                  <label htmlFor={`h-dept-${dept.id}-hc`} className={LBL}>모집인원{REQ}</label>
-                  <input id={`h-dept-${dept.id}-hc`} value={dept.headcount}
-                    onChange={(e) => updateDept(dept.id, "headcount", e.target.value)}
-                    className={IN} placeholder="예: 1명 (또는 0명·채용 시 마감)" aria-required="true" />
-                  <FieldError message={errors[`dept_${i}_headcount`]} />
+
+                <div className="grid grid-cols-2 gap-4 mb-4 max-[640px]:grid-cols-1">
+                  <div ref={setRef(`dept_${i}_name`)}>
+                    <label htmlFor={`h-dept-${dept.id}-name`} className={LBL}>부문명{REQ}</label>
+                    <input id={`h-dept-${dept.id}-name`} value={dept.name}
+                      onChange={(e) => updateDept(dept.id, "name", e.target.value)}
+                      className={IN} placeholder="예: 약제팀 평일약사" aria-required="true" />
+                    <FieldError message={errors[`dept_${i}_name`]} />
+                  </div>
+                  <div ref={setRef(`dept_${i}_headcount`)}>
+                    <label htmlFor={`h-dept-${dept.id}-hc`} className={LBL}>모집인원{REQ}</label>
+                    <div className="flex items-center gap-3">
+                      <input id={`h-dept-${dept.id}-hc`} type="number" min={0} inputMode="numeric" value={dept.headcount}
+                        onChange={(e) => updateDept(dept.id, "headcount", e.target.value)}
+                        disabled={dept.headcountUndetermined}
+                        className={clsx(IN, "flex-1", dept.headcountUndetermined && "bg-[#f5f6f8] text-[#a4adba] cursor-not-allowed")}
+                        placeholder="예: 1" aria-required="true" />
+                      <label className="inline-flex h-11 shrink-0 items-center gap-2 text-[13px] font-medium text-[#4c5665] whitespace-nowrap">
+                        <input type="checkbox" checked={dept.headcountUndetermined}
+                          onChange={(e) => updateDept(dept.id, "headcountUndetermined", e.target.checked)}
+                          className="h-4 w-4 accent-[#111111]" />
+                        인원 미정
+                      </label>
+                    </div>
+                    <FieldError message={errors[`dept_${i}_headcount`]} />
+                  </div>
+                </div>
+
+                <div className="mb-4" ref={setRef(`dept_${i}_schedule`)}>
+                  <label htmlFor={`h-dept-${dept.id}-sched`} className={LBL}>근무시간{REQ}</label>
+                  <input id={`h-dept-${dept.id}-sched`} value={dept.schedule}
+                    onChange={(e) => updateDept(dept.id, "schedule", e.target.value)}
+                    className={IN} placeholder="예: 월–금 08:30~16:30 (탄력근무제)" aria-required="true" />
+                  <FieldError message={errors[`dept_${i}_schedule`]} />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor={`h-dept-${dept.id}-duties`} className={LBL}>담당업무</label>
+                  <textarea id={`h-dept-${dept.id}-duties`} value={dept.duties}
+                    onChange={(e) => updateDept(dept.id, "duties", e.target.value)} rows={2}
+                    className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
+                    placeholder={"예: 처방 감사, 입·퇴원 조제 및 투약설명, 의약품·마약류 관리"} />
+                </div>
+
+                <div>
+                  <label htmlFor={`h-dept-${dept.id}-req`} className={LBL}>자격요건</label>
+                  <textarea id={`h-dept-${dept.id}-req`} value={dept.requirements}
+                    onChange={(e) => updateDept(dept.id, "requirements", e.target.value)} rows={2}
+                    className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
+                    placeholder="예: 약사 면허 소지자 / 경력 무관" />
                 </div>
               </div>
+            ))}
 
-              <div className="mb-4" ref={setRef(`dept_${i}_hours`)}>
-                <label htmlFor={`h-dept-${dept.id}-hrs`} className={LBL}>근무시간{REQ}</label>
-                <input id={`h-dept-${dept.id}-hrs`} value={dept.hours}
-                  onChange={(e) => updateDept(dept.id, "hours", e.target.value)}
-                  className={IN} placeholder="예: 월–금 08:30~16:30 (탄력근무제)" aria-required="true" />
-                <FieldError message={errors[`dept_${i}_hours`]} />
-              </div>
+            <button type="button" onClick={addDept}
+              className="w-full h-11 border border-dashed border-[#d8e0e8] bg-white text-[13px] font-medium text-[#4f5967] flex items-center justify-center gap-2 hover:border-[#111111] hover:text-[#111111] transition-colors">
+              <Plus size={14} aria-hidden /> 모집부문 추가
+            </button>
+          </SectionCard>
+        )}
 
-              <div className="mb-4">
-                <label htmlFor={`h-dept-${dept.id}-duties`} className={LBL}>담당업무</label>
-                <textarea id={`h-dept-${dept.id}-duties`} value={dept.duties}
-                  onChange={(e) => updateDept(dept.id, "duties", e.target.value)} rows={2}
-                  className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-                  placeholder={"예: 처방 감사, 입·퇴원 조제 및 투약설명, 의약품·마약류 관리"} />
-              </div>
-
-              <div>
-                <label htmlFor={`h-dept-${dept.id}-req`} className={LBL}>자격요건</label>
-                <textarea id={`h-dept-${dept.id}-req`} value={dept.requirements}
-                  onChange={(e) => updateDept(dept.id, "requirements", e.target.value)} rows={2}
-                  className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-                  placeholder="예: 약사 면허 소지자 / 경력 무관" />
-              </div>
-            </div>
-          ))}
-
-          <button type="button" onClick={addDept}
-            className="w-full h-11 border border-dashed border-[#d8e0e8] bg-white text-[13px] font-medium text-[#4f5967] flex items-center justify-center gap-2 hover:border-[#111111] hover:text-[#111111] transition-colors">
-            <Plus size={14} aria-hidden /> 모집부문 추가
-          </button>
-        </SectionCard>
+        {showMergeConfirm && (
+          <ConfirmDialog
+            title="모집부문을 합칠까요?"
+            description="모집부문에 입력한 내용이 모두 삭제되고, 모집인원은 기본 정보에서 다시 입력해야 합니다."
+            confirmLabel="합치기"
+            onConfirm={handleConfirmMerge}
+            onCancel={() => setShowMergeConfirm(false)}
+          />
+        )}
 
         {/* ── §3 업무·자격 (부문 공통) ──────────────────────────────────────────── */}
         <SectionCard
@@ -588,24 +754,38 @@ export function HospitalJobPostingForm() {
           <div className="border-t border-[#f0f2f5] my-5" />
 
           <div className="mb-5">
-            <SegControl label="급여 표기 방식" required options={["연봉", "일급·회당", "면접 후 결정"]} value={salaryType} onChange={setSalaryType} />
+            <SegControl label="급여 표기 방식" required options={SALARY_TYPE_OPTIONS}
+              value={salaryType} onChange={(v) => setSalaryType(v as SalaryTypeOption)} />
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="h-salary-amt" className={LBL}>금액</label>
+              <label htmlFor="h-salary-min" className={LBL}>최소 금액</label>
               <div className="relative">
-                <input id="h-salary-amt" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)}
-                  className={`${IN} pr-10`} placeholder="예: 7,000" />
+                <input id="h-salary-min" value={salaryMin} onChange={(e) => setSalaryMin(e.target.value)}
+                  disabled={salaryType === "면접 후 결정"}
+                  className={`${IN} pr-10 disabled:bg-[#f5f6f8] disabled:text-[#a4adba] disabled:cursor-not-allowed`}
+                  placeholder="예: 6,000" />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>만원</span>
               </div>
-              <p className={HINT}>신규(1년차) 기준 등 산정 기준이 있으면 함께 적어주세요.</p>
+              <p className={HINT}>신규(1년차) 기준 등 산정 기준이 있으면 급여 비고에 적어주세요.</p>
             </div>
             <div>
-              <label htmlFor="h-salary-note" className={LBL}>급여 비고</label>
-              <input id="h-salary-note" value={salaryNote} onChange={(e) => setSalaryNote(e.target.value)}
-                className={IN} placeholder="예: 신규 기준, 경력·근무횟수에 따라 상이" />
+              <label htmlFor="h-salary-max" className={LBL}>최대 금액 <span className="text-[#9aa3af] font-normal">(선택)</span></label>
+              <div className="relative">
+                <input id="h-salary-max" value={salaryMax} onChange={(e) => setSalaryMax(e.target.value)}
+                  disabled={salaryType === "면접 후 결정"}
+                  className={`${IN} pr-10 disabled:bg-[#f5f6f8] disabled:text-[#a4adba] disabled:cursor-not-allowed`}
+                  placeholder="예: 9,000" />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>만원</span>
+              </div>
             </div>
           </div>
+          <div className="mb-5">
+            <label htmlFor="h-salary-note" className={LBL}>급여 비고</label>
+            <input id="h-salary-note" value={salaryNote} onChange={(e) => setSalaryNote(e.target.value)}
+              className={IN} placeholder="예: 신규 기준, 경력·근무횟수에 따라 상이" />
+          </div>
+          <InlineNote>미리보기: {salaryPreview}</InlineNote>
 
           <div className="border-t border-[#f0f2f5] my-5" />
 
@@ -619,6 +799,38 @@ export function HospitalJobPostingForm() {
             <textarea id="h-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={3}
               className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
               placeholder="예: 4대 보험, 퇴직연금, 본인·가족 의료비 지원, 교육비 지원, 경조 휴가 등을 운영합니다." />
+          </div>
+
+          <div className="mb-2">
+            <p className={LBL} id="h-extra-items-lbl">
+              추가 항목 <span className="text-[#9aa3af] font-normal">(선택, 최대 {MAX_EXTRA_WORK_ITEMS}개)</span>
+            </p>
+            <div aria-labelledby="h-extra-items-lbl" className="flex flex-col gap-2">
+              {extraWorkItems.map((item, i) => (
+                <div key={item.id} className="flex items-center gap-2">
+                  <input aria-label={`추가 항목 ${i + 1} 라벨`} value={item.label} maxLength={20}
+                    onChange={(e) => updateExtraWorkItem(item.id, "label", e.target.value)}
+                    className={`w-[140px] shrink-0 ${IN}`} placeholder="예: 식대" />
+                  <input aria-label={`추가 항목 ${i + 1} 값`} value={item.value} maxLength={60}
+                    onChange={(e) => updateExtraWorkItem(item.id, "value", e.target.value)}
+                    className={`flex-1 ${IN}`} placeholder="예: 중식 제공" />
+                  <button type="button" aria-label={`추가 항목 ${i + 1} 삭제`} onClick={() => removeExtraWorkItem(item.id)}
+                    className="w-9 h-9 border border-[#dfe4ea] bg-white text-[#a0a9b7] grid place-items-center hover:text-danger hover:border-danger/30 transition-colors shrink-0">
+                    <Trash2 size={14} aria-hidden />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={addExtraWorkItem} disabled={extraWorkItems.length >= MAX_EXTRA_WORK_ITEMS}
+              className="mt-2 h-9 px-4 border border-dashed border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-[#111111] hover:text-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#d8e0e8] disabled:hover:text-[#4f5967]">
+              <Plus size={13} aria-hidden /> 항목 추가
+            </button>
+          </div>
+
+          <div className="mt-4">
+            <InlineNote>
+              근무조건 미리보기: {workConditionItemsPreview.map((item) => `${item.label}: ${item.value}`).join(" · ")}
+            </InlineNote>
           </div>
 
           <div className="border-t border-[#f0f2f5] my-5" />

@@ -41,6 +41,7 @@ const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string; tra
   { key: "headhuntingOnly", label: "헤드헌팅 공고" },
   { key: "quickApplyOnly", label: "간편지원 공고" },
   { key: "hourlyIncludeUnknown", label: "시급 미표기 포함", tracks: ["pharmacy"] },
+  { key: "salaryIncludeUnknown", label: "급여 미표기 포함", tracks: ["hospital"] },
 ];
 
 export function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {

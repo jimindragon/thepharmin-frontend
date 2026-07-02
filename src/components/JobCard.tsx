@@ -3,9 +3,11 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
+import { useState } from "react";
 import { companies } from "@/data/companies";
 import { companyLogos } from "@/config/companyImages";
 import type { Job } from "@/types/jobs";
+import { formatHospitalSalary } from "@/utils/salary";
 
 interface JobCardProps {
   job: Job;
@@ -30,6 +32,8 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
   const easyApply = job.applyMethod === "간편 지원";
   const hasCompanyProfile = Boolean(job.companyId && companies.some((item) => item.id === job.companyId));
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
+  const [logoFailed, setLogoFailed] = useState(false);
+  const showLogoImage = Boolean(logoUrl) && !logoFailed;
 
   return (
     <article className="surface group relative border-[#dedede] shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc]">
@@ -53,8 +57,13 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
       <div className="flex">
         {/* 로고 컬럼 */}
         <div className="flex w-[130px] shrink-0 items-center justify-center px-5">
-          {logoUrl ? (
-            <img src={logoUrl} alt={job.company} className="max-h-10 w-full object-contain" />
+          {showLogoImage ? (
+            <img
+              src={logoUrl}
+              alt={job.company}
+              className="max-h-10 w-full object-contain"
+              onError={() => setLogoFailed(true)}
+            />
           ) : (
             <span className="text-[13px] font-semibold text-[#596373]">{job.company.slice(0, 2)}</span>
           )}
@@ -97,7 +106,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
               <span className="px-2 text-[#c2c8d1]">·</span>
               {job.location}
               <span className="px-2 text-[#c2c8d1]">|</span>
-              {job.salary}
+              {job.track === "hospital" ? formatHospitalSalary(job.salaryRange, job.salaryNote) : job.salary}
             </p>
 
             <div className="mt-2 flex flex-wrap gap-1.5">

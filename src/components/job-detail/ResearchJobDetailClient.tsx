@@ -142,6 +142,7 @@ function ResearchSalarySection({ job }: { job: Job }) {
       <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3.5">
         <p className="text-[12px] font-medium text-[#8893a2]">급여</p>
         <p className="mt-1.5 text-[17px] font-bold text-[#2f3845]">{formatted.primary}</p>
+        {formatted.diff ? <p className="mt-1 text-[13px] font-normal leading-[1.55] text-[#667181]">{formatted.diff}</p> : null}
         {formatted.note ? <p className="mt-1 text-[13px] font-normal leading-[1.55] text-[#667181]">{formatted.note}</p> : null}
       </div>
       {info.funding?.length ? (
@@ -265,7 +266,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
       });
     }
     if (job.researchRecruitType) items.push({ label: "채용 형태", value: job.researchRecruitType });
-    if (job.researchApplyVia) items.push({ label: "채용 방식", value: job.researchApplyVia });
+    if (job.researchApplyVia) items.push({ label: "지원 방식", value: job.researchApplyVia });
     items.push({ label: "최종학력", value: job.researchDegree ?? job.education });
     if (job.headcount) items.push({ label: "채용 인원", value: job.headcount });
     if (job.researchLocationInfo) {

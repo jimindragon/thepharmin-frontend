@@ -19,6 +19,9 @@ export const researchFieldCategoryOptions: JobCategoryOption[] = [
       { id: "microbiology", label: "미생물학", categoryId: "life-science" },
       { id: "biochemistry", label: "생화학", categoryId: "life-science" },
       { id: "structural-biology", label: "구조생물학", categoryId: "life-science" },
+      { id: "bioengineering", label: "생물공학", categoryId: "life-science" },
+      { id: "infection-biology", label: "감염생물학", categoryId: "life-science" },
+      { id: "life-science-etc", label: "생명과학 기타", categoryId: "life-science" },
     ],
   },
   {
@@ -32,6 +35,10 @@ export const researchFieldCategoryOptions: JobCategoryOption[] = [
       { id: "pharmacology", label: "약리학", categoryId: "medicine" },
       { id: "physiology", label: "생리학", categoryId: "medicine" },
       { id: "pathology", label: "병리학", categoryId: "medicine" },
+      { id: "pharmacy", label: "약학", categoryId: "medicine" },
+      { id: "molecular-cell-medicine", label: "분자세포의학", categoryId: "medicine" },
+      { id: "infectious-medicine", label: "감염의학", categoryId: "medicine" },
+      { id: "applied-medicine", label: "응용의학", categoryId: "medicine" },
     ],
   },
   {

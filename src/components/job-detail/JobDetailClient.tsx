@@ -30,6 +30,7 @@ import type {
   Job,
   ReviewAccessState,
 } from "@/types/jobs";
+import { getActiveJobCount } from "@/data/companyDirectory";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import {
   ActionIconButton,
@@ -944,7 +945,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   <OverviewCard label="업종" value={company?.industry ?? job.industry ?? "제약·바이오"} />
                   <OverviewCard label="사원 수" value={company?.employeeCount ?? "정보 없음"} />
                   <OverviewCard label="설립연도" value={company?.foundedYear ?? "정보 없음"} />
-                  <OverviewCard label="진행 중 공고" value={`${company?.activeJobCount ?? 1}개`} />
+                  <OverviewCard label="진행 중 공고" value={`${company ? getActiveJobCount(company.id) : 1}개`} />
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   <Link

@@ -1,4 +1,4 @@
-import type { JobWorkShift, ResearchSalaryInfo, SalaryDetail } from "@/types/jobs";
+import type { JobWorkShift, PayType, ResearchSalaryInfo, SalaryDetail, SalaryRange } from "@/types/jobs";
 
 /**
  * 원 단위 숫자를 화면 표시용 문자열로 변환한다.
@@ -136,10 +136,55 @@ export function formatResearchSalaryInfo(info: ResearchSalaryInfo): FormattedSal
     return { primary: "면접 시 협의", note: info.note };
   }
 
+  if (info.kind === "월급") {
+    const monthlyRange = formatManwonRange(info.min, info.max);
+    const annualMin = info.min != null ? info.min * 12 : undefined;
+    const annualMax = info.max != null ? info.max * 12 : undefined;
+    const annualRange = formatManwonRange(annualMin, annualMax);
+
+    return {
+      primary: annualRange ? `연봉 ${annualRange}` : "연봉 협의",
+      diff: monthlyRange ? `월급 ${monthlyRange} 기준 환산` : undefined,
+      note: info.note,
+    };
+  }
+
   const range = formatManwonRange(info.min, info.max);
 
   return {
     primary: range ? `연봉 ${range}` : "연봉 협의",
     note: info.note,
   };
+}
+
+const HOSPITAL_PAY_TYPE_LABELS: Record<PayType, string> = {
+  annual: "연봉",
+  monthly: "월급",
+  hourly: "시급",
+  daily: "일급",
+};
+
+/**
+ * 병원 트랙 급여 표시용 문자열.
+ * salaryRange가 없으면(또는 min/max가 모두 비어 있으면) salaryNote를 접두어 없이 단독 표기하고,
+ * salaryNote도 없으면 "면접 후 결정"으로 표시한다. salaryRange가 있으면 금액 표기 뒤에 salaryNote를 " · "로 병기한다.
+ */
+export function formatHospitalSalary(salaryRange: SalaryRange | null | undefined, salaryNote?: string): string {
+  const label = salaryRange ? HOSPITAL_PAY_TYPE_LABELS[salaryRange.payType] : undefined;
+  const { min, max } = salaryRange ?? {};
+
+  if (!label || (min == null && max == null)) {
+    return salaryNote ?? "면접 후 결정";
+  }
+
+  let base: string;
+  if (min != null && max != null && min !== max) {
+    base = `${label} ${min.toLocaleString("ko-KR")}~${max.toLocaleString("ko-KR")}만원`;
+  } else if (min != null) {
+    base = max != null ? `${label} ${min.toLocaleString("ko-KR")}만원` : `${label} ${min.toLocaleString("ko-KR")}만원 이상`;
+  } else {
+    base = `${label} ${max!.toLocaleString("ko-KR")}만원 이하`;
+  }
+
+  return salaryNote ? `${base} · ${salaryNote}` : base;
 }

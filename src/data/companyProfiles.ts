@@ -31,16 +31,6 @@ export interface CompanyProfileJob {
   location: string;
 }
 
-export interface KeywordReview {
-  id: string;
-  role: string;
-  career: string;
-  date: string;
-  keywords: string[];
-  summary: string;
-  helpfulCount?: number;
-}
-
 export interface CompanyProfileNews {
   id: string;
   date: string;
@@ -75,17 +65,7 @@ export interface CompanyProfile {
   recruitSummary: string;
   details: CompanyDetailField[];
   keywords: string[];
-  jobCount: number;
   jobs: CompanyProfileJob[];
-  interviewReviewCount: number;
-  interviewTopKeywords: string[];
-  interviewReviews: KeywordReview[];
-  employeeReviewCount: number;
-  employeeTopKeywords: string[];
-  employeePositiveKeywords: string[];
-  employeeImprovementKeywords: string[];
-  employeeReviews: KeywordReview[];
-  newsCount: number;
   news: CompanyProfileNews[];
   sidebar: {
     interestedCount: string;
@@ -141,78 +121,12 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "계열사", value: "더파마헬스케어, 더파마바이오" },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "도전과 혁신", "환자 중심", "전문성 존중"],
-    jobCount: 4,
     jobs: [
       { id: "ra", title: "RA Specialist", href: "/jobs/ra-specialist", dDay: "D-12", tags: ["RA"], career: "경력 3~5년", location: "서울" },
       { id: "cra", title: "Clinical Research Associate", href: "/jobs?keyword=CRA", dDay: "D-18", tags: ["CRA"], career: "경력 2~4년", location: "전국" },
       { id: "rnd", title: "신약개발 연구원", href: "/jobs?keyword=신약개발", dDay: "D-24", tags: ["연구개발"], career: "신입/경력", location: "대전" },
       { id: "pv", title: "PV Specialist", href: "/jobs?keyword=PV", dDay: "D-30", tags: ["PV"], career: "경력 2~6년", location: "서울" },
     ],
-    interviewReviewCount: 128,
-    interviewTopKeywords: ["직무역량 평가", "실무 중심 질문", "차분한 분위기", "일정 안내 명확", "전형 과정 보통"],
-    interviewReviews: [
-      {
-        id: "interview-1",
-        role: "RA",
-        career: "경력 1-3년",
-        date: "2024.05",
-        keywords: ["직무 적합성", "면접 분위기", "질문 난이도"],
-        summary: "실무 경험 질문 위주로 진행되며, 근거를 차분히 설명할 수 있는 분위기였습니다.",
-        helpfulCount: 18,
-      },
-      {
-        id: "interview-2",
-        role: "CRA",
-        career: "경력 2-4년",
-        date: "2024.04",
-        keywords: ["커뮤니케이션", "전공 지식", "회사 이해도"],
-        summary: "실제 임상 운영 상황에 대한 질문이 많았고, 회사 비전에 대한 관심도 중요하게 보였습니다.",
-        helpfulCount: 12,
-      },
-      {
-        id: "interview-3",
-        role: "신약개발",
-        career: "신입",
-        date: "2024.03",
-        keywords: ["실무 중심", "비전 공유", "일정 안내 명확"],
-        summary: "연구 경험과 협업 태도에 대한 질문이 중심이었고, 전형 일정 안내가 명확했습니다.",
-        helpfulCount: 9,
-      },
-    ],
-    employeeReviewCount: 356,
-    employeeTopKeywords: ["수평적인 조직문화", "자율성 있는 편", "R&D 투자 활발", "직무 전문성 성장", "복지 만족", "업무량 있음"],
-    employeePositiveKeywords: ["직무 전문성", "안정적인 프로세스", "연구개발 투자", "복지 만족"],
-    employeeImprovementKeywords: ["업무 프로세스 개선 필요", "의사결정 속도", "일정 압박"],
-    employeeReviews: [
-      {
-        id: "employee-1",
-        role: "연구개발",
-        career: "경력 3-5년",
-        date: "2024.05",
-        keywords: ["연구개발 지원", "자율성과 책임", "복지 만족"],
-        summary: "R&D 투자가 활발하고 연구에 집중할 수 있는 환경이 잘 조성되어 있습니다.",
-        helpfulCount: 31,
-      },
-      {
-        id: "employee-2",
-        role: "RA",
-        career: "경력 2-4년",
-        date: "2024.04",
-        keywords: ["글로벌 경험", "업무 효율성", "동료 관계"],
-        summary: "글로벌 프로젝트 경험을 쌓기에 좋고, 동료 간 협업 문화가 긍정적입니다.",
-        helpfulCount: 24,
-      },
-      {
-        id: "employee-3",
-        role: "생산/품질",
-        career: "경력 5년 이상",
-        date: "2024.03",
-        keywords: ["안정적 근무", "복지 만족", "워라밸"],
-        summary: "근무 환경이 안정적이며, 워크라이프 밸런스를 중요하게 생각합니다.",
-        helpfulCount: 17,
-      },
-    ],
-    newsCount: 24,
     news: [
       {
         id: "news-1",
@@ -328,7 +242,6 @@ export const companyProfiles: CompanyProfile[] = [
       },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "사회적 책임", "항암·면역", "버들표 신뢰"],
-    jobCount: 1,
     jobs: [
       {
         id: "yuhan-office-support-2026",
@@ -340,35 +253,6 @@ export const companyProfiles: CompanyProfile[] = [
         location: "서울",
       },
     ],
-    interviewReviewCount: 2,
-    interviewTopKeywords: ["AI 인적성검사", "PT 발표면접", "실무진 면접", "편안한 분위기", "임원 면접"],
-    interviewReviews: [
-      {
-        id: "yuhan-interview-1",
-        role: "임상개발",
-        career: "신입",
-        date: "2025.10",
-        keywords: ["AI 인적성", "PT 발표면접", "실무진 면접", "임원 면접"],
-        summary: "AI 인적성검사부터 PT 발표면접, 실무진 면접, 임원 면접까지 다단계로 진행되었고 전반적인 난이도는 보통이었습니다.",
-        helpfulCount: 14,
-      },
-      {
-        id: "yuhan-interview-2",
-        role: "생산",
-        career: "신입",
-        date: "2024.04",
-        keywords: ["조별 면접", "편안한 분위기", "1인 1질문"],
-        summary: "조별로 진행된 면접에서 1인 1질문 방식으로 편안한 분위기 속에 대화가 이어졌습니다.",
-        helpfulCount: 9,
-      },
-    ],
-    // TODO: 기업 후기(임직원 리뷰) 실데이터 확보 시 반영 — 현재 제공된 자료에 없어 빈 배열로 둔다
-    employeeReviewCount: 0,
-    employeeTopKeywords: [],
-    employeePositiveKeywords: [],
-    employeeImprovementKeywords: [],
-    employeeReviews: [],
-    newsCount: 5,
     news: [
       {
         id: "yuhan-news-1",
@@ -499,19 +383,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["CDMO", "글로벌 위탁생산", "송도 바이오캠퍼스", "ESG", "항체의약품", "ADC"],
     // TODO: 채용공고 실데이터 확보 시 반영 — 현재 진행 중인 공고 없음(실)
-    jobCount: 0,
     jobs: [],
-    // TODO: 면접 후기 실데이터 확보 시 반영 — 제공된 자료에 본문 없음(잡코리아 게시물 77건만 존재가 언급됨)
-    interviewReviewCount: 0,
-    interviewTopKeywords: [],
-    interviewReviews: [],
-    // TODO: 기업 후기(임직원 리뷰) 실데이터 확보 시 반영 — 현재 제공된 자료에 없어 빈 배열로 둔다
-    employeeReviewCount: 0,
-    employeeTopKeywords: [],
-    employeePositiveKeywords: [],
-    employeeImprovementKeywords: [],
-    employeeReviews: [],
-    newsCount: 5,
     news: [
       {
         id: "sbl-news-1",
@@ -599,6 +471,7 @@ export const companyProfiles: CompanyProfile[] = [
     id: "hugel",
     name: "휴젤(주)",
     logoText: "HUGEL",
+    logoImage: companyLogos["휴젤(주)"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "삶의 질 향상을 추구하는 글로벌 바이오의약품 전문기업",
@@ -638,7 +511,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "계열사", value: "(주)GS, 지에스칼텍스(주), 자이에스앤디(주), 지에스이피에스(주), 지에스파워(주), 인천종합에너지(주) 등" },
     ],
     keywords: ["보툴리눔 톡신", "HA필러", "글로벌 수출", "에스테틱", "R&D", "더마 코스메틱"],
-    jobCount: 5,
     jobs: [
       {
         id: "hugel-global-product-planning",
@@ -686,17 +558,6 @@ export const companyProfiles: CompanyProfile[] = [
         location: "강원",
       },
     ],
-    // TODO: 면접 후기 실데이터 확보 시 반영 — 제공된 자료에 본문 없음
-    interviewReviewCount: 0,
-    interviewTopKeywords: [],
-    interviewReviews: [],
-    // TODO: 기업 후기(임직원 리뷰) 실데이터 확보 시 반영 — 현재 제공된 자료에 없어 빈 배열로 둔다
-    employeeReviewCount: 0,
-    employeeTopKeywords: [],
-    employeePositiveKeywords: [],
-    employeeImprovementKeywords: [],
-    employeeReviews: [],
-    newsCount: 5,
     news: [
       {
         id: "hugel-news-1",
@@ -779,6 +640,519 @@ export const companyProfiles: CompanyProfile[] = [
       { id: "medytox", name: "(주)메디톡스", description: "보툴리눔 톡신·미용의료 전문 인력 채용", href: "/jobs?keyword=메디톡스" },
       { id: "sk-bioscience", name: "에스케이바이오사이언스(주)", description: "백신·바이오 전문 인력 채용", href: "/jobs?keyword=에스케이바이오사이언스" },
     ],
+  },
+  {
+    id: "celltrion",
+    name: "셀트리온",
+    logoText: "CELLTRION",
+    logoImage: companyLogos["셀트리온"],
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "바이오시밀러를 넘어 신약으로, 글로벌 바이오 기업",
+    tags: ["제약/바이오", "설립 1991년", "사원수 2,300명"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "매출액", value: "3조 5,573억 원", caption: "2025년" },
+      { label: "영업이익", value: "6,048억 원", caption: "2025년" },
+      { label: "R&D 투자비율", value: "18.2%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "88%", caption: "2025년", estimated: true },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "항체 바이오시밀러·신약 개발 및 생산" },
+      { label: "주요 제품", value: "램시마 · 트룩시마 · 짐펜트라" },
+      { label: "글로벌 진출", value: "110개국+", estimated: true },
+    ],
+    recruitSummary:
+      "램시마SC와 짐펜트라의 글로벌 확대를 중심으로 바이오시밀러 포트폴리오를 넓히며, 항체 신약과 ADC 분야로 파이프라인을 확장하고 있습니다.",
+    details: [
+      { label: "대표자", value: "서정진" },
+      { label: "설립일", value: "1991년 02월" },
+      { label: "본사 위치", value: "인천 연수구 아카데미로 23" },
+      { label: "홈페이지", value: "www.celltrion.com" },
+      { label: "기업 형태", value: "대기업" },
+      { label: "업종", value: "생물학적 제제 제조업" },
+    ],
+    keywords: ["바이오시밀러", "글로벌 진출", "항체의약품", "생산 강자", "신약 도전"],
+    jobs: [],
+    news: [
+      {
+        id: "celltrion-news-1",
+        date: "2026.03.12",
+        title: "셀트리온, 짐펜트라 유럽 적응증 확대 승인",
+        source: "더파마뉴스",
+        category: "글로벌·허가",
+        summary: "글로벌 RA·메디컬 어페어즈 직무 수요가 이어질 수 있습니다.",
+        tags: ["글로벌", "허가"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/celltrion-news-1",
+      },
+      {
+        id: "celltrion-news-2",
+        date: "2025.11.05",
+        title: "셀트리온, 3공장 상업 생산 본격 가동",
+        source: "더파마뉴스",
+        category: "생산·품질",
+        summary: "생산·QA·QC 인력 채용이 확대되는 흐름입니다.",
+        tags: ["생산", "품질"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/celltrion-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "18,000+",
+      responseRate: "92%",
+      averageResponseTime: "1.2일",
+      followers: "18,000+",
+      reviewKeywordCount: "17개",
+      industryRank: "생물학적 제제 제조업 1위",
+      products: [
+        { name: "램시마", description: "자가면역질환 치료제" },
+        { name: "트룩시마", description: "혈액암 치료제" },
+        { name: "짐펜트라", description: "램시마SC 미국 브랜드" },
+      ],
+      address: "인천 연수구 아카데미로 23",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "hanmi-pharm",
+    name: "한미약품(주)",
+    logoText: "한미약품",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "R&D로 성장하는 신약개발 중심 제약기업",
+    tags: ["제약/바이오", "설립 1973년", "사원수 2,400명"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "매출액", value: "1조 5,842억 원", caption: "2025년" },
+      { label: "영업이익", value: "2,315억 원", caption: "2025년" },
+      { label: "R&D 투자비율", value: "13.8%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "12%", caption: "2025년", estimated: true },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "개량신약·전문의약품 및 신약 파이프라인 개발" },
+      { label: "주요 제품", value: "아모잘탄 · 로수젯 · 팔팔" },
+      { label: "파이프라인", value: "30개+", estimated: true },
+    ],
+    recruitSummary:
+      "대사질환·항암 중심의 신약 파이프라인과 개량신약 포트폴리오를 함께 운영하며, 국내 R&D 투자 상위권을 유지하고 있는 연구 중심 제약사입니다.",
+    details: [
+      { label: "대표자", value: "박재현" },
+      { label: "설립일", value: "1973년 06월" },
+      { label: "본사 위치", value: "서울 송파구 위례성대로 14" },
+      { label: "홈페이지", value: "www.hanmi.co.kr" },
+      { label: "기업 형태", value: "대기업" },
+      { label: "업종", value: "완제 의약품 제조업" },
+    ],
+    keywords: ["신약개발", "R&D 중심", "개량신약", "대사질환", "오픈이노베이션"],
+    jobs: [],
+    news: [
+      {
+        id: "hanmi-pharm-news-1",
+        date: "2026.01.28",
+        title: "한미약품, 비만 치료 신약 국내 3상 진입",
+        source: "더파마뉴스",
+        category: "국내·임상",
+        summary: "임상 운영·메디컬 직무 수요가 늘어날 수 있습니다.",
+        tags: ["국내", "임상"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/hanmi-pharm-news-1",
+      },
+      {
+        id: "hanmi-pharm-news-2",
+        date: "2025.08.14",
+        title: "한미약품, 항암 파이프라인 글로벌 기술이전 계약",
+        source: "더파마뉴스",
+        category: "글로벌·파트너십",
+        summary: "BD·라이선싱 직무의 역할이 커지는 흐름입니다.",
+        tags: ["글로벌", "파트너십"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/hanmi-pharm-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "12,000+",
+      responseRate: "90%",
+      averageResponseTime: "1.5일",
+      followers: "12,000+",
+      reviewKeywordCount: "15개",
+      products: [
+        { name: "아모잘탄", description: "고혈압 복합제" },
+        { name: "로수젯", description: "이상지질혈증 복합제" },
+        { name: "팔팔", description: "발기부전 치료제" },
+      ],
+      address: "서울 송파구 위례성대로 14",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "chongkundang",
+    name: "(주)종근당",
+    logoText: "종근당",
+    logoImage: companyLogos["(주)종근당"],
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "신약과 개량신약을 아우르는 국내 대표 제약기업",
+    tags: ["제약/바이오", "설립 1941년", "사원수 2,200명"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "매출액", value: "1조 6,694억 원", caption: "2025년" },
+      { label: "영업이익", value: "1,528억 원", caption: "2025년" },
+      { label: "R&D 투자비율", value: "12.1%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "8%", caption: "2025년", estimated: true },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "전문의약품·개량신약 개발 및 제조" },
+      { label: "주요 제품", value: "종근당글리아티린 · 이모튼 · 딜라트렌" },
+    ],
+    recruitSummary:
+      "전문의약품 중심의 안정적인 매출 기반 위에서 합성신약과 바이오 분야 파이프라인을 확대하고 있으며, CMC·품질 직무 채용이 꾸준한 기업입니다.",
+    details: [
+      { label: "대표자", value: "김영주" },
+      { label: "설립일", value: "1941년 05월" },
+      { label: "본사 위치", value: "서울 서대문구 충정로 8" },
+      { label: "홈페이지", value: "www.ckdpharm.com" },
+      { label: "기업 형태", value: "대기업" },
+      { label: "업종", value: "완제 의약품 제조업" },
+    ],
+    keywords: ["전문의약품", "CMC·품질", "꾸준한 채용", "안정성", "신약 파이프라인"],
+    jobs: [],
+    news: [
+      {
+        id: "chongkundang-news-1",
+        date: "2026.02.19",
+        title: "종근당, 합성신약 후보물질 임상 1상 승인",
+        source: "더파마뉴스",
+        category: "국내·임상",
+        summary: "비임상·임상 초기 단계 인력 수요가 생기고 있습니다.",
+        tags: ["국내", "임상"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/chongkundang-news-1",
+      },
+      {
+        id: "chongkundang-news-2",
+        date: "2025.09.30",
+        title: "종근당, 천안공장 스마트팩토리 전환 투자 발표",
+        source: "더파마뉴스",
+        category: "생산·품질",
+        summary: "공정기술·밸리데이션 직무 채용이 이어질 수 있습니다.",
+        tags: ["생산", "품질"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/chongkundang-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "8,500+",
+      responseRate: "88%",
+      averageResponseTime: "1.8일",
+      followers: "8,500+",
+      reviewKeywordCount: "12개",
+      products: [
+        { name: "종근당글리아티린", description: "뇌기능개선제" },
+        { name: "이모튼", description: "관절 기능성 제제" },
+        { name: "딜라트렌", description: "심부전 치료제" },
+      ],
+      address: "서울 서대문구 충정로 8",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "greencross",
+    name: "(주)녹십자",
+    logoText: "녹십자",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "백신과 혈액제제로 공중보건을 지켜온 바이오 전문기업",
+    tags: ["제약/바이오", "설립 1967년", "사원수 2,100명"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "매출액", value: "1조 7,208억 원", caption: "2025년" },
+      { label: "영업이익", value: "682억 원", caption: "2025년" },
+      { label: "R&D 투자비율", value: "11.4%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "22%", caption: "2025년", estimated: true },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "혈액제제·백신 개발 및 제조" },
+      { label: "주요 제품", value: "알리글로 · 지씨플루 · 헌터라제" },
+    ],
+    recruitSummary:
+      "혈액제제 알리글로의 미국 시장 안착을 계기로 글로벌 매출 비중을 늘리고 있으며, 백신·희귀질환 치료제 중심의 특화 포트폴리오를 운영합니다.",
+    details: [
+      { label: "대표자", value: "허은철" },
+      { label: "설립일", value: "1967년 10월" },
+      { label: "본사 위치", value: "경기 용인시 기흥구 이현로30번길 107" },
+      { label: "홈페이지", value: "www.gccorp.com" },
+      { label: "기업 형태", value: "대기업" },
+      { label: "업종", value: "생물학적 제제 제조업" },
+    ],
+    keywords: ["혈액제제", "백신", "글로벌 진출", "희귀질환", "콜드체인"],
+    jobs: [],
+    news: [
+      {
+        id: "greencross-news-1",
+        date: "2026.04.08",
+        title: "녹십자, 알리글로 미국 매출 분기 최대 실적",
+        source: "더파마뉴스",
+        category: "글로벌·수출",
+        summary: "글로벌 생산·품질 및 SCM 직무의 중요성이 커지고 있습니다.",
+        tags: ["글로벌", "수출"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/greencross-news-1",
+      },
+      {
+        id: "greencross-news-2",
+        date: "2025.10.22",
+        title: "녹십자, 독감백신 국가출하승인 물량 확대",
+        source: "더파마뉴스",
+        category: "국내·백신",
+        summary: "시즌별 생산·QC 인력 수요가 반복되는 구조입니다.",
+        tags: ["국내", "백신"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/greencross-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "7,200+",
+      responseRate: "91%",
+      averageResponseTime: "1.4일",
+      followers: "7,200+",
+      reviewKeywordCount: "9개",
+      products: [
+        { name: "알리글로", description: "면역글로불린" },
+        { name: "지씨플루", description: "독감백신" },
+        { name: "헌터라제", description: "헌터증후군 치료제" },
+      ],
+      address: "경기 용인시 기흥구 이현로30번길 107",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "medicoa-cro",
+    name: "메디코아CRO(주)",
+    logoText: "메디코아",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO",
+    tags: ["CRO/CDMO", "설립 2011년", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "매출액", value: "892억 원", caption: "2025년" },
+      { label: "영업이익", value: "96억 원", caption: "2025년" },
+      { label: "진행 과제", value: "연간 140건+", estimated: true },
+      { label: "글로벌 과제 비중", value: "35%", caption: "2025년", estimated: true },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "임상 1~4상 운영·모니터링·DM·통계 수탁" },
+      { label: "주요 고객", value: "국내 제약사·바이오벤처·글로벌 스폰서" },
+    ],
+    recruitSummary:
+      "국내 제약사와 바이오벤처의 임상을 폭넓게 수탁하며, 다국가 임상 비중을 늘려가는 성장기 CRO입니다. CRA·DM·통계 직군의 채용이 꾸준합니다.",
+    details: [
+      { label: "대표자", value: "이정민" },
+      { label: "설립일", value: "2011년 03월" },
+      { label: "본사 위치", value: "서울 구로구 디지털로 300" },
+      { label: "홈페이지", value: "www.medicoacro.co.kr" },
+      { label: "기업 형태", value: "중견기업" },
+      { label: "업종", value: "임상시험 수탁기관" },
+    ],
+    keywords: ["풀서비스 CRO", "CRA 채용", "다국가 임상", "성장기", "커리어 시작"],
+    jobs: [],
+    news: [
+      {
+        id: "medicoa-cro-news-1",
+        date: "2026.03.02",
+        title: "메디코아CRO, 글로벌 스폰서 항암 3상 수주",
+        source: "더파마뉴스",
+        category: "사업·수주",
+        summary: "CRA·임상 QA 채용이 확대될 수 있습니다.",
+        tags: ["사업", "수주"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/medicoa-cro-news-1",
+      },
+      {
+        id: "medicoa-cro-news-2",
+        date: "2025.07.16",
+        title: "메디코아CRO, 재택·거점 근무제 정식 도입",
+        source: "더파마뉴스",
+        category: "조직·복지",
+        summary: "모니터링 직군의 근무 유연성이 개선되고 있습니다.",
+        tags: ["조직", "복지"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/medicoa-cro-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "3,400+",
+      responseRate: "95%",
+      averageResponseTime: "0.9일",
+      followers: "3,400+",
+      reviewKeywordCount: "12개",
+      products: [],
+      address: "서울 구로구 디지털로 300",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "snubh",
+    name: "분당서울대학교병원",
+    logoText: "분당서울대학교병원",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "연구와 진료를 잇는 스마트병원 선도 상급종합병원",
+    tags: ["병원", "설립 2003년", "사원수 501명 이상"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "병상 수", value: "1,335병상" },
+      { label: "연간 임상시험", value: "600건+", estimated: true },
+      { label: "약제부 인력", value: "110명+", estimated: true },
+      { label: "주요 분야", value: "진료·임상연구·의료정보화" },
+    ],
+    businessSummary: [{ label: "특징", value: "국내 최초 전면 디지털 병원 (HIMSS 최고 등급 경험)" }],
+    recruitSummary:
+      "임상시험센터와 의료정보화 역량을 갖춘 연구 중심 병원으로, 병원약사·CRC 등 보건의료 직군과 임상연구 직군의 채용이 꾸준히 발생합니다.",
+    details: [
+      { label: "대표자", value: "병원장 송정한" },
+      { label: "설립일", value: "2003년 05월" },
+      { label: "본사 위치", value: "경기 성남시 분당구 구미로173번길 82" },
+      { label: "홈페이지", value: "www.snubh.org" },
+      { label: "기업 형태", value: "공공·대학병원" },
+      { label: "업종", value: "상급종합병원" },
+    ],
+    keywords: ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계"],
+    jobs: [],
+    news: [
+      {
+        id: "snubh-news-1",
+        date: "2026.02.10",
+        title: "분당서울대병원, 상반기 약무직 정기 채용 진행",
+        source: "더파마뉴스",
+        category: "병원·채용",
+        summary: "병원약사 정기 채용 사이클이 유지되고 있습니다.",
+        tags: ["병원", "채용"],
+        thumbnail: companyExampleImages.hero,
+        href: "https://www.thepharmanews.com/news/snubh-news-1",
+      },
+      {
+        id: "snubh-news-2",
+        date: "2025.12.01",
+        title: "분당서울대병원, 임상시험센터 확장 개소",
+        source: "더파마뉴스",
+        category: "연구·임상",
+        summary: "CRC·임상 코디네이터 수요가 늘어날 수 있습니다.",
+        tags: ["연구", "임상"],
+        thumbnail: companyExampleImages.workspace,
+        href: "https://www.thepharmanews.com/news/snubh-news-2",
+      },
+    ],
+    sidebar: {
+      interestedCount: "5,100+",
+      responseRate: "85%",
+      averageResponseTime: "2.1일",
+      followers: "5,100+",
+      reviewKeywordCount: "9개",
+      products: [],
+      address: "경기 성남시 분당구 구미로173번길 82",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
+  },
+  {
+    id: "eunhaeng-pharmacy",
+    name: "은행약국",
+    logoText: "은행약국",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    // 원고의 "용인 수지구" 표현은 기존 companies.ts의 eunhaeng-pharmacy 주소(처인구 양지읍)와 달라
+    // 사용자 확인 후 기존 데이터 기준으로 "수지구"만 "처인구"로 교체 — 그 외 문구는 원고 그대로다.
+    tagline: "의원 처방 중심의 안정적인 근무 환경, 용인 처인구 의원층 약국",
+    tags: ["약국", "설립 2026.02.11"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "일평균 처방", value: "180건 내외" },
+      { label: "주요 처방과", value: "내과·이비인후과·정형외과" },
+      { label: "근무 형태", value: "주 5일 협의 / 토요일 격주" },
+      { label: "문전 여부", value: "의원층 (엘리베이터 공유)" },
+    ],
+    businessSummary: [
+      { label: "근무 약사", value: "3명" },
+      { label: "직원", value: "2명" },
+    ],
+    recruitSummary:
+      "같은 건물 의원 처방 중심이라 처방 패턴이 안정적이고, 신규 약사 교육과 복약지도 루틴이 정리되어 있는 의원층 약국입니다.",
+    details: [
+      // 원고의 "대표자: 대표약사 (목데이터: 김은행)" 대신 기존 companies.ts의 마스킹된 실제 값을 사용 (사용자 확인)
+      { label: "대표자", value: "정*래" },
+      { label: "설립일", value: "2026.02.11" },
+      { label: "본사 위치", value: "경기 용인시 처인구 양지읍 양지로138번길 14 2층" },
+      { label: "기업 형태", value: "개인약국" },
+      { label: "업종", value: "의원(층)약국" },
+    ],
+    keywords: ["의원층 약국", "안정적 처방", "근무 협의 가능", "교육 루틴"],
+    jobs: [
+      {
+        id: "eunhaeng-pharmacy-part-time-pharmacist",
+        title: "파트타임 약사 채용",
+        href: "/jobs/eunhaeng-pharmacy-part-time-pharmacist",
+        dDay: "채용시 마감",
+        tags: ["파트타임약사"],
+        career: "경력 무관",
+        location: "경기 용인시 처인구",
+      },
+    ],
+    news: [],
+    sidebar: {
+      // 원고에 사이드바 수치(관심기업/응답률/평균응답)가 없어 이 회사의 다른 필드(사원수 등)와 동일하게
+      // 데이터 없음을 뜻하는 기존 관례("-")를 사용했다
+      interestedCount: "-",
+      responseRate: "-",
+      averageResponseTime: "-",
+      followers: "-",
+      reviewKeywordCount: "9개",
+      products: [],
+      address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",
+    },
+    extraCards: [
+      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
+      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
+      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
+      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
+    ],
+    relatedCompanies: [],
   },
 ];
 

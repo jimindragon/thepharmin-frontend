@@ -35,6 +35,9 @@ export const shiftTypeOptions: FilterOption[] = [
   { id: "weekend_work", label: "주말근무" },
 ];
 
+/** 병원 트랙 급여 셀렉트. "면접 후 결정" 등 미표기 공고는 company-policy 옵션 대신 salaryIncludeUnknown 체크박스로 다룬다 */
+export const hospitalSalaryOptions: FilterOption[] = salaryOptions.filter((option) => option.id !== "company-policy");
+
 export const hospitalFilterConfig: TrackFilterConfig = {
   track: "hospital",
   filters: [
@@ -49,7 +52,7 @@ export const hospitalFilterConfig: TrackFilterConfig = {
     },
     { id: "region", label: "지역", kind: "options", stateKey: "regionIds", selection: "multiple", options: domesticRegionOptions },
     { id: "experience", label: "경력", kind: "options", stateKey: "experienceId", selection: "single", options: experienceOptions },
-    { id: "salary", label: "급여", kind: "options", stateKey: "salaryId", selection: "single", options: salaryOptions },
+    { id: "salary", label: "급여", kind: "options", stateKey: "salaryId", selection: "single", options: hospitalSalaryOptions },
     {
       id: "additional",
       label: "추가 조건",

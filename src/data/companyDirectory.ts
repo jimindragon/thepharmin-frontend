@@ -1,5 +1,6 @@
 import { companies, companyReviews } from "@/data/companies";
 import { companyProfiles } from "@/data/companyProfiles";
+import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
 
 export type IndustryGroup = "pharma_bio" | "cro_cdmo";
@@ -36,9 +37,33 @@ export interface CompanyDirectoryEntry {
 const trackById: Record<string, JobTrack> = {
   "thepharmin-pharma": "industry",
   "eunhaeng-pharmacy": "pharmacy",
+  "hyundai-pharmacy": "pharmacy",
+  "hwagok-gibeum-pharmacy": "pharmacy",
+  "hyeongang-pharmacy": "pharmacy",
+  "yeongdong-365-pharmacy": "pharmacy",
+  "bichina-pharmacy": "pharmacy",
+  "masan-yugil-pharmacy": "pharmacy",
+  "shin-jungang-pharmacy": "pharmacy",
+  "munmu-pharmacy": "pharmacy",
+  "buldang-central-pharmacy": "pharmacy",
   yuhan: "industry",
   "samsung-biologics": "industry",
   hugel: "industry",
+  celltrion: "industry",
+  "hanmi-pharm": "industry",
+  chongkundang: "industry",
+  greencross: "industry",
+  "medicoa-cro": "industry",
+  snubh: "hospital",
+  "hanbit-general-hospital": "hospital",
+  "mirae-care-hospital": "hospital",
+  "national-central-hospital": "hospital",
+  "jeil-orthopedic-hospital": "hospital",
+  "muju-county-care-hospital": "hospital",
+  "national-fire-hospital": "hospital",
+  "sungae-hospital": "hospital",
+  "armed-forces-seoul-district-hospital": "hospital",
+  "osan-hankook-hospital": "hospital",
 };
 
 /**
@@ -52,10 +77,21 @@ const industryGroupById: Record<string, IndustryGroup> = {
   // 배지·태그가 "바이오/CDMO"로 명시된 위탁개발생산 전문기업이라 CRO·CDMO 탭으로 분류한다
   "samsung-biologics": "cro_cdmo",
   hugel: "pharma_bio",
+  celltrion: "pharma_bio",
+  "hanmi-pharm": "pharma_bio",
+  chongkundang: "pharma_bio",
+  greencross: "pharma_bio",
+  // 원고에서 카테고리를 "CRO·CDMO"로 명시한 임상시험 수탁기관이라 CRO·CDMO 탭으로 분류한다
+  "medicoa-cro": "cro_cdmo",
 };
 
 function regionFromAddress(address: string) {
   return address.split(" ").slice(0, 2).join(" ");
+}
+
+/** company.activeJobCount 수기 필드를 대체하는 파생 계산 — jobs.ts에서 companyId가 일치하는 공고 수를 센다 */
+export function getActiveJobCount(companyId: string) {
+  return jobs.filter((job) => job.companyId === companyId).length;
 }
 
 function parseCount(value?: string) {
@@ -86,7 +122,7 @@ export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company)
     companyReviewCount: reviewsForCompany.filter((review) => review.type === "company").length,
     interviewReviewCount: reviewsForCompany.filter((review) => review.type === "interview").length,
     interestedCount: parseCount(profile?.sidebar.interestedCount),
-    activeJobCount: company.activeJobCount,
+    activeJobCount: getActiveJobCount(company.id),
     detailHref: profile ? `/companies/${company.id}` : `/companies/${company.id}/reviews`,
   };
 });

@@ -108,6 +108,7 @@ export const emptyJobFilters: JobFilters = {
   headhuntingOnly: false,
   quickApplyOnly: false,
   hourlyIncludeUnknown: false,
+  salaryIncludeUnknown: false,
 };
 
 function without<T>(items: T[], value: T) {
@@ -162,6 +163,7 @@ function parseFiltersFromQuery(): JobFilters {
     headhuntingOnly: params.get("headhunting") === "true",
     quickApplyOnly: params.get("quickApply") === "true",
     hourlyIncludeUnknown: params.get("hourlyUnknown") === "true",
+    salaryIncludeUnknown: params.get("salaryUnknown") === "true",
   };
 
   arrayFilterKeys.forEach((key) => {
@@ -239,6 +241,10 @@ export function buildAppliedChips(filters: JobFilters): AppliedFilterChip[] {
     chips.push(makeChip("hourlyIncludeUnknown", "true", "시급 미표기 포함"));
   }
 
+  if (filters.salaryIncludeUnknown) {
+    chips.push(makeChip("salaryIncludeUnknown", "true", "급여 미표기 포함"));
+  }
+
   return chips;
 }
 
@@ -291,6 +297,10 @@ export function removeChipFromFilters(filters: JobFilters, chip: AppliedFilterCh
     return { ...filters, hourlyIncludeUnknown: false };
   }
 
+  if (chip.kind === "salaryIncludeUnknown") {
+    return { ...filters, salaryIncludeUnknown: false };
+  }
+
   if (chip.kind === "jobCategory") {
     const subcategoryIds = subcategoryIdsForCategory(filters.track, chip.id);
     return {
@@ -334,7 +344,8 @@ function hasActiveFilters(filters: JobFilters) {
     filters.leaderOnly ||
     filters.headhuntingOnly ||
     filters.quickApplyOnly ||
-    filters.hourlyIncludeUnknown
+    filters.hourlyIncludeUnknown ||
+    filters.salaryIncludeUnknown
   );
 }
 
@@ -349,6 +360,7 @@ function toQuery(filters: JobFilters) {
   if (filters.headhuntingOnly) params.set("headhunting", "true");
   if (filters.quickApplyOnly) params.set("quickApply", "true");
   if (filters.hourlyIncludeUnknown) params.set("hourlyUnknown", "true");
+  if (filters.salaryIncludeUnknown) params.set("salaryUnknown", "true");
 
   arrayFilterKeys.forEach((key) => {
     if (filters[key].length) params.set(queryKeys[key], filters[key].join(","));
@@ -665,7 +677,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
       return false;
     }
 
-    if (salary) {
+    if (salary && !(filters.salaryIncludeUnknown && job.salaryMin === null)) {
       if (salary.id === "company-policy" && job.salaryMin !== null) return false;
       if (salary.min !== null && (job.salaryMax ?? job.salaryMin ?? 0) < salary.min) return false;
     }
