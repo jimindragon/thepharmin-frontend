@@ -37,11 +37,11 @@ export const experienceOptions: ExperienceFilterOption[] = [
 export const educationOptions: FilterOption[] = [
   { id: "any", label: "학력무관" },
   { id: "associate", label: "전문학사" },
-  { id: "bachelor", label: "학사" },
+  { id: "bachelor", label: "학사 (4년제)" },
   { id: "pharmacy", label: "약사 면허" },
   { id: "master", label: "석사" },
   { id: "doctor", label: "박사" },
-  { id: "professional", label: "의·약학 전문학위" },
+  { id: "professional", label: "의약학 전문학위 (6년제)" },
 ];
 
 export const employmentTypeOptions: FilterOption[] = [
@@ -72,6 +72,7 @@ export const companyTypeOptions: FilterOption[] = [
   { id: "medical-device", label: "의료기기" },
   { id: "cro", label: "CRO" },
   { id: "cdmo", label: "CDMO" },
+  { id: "digital-healthcare", label: "디지털 헬스케어" },
   { id: "distributor", label: "유통사" },
 ];
 
@@ -85,6 +86,19 @@ export const contractPeriodOptions: FilterOption[] = [
 export const scheduleOptions: FilterOption[] = [
   { id: "weekday-day", label: "평일 주간" },
   { id: "weekday-evening", label: "평일 야간" },
+  { id: "weekend", label: "주말" },
+  { id: "negotiable", label: "시간 협의" },
+];
+
+/**
+ * 병원 shiftTypeOptions(hospitalFilters.ts)와 약국 scheduleOptions의 통합 정본.
+ * 정의만 하는 단계 — 아직 어느 필터 설정에서도 소비하지 않는다 (N2에서 연결 예정).
+ * 기존 shiftTypeOptions/scheduleOptions는 삭제하지 않고 유지한다 (N4에서 정리 예정).
+ */
+export const workScheduleOptions: FilterOption[] = [
+  { id: "day", label: "주간" },
+  { id: "night-shift", label: "야간·당직" },
+  { id: "rotating", label: "교대" },
   { id: "weekend", label: "주말" },
   { id: "negotiable", label: "시간 협의" },
 ];

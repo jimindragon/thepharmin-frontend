@@ -1,4 +1,5 @@
 import { companyExampleImages, companyLogos } from "@/config/companyImages";
+import { PHARMACY_TYPE_DEFAULT_FEATURE_ID } from "@/config/companyTypes";
 
 export interface CompanyMetric {
   label: string;
@@ -21,16 +22,6 @@ export interface CompanyProduct {
   description: string;
 }
 
-export interface CompanyProfileJob {
-  id: string;
-  title: string;
-  href: string;
-  dDay: string;
-  tags: string[];
-  career: string;
-  location: string;
-}
-
 export interface CompanyProfileNews {
   id: string;
   date: string;
@@ -41,6 +32,12 @@ export interface CompanyProfileNews {
   tags: string[];
   thumbnail: string;
   href: string;
+}
+
+/** 기관 특징(병원·약국 트랙 "요약" 카드의 특징 행 리스트). 값이 없으면 섹션 자체를 숨긴다 */
+export interface CompanyProfileFeature {
+  label: string;
+  text: string;
 }
 
 export interface CompanyProfile {
@@ -58,8 +55,23 @@ export interface CompanyProfile {
   recruitSummary: string;
   details: CompanyDetailField[];
   keywords: string[];
-  jobs: CompanyProfileJob[];
   news: CompanyProfileNews[];
+  /** 기관 특징([제목|내용] 행 리스트). 병원·약국 트랙 "요약" 카드용 — 값이 없으면 섹션 자체를 숨긴다 */
+  features?: CompanyProfileFeature[];
+  /** 병원 트랙 전용 */
+  dutySystem?: string;
+  /** 병원 트랙 전용 */
+  departments?: string;
+  /** 병원 트랙 전용. 미등록 시 "전문약사 보유" 블록 자체를 숨긴다 */
+  specialistPharmacists?: string[];
+  /** 약국 트랙 전용 */
+  pharmacySoftware?: string;
+  /** 약국 트랙 전용 */
+  businessHours?: string;
+  /** 약국 트랙 전용. 미등록 시 "조제 환경·장비" 블록 자체를 숨긴다 */
+  dispensingEquipment?: string[];
+  /** 약국 트랙 전용. pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용한다 */
+  pharmacyFeatures?: string[];
   sidebar: {
     interestedCount: string;
     responseRate: string;
@@ -108,12 +120,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "계열사", value: "더파마헬스케어, 더파마바이오" },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "도전과 혁신", "환자 중심", "전문성 존중"],
-    jobs: [
-      { id: "ra", title: "RA Specialist", href: "/jobs/ra-specialist", dDay: "D-12", tags: ["RA"], career: "경력 3~5년", location: "서울" },
-      { id: "cra", title: "Clinical Research Associate", href: "/jobs?keyword=CRA", dDay: "D-18", tags: ["CRA"], career: "경력 2~4년", location: "전국" },
-      { id: "rnd", title: "신약개발 연구원", href: "/jobs?keyword=신약개발", dDay: "D-24", tags: ["연구개발"], career: "신입/경력", location: "대전" },
-      { id: "pv", title: "PV Specialist", href: "/jobs?keyword=PV", dDay: "D-30", tags: ["PV"], career: "경력 2~6년", location: "서울" },
-    ],
     news: [
       {
         id: "news-1",
@@ -218,17 +224,6 @@ export const companyProfiles: CompanyProfile[] = [
       },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "사회적 책임", "항암·면역", "버들표 신뢰"],
-    jobs: [
-      {
-        id: "yuhan-office-support-2026",
-        title: "2026년 본사 사무지원 계약직(장애인력) 채용",
-        href: "/jobs?keyword=유한양행",
-        dDay: "D-36",
-        tags: ["사무지원"],
-        career: "신입·고졸↑",
-        location: "서울",
-      },
-    ],
     news: [
       {
         id: "yuhan-news-1",
@@ -347,8 +342,6 @@ export const companyProfiles: CompanyProfile[] = [
       },
     ],
     keywords: ["CDMO", "글로벌 위탁생산", "송도 바이오캠퍼스", "ESG", "항체의약품", "ADC"],
-    // TODO: 채용공고 실데이터 확보 시 반영 — 현재 진행 중인 공고 없음(실)
-    jobs: [],
     news: [
       {
         id: "sbl-news-1",
@@ -465,53 +458,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "계열사", value: "(주)GS, 지에스칼텍스(주), 자이에스앤디(주), 지에스이피에스(주), 지에스파워(주), 인천종합에너지(주) 등" },
     ],
     keywords: ["보툴리눔 톡신", "HA필러", "글로벌 수출", "에스테틱", "R&D", "더마 코스메틱"],
-    jobs: [
-      {
-        id: "hugel-global-product-planning",
-        title: "[화장품상품기획팀] 글로벌 상품기획(웰라쥬 BM)",
-        href: "/jobs?keyword=휴젤",
-        dDay: "D-59",
-        tags: ["상품기획"],
-        career: "경력·초대졸↑",
-        location: "서울",
-      },
-      {
-        id: "hugel-logistics-management",
-        title: "[국내물류팀] 조직은행 물류관리 담당",
-        href: "/jobs?keyword=휴젤",
-        dDay: "D-16",
-        tags: ["물류관리"],
-        career: "경력·대졸↑",
-        location: "경기",
-      },
-      {
-        id: "hugel-production-staff",
-        title: "생산직 사원 채용",
-        href: "/jobs?keyword=휴젤",
-        dDay: "상시",
-        tags: ["생산"],
-        career: "신입·경력·고졸↑",
-        location: "강원",
-      },
-      {
-        id: "hugel-regional-talent-rnd",
-        title: "지역우수인재 채용 - 연구개발",
-        href: "/jobs?keyword=휴젤",
-        dDay: "상시",
-        tags: ["연구개발"],
-        career: "신입",
-        location: "강원",
-      },
-      {
-        id: "hugel-regional-talent-quality",
-        title: "지역우수인재 채용 - 품질",
-        href: "/jobs?keyword=휴젤",
-        dDay: "상시",
-        tags: ["품질"],
-        career: "신입",
-        location: "강원",
-      },
-    ],
     news: [
       {
         id: "hugel-news-1",
@@ -616,7 +562,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "생물학적 제제 제조업" },
     ],
     keywords: ["바이오시밀러", "글로벌 진출", "항체의약품", "생산 강자", "신약 도전"],
-    jobs: [],
     news: [
       {
         id: "celltrion-news-1",
@@ -688,7 +633,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "완제 의약품 제조업" },
     ],
     keywords: ["신약개발", "R&D 중심", "개량신약", "대사질환", "오픈이노베이션"],
-    jobs: [],
     news: [
       {
         id: "hanmi-pharm-news-1",
@@ -758,7 +702,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "완제 의약품 제조업" },
     ],
     keywords: ["전문의약품", "CMC·품질", "꾸준한 채용", "안정성", "신약 파이프라인"],
-    jobs: [],
     news: [
       {
         id: "chongkundang-news-1",
@@ -828,7 +771,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "생물학적 제제 제조업" },
     ],
     keywords: ["혈액제제", "백신", "글로벌 진출", "희귀질환", "콜드체인"],
-    jobs: [],
     news: [
       {
         id: "greencross-news-1",
@@ -898,7 +840,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "임상시험 수탁기관" },
     ],
     keywords: ["풀서비스 CRO", "CRA 채용", "다국가 임상", "성장기", "커리어 시작"],
-    jobs: [],
     news: [
       {
         id: "medicoa-cro-news-1",
@@ -945,8 +886,8 @@ export const companyProfiles: CompanyProfile[] = [
     coverImage: companyExampleImages.hero,
     metrics: [
       { label: "병상 수", value: "1,335병상" },
-      { label: "연간 임상시험", value: "600건+", estimated: true },
-      { label: "약제부 인력", value: "110명+", estimated: true },
+      { label: "연간 임상시험", value: "600건+" },
+      { label: "약제부 인력", value: "110명+" },
       { label: "주요 분야", value: "진료·임상연구·의료정보화" },
     ],
     businessSummary: [{ label: "특징", value: "국내 최초 전면 디지털 병원 (HIMSS 최고 등급 경험)" }],
@@ -961,7 +902,14 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "상급종합병원" },
     ],
     keywords: ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계"],
-    jobs: [],
+    dutySystem: "야간 당직 월 2~3회",
+    departments: "40개+ · 주요 센터 12",
+    features: [
+      { label: "신입 교육", text: "신입 약사 6개월 조제·병동 로테이션, 프리셉터 배정 운영" },
+      { label: "임상연구 환경", text: "임상시험센터 상시 운영, CRC·연구약사 채용이 주기적으로 발생" },
+      { label: "의료정보화", text: "국내 최초 전면 디지털 병원, HIMSS 최고 등급 인증 경험" },
+    ],
+    specialistPharmacists: ["감염", "종양", "정맥영양(TPN)"],
     news: [
       {
         id: "snubh-news-1",
@@ -1002,9 +950,8 @@ export const companyProfiles: CompanyProfile[] = [
     logoText: "은행약국",
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
-    // 원고의 "용인 수지구" 표현은 기존 companies.ts의 eunhaeng-pharmacy 주소(처인구 양지읍)와 달라
-    // 사용자 확인 후 기존 데이터 기준으로 "수지구"만 "처인구"로 교체 — 그 외 문구는 원고 그대로다.
-    tagline: "의원 처방 중심의 안정적인 근무 환경, 용인 처인구 의원층 약국",
+    // N3 PART B 확정 문구로 교체 (기존의 평가성 문구 → 사실 서술)
+    tagline: "내과·이비인후과 의원 처방을 주로 조제하는 의원층 약국",
     tags: ["약국", "설립 2026.02.11"],
     coverImage: companyExampleImages.hero,
     metrics: [
@@ -1028,17 +975,15 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "업종", value: "의원(층)약국" },
     ],
     keywords: ["의원층 약국", "안정적 처방", "근무 협의 가능", "교육 루틴"],
-    jobs: [
-      {
-        id: "eunhaeng-pharmacy-part-time-pharmacist",
-        title: "파트타임 약사 채용",
-        href: "/jobs/eunhaeng-pharmacy-part-time-pharmacist",
-        dDay: "채용시 마감",
-        tags: ["파트타임약사"],
-        career: "경력 무관",
-        location: "경기 용인시 처인구",
-      },
+    pharmacySoftware: "유팜",
+    businessHours: "평일 09:00~19:00 · 토요일 격주",
+    dispensingEquipment: ["자동조제기(ATC)", "파우치 포장기"],
+    features: [
+      { label: "근무 형태", text: "주 5일 협의 가능, 마감 시간 준수 문화" },
+      { label: "교육 루틴", text: "신규 약사 대상 조제 검토·복약지도 루틴 교육, 재고·마약류 관리 체계 정리됨" },
     ],
+    // clinic-floor 기본 매핑(기관이 해제 가능한 프리체크 값)을 그대로 반영 — PHARMACY_TYPE_DEFAULT_FEATURE_ID 참고
+    pharmacyFeatures: [PHARMACY_TYPE_DEFAULT_FEATURE_ID["clinic-floor"]].filter((id): id is string => Boolean(id)),
     news: [],
     sidebar: {
       // 원고에 사이드바 수치(관심기업/응답률/평균응답)가 없어 이 회사의 다른 필드(사원수 등)와 동일하게

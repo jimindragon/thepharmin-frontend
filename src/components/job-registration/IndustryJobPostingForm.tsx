@@ -7,6 +7,15 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import {
+  companyTypeOptions,
+  educationOptions,
+  employmentTypeOptions,
+  experienceOptions,
+  industryJobCategoryOptions,
+  workModeOptions,
+} from "@/config/jobFilters/index";
+import type { JobSubcategoryOption } from "@/types/jobs";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -14,31 +23,33 @@ type JobCat = "rnd" | "sales" | "clinical" | "ra" | "ma" | "qc" | "pv" | "strate
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
-const JOB_CATEGORIES: { key: JobCat; label: string }[] = [
-  { key: "rnd",      label: "연구개발" },
-  { key: "sales",    label: "영업·마케팅" },
-  { key: "clinical", label: "임상" },
-  { key: "ra",       label: "RA·인허가" },
-  { key: "ma",       label: "Medical·Market Access" },
-  { key: "qc",       label: "생산·품질" },
-  { key: "pv",       label: "약무·의약 관리" },
-  { key: "strategy", label: "전략·투자" },
-  { key: "data",     label: "데이터·AI" },
-  { key: "biz",      label: "경영지원" },
-];
-
-const JOB_DETAILS: Record<JobCat, string[]> = {
-  rnd:      ["신약개발", "바이오의약품 전임·분석", "콜리·독성", "비임상", "합성·CMC", "의료기기 R&D"],
-  sales:    ["제약영업·MR", "의료기기 영업", "마케팅·PM", "영업기획·관리", "디지털마케팅", "해외영업"],
-  clinical: ["임상시험이사", "Medical Writing", "CRA", "CRC", "임상 QA", "임상 PM", "임상 DM·통계"],
-  ra:       ["RA", "CMC RA", "허가 전략", "의료기기 RA"],
-  ma:       ["Medical Affairs", "MSL", "HEOR·RWE", "약가·보험"],
-  qc:       ["생산·제조", "SCM", "공정기술", "QC", "QA", "Validation", "GMP·QMS"],
-  pv:       ["병원 약무", "제약 약무", "유통 약무", "PV·Drug Safety"],
-  strategy: ["BD·Licensing", "사업전략", "투자", "M&A", "IR"],
-  data:     ["AI 신약개발", "IT·Software", "Bioinformatics", "Data Science", "RWE 데이터"],
-  biz:      ["HR", "디자인", "재무·회계", "법무·컴플라이언스", "구매·이무", "홍보·PR"],
+/**
+ * 이 폼의 대분류 탭 키(JobCat)는 키워드 추천(KW_BY_CAT)을 위한 내부 식별자이며,
+ * 정본 카테고리 id와 1:1로 매핑해 라벨·소분류를 industryJobCategoryOptions에서 가져온다.
+ */
+const JOB_CAT_TO_CATEGORY_ID: Record<JobCat, string> = {
+  rnd: "rd",
+  sales: "sales-marketing",
+  clinical: "clinical",
+  ra: "regulatory",
+  ma: "medical-market",
+  qc: "production-quality",
+  pv: "pharmacy-safety",
+  strategy: "strategy-investment",
+  data: "data-ai",
+  biz: "management",
 };
+
+const JOB_CATEGORIES: { key: JobCat; label: string; subcategories: JobSubcategoryOption[] }[] = (
+  Object.keys(JOB_CAT_TO_CATEGORY_ID) as JobCat[]
+).map((key) => {
+  const category = industryJobCategoryOptions.find((c) => c.id === JOB_CAT_TO_CATEGORY_ID[key]);
+  return { key, label: category?.label ?? "", subcategories: category?.subcategories ?? [] };
+});
+
+const SUBCATEGORY_LABEL_BY_ID = new Map(
+  industryJobCategoryOptions.flatMap((category) => category.subcategories).map((sub) => [sub.id, sub.label] as const),
+);
 
 const KW_BY_CAT: Record<JobCat, string[]> = {
   rnd:      ["신약개발", "전임상", "콜리", "독성", "합성", "전임 연구", "바이오의약품", "CMC", "스크린", "후보물질", "의료기기 R&D", "특허"],
@@ -215,9 +226,9 @@ export function IndustryJobPostingForm() {
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const [industryCat, setIndustryCat] = useState("");
   const [headcount, setHeadcount] = useState("");
-  const [employmentType, setEmploymentType] = useState("정규직");
-  const [careerType, setCareerType] = useState("경력무관");
-  const [educationType, setEducationType] = useState("학력무관");
+  const [employmentType, setEmploymentType] = useState("permanent");
+  const [careerType, setCareerType] = useState("any");
+  const [educationType, setEducationType] = useState("any");
 
   // §2 포지션 소개·업무·자격
   const [summary, setSummary] = useState("");
@@ -320,7 +331,9 @@ export function IndustryJobPostingForm() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
-  const activeCatLabel = JOB_CATEGORIES.find((c) => c.key === activeJobCat)?.label ?? "";
+  const activeCategory = JOB_CATEGORIES.find((c) => c.key === activeJobCat);
+  const activeCatLabel = activeCategory?.label ?? "";
+  const activeCategorySubcategories = activeCategory?.subcategories ?? [];
   const kwCatLabel     = JOB_CATEGORIES.find((c) => c.key === kwCategory)?.label ?? "";
 
   return (
@@ -405,11 +418,11 @@ export function IndustryJobPostingForm() {
                   {activeCatLabel} · 세부 직무
                 </p>
                 <div role="group" aria-label="세부 직무" className="flex flex-wrap gap-2">
-                  {JOB_DETAILS[activeJobCat].map((job) => {
-                    const on = selectedJobs.has(job);
+                  {activeCategorySubcategories.map((sub) => {
+                    const on = selectedJobs.has(sub.id);
                     return (
-                      <button key={job} type="button" role="checkbox" aria-checked={on}
-                        onClick={() => toggleJob(job)}
+                      <button key={sub.id} type="button" role="checkbox" aria-checked={on}
+                        onClick={() => toggleJob(sub.id)}
                         className={clsx(
                           "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
                           on
@@ -417,7 +430,7 @@ export function IndustryJobPostingForm() {
                             : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
                         )}>
                         {on && <span className="text-[10px]" aria-hidden>✓</span>}
-                        {job}
+                        {sub.label}
                       </button>
                     );
                   })}
@@ -426,7 +439,7 @@ export function IndustryJobPostingForm() {
             </div>
             {selectedJobs.size > 0 && (
               <p className="mt-2 text-[11.5px] text-[#7b8491]">
-                선택됨: {Array.from(selectedJobs).join(", ")}
+                선택됨: {Array.from(selectedJobs).map((id) => SUBCATEGORY_LABEL_BY_ID.get(id) ?? id).join(", ")}
               </p>
             )}
             <FieldError message={errors.selectedJobs} />
@@ -439,12 +452,9 @@ export function IndustryJobPostingForm() {
               <select id="i-indcat" value={industryCat} onChange={(e) => setIndustryCat(e.target.value)}
                 className={SEL} aria-required="true">
                 <option value="" disabled>산업 유형을 선택해 주세요</option>
-                <option>제약·바이오</option>
-                <option>CRO·CMDO</option>
-                <option>의료기기</option>
-                <option>디지털 포스케어</option>
-                <option>유통·도매</option>
-                <option>기타</option>
+                {companyTypeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
               <FieldError message={errors.industryCat} />
             </div>
@@ -467,33 +477,27 @@ export function IndustryJobPostingForm() {
             <div>
               <label htmlFor="i-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="i-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
-                <option>정규직</option>
-                <option>계약직</option>
-                <option>인턴</option>
-                <option>파트타임</option>
-                <option>프리랜서</option>
+                {employmentTypeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
             </div>
             <div>
               <label htmlFor="i-career" className={LBL}>경력{REQ}</label>
               <select id="i-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
-                <option>경력무관</option>
-                <option>신입</option>
-                <option>1년 미만</option>
-                <option>1~3년</option>
-                <option>3~5년</option>
-                <option>5~10년</option>
-                <option>10년 이상</option>
+                {experienceOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
             </div>
             <div>
               <label htmlFor="i-edu" className={LBL}>학력{REQ}</label>
               <select id="i-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
-                <option>학력무관</option>
-                <option>학사 이상</option>
-                <option>석사 이상</option>
-                <option>박사</option>
+                {educationOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
+              <p className={HINT}>선택한 학력 이상의 지원자를 대상으로 합니다.</p>
             </div>
           </div>
         </SectionCard>
@@ -569,11 +573,9 @@ export function IndustryJobPostingForm() {
               <select id="i-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
                 className={SEL} aria-required="true">
                 <option value="" disabled>근무 방식을 선택해 주세요</option>
-                <option>사무실 근무</option>
-                <option>현장 근무</option>
-                <option>사무실·현장</option>
-                <option>재택</option>
-                <option>하이브리드</option>
+                {workModeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
               <FieldError message={errors.workMode} />
             </div>

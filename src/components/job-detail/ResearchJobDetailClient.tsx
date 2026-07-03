@@ -34,6 +34,7 @@ import {
   writeSavedJobs,
 } from "@/components/job-detail/shared";
 import { getResearchFieldLabel, getResearchFieldShortLabel } from "@/config/researchFields";
+import { getResearchInstitutionTypeLabel } from "@/config/jobFilters/researchFilters";
 import { formatResearchSalaryInfo } from "@/utils/salary";
 
 interface ResearchJobDetailClientProps {
@@ -195,7 +196,7 @@ function ResearchLabSection({ job, otherLabJobsCount }: { job: Job; otherLabJobs
         </div>
       </div>
       <div className="mt-5 grid grid-cols-4 gap-3 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
-        <OverviewCard label="기관 분류" value={lab.institutionType} />
+        <OverviewCard label="기관 분류" value={getResearchInstitutionTypeLabel(lab.institutionType)} />
         {lab.labName ? <OverviewCard label="연구실·소속 조직" value={lab.labName} /> : null}
         <OverviewCard label="PI" value={lab.pi} />
         {lab.address ? <OverviewCard label="주소" value={lab.address} /> : null}
@@ -278,7 +279,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
     }
     items.push({ label: "급여", value: job.salary });
     if (lab) {
-      items.push({ label: "기관 분류", value: lab.institutionType });
+      items.push({ label: "기관 분류", value: getResearchInstitutionTypeLabel(lab.institutionType) });
       if (lab.labName) items.push({ label: "연구실·소속 조직", value: lab.labName });
       items.push({ label: "PI", value: lab.pi });
     }
@@ -373,7 +374,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
                     <div className="flex items-center gap-4">
                       <CompanyLogo name={lab?.institution ?? job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
                       <div className="flex min-w-0 flex-col items-start gap-1.5">
-                        <p className="text-[15px] font-normal text-[#667181]">{lab ? `${lab.institution} · ${lab.institutionType}` : job.company}</p>
+                        <p className="text-[15px] font-normal text-[#667181]">{lab ? `${lab.institution} · ${getResearchInstitutionTypeLabel(lab.institutionType)}` : job.company}</p>
                         {lab?.labName || lab?.pi ? (
                           <p className="text-[13px] font-medium text-[#8a95a5]">
                             {[lab?.labName, lab?.pi ? `PI ${lab.pi}` : null].filter(Boolean).join(" · ")}

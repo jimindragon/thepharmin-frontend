@@ -73,7 +73,6 @@ export const premiumCompanies: Array<{
   id: string;
   name: string;
   lines: string[];
-  positionCount: string;
   track: HomeTrackFilter;
   logoText: string;
   logoTone?: "dark" | "light" | "plus";
@@ -82,7 +81,6 @@ export const premiumCompanies: Array<{
     id: "yuhan",
     name: "유한양행",
     lines: ["국내 신약개발 선도", "R&D·RA 경력직 채용"],
-    positionCount: "24개 포지션",
     track: "industry",
     logoText: "YH",
   },
@@ -90,7 +88,6 @@ export const premiumCompanies: Array<{
     id: "samsung-biologics",
     name: "삼성바이오로직스",
     lines: ["세계 1위 CDMO", "경력직·전문직 채용"],
-    positionCount: "28개 포지션",
     track: "industry",
     logoText: "SB",
   },
@@ -98,7 +95,6 @@ export const premiumCompanies: Array<{
     id: "celltrion",
     name: "셀트리온",
     lines: ["글로벌 바이오시밀러 리더", "생산·QA·RA 채용"],
-    positionCount: "15개 포지션",
     track: "industry",
     logoText: "CT",
   },
@@ -106,7 +102,6 @@ export const premiumCompanies: Array<{
     id: "kbsi",
     name: "한국기초과학지원연구원",
     lines: ["첨단 연구장비·분석 전문", "연구·행정 인력 채용"],
-    positionCount: "12개 포지션",
     track: "research",
     logoText: "KBSI",
   },
@@ -114,7 +109,6 @@ export const premiumCompanies: Array<{
     id: "kribb",
     name: "한국생명공학연구원",
     lines: ["바이오 원천기술 R&D", "박사후연구원 모집"],
-    positionCount: "18개 포지션",
     track: "research",
     logoText: "KRIBB",
   },
@@ -122,7 +116,6 @@ export const premiumCompanies: Array<{
     id: "snuh",
     name: "서울대학교병원",
     lines: ["병원약사·임상약학", "전문 인력 채용"],
-    positionCount: "8개 포지션",
     track: "hospital",
     logoText: "SNUH",
   },
@@ -130,7 +123,6 @@ export const premiumCompanies: Array<{
     id: "onnuri",
     name: "온누리약국 네트워크",
     lines: ["전국 가맹약국", "근무·관리약사 채용"],
-    positionCount: "34개 포지션",
     track: "pharmacy",
     logoText: "+",
     logoTone: "plus",
@@ -139,7 +131,6 @@ export const premiumCompanies: Array<{
     id: "kpa",
     name: "대한약사회 파트너약국",
     lines: ["지역 거점 약국", "근무약사 상시 채용"],
-    positionCount: "21개 포지션",
     track: "pharmacy",
     logoText: "+",
     logoTone: "plus",

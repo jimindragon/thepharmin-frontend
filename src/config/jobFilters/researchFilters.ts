@@ -53,6 +53,10 @@ export const researchInstitutionTypeOptions: FilterOption[] = [
   { id: "nonprofit_research_foundation", label: "비영리 연구재단" },
 ];
 
+export function getResearchInstitutionTypeLabel(id: string): string {
+  return researchInstitutionTypeOptions.find((option) => option.id === id)?.label ?? id;
+}
+
 export const researchFilterConfig: TrackFilterConfig = {
   track: "research",
   filters: [

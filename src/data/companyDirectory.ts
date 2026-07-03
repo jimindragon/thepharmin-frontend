@@ -1,7 +1,7 @@
 import { companies, companyReviews } from "@/data/companies";
 import { companyProfiles } from "@/data/companyProfiles";
 import { jobs } from "@/data/jobs";
-import type { JobTrack } from "@/types/jobs";
+import type { Job, JobTrack } from "@/types/jobs";
 
 export type IndustryGroup = "pharma_bio" | "cro_cdmo";
 
@@ -88,13 +88,61 @@ const industryGroupById: Record<string, IndustryGroup> = {
 /** 기업정보 허브 랜딩 로고 스트립에서 맨 앞에 고정 노출할 기업 id(이후 프로필 보유 기업 → 나머지 로고 보유 기업 순으로 이어붙인다). companyProfiles.ts에 프로필이 있는 기업 중 수동 선정 */
 export const FEATURED_COMPANY_IDS = ["celltrion", "hanmi-pharm"];
 
-function regionFromAddress(address: string) {
+export function regionFromAddress(address: string) {
   return address.split(" ").slice(0, 2).join(" ");
 }
 
-/** company.activeJobCount 수기 필드를 대체하는 파생 계산 — jobs.ts에서 companyId가 일치하는 공고 수를 센다 */
+/** 시·도 단위(주소 첫 토큰)만 비교할 때 쓴다. "같은 지역" 매칭(예: 약국 상세의 같은 지역 채용중 약국)은
+ * regionFromAddress의 시·도+시/군/구 두 토큰이 아니라 이 한 토큰 기준이다. */
+export function provinceFromAddress(address: string) {
+  return address.split(" ")[0];
+}
+
+/** companies.ts 각 기업이 속한 트랙 조회. companyDirectory 배열을 만들 필요 없이 단건 조회할 때 사용 */
+export function getCompanyTrack(companyId: string): JobTrack {
+  return trackById[companyId] ?? "industry";
+}
+
+/** "(주)"·"주식회사"·공백을 제거해 표기가 다른 동일 기업명을 비교할 수 있게 정규화한다. 실제 이름 문자열은 건드리지 않고 비교 시점에만 적용한다 */
+function normalizeCompanyName(name: string) {
+  return name.replace(/\(주\)|주식회사/g, "").replace(/\s+/g, "");
+}
+
+/** "채용중" 판정 — 마감일이 지난 공고는 제외한다. 상시채용(closingStatus: "always"/deadlineType: "untilHired")과
+ * 마감일 정보가 없는 공고는 계속 채용중으로 취급한다. job-detail/shared.tsx의 deadlineLabel()과 동일한 마감 판정 규칙이다 */
+export function isJobActive(job: Job, referenceDate: Date = new Date()) {
+  if (job.isClosed) return false;
+  if (job.deadlineType === "untilHired" || job.closingStatus === "always") return true;
+  if (!job.deadline) return true;
+
+  const today = new Date(referenceDate);
+  today.setHours(0, 0, 0, 0);
+  return new Date(`${job.deadline}T00:00:00`).getTime() >= today.getTime();
+}
+
+/**
+ * 채용중 공고 목록의 단일 소스 — 홈 카드/기업 인사이트 리스트·상세(탭 숫자·미리보기 카드 목록)가 모두 이 함수를 쓴다.
+ * companyProfiles.ts의 jobs 배열(상세 페이지용 큐레이션 미리보기)은 집계 대상이 아니다 — 실제 공고 원장인 jobs.ts만 조회한다.
+ * 매칭 우선순위: ① job.companyId 명시 연결 → ② company.name과 job.company 이름 정규화 비교 →
+ * ③ company.name과 job.researchLab.institution 이름 정규화 비교. 매칭 후보에서도 마감 지난 공고는 제외한다.
+ */
+export function getActiveJobs(companyId: string): Job[] {
+  const companyName = companies.find((company) => company.id === companyId)?.name;
+  const normalizedName = companyName ? normalizeCompanyName(companyName) : null;
+
+  return jobs.filter((job) => {
+    if (!isJobActive(job)) return false;
+    if (job.companyId === companyId) return true;
+    if (!normalizedName) return false;
+    if (normalizeCompanyName(job.company) === normalizedName) return true;
+    if (job.researchLab?.institution && normalizeCompanyName(job.researchLab.institution) === normalizedName) return true;
+    return false;
+  });
+}
+
+/** getActiveJobs와 같은 필터를 공유해 목록·카운트가 어긋나지 않는다. 카운트만 필요할 때 쓴다 */
 export function getActiveJobCount(companyId: string) {
-  return jobs.filter((job) => job.companyId === companyId).length;
+  return getActiveJobs(companyId).length;
 }
 
 function parseCount(value?: string) {

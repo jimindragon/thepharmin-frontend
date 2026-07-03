@@ -2,9 +2,12 @@ import clsx from "clsx";
 import Link from "next/link";
 import { type ReactNode } from "react";
 import { BriefcaseBusiness, Building2, ChevronRight, Clock3, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp, Users } from "lucide-react";
-import { companyReviews } from "@/data/companies";
-import type { CompanyProfile } from "@/data/companyProfiles";
-import type { CompanyReview, CompanyReviewType } from "@/types/jobs";
+import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
+import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+import { companies, companyReviews } from "@/data/companies";
+import { type CompanyDirectoryEntry, companyDirectory, getActiveJobCount, getActiveJobs, provinceFromAddress } from "@/data/companyDirectory";
+import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
+import type { Company, CompanyReview, CompanyReviewType, HospitalType } from "@/types/jobs";
 
 /** [companyId] 탭 페이지들(개요/채용공고/면접 후기/기업 리뷰/뉴스)이 공유하는 섹션 빌딩 블록.
  * 예전 앵커 스크롤 시절의 SectionShell은 id/scroll-mt를 가졌지만, 지금은 각 섹션이 별도 라우트의
@@ -273,10 +276,12 @@ export function CompanyReviewsPreviewSection({ profile, type }: { profile: Compa
 }
 
 export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
+  const activeJobs = getActiveJobs(profile.id);
+
   return (
     <SectionShell
       title="채용공고"
-      description={`현재 채용중인 공고 ${profile.jobs.length}건 중 주요 공고를 먼저 확인해 보세요.`}
+      description={`현재 채용중인 공고 ${activeJobs.length}건 중 주요 공고를 먼저 확인해 보세요.`}
       action={
         <Link href={`/jobs?company=${profile.id}`} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
           더보기
@@ -284,26 +289,8 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
         </Link>
       }
     >
-      {profile.jobs.length ? (
-        <div className="grid grid-cols-4 gap-3 max-[1100px]:grid-cols-2 max-[620px]:grid-cols-1">
-          {profile.jobs.map((job) => (
-            <Link key={job.id} href={job.href} className="group border border-[#e0e6ee] bg-white p-4 transition hover:border-[#111111]">
-              <p className="text-[13px] font-medium text-danger">{job.dDay}</p>
-              <h3 className="mt-3 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.45] text-[#202733] group-hover:underline">{job.title}</h3>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {job.tags.map((tag) => (
-                  <span key={tag} className="bg-[#f1f3f5] px-2 py-1 text-[11px] font-medium text-[#667181]">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-3 text-[12px] font-medium text-[#7b8594]">
-                {job.career} · {job.location}
-              </p>
-              <span className="mt-4 inline-flex text-[12px] font-medium text-[#596373]">상세내용</span>
-            </Link>
-          ))}
-        </div>
+      {activeJobs.length ? (
+        <CompanyJobsGrid jobs={activeJobs} />
       ) : (
         <EmptyState
           message="현재 채용중인 공고가 없습니다. 관심기업으로 등록하면 새 공고가 올라올 때 알려드릴게요."
@@ -345,7 +332,7 @@ export function CompanyNewsSection({ profile }: { profile: CompanyProfile }) {
 export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
   const infoItems = [
     { label: "관심기업", value: profile.sidebar.interestedCount, icon: Heart },
-    { label: "채용중 공고", value: `${profile.jobs.length}건`, icon: BriefcaseBusiness },
+    { label: "채용중 공고", value: `${getActiveJobCount(profile.id)}건`, icon: BriefcaseBusiness },
     { label: "후기 키워드", value: profile.sidebar.reviewKeywordCount, icon: MessageSquareText },
     { label: "응답률", value: profile.sidebar.responseRate, icon: Users },
     { label: "평균 응답 시간", value: profile.sidebar.averageResponseTime, icon: Clock3 },
@@ -420,6 +407,357 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
           후기 페이지 보기
         </Link>
       </section>
+    </aside>
+  );
+}
+
+/* ── 병원·약국 트랙 개요 (N3 상세 개편) — 산업·CRO 트랙은 위 컴포넌트를 그대로 쓴다, 아래는 건드리지 않는다 ── */
+
+interface SummaryRow {
+  label: string;
+  value: string;
+}
+
+function detailValue(profile: CompanyProfile, label: string) {
+  return profile.details.find((item) => item.label === label)?.value ?? undefined;
+}
+
+function metricValue(profile: CompanyProfile, label: string) {
+  return profile.metrics.find((item) => item.label === label)?.value;
+}
+
+function buildHospitalSummaryRows(profile: CompanyProfile, company: Company): SummaryRow[] {
+  const typeLabel =
+    company.hospitalType && company.hospitalOperator
+      ? getHospitalCombinedTypeLabel(company.hospitalType, company.hospitalOperator, company.specialtyLabel)
+      : undefined;
+
+  const rows: (SummaryRow | { label: string; value: string | undefined })[] = [
+    { label: "병원장", value: detailValue(profile, "대표자") },
+    { label: "설립", value: detailValue(profile, "설립일") },
+    { label: "병원 유형", value: typeLabel },
+    { label: "병상 수", value: metricValue(profile, "병상 수") },
+    { label: "약제부 인력", value: metricValue(profile, "약제부 인력") },
+    { label: "당직 체계", value: profile.dutySystem },
+    { label: "연간 임상시험", value: metricValue(profile, "연간 임상시험") },
+    { label: "진료과", value: profile.departments },
+    { label: "위치", value: detailValue(profile, "본사 위치") },
+    { label: "홈페이지", value: detailValue(profile, "홈페이지") },
+  ];
+  return rows.filter((row): row is SummaryRow => Boolean(row.value));
+}
+
+function buildPharmacySummaryRows(profile: CompanyProfile, company: Company): SummaryRow[] {
+  const pharmacistCount = profile.businessSummary.find((item) => item.label === "근무 약사")?.value;
+  const staffCount = profile.businessSummary.find((item) => item.label === "직원")?.value;
+  const staffComposition =
+    [pharmacistCount ? `근무약사 ${pharmacistCount}` : null, staffCount ? `직원 ${staffCount}` : null].filter(Boolean).join(" · ") || undefined;
+
+  const rows: (SummaryRow | { label: string; value: string | undefined })[] = [
+    { label: "대표약사", value: detailValue(profile, "대표자") },
+    { label: "개국", value: detailValue(profile, "설립일") },
+    { label: "약국 유형", value: company.pharmacyType ? getPharmacyTypeLabel(company.pharmacyType) : undefined },
+    { label: "근무자 구성", value: staffComposition },
+    { label: "일평균 처방", value: metricValue(profile, "일평균 처방") },
+    { label: "주처방 진료과", value: metricValue(profile, "주요 처방과") },
+    { label: "전산소프트웨어", value: profile.pharmacySoftware },
+    { label: "영업시간", value: profile.businessHours },
+    { label: "위치", value: detailValue(profile, "본사 위치") },
+  ];
+  return rows.filter((row): row is SummaryRow => Boolean(row.value));
+}
+
+function InstitutionSummaryCard({
+  title,
+  recruitSummary,
+  homepage,
+  rows,
+  features,
+}: {
+  title: string;
+  recruitSummary: string;
+  homepage?: string;
+  rows: SummaryRow[];
+  features?: CompanyProfileFeature[];
+}) {
+  return (
+    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+      <div className="flex items-start justify-between gap-4 max-[640px]:flex-col">
+        <div>
+          <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
+          <p className="mt-3 text-[14px] font-normal leading-[1.85] text-[#596373]">{recruitSummary}</p>
+        </div>
+        {homepage ? (
+          <a
+            href={`https://${homepage}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-10 shrink-0 items-center gap-2 border border-[#d8e0e8] px-3 text-[12px] font-medium text-[#4f5a66] transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            기업 홈페이지 바로가기
+            <ExternalLink size={14} />
+          </a>
+        ) : null}
+      </div>
+      {rows.length ? (
+        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-4 max-[640px]:grid-cols-1">
+          {rows.map((row) => (
+            <div key={row.label} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 text-[13px]">
+              <dt className="font-medium text-[#8a94a3]">{row.label}</dt>
+              <dd className="font-medium leading-[1.6] text-[#3c4654]">{row.value}</dd>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {features && features.length ? (
+        <div className="mt-6 border-t border-[#edf1f5] pt-5">
+          <h3 className="text-[15px] font-bold text-[#202733]">기관 특징</h3>
+          <div className="mt-3 grid gap-3">
+            {features.map((feature) => (
+              <div key={feature.label} className="grid grid-cols-[150px_minmax(0,1fr)] gap-4 text-[13px] max-[560px]:grid-cols-1 max-[560px]:gap-1">
+                <dt className="font-medium text-[#8a94a3]">{feature.label}</dt>
+                <dd className="font-normal leading-[1.6] text-[#3c4654]">{feature.text}</dd>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** [companyId] 개요 탭 — 병원 트랙. "한눈에 보는 기업" 지표 그리드를 없애고 "병원 요약" 카드 하나로 통합한다 */
+export function HospitalSummarySection({ profile, company }: { profile: CompanyProfile; company: Company }) {
+  return (
+    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
+      <InstitutionSummaryCard
+        title="병원 요약"
+        recruitSummary={profile.recruitSummary}
+        homepage={detailValue(profile, "홈페이지")}
+        rows={buildHospitalSummaryRows(profile, company)}
+        features={profile.features}
+      />
+      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">핵심 키워드</h2>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {profile.keywords.map((keyword) => (
+            <Chip key={keyword} tone="accent">
+              {keyword}
+            </Chip>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** [companyId] 개요 탭 — 약국 트랙. 병원과 동일 골격, "약국 요약" 카드로 통합한다 */
+export function PharmacySummarySection({ profile, company }: { profile: CompanyProfile; company: Company }) {
+  return (
+    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
+      <InstitutionSummaryCard
+        title="약국 요약"
+        recruitSummary={profile.recruitSummary}
+        homepage={detailValue(profile, "홈페이지")}
+        rows={buildPharmacySummaryRows(profile, company)}
+        features={profile.features}
+      />
+      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">핵심 키워드</h2>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {profile.keywords.map((keyword) => (
+            <Chip key={keyword} tone="accent">
+              {keyword}
+            </Chip>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function reviewSummaryLabel(companyId: string) {
+  const interviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "interview").length;
+  const companyReviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "company").length;
+  return `면접 ${interviewCount} · 리뷰 ${companyReviewCount}`;
+}
+
+/** 병원·약국 트랙 사이드바 상단 — 산업 트랙 CompanyAsidePanel의 6~7항목 대신 3항목만 보여준다 */
+function InstitutionCoreInfoCard({ profile }: { profile: CompanyProfile }) {
+  const infoItems = [
+    { label: "관심 기관", value: profile.sidebar.interestedCount, icon: Heart },
+    { label: "채용중 공고", value: `${getActiveJobCount(profile.id)}건`, icon: BriefcaseBusiness },
+    { label: "후기", value: reviewSummaryLabel(profile.id), icon: MessageSquareText },
+  ];
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">기관 핵심 정보</h2>
+      <dl className="mt-4 grid gap-3">
+        {infoItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.label} className="flex items-center justify-between gap-3 border-b border-[#edf1f5] pb-3 last:border-b-0 last:pb-0">
+              <dt className="flex items-center gap-2 text-[12px] font-medium text-[#697484]">
+                <Icon size={15} />
+                {item.label}
+              </dt>
+              <dd className="text-[13px] font-medium text-[#202733]">{item.value}</dd>
+            </div>
+          );
+        })}
+      </dl>
+    </section>
+  );
+}
+
+function ChipListCard({ title, items, note }: { title: string; items: string[]; note?: string }) {
+  if (!items.length) return null;
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <Chip key={item} tone="accent">
+            {item}
+          </Chip>
+        ))}
+      </div>
+      {note ? <p className="mt-3 text-[12px] font-normal text-[#8a95a5]">{note}</p> : null}
+    </section>
+  );
+}
+
+interface RelatedInstitutionsResult {
+  title: string;
+  items: CompanyDirectoryEntry[];
+}
+
+/** 같은 hospitalType + 채용중인 병원을 우선 추천하고, 없으면 전체 병원 중 채용중인 곳(채용중 공고 많은 순)으로 폴백한다.
+ * 그마저도 없으면 null(블록 자체 미노출) */
+function relatedHospitals(currentId: string, hospitalType: HospitalType | undefined): RelatedInstitutionsResult | null {
+  const candidates = companyDirectory.filter((entry) => entry.track === "hospital" && entry.id !== currentId && entry.activeJobCount > 0);
+
+  if (hospitalType) {
+    const sameType = candidates.filter((entry) => companies.find((item) => item.id === entry.id)?.hospitalType === hospitalType);
+    if (sameType.length) return { title: "같은 유형 채용중 병원", items: sameType };
+  }
+  if (candidates.length) {
+    return { title: "현재 채용 중인 병원", items: [...candidates].sort((a, b) => b.activeJobCount - a.activeJobCount) };
+  }
+  return null;
+}
+
+/** 같은 시·도(주소 첫 토큰) + 채용중인 약국을 우선 추천하고, 없으면 전국 채용중인 약국으로 폴백한다.
+ * 그마저도 없으면 null(블록 자체 미노출) */
+function relatedPharmacies(currentId: string, address: string): RelatedInstitutionsResult | null {
+  const province = provinceFromAddress(address);
+  const candidates = companyDirectory.filter((entry) => entry.track === "pharmacy" && entry.id !== currentId && entry.activeJobCount > 0);
+
+  const sameProvince = candidates.filter((entry) => {
+    const candidateCompany = companies.find((item) => item.id === entry.id);
+    return candidateCompany ? provinceFromAddress(candidateCompany.address) === province : false;
+  });
+  if (sameProvince.length) return { title: "같은 지역 채용중 약국", items: sameProvince };
+  if (candidates.length) {
+    return { title: "현재 채용 중인 약국", items: [...candidates].sort((a, b) => b.activeJobCount - a.activeJobCount) };
+  }
+  return null;
+}
+
+function RelatedInstitutionsCard({ result }: { result: RelatedInstitutionsResult | null }) {
+  if (!result || !result.items.length) return null;
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">{result.title}</h2>
+      <div className="mt-4 grid gap-3">
+        {result.items.slice(0, 5).map((entry) => (
+          <Link
+            key={entry.id}
+            href={entry.detailHref}
+            className="flex items-center justify-between gap-3 border-b border-[#edf1f5] pb-3 text-[13px] last:border-b-0 last:pb-0 hover:text-[#111111]"
+          >
+            <span className="font-medium text-[#3c4654]">{entry.name}</span>
+            <span className="shrink-0 text-[12px] font-medium text-[#8a95a5]">채용중 {entry.activeJobCount}건</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function InstitutionLocationCard({ address }: { address: string }) {
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">위치</h2>
+      <p className="mt-3 text-[13px] font-medium leading-[1.7] text-[#596373]">{address}</p>
+      <div className="mt-4 grid h-[130px] place-items-center border border-[#dfe6ee] bg-[#f3f5f7]">
+        <div className="text-center">
+          <MapPin className="mx-auto text-[#596373]" size={24} />
+          <p className="mt-2 text-[12px] font-medium text-[#596373]">지도 preview</p>
+        </div>
+      </div>
+      <button className="mt-3 text-[12px] font-medium text-[#596373] hover:text-[#111111]">지도에서 보기</button>
+    </section>
+  );
+}
+
+function InstitutionApplyCTACard({ companyId }: { companyId: string }) {
+  return (
+    <section className="border border-[#b9ddd9] bg-[linear-gradient(135deg,#f6fbfa_0%,#eef8f6_100%)] p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[22px] font-bold leading-[1.35] tracking-[-0.02em] text-[#202733]">이 회사에 지원하고 싶다면?</h2>
+      <p className="mt-2 text-[13px] font-medium leading-[1.65] text-[#687382]">지금 채용공고를 확인해보세요.</p>
+      <Link
+        href={`/jobs?company=${companyId}`}
+        className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 bg-[#111111] text-[14px] font-medium text-white hover:bg-[#2a2a2a]"
+      >
+        채용공고 보기
+        <ChevronRight size={16} />
+      </Link>
+    </section>
+  );
+}
+
+function InstitutionReviewMoreCard({ companyId }: { companyId: string }) {
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#202733]">후기를 더 자세히 보려면</h2>
+      <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">현직자 리뷰와 면접 후기를 더 자세히 확인하려면 후기를 작성하거나 열람권을 사용하세요.</p>
+      <Link
+        href={`/companies/${companyId}/reviews`}
+        className="mt-3 inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+      >
+        후기 페이지 보기
+      </Link>
+    </section>
+  );
+}
+
+/** [companyId] 개요 탭 사이드바 — 병원 트랙. 대표 제품 블록은 병원·약국 트랙에서 노출하지 않는다 */
+export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfile; company: Company }) {
+  const related = relatedHospitals(profile.id, company.hospitalType);
+  return (
+    <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
+      <InstitutionCoreInfoCard profile={profile} />
+      <ChipListCard title="전문약사 보유" items={profile.specialistPharmacists ?? []} note="기관이 등록한 분야만 표시됩니다" />
+      <RelatedInstitutionsCard result={related} />
+      <InstitutionLocationCard address={profile.sidebar.address} />
+      <InstitutionApplyCTACard companyId={profile.id} />
+      <InstitutionReviewMoreCard companyId={profile.id} />
+    </aside>
+  );
+}
+
+/** [companyId] 개요 탭 사이드바 — 약국 트랙. 대표 제품 블록은 병원·약국 트랙에서 노출하지 않는다 */
+export function PharmacyAsidePanel({ profile, company }: { profile: CompanyProfile; company: Company }) {
+  const related = relatedPharmacies(profile.id, company.address);
+  return (
+    <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
+      <InstitutionCoreInfoCard profile={profile} />
+      <ChipListCard title="조제 환경·장비" items={profile.dispensingEquipment ?? []} />
+      <RelatedInstitutionsCard result={related} />
+      <InstitutionLocationCard address={profile.sidebar.address} />
+      <InstitutionApplyCTACard companyId={profile.id} />
+      <InstitutionReviewMoreCard companyId={profile.id} />
     </aside>
   );
 }

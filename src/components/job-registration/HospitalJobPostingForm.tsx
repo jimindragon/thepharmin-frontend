@@ -8,6 +8,13 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import {
+  educationOptions,
+  employmentTypeOptions,
+  experienceOptions,
+  hospitalJobCategoryOptions,
+  hospitalTypeOptions,
+} from "@/config/jobFilters/index";
 import type { PayType, SalaryRange } from "@/types/jobs";
 import { formatHeadcount } from "@/utils/headcount";
 import { formatHospitalSalary } from "@/utils/salary";
@@ -229,17 +236,23 @@ function ToggleRow({
 // ── Constant data ──────────────────────────────────────────────────────────────
 
 const LICENSE_OPTS = ["약사 면허", "감염전문약사", "종양전문약사", "정맥영양(TPN)", "항응고전문약사", "심평원 등록"];
+// 직무 소분류 id(hospitalJobCategoryOptions 정본) 기준 추천 키워드 풀
 const KW_BY_JOBCAT: Record<string, string[]> = {
-  "입원·조제 약사": ["조제", "복약지도", "처방감사", "투약", "입원조제", "외래조제", "마약류 관리", "의약품 관리", "무균조제", "주사제"],
-  "임상·전문약사":  ["ASP", "감염관리", "항생제", "종양약사", "TPN", "정맥영양", "항응고", "DUR", "약물상담", "전문약사", "임상약학"],
-  "임상시험 약사":  ["임상시험", "IP 관리", "임상시험약", "프로토콜", "GCP", "SAE", "임상연구", "CRC 협업"],
-  "약제부 관리":    ["약제부 운영", "약사 인력관리", "의약품 구매", "재고관리", "DUR", "처방 모니터링", "약무 통계", "위원회 운영"],
-  "약무행정":       ["약무행정", "보험심사", "삭감관리", "약가", "청구", "인증평가", "규정 관리", "문서 관리"],
+  hospital_pharmacist: ["조제", "복약지도", "처방감사", "투약", "입원조제", "외래조제", "마약류 관리", "의약품 관리", "무균조제", "주사제"],
+  clinical_pharmacist: ["ASP", "감염관리", "항생제", "종양약사", "TPN", "정맥영양", "항응고", "DUR", "약물상담", "전문약사", "임상약학"],
+  clinical_trial_pharmacist: ["임상시험", "IP 관리", "임상시험약", "프로토콜", "GCP", "SAE", "임상연구", "CRC 협업"],
+  pharmacy_department_management: ["약제부 운영", "약사 인력관리", "의약품 구매", "재고관리", "DUR", "처방 모니터링", "약무 통계", "위원회 운영"],
+  hospital_pharmacy_administration: ["약무행정", "보험심사", "삭감관리", "약가", "청구", "인증평가", "규정 관리", "문서 관리"],
 };
+const JOB_SUBCATEGORY_LABEL_BY_ID = new Map(
+  hospitalJobCategoryOptions.flatMap((category) => category.subcategories).map((sub) => [sub.id, sub.label] as const),
+);
 const MAX_KW = 8;
 const WELFARE_OPTS = ["4대보험", "퇴직연금", "본인·가족 의료비", "교육비 지원", "경조 지원", "사내식당", "직원 주차", "연·월차", "휴양시설", "직장 어린이집"];
 const SUBMISSION_OPTS = ["입사지원서(자사양식)", "최종학력 성적증명서", "약사 면허증 사본", "자기소개서", "경력증명서", "자격증 사본"];
 const WORK_TYPE_OPTS = ["주간", "야간·당직", "주말", "파트타임", "교대"];
+// 병원 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions(5종)에서 "인턴" 제외 4종만 id로 명시
+const HOSPITAL_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time", "freelance"];
 
 // Shared input class — no rounding (sharp corners), matches BusinessFormControls.TextInput style
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
@@ -256,9 +269,9 @@ export function HospitalJobPostingForm() {
   const [jobCategory, setJobCategory] = useState("");
   const [workplaceCategory, setWorkplaceCategory] = useState("");
   const [workTypes, setWorkTypes] = useState<Set<string>>(new Set(["주간"]));
-  const [employmentType, setEmploymentType] = useState("정규직");
-  const [careerType, setCareerType] = useState("경력무관");
-  const [educationType, setEducationType] = useState("학력무관");
+  const [employmentType, setEmploymentType] = useState("permanent");
+  const [careerType, setCareerType] = useState("any");
+  const [educationType, setEducationType] = useState("any");
   const [basicHeadcount, setBasicHeadcount] = useState("");
   const [basicHeadcountUndetermined, setBasicHeadcountUndetermined] = useState(false);
 
@@ -491,12 +504,13 @@ export function HospitalJobPostingForm() {
               <label htmlFor="h-jobcat" className={LBL}>직무 분류{REQ}</label>
               <select id="h-jobcat" value={jobCategory} onChange={(e) => setJobCategory(e.target.value)} className={SEL} aria-required="true">
                 <option value="" disabled>직무를 선택해 주세요</option>
-                <optgroup label="약사 직무">
-                  <option>입원·조제 약사</option><option>임상·전문약사</option><option>임상시험 약사</option>
-                </optgroup>
-                <optgroup label="관리·행정">
-                  <option>약제부 관리</option><option>약무행정</option>
-                </optgroup>
+                {hospitalJobCategoryOptions.map((category) => (
+                  <optgroup key={category.id} label={category.label}>
+                    {category.subcategories.map((sub) => (
+                      <option key={sub.id} value={sub.id}>{sub.label}</option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
               <FieldError message={errors.jobCategory} />
             </div>
@@ -504,7 +518,9 @@ export function HospitalJobPostingForm() {
               <label htmlFor="h-wpcat" className={LBL}>사업장 분류{REQ}</label>
               <select id="h-wpcat" value={workplaceCategory} onChange={(e) => setWorkplaceCategory(e.target.value)} className={SEL} aria-required="true">
                 <option value="" disabled>의료기관 유형을 선택해 주세요</option>
-                <option>상급종합병원</option><option>종합병원</option><option>병원</option><option>요양병원</option>
+                {hospitalTypeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
               <FieldError message={errors.workplaceCategory} />
             </div>
@@ -520,19 +536,25 @@ export function HospitalJobPostingForm() {
             <div>
               <label htmlFor="h-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="h-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
-                <option>정규직</option><option>계약직</option><option>파트타임</option><option>프리랜서</option>
+                {employmentTypeOptions
+                  .filter((option) => HOSPITAL_EMPLOYMENT_TYPE_IDS.includes(option.id))
+                  .map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor="h-career" className={LBL}>경력{REQ}</label>
               <select id="h-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
-                <option>경력무관</option><option>신입</option><option>1년 미만</option><option>1~3년</option><option>3~5년</option><option>5~10년</option>
+                {experienceOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
             </div>
             <div>
               <label htmlFor="h-edu" className={LBL}>학력{REQ}</label>
               <select id="h-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
-                <option>학력무관</option><option>대졸(4년제)</option><option>대졸(6년제)</option><option>석사 이상</option>
+                {educationOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -926,7 +948,7 @@ export function HospitalJobPostingForm() {
             {jobCategory && KW_BY_JOBCAT[jobCategory] ? (
               <>
                 <p className={`${HINT} mb-3`}>
-                  선택한 직무({jobCategory})에 맞춰 추천 키워드가 표시됩니다.
+                  선택한 직무({JOB_SUBCATEGORY_LABEL_BY_ID.get(jobCategory) ?? jobCategory})에 맞춰 추천 키워드가 표시됩니다.
                 </p>
                 <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
                   {KW_BY_JOBCAT[jobCategory].map((kw) => {

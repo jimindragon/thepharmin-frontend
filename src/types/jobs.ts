@@ -361,8 +361,16 @@ export type ResearchRecruitType =
 
 export type ResearchDegree = "박사" | "박사수료" | "박사예정" | "석사" | "석사수료" | "석사예정";
 
-/** Lab.institutionType 전용 분류. 트랙 라우팅에 쓰이는 OrganizationType과는 별개로, 연구실 상세 페이지 표시용 분류다. */
-export type LabInstitutionType = "대학" | "의과대학" | "병원" | "정부출연연구기관" | "기업부설연구소" | "기타";
+/**
+ * Lab.institutionType 전용 분류. 트랙 라우팅에 쓰이는 OrganizationType과는 별개로, 연구실 상세 페이지 표시용 분류다.
+ * `researchInstitutionTypeOptions`(`config/jobFilters/researchFilters.ts`)의 id와 1:1로 대응 — 필터 정본이므로 이 유니온도 함께 바뀌어야 한다.
+ */
+export type LabInstitutionType =
+  | "government_research_institute"
+  | "university_lab"
+  | "hospital_research_institute"
+  | "national_research_agency"
+  | "nonprofit_research_foundation";
 
 /** 기관 → 연구실 → PI 구조. 값이 없는 필드(홈페이지·채용페이지·소개 등)는 해당 행/버튼을 렌더링하지 않는다. */
 export interface ResearchLab {
@@ -458,7 +466,6 @@ export interface Job {
   salaryNote?: string;
   workModeIds: string[];
   companyTypeId: string;
-  researchInstitutionTypeIds?: string[];
   researchFieldIds?: string[];
   contractPeriodIds?: string[];
   pharmacyWorkTypeIds?: string[];
@@ -541,6 +548,21 @@ export interface Job {
   themes?: ThemeId[];
 }
 
+/**
+ * Company(약국) 기관 분류. 검색 필터의 pharmacyFeatureOptions/pharmacyWorkTypeOptions와는 별개로,
+ * 약국이라는 기관 자체를 분류하는 값이다 — 필터 옵션과 섞어 쓰지 않는다.
+ */
+export type PharmacyType = "general" | "clinic-floor" | "clinic-front" | "hospital-front" | "mart";
+
+/**
+ * Company(병원) 기관 분류. 검색 필터의 hospitalTypeOptions(4종, 기관 분류와 다른 용도)와는 별개다 —
+ * 필터 옵션은 이 타입 신설과 무관하게 그대로 유지한다. "specialty"는 필터에는 노출하지 않는다.
+ */
+export type HospitalType = "tertiary" | "general" | "hospital" | "specialty" | "long-term";
+
+/** Company(병원)의 운영 주체. */
+export type HospitalOperator = "private" | "public" | "military" | "university";
+
 export interface Company {
   id: string;
   name: string;
@@ -559,6 +581,14 @@ export interface Company {
   /** 마스킹된 대표자명(예: "정*래"). 실명 노출이 어려운 업종에서 사용 */
   repName?: string;
   address: string;
+  /** track === "pharmacy"인 기관만 설정 */
+  pharmacyType?: PharmacyType;
+  /** track === "hospital"인 기관만 설정 */
+  hospitalType?: HospitalType;
+  /** track === "hospital"인 기관만 설정 */
+  hospitalOperator?: HospitalOperator;
+  /** hospitalType이 "specialty"일 때만 의미 있는 전문 분야명 (예: "정형외과") */
+  specialtyLabel?: string;
 }
 
 export type CompanyReviewType = "interview" | "company";

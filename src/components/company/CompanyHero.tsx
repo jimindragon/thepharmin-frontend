@@ -2,12 +2,38 @@
 
 import { useState } from "react";
 import { Heart, Share2, ShieldCheck } from "lucide-react";
+import { companies } from "@/data/companies";
+import { getCompanyTrack, regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
+import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+
+/** 병원·약국 트랙 hero 뱃지: 기관 유형 콤보 라벨(강조) + 지역 + 사원수. 값이 없는 뱃지는 만들지 않는다.
+ * "-"는 이 코드베이스에서 미입력을 뜻하는 기존 관례(예: companies.ts employeeCount)라 빈 값과 동일하게 취급한다 */
+function institutionHeroBadges(profile: CompanyProfile): { text: string; emphasize: boolean }[] | null {
+  const company = companies.find((item) => item.id === profile.id);
+  if (!company) return null;
+
+  const track = getCompanyTrack(profile.id);
+  const typeLabel =
+    track === "hospital" && company.hospitalType && company.hospitalOperator
+      ? getHospitalCombinedTypeLabel(company.hospitalType, company.hospitalOperator, company.specialtyLabel)
+      : track === "pharmacy" && company.pharmacyType
+        ? getPharmacyTypeLabel(company.pharmacyType)
+        : null;
+  if (!typeLabel) return null;
+
+  const badges = [{ text: typeLabel, emphasize: true }];
+  const region = regionFromAddress(company.address);
+  if (region) badges.push({ text: region, emphasize: false });
+  if (company.employeeCount && company.employeeCount !== "-") badges.push({ text: company.employeeCount, emphasize: false });
+  return badges;
+}
 
 /** 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심기업 버튼). [companyId]/layout.tsx가 모든 탭 페이지에서 공유한다 */
 export function CompanyHero({ profile }: { profile: CompanyProfile }) {
   const [interested, setInterested] = useState(false);
   const [shared, setShared] = useState(false);
+  const institutionBadges = institutionHeroBadges(profile);
 
   const shareCompany = async () => {
     const url = window.location.href;
@@ -41,11 +67,24 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
               </div>
               <p className="mt-3 text-[15px] font-normal text-white/86 max-[640px]:text-[13px]">{profile.tagline}</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {profile.tags.map((tag) => (
-                  <span key={tag} className="inline-flex h-8 items-center bg-white/10 px-3 text-[12px] font-medium text-white/88 ring-1 ring-white/14">
-                    {tag}
-                  </span>
-                ))}
+                {institutionBadges
+                  ? institutionBadges.map((badge) => (
+                      <span
+                        key={badge.text}
+                        className={
+                          badge.emphasize
+                            ? "inline-flex h-8 items-center bg-white px-3 text-[12px] font-bold text-[#17212c]"
+                            : "inline-flex h-8 items-center bg-white/10 px-3 text-[12px] font-medium text-white/88 ring-1 ring-white/14"
+                        }
+                      >
+                        {badge.text}
+                      </span>
+                    ))
+                  : profile.tags.map((tag) => (
+                      <span key={tag} className="inline-flex h-8 items-center bg-white/10 px-3 text-[12px] font-medium text-white/88 ring-1 ring-white/14">
+                        {tag}
+                      </span>
+                    ))}
               </div>
             </div>
           </div>

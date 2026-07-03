@@ -660,7 +660,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
     if (filters.employmentTypeIds.length && !includesAny(jobEmploymentTypeIds(job), filters.employmentTypeIds)) return false;
     if (filters.workModeIds.length && !includesAny(job.workModeIds, filters.workModeIds)) return false;
     if (filters.companyTypeIds.length && !filters.companyTypeIds.includes(job.companyTypeId)) return false;
-    if (filters.institutionTypeIds.length && !includesAny(job.researchInstitutionTypeIds, filters.institutionTypeIds)) return false;
+    if (filters.institutionTypeIds.length && !(job.researchLab && filters.institutionTypeIds.includes(job.researchLab.institutionType))) return false;
     if (filters.contractPeriodIds.length && !includesAny(job.contractPeriodIds, filters.contractPeriodIds)) return false;
     if (filters.workTypeIds.length && !includesAny(job.pharmacyWorkTypeIds, filters.workTypeIds)) return false;
     if (filters.pharmacyFeatureIds.length && !includesAny(job.pharmacyFeatureIds, filters.pharmacyFeatureIds)) return false;

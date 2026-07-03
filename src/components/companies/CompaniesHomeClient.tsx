@@ -7,7 +7,7 @@ import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useM
 import { Pagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/Button";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
-import { FEATURED_COMPANY_IDS } from "@/data/companyDirectory";
+import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
 import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
@@ -246,26 +246,26 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
 
 function FeedFilterTabs({ active, onChange }: { active: FeedFilter; onChange: (filter: FeedFilter) => void }) {
   return (
-    <div className="flex shrink-0 items-center gap-4" role="tablist" aria-label="최근 올라온 이야기 필터">
+    <nav className="flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="최근 올라온 이야기 필터">
       {feedFilterTabs.map((tab) => {
         const selected = active === tab.id;
         return (
           <button
             key={tab.id}
             type="button"
-            role="tab"
-            aria-selected={selected}
             onClick={() => onChange(tab.id)}
             className={clsx(
-              "relative pb-1 text-[13px] font-medium transition",
-              selected ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[1.5px] after:w-full after:bg-[#111111]" : "text-[#8a94a3] hover:text-[#111111]",
+              "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-medium whitespace-nowrap transition",
+              selected
+                ? "font-semibold text-[#111111] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
+                : "text-[#4f5967] hover:text-[#111111]",
             )}
           >
             {tab.label}
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 }
 
@@ -274,7 +274,7 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
   const kindLabel = item.type === "interview" ? "면접 후기" : "현직자 리뷰";
 
   return (
-    <div className="group relative grid grid-cols-[150px_1px_1fr_auto] items-center gap-4 py-5 max-[560px]:grid-cols-1 max-[560px]:gap-2">
+    <div className="group relative grid grid-cols-[150px_1px_1fr_auto] items-center gap-4 py-6 max-[560px]:grid-cols-1 max-[560px]:gap-2">
       {/* 행 전체 클릭 영역. 우측 액션은 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
       <Link href={href} aria-label={`${item.companyName} 상세 보기`} className="absolute inset-0 z-10" />
       <div className="min-w-0">
@@ -337,19 +337,19 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
 
   return (
     <section className="border border-[#e5e9ef] bg-white p-6 max-[560px]:p-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 올라온 이야기</h2>
+      <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 올라온 이야기</h2>
+      <div className="mt-4">
         <FeedFilterTabs active={feedFilter} onChange={setFeedFilter} />
       </div>
 
       {displayedItems.length ? (
-        <div className="mt-4 divide-y divide-[#e5e9ef] border-t-[1.5px] border-[#111111]">
+        <div className="mt-4 divide-y divide-[#e5e9ef] px-5">
           {displayedItems.map((item) => (
             <FeedRow key={item.id} item={item} onRequestWriteInterviewReview={handleRequestWriteInterviewReview} />
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 border-t-[1.5px] border-[#111111] text-center">
+        <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 px-5 text-center">
           <p className="text-[13px] font-normal text-[#8791a0]">해당 조건의 이야기가 아직 없습니다.</p>
         </div>
       )}
@@ -409,7 +409,7 @@ function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => v
   const jobCountByTrack = useMemo(() => {
     const counts: Partial<Record<JobTrack, number>> = {};
     for (const track of jobTracks) {
-      counts[track.id] = jobs.filter((job) => job.track === track.id).length;
+      counts[track.id] = jobs.filter((job) => job.track === track.id && isJobActive(job)).length;
     }
     return counts;
   }, []);
@@ -646,12 +646,10 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
         ) : (
           <DirectoryEmptyState />
         )}
-
-        <div className="mt-6">
-          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
-        </div>
-        {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
       </section>
+
+      <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+      {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
     </>
   );
 }

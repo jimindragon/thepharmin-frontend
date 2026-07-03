@@ -7,6 +7,8 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { companyExampleImages } from "@/config/companyImages";
+import { domesticRegionOptions } from "@/config/jobFilters/index";
+import { researchInstitutionTypeOptions } from "@/config/jobFilters/researchFilters";
 import { researchFieldCategoryOptions } from "@/config/researchFields";
 import type { LabInstitutionType, ResearchApplyVia } from "@/types/jobs";
 
@@ -24,13 +26,6 @@ const DEGREE_OPTIONS = ["박사", "박사수료", "박사예정", "석사", "석
 
 const HEADCOUNT_OPTIONS = ["1명", "2명", "3명", "4명 이상", "미정"] as const;
 
-const DOMESTIC_REGIONS = [
-  "서울", "경기", "인천", "부산", "대구", "광주", "대전", "울산", "세종",
-  "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
-] as const;
-
-const INSTITUTION_TYPES: LabInstitutionType[] = ["대학", "의과대학", "병원", "정부출연연구기관", "기업부설연구소", "기타"];
-
 const APPLY_VIA_OPTIONS: ResearchApplyVia[] = ["이메일", "기관홈페이지", "플랫폼"];
 
 const PRESET_BENEFITS = [
@@ -43,7 +38,7 @@ const DEFAULT_LAB_IMAGE = companyExampleImages.research;
 
 const mockLab = {
   institution: "서울아산병원",
-  institutionType: "병원" as LabInstitutionType,
+  institutionType: "hospital_research_institute" as LabInstitutionType,
   displayName: "서울아산병원 대장항문외과",
 };
 
@@ -509,7 +504,7 @@ export function ResearchJobPostingForm() {
                   <label htmlFor="r-region" className={LBL}>근무지역(시·도){REQ}</label>
                   <SelectWrap id="r-region" value={locationRegion} onChange={setLocationRegion} required>
                     <option value="" disabled>시·도를 선택해 주세요</option>
-                    {DOMESTIC_REGIONS.map((r) => <option key={r}>{r}</option>)}
+                    {domesticRegionOptions.map((r) => <option key={r.id}>{r.label}</option>)}
                   </SelectWrap>
                 </>
               ) : (
@@ -812,7 +807,7 @@ export function ResearchJobPostingForm() {
               <label htmlFor="r-lab-type" className={LBL}>기관 분류{REQ}</label>
               <SelectWrap id="r-lab-type" value={labInstitutionType} onChange={(v) => setLabInstitutionType(v as LabInstitutionType)} required>
                 <option value="" disabled>기관 분류를 선택해 주세요</option>
-                {INSTITUTION_TYPES.map((t) => <option key={t}>{t}</option>)}
+                {researchInstitutionTypeOptions.map((opt) => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
               </SelectWrap>
               <FieldError message={errors.labInstitutionType} />
             </div>

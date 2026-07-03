@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { companyReviews } from "@/data/companies";
+import { getActiveJobCount, getCompanyTrack } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
 
 /** 앵커 스크롤 대신 실제 라우트로 이동하는 탭. (hub)/layout.tsx의 CompaniesHubTabs와 동일한 패턴(border-radius: 0).
@@ -13,13 +14,16 @@ export function CompanyDetailTabs({ companyId, profile }: { companyId: string; p
 
   const interviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "interview").length;
   const companyReviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "company").length;
+  const track = getCompanyTrack(companyId);
+  // 병원·약국 트랙은 뉴스 탭을 숨긴다(N3 상세 개편) — profile.news 데이터 자체는 삭제하지 않고 그대로 둔다
+  const showNewsTab = track !== "hospital" && track !== "pharmacy";
 
   const tabs = [
     { href: `/companies/${companyId}`, label: "기업 개요" },
-    { href: `/companies/${companyId}/jobs`, label: `채용공고 ${profile.jobs.length}` },
+    { href: `/companies/${companyId}/jobs`, label: `채용공고 ${getActiveJobCount(companyId)}` },
     { href: `/companies/${companyId}/interviews`, label: `면접 후기 ${interviewCount}` },
     { href: `/companies/${companyId}/reviews`, label: `현직자 리뷰 ${companyReviewCount}` },
-    { href: `/companies/${companyId}/news`, label: `뉴스 ${profile.news.length}` },
+    ...(showNewsTab ? [{ href: `/companies/${companyId}/news`, label: `뉴스 ${profile.news.length}` }] : []),
   ];
 
   return (

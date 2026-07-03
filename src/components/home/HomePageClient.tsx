@@ -9,20 +9,23 @@ import { CarouselControl } from "@/components/RecommendedJobs";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
-import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
+import { FEATURED_COMPANY_IDS, getActiveJobCount } from "@/data/companyDirectory";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 
-/** 실제 기업 상세 페이지(`/companies/{id}`)가 구현된 기업만 카드 클릭을 허용한다. 나머지는 상세 페이지가 없으므로 비클릭형으로 둔다 */
-const premiumCompanyDetailIds = new Set(["yuhan", "samsung-biologics"]);
-
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
-  const visibleCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
+  const trackCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
+  // FEATURED_COMPANY_IDS에 속한 기업을 앞으로 — Array.prototype.sort는 안정 정렬이라 나머지는 원래 순서를 유지한다
+  const visibleCompanies = [...trackCompanies].sort((a, b) => {
+    const aFeatured = FEATURED_COMPANY_IDS.includes(a.id) ? 0 : 1;
+    const bFeatured = FEATURED_COMPANY_IDS.includes(b.id) ? 0 : 1;
+    return aFeatured - bFeatured;
+  });
   const { containerRef, canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useHorizontalCarousel<HTMLDivElement>();
 
   return (
@@ -48,37 +51,38 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => {
             const logoSrc = companyLogos[company.name];
-            const cardClassName = "min-h-[188px] w-[300px] shrink-0 border-r border-[#dddddd] px-7 py-7 transition duration-[180ms] hover:bg-[#f7f7f7] last:border-r-0";
-            const cardContent = (
-              <>
-                {logoSrc ? (
-                  <div className="mb-6 grid h-12 w-20 place-items-center border border-[#e2e5e8] bg-white p-1.5">
-                    <img src={logoSrc} alt={company.name} className="h-full w-full object-contain" />
-                  </div>
-                ) : (
-                  <div className="mb-6">
-                    <EntityLogo name={company.name} logoText={company.logoText} size={48} />
-                  </div>
-                )}
-                <h3 className={clsx(typeScale.cardTitle, "text-[#15191f]")}>{company.name}</h3>
-                <p className="mt-3 text-[13px] font-normal leading-6 text-[#777777]">
-                  {company.lines.map((line) => (
-                    <span key={line} className="block">
-                      {line}
-                    </span>
-                  ))}
-                </p>
-                <p className="mt-5 text-[13px] font-semibold text-[#111111]">{company.positionCount}</p>
-              </>
-            );
+            const description = company.lines.join(" · ");
+            const activeJobCount = getActiveJobCount(company.id);
 
-            return premiumCompanyDetailIds.has(company.id) ? (
-              <Link key={company.id} href={`/companies/${company.id}`} data-carousel-item className={cardClassName}>
-                {cardContent}
-              </Link>
-            ) : (
-              <div key={company.id} data-carousel-item className={cardClassName}>
-                {cardContent}
+            return (
+              <div
+                key={company.id}
+                data-carousel-item
+                className="premium-company-card relative z-0 flex min-h-[264px] w-[300px] shrink-0 flex-col border-r border-[#dddddd] px-7 py-[34px] transition-colors duration-[180ms] last:border-r-0"
+              >
+                <Link href={`/companies/${company.id}`} className="absolute inset-0 z-10">
+                  <span className="sr-only">{company.name} 기업정보 보기</span>
+                </Link>
+                {/* 로고 유무와 무관하게 고정 높이로 렌더 — 폴백 텍스트도 이 안에서 세로 중앙 정렬되어 아래 요소들의 시작 위치가 모든 카드에서 동일하다 */}
+                <div className="flex h-10 items-center">
+                  {logoSrc ? (
+                    <img src={logoSrc} alt={company.name} className="max-h-[34px] w-auto max-w-[160px] object-contain" />
+                  ) : (
+                    <span className="text-[15px] font-bold text-[#171b20]/60">{company.name}</span>
+                  )}
+                </div>
+                <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f]")}>{company.name}</h3>
+                {/* min-h로 한 줄 캡션도 두 줄 높이를 차지 — 풋터 구분선 시작 위치를 카드마다 통일한다 */}
+                <p className="mt-2 line-clamp-2 min-h-[42px] text-[13px] font-normal leading-[1.6] text-[#777777]">{description}</p>
+                <div className="mt-8 border-t border-[#ececec] pt-3">
+                  <Link
+                    href={`/companies/${company.id}/jobs`}
+                    className="relative z-20 flex items-center justify-between"
+                  >
+                    <span className="text-[12px] font-medium text-[#aaaaaa]">채용중 공고</span>
+                    <strong className="premium-company-card-count text-[13px] font-bold text-[#111111]">{activeJobCount}건</strong>
+                  </Link>
+                </div>
               </div>
             );
           })}

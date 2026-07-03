@@ -207,6 +207,19 @@ input:focus-visible {
   display: none;
 }
 
+/* 업계를 이끄는 기업 카드 — hover 가능한 환경(마우스)에서만 배경 전환 + 채용중 공고 숫자 밑줄. 터치 환경은 hover 잔상이 남아 제외한다 */
+@media (hover: hover) {
+  .premium-company-card:hover {
+    background: var(--color-brand-soft);
+  }
+
+  .premium-company-card:hover .premium-company-card-count {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+}
+
 /* 홈 히어로 슬라이드 크로스페이드 — 모션 최소화 환경에서는 즉시 전환 */
 .hero-slide {
   transition: opacity 900ms ease;

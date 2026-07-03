@@ -7,6 +7,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
 import type { SalaryDetail } from "@/types/jobs";
 import { convertToHourly, formatSalaryDetail, formatWon } from "@/utils/salary";
 
@@ -78,9 +79,9 @@ function ChipGroup({ label, required, options, selected, onToggle, max, hint }: 
   );
 }
 
-function SegControl({ label, required, options, value, onChange, noDeselect }: {
+function SegControl({ label, required, options, value, onChange, noDeselect, labels }: {
   label: string; required?: boolean; options: string[]; value: string;
-  onChange: (v: string) => void; noDeselect?: boolean;
+  onChange: (v: string) => void; noDeselect?: boolean; labels?: Record<string, string>;
 }) {
   const id = useId();
   return (
@@ -94,7 +95,7 @@ function SegControl({ label, required, options, value, onChange, noDeselect }: {
             onClick={() => onChange(noDeselect && opt === value ? opt : opt === value ? "" : opt)}
             className={clsx("h-11 border-r border-[#d8e0e8] px-5 text-[13px] font-medium transition-colors last:border-r-0",
               value === opt ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]")}>
-            {opt}
+            {labels?.[opt] ?? opt}
           </button>
         ))}
       </div>
@@ -120,10 +121,9 @@ function ToggleRow({ title, description, checked, onChange, ariaLabel }: {
 
 const PHARMACY_JOB_TYPES = ["풀타임약사","파트타임약사","토요일주말약사","단기대체약사","관리약사","전산약무","조제보조","매장관리판매","사무보조"];
 const PHARMACY_TYPES = ["문전약국","의원층약국","일반약국","마트약국","기타"];
-const EMPLOYMENT_TYPE_OPTS = ["정규직","계약직","아르바이트","기타"];
+// 약국 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions에서 정규직/계약직/파트타임 3종만 id로 명시 ("아르바이트"는 파트타임으로 라벨 통일, "기타"는 정본에 없어 제외)
+const PHARMACY_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time"];
 const WORK_TYPE_OPTS = ["상근직","시간제","교대제","기타"];
-const CAREER_OPTS = ["경력무관","신입","1년 미만","1~3년","3~5년","5~10년"];
-const EDUCATION_OPTS = ["학력무관","고졸","전문대졸","대졸(4년제)","대졸(6년제)","석사 이상"];
 const SOFTWARE_PRESETS = ["유팜","팜IT 3000","팜트리","비트컴퓨터","이지팜"];
 const DEVICE_PRESETS = ["계수기","산제자동포장기","자동정제반절기","약포지인쇄기","자동투약기"];
 const BENEFIT_PRESETS = ["4대보험","퇴직연금","식사 제공","숙소 제공","연차","경조 지원","교통비 지원","명절 상여","직원 주차","복지포인트"];
@@ -479,7 +479,9 @@ export function PharmacyJobPostingForm() {
               <label htmlFor="p-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="p-emptype" value={employmentType} onChange={e => setEmploymentType(e.target.value)} className={SEL} aria-required="true">
                 <option value="" disabled>선택</option>
-                {EMPLOYMENT_TYPE_OPTS.map(t => <option key={t}>{t}</option>)}
+                {employmentTypeOptions
+                  .filter((option) => PHARMACY_EMPLOYMENT_TYPE_IDS.includes(option.id))
+                  .map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
               <FieldError message={errors.employmentType} />
             </div>
@@ -497,7 +499,9 @@ export function PharmacyJobPostingForm() {
               <label htmlFor="p-career" className={LBL}>경력{REQ}</label>
               <select id="p-career" value={career} onChange={e => setCareer(e.target.value)} className={SEL} aria-required="true">
                 <option value="" disabled>선택</option>
-                {CAREER_OPTS.map(t => <option key={t}>{t}</option>)}
+                {experienceOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
               <FieldError message={errors.career} />
             </div>
@@ -505,7 +509,9 @@ export function PharmacyJobPostingForm() {
               <label htmlFor="p-edu" className={LBL}>학력{REQ}</label>
               <select id="p-edu" value={education} onChange={e => setEducation(e.target.value)} className={SEL} aria-required="true">
                 <option value="" disabled>선택</option>
-                {EDUCATION_OPTS.map(t => <option key={t}>{t}</option>)}
+                {educationOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
               <FieldError message={errors.education} />
             </div>
@@ -662,6 +668,7 @@ export function PharmacyJobPostingForm() {
         <SectionCard title="급여" description="급여 표기 방식과 금액을 입력합니다." status="작성 중">
           <div className="mb-5">
             <SegControl label="급여 표기 방식" required options={["월급","일급","시급","연봉","면접후결정"]}
+              labels={{ "면접후결정": "면접 후 결정" }}
               value={salaryKind} onChange={v => setSalaryKind(v as SalaryKind)} noDeselect />
           </div>
 
