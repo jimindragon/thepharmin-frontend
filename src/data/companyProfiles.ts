@@ -43,13 +43,6 @@ export interface CompanyProfileNews {
   href: string;
 }
 
-export interface RelatedCompany {
-  id: string;
-  name: string;
-  description: string;
-  href: string;
-}
-
 export interface CompanyProfile {
   id: string;
   name: string;
@@ -78,12 +71,6 @@ export interface CompanyProfile {
     products: CompanyProduct[];
     address: string;
   };
-  extraCards: Array<{
-    title: string;
-    description: string;
-    status: string;
-  }>;
-  relatedCompanies: RelatedCompany[];
 }
 
 export const companyProfiles: CompanyProfile[] = [
@@ -186,17 +173,6 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "서울특별시 강남구 테헤란로 123",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [
-      { id: "bio-nex", name: "바이오넥스(주)", description: "RA·임상 직무 채용 중", href: "/jobs?keyword=바이오넥스" },
-      { id: "celltrion", name: "셀트리온", description: "생산·QA·RA 전문 인력 채용", href: "/jobs?keyword=셀트리온" },
-      { id: "hanmi", name: "한미정밀화학(주)", description: "QC·CMC 직무 중심 채용", href: "/jobs?keyword=한미정밀화학" },
-    ],
   },
   {
     id: "yuhan",
@@ -324,17 +300,6 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "서울 동작구 노량진로 74 (유한양행빌딩)",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [
-      { id: "jongkundang", name: "(주)종근당", description: "CMC·품질 직무 채용 중", href: "/jobs?keyword=종근당" },
-      { id: "greencross", name: "(주)녹십자", description: "백신·혈액제제 전문 인력 채용", href: "/jobs?keyword=녹십자" },
-      { id: "hanmi-pharm", name: "한미약품(주)", description: "신약개발·임상 전문 인력 채용", href: "/jobs?keyword=한미약품" },
-    ],
   },
   {
     id: "samsung-biologics",
@@ -455,17 +420,6 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "인천 연수구 송도바이오대로 300 (송도동, 삼성바이오로직스)",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [
-      { id: "hugel", name: "휴젤(주)", description: "보툴리눔 톡신·HA필러 전문기업", href: "/companies/hugel" },
-      { id: "sk-bioscience", name: "에스케이바이오사이언스(주)", description: "백신·바이오 전문 인력 채용", href: "/jobs?keyword=에스케이바이오사이언스" },
-      { id: "medytox", name: "(주)메디톡스", description: "보툴리눔 톡신·미용의료 전문 인력 채용", href: "/jobs?keyword=메디톡스" },
-    ],
   },
   {
     id: "hugel",
@@ -629,17 +583,6 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "강원 춘천시 동내면 거두단지1길 23 (거두리, 휴젤)",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [
-      { id: "samsung-biologics", name: "삼성바이오로직스(주)", description: "글로벌 CDMO·항체의약품 생산 전문기업", href: "/companies/samsung-biologics" },
-      { id: "medytox", name: "(주)메디톡스", description: "보툴리눔 톡신·미용의료 전문 인력 채용", href: "/jobs?keyword=메디톡스" },
-      { id: "sk-bioscience", name: "에스케이바이오사이언스(주)", description: "백신·바이오 전문 인력 채용", href: "/jobs?keyword=에스케이바이오사이언스" },
-    ],
   },
   {
     id: "celltrion",
@@ -712,18 +655,12 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "인천 연수구 아카데미로 23",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "hanmi-pharm",
     name: "한미약품(주)",
     logoText: "한미약품",
+    logoImage: companyLogos["한미약품"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "R&D로 성장하는 신약개발 중심 제약기업",
@@ -789,13 +726,6 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "서울 송파구 위례성대로 14",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "chongkundang",
@@ -866,18 +796,12 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "서울 서대문구 충정로 8",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "greencross",
     name: "(주)녹십자",
     logoText: "녹십자",
+    logoImage: companyLogos["녹십자"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "백신과 혈액제제로 공중보건을 지켜온 바이오 전문기업",
@@ -942,18 +866,12 @@ export const companyProfiles: CompanyProfile[] = [
       ],
       address: "경기 용인시 기흥구 이현로30번길 107",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "medicoa-cro",
     name: "메디코아CRO(주)",
     logoText: "메디코아",
+    logoImage: companyLogos["메디코아"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO",
@@ -1014,18 +932,12 @@ export const companyProfiles: CompanyProfile[] = [
       products: [],
       address: "서울 구로구 디지털로 300",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "snubh",
     name: "분당서울대학교병원",
     logoText: "분당서울대학교병원",
+    logoImage: companyLogos["분당서울대병원"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "연구와 진료를 잇는 스마트병원 선도 상급종합병원",
@@ -1083,13 +995,6 @@ export const companyProfiles: CompanyProfile[] = [
       products: [],
       address: "경기 성남시 분당구 구미로173번길 82",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
   {
     id: "eunhaeng-pharmacy",
@@ -1146,13 +1051,6 @@ export const companyProfiles: CompanyProfile[] = [
       products: [],
       address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",
     },
-    extraCards: [
-      { title: "연봉 정보", description: "직무별 연봉 범위와 보상 구조를 준비 중입니다.", status: "준비중" },
-      { title: "복지 및 문화", description: "복리후생, 근무 문화, 성장 지원 정보를 정리하고 있습니다.", status: "미리보기" },
-      { title: "채용 정보", description: "전형 방식과 채용 일정 데이터를 연결할 예정입니다.", status: "연결 예정" },
-      { title: "ESG 경영", description: "지속가능경영과 사회공헌 정보를 제공할 예정입니다.", status: "준비중" },
-    ],
-    relatedCompanies: [],
   },
 ];
 

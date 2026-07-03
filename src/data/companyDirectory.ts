@@ -85,6 +85,9 @@ const industryGroupById: Record<string, IndustryGroup> = {
   "medicoa-cro": "cro_cdmo",
 };
 
+/** 기업정보 허브 랜딩 로고 스트립에서 맨 앞에 고정 노출할 기업 id(이후 프로필 보유 기업 → 나머지 로고 보유 기업 순으로 이어붙인다). companyProfiles.ts에 프로필이 있는 기업 중 수동 선정 */
+export const FEATURED_COMPANY_IDS = ["celltrion", "hanmi-pharm"];
+
 function regionFromAddress(address: string) {
   return address.split(" ").slice(0, 2).join(" ");
 }

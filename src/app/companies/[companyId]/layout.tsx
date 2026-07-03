@@ -34,7 +34,7 @@ export default async function CompanyLayout({ children, params }: CompanyLayoutP
       <Header />
       <main className="bg-[#f5f6f7] pb-24 pt-6">
         <div className="app-shell">
-          <PageBreadcrumb className="mb-5" items={[{ label: "기업정보" }, { label: profile.name }]} />
+          <PageBreadcrumb className="mb-5" items={[{ label: "기업 인사이트" }, { label: profile.name }]} />
           <CompanyHero profile={profile} />
           <CompanyDetailTabs companyId={companyId} profile={profile} />
           {children}

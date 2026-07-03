@@ -14,6 +14,8 @@ interface LockedContentProps {
   /** 잠금 영역의 스켈레톤 줄 수. 맥락(카드/본문)에 맞게 조정한다. */
   lines?: number;
   className?: string;
+  /** 기본은 모노톤 아웃라인 버튼. "gradient"는 페이지당 대표 액션 하나(예: 면접 후기 작성하기)에만 사용할 것 — 미지정 시 기존 동작과 동일하다. */
+  ctaVariant?: "outline" | "gradient";
 }
 
 /**
@@ -21,7 +23,14 @@ interface LockedContentProps {
  * 않으므로(부모가 잠금 여부에 따라 콘텐츠 자체를 보내지 않음), 흐릿한 텍스트 대신 항상
  * 스켈레톤 placeholder + 흰색 gradient + 자물쇠 아이콘 + 안내문 + CTA만 렌더링한다.
  */
-export function LockedContent({ message, ctaLabel, ctaHref, onCtaClick, lines = 3, className }: LockedContentProps) {
+export function LockedContent({ message, ctaLabel, ctaHref, onCtaClick, lines = 3, className, ctaVariant = "outline" }: LockedContentProps) {
+  const ctaClassName =
+    ctaVariant === "gradient"
+      ? "mt-1 inline-flex h-9 items-center px-4 text-[12px] font-medium text-white transition hover:brightness-110 active:brightness-90"
+      : "mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white";
+  const ctaStyle =
+    ctaVariant === "gradient" ? { backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" } : undefined;
+
   return (
     <div
       role="region"
@@ -45,18 +54,11 @@ export function LockedContent({ message, ctaLabel, ctaHref, onCtaClick, lines = 
         <Lock size={17} className="text-[#8a95a5]" aria-hidden="true" />
         <p className="max-w-[260px] text-[13px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
         {ctaHref ? (
-          <Link
-            href={ctaHref}
-            className="mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
-          >
+          <Link href={ctaHref} className={ctaClassName} style={ctaStyle}>
             {ctaLabel}
           </Link>
         ) : (
-          <button
-            type="button"
-            onClick={onCtaClick}
-            className="mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
-          >
+          <button type="button" onClick={onCtaClick} className={ctaClassName} style={ctaStyle}>
             {ctaLabel}
           </button>
         )}

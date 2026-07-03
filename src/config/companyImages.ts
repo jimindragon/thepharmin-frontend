@@ -59,4 +59,8 @@ export const companyLogos: Record<string, string> = {
   제일정형외과병원: "/images/companies/제일정형외과병원.png",
   한빛종합병원: "/images/companies/한빛종합병원.png",
   국군서울지구병원: "/images/companies/국군서울지구병원.svg",
+  분당서울대병원: "/images/companies/분당서울대병원.png",
+  메디코아: "/images/companies/메디코아.png",
+  녹십자: "/images/companies/녹십자.png",
+  한미약품: "/images/companies/한미약품.gif",
 };

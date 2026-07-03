@@ -9,7 +9,7 @@ interface CompanyReviewsPageProps {
 }
 
 export const metadata: Metadata = {
-  title: "기업 리뷰 | THE PHARMA Recruit.",
+  title: "현직자 리뷰 | THE PHARMA Recruit.",
 };
 
 /** 기업 리뷰(회사 후기)는 이 앱 어디에도 열람 게이팅이 없다 — 1A와 동일한 기준으로 항상 원문을 내려준다.
@@ -34,12 +34,12 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
   const body = items.length ? (
     <div className="mt-6 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
       {items.map((item) => (
-        <CompanyReviewCard key={item.id} review={item} typeLabel="기업 리뷰" />
+        <CompanyReviewCard key={item.id} review={item} />
       ))}
     </div>
   ) : (
-    <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] text-center">
-      <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 기업 리뷰가 없습니다.</p>
+    <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 border border-[#e1e8ef] bg-[#fbfcfd] text-center">
+      <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 현직자 리뷰가 없습니다.</p>
       <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
     </div>
   );

@@ -19,7 +19,7 @@ export function CompanyInterviewsListClient({ items, isLoggedIn }: CompanyInterv
 
   if (!items.length) {
     return (
-      <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius)] border border-[#e1e8ef] bg-[#fbfcfd] text-center">
+      <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 border border-[#e1e8ef] bg-[#fbfcfd] text-center">
         <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 면접 후기가 없습니다.</p>
         <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
       </div>
@@ -33,7 +33,6 @@ export function CompanyInterviewsListClient({ items, isLoggedIn }: CompanyInterv
           <CompanyReviewCard
             key={item.id}
             review={item}
-            typeLabel="면접 후기"
             lockedMessage={
               isLoggedIn
                 ? "면접 후기를 작성하면 다른 사용자의 상세 후기를 확인할 수 있습니다."
@@ -41,6 +40,7 @@ export function CompanyInterviewsListClient({ items, isLoggedIn }: CompanyInterv
             }
             lockedCtaLabel={isLoggedIn ? "면접 후기 작성하기" : "로그인하기"}
             lockedCtaHref={isLoggedIn ? undefined : "/companies"}
+            lockedCtaVariant={isLoggedIn ? "gradient" : "outline"}
             onLockedCtaClick={isLoggedIn ? handleRequestWriteReview : undefined}
           />
         ))}

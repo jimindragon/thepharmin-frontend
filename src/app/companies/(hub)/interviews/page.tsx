@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { InterviewsFeedClient } from "@/components/companies/InterviewsFeedClient";
 import { companies, companyReviews } from "@/data/companies";
 
@@ -36,5 +37,12 @@ export default async function CompaniesInterviewsPage({ searchParams }: Companie
       };
     });
 
-  return <InterviewsFeedClient items={items} isLoggedIn={isLoggedIn} />;
+  return (
+    <>
+      <Link href="/companies" className="mt-8 inline-flex items-center text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
+        ← 기업 인사이트
+      </Link>
+      <InterviewsFeedClient items={items} isLoggedIn={isLoggedIn} />
+    </>
+  );
 }

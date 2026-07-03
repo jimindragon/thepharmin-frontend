@@ -719,3 +719,38 @@ input:focus-visible {
     opacity: 1;
   }
 }
+
+/* ── 기업정보 허브 — 로고 스트립 (컬러 로고, hover 시 opacity/텍스트 톤·굵기만 진해짐) ───── */
+@media (hover: none) {
+  .company-logo-strip-img {
+    opacity: 1;
+  }
+
+  .company-logo-strip-name {
+    color: #171d26;
+  }
+}
+
+@media (hover: hover) {
+  .company-logo-strip-img {
+    opacity: 0.9;
+    transition: opacity 0.25s ease;
+  }
+
+  .company-logo-strip-name {
+    color: #596373;
+    font-weight: 500;
+    transition: color 0.25s ease;
+  }
+
+  .company-logo-strip-item:hover .company-logo-strip-img,
+  .company-logo-strip-item:focus-visible .company-logo-strip-img {
+    opacity: 1;
+  }
+
+  .company-logo-strip-item:hover .company-logo-strip-name,
+  .company-logo-strip-item:focus-visible .company-logo-strip-name {
+    color: #171d26;
+    font-weight: 700;
+  }
+}

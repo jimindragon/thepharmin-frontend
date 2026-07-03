@@ -18,7 +18,7 @@ export function CompanyDetailTabs({ companyId, profile }: { companyId: string; p
     { href: `/companies/${companyId}`, label: "기업 개요" },
     { href: `/companies/${companyId}/jobs`, label: `채용공고 ${profile.jobs.length}` },
     { href: `/companies/${companyId}/interviews`, label: `면접 후기 ${interviewCount}` },
-    { href: `/companies/${companyId}/reviews`, label: `기업 리뷰 ${companyReviewCount}` },
+    { href: `/companies/${companyId}/reviews`, label: `현직자 리뷰 ${companyReviewCount}` },
     { href: `/companies/${companyId}/news`, label: `뉴스 ${profile.news.length}` },
   ];
 

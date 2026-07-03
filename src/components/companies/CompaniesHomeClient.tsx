@@ -2,38 +2,67 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { ChevronRight, Heart, Search, ShieldCheck } from "lucide-react";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { ChevronRight, Search, ShieldCheck } from "lucide-react";
+import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Pagination } from "@/components/Pagination";
-import { LockedContent } from "@/components/companies/LockedContent";
-import { EntityLogo } from "@/components/ui/EntityLogo";
-import { jobTrackLabels } from "@/config/jobTracks";
+import { Button } from "@/components/ui/Button";
+import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
+import { FEATURED_COMPANY_IDS } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
+import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
 
 type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "hospital" | "pharmacy";
 type SortOption = "리뷰순" | "관심순" | "채용중순";
+type FeedFilter = "all" | "interview" | "company";
 
-interface RecentInterviewReviewPreview {
+interface RecentFeedCompanyItem {
   id: string;
   companyId: string;
   companyName: string;
-  track: JobTrack;
-  industryGroup?: IndustryGroup;
+  type: "company";
   jobRole: string;
-  outcome?: "합격" | "불합격";
   writtenAt: string;
-  /** 권한이 없으면 서버에서부터 null로 내려온다 — 클라이언트는 원문 자체를 받지 않는다 */
-  preview: string | null;
+  content: string;
+  helpfulCount: number;
 }
+
+interface RecentFeedInterviewItem {
+  id: string;
+  companyId: string;
+  companyName: string;
+  type: "interview";
+  jobRole: string;
+  writtenAt: string;
+  /** 원문(content)은 절대 내려오지 않는다 — 태그만으로 미리보기를 구성한다 */
+  tags: string[];
+}
+
+type RecentFeedItem = RecentFeedCompanyItem | RecentFeedInterviewItem;
 
 interface CompaniesHomeClientProps {
   directory: CompanyDirectoryEntry[];
-  recentInterviewReviews: RecentInterviewReviewPreview[];
-  isLoggedIn: boolean;
+  companyFeedItems: RecentFeedCompanyItem[];
+  interviewFeedItems: RecentFeedInterviewItem[];
 }
 
-const LOGIN_HREF = "/companies";
+const FEED_COMPANY_QUOTA = 3;
+const FEED_INTERVIEW_QUOTA = 2;
+const FEED_TOTAL = FEED_COMPANY_QUOTA + FEED_INTERVIEW_QUOTA;
+
+/** "전체" 필터 기본 구성: 기업 리뷰 3 + 면접 후기 2(각 타입 내 최신순), 한쪽이 부족하면 다른 타입으로 채운다 */
+function buildAllFeedItems(companyItems: RecentFeedCompanyItem[], interviewItems: RecentFeedInterviewItem[]): RecentFeedItem[] {
+  const companyPick = companyItems.slice(0, FEED_COMPANY_QUOTA);
+  const interviewPick = interviewItems.slice(0, FEED_INTERVIEW_QUOTA);
+  const shortfall = FEED_TOTAL - companyPick.length - interviewPick.length;
+
+  const extras: RecentFeedItem[] = [...companyItems.slice(companyPick.length), ...interviewItems.slice(interviewPick.length)]
+    .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
+    .slice(0, Math.max(shortfall, 0));
+
+  return [...companyPick, ...interviewPick, ...extras].sort((a, b) => b.writtenAt.localeCompare(a.writtenAt));
+}
+
 const PAGE_SIZE = 8;
 
 const trackFilterTabs: { id: TrackFilter; label: string }[] = [
@@ -44,7 +73,20 @@ const trackFilterTabs: { id: TrackFilter; label: string }[] = [
   { id: "pharmacy", label: "약국" },
 ];
 
+const feedFilterTabs: { id: FeedFilter; label: string }[] = [
+  { id: "all", label: "전체" },
+  { id: "interview", label: "면접 후기" },
+  { id: "company", label: "현직자 리뷰" },
+];
+
 const sortOptions: SortOption[] = ["리뷰순", "관심순", "채용중순"];
+
+/** 사이드바 "업종별 탐색"의 산업(JobTrack) 클릭을 하단 리스트의 큐레이션 탭(TrackFilter)으로 잇는 매핑.
+ * 산업/연구는 큐레이션 탭이 세분화(제약·바이오/CRO·CDMO)되어 있거나 아예 탭이 없어 "전체"로 스크롤만 한다. */
+const trackToDirectoryFilter: Partial<Record<JobTrack, TrackFilter>> = {
+  hospital: "hospital",
+  pharmacy: "pharmacy",
+};
 
 /** 큐레이션 탭은 트랙(JobTrack)과 산업 세분류(IndustryGroup)를 함께 봐야 한다 — 산업 트랙이 제약·바이오/CRO·CDMO 두 탭으로 나뉘기 때문 */
 function matchesTrackFilter(track: JobTrack, industryGroup: IndustryGroup | undefined, filter: TrackFilter) {
@@ -72,30 +114,114 @@ function CompanySearchBar({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <form onSubmit={onSubmit} className="mt-8 flex max-w-[640px] gap-2 max-[520px]:flex-col">
-      <div className="flex h-12 flex-1 items-center gap-2 border border-[#dfe4ea] bg-white px-4">
+    <form
+      onSubmit={onSubmit}
+      className="mt-8 flex h-14 items-stretch border border-[#d8dce2] bg-white transition-colors focus-within:border-[#111111]"
+    >
+      <div className="flex flex-1 items-center gap-3 pl-5">
         <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
         <input
           value={keyword}
           onChange={(event) => onKeywordChange(event.target.value)}
           placeholder="기업 또는 기관명을 검색하세요"
           aria-label="기업 또는 기관명 검색"
-          className="h-full w-full bg-transparent text-[14px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
+          className="h-full w-full bg-transparent text-[15px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
         />
       </div>
-      <button
-        type="submit"
-        className="h-12 shrink-0 bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]"
-      >
+      <button type="submit" className="shrink-0 bg-[#111111] px-8 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]">
         검색
       </button>
     </form>
   );
 }
 
+function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const dragState = useRef<{ startX: number; startScrollLeft: number } | null>(null);
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+
+    // 세로 휠 스크롤을 가로 스크롤로 리다이렉트한다 — 트랙패드의 원래 가로 제스처(deltaX)는 그대로 둔다
+    const handleWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      node.scrollLeft += event.deltaY;
+    };
+    node.addEventListener("wheel", handleWheel, { passive: false });
+    return () => node.removeEventListener("wheel", handleWheel);
+  }, []);
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+    const node = scrollRef.current;
+    if (!node) return;
+    dragState.current = { startX: event.clientX, startScrollLeft: node.scrollLeft };
+    node.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const node = scrollRef.current;
+    if (!node || !dragState.current) return;
+    node.scrollLeft = dragState.current.startScrollLeft - (event.clientX - dragState.current.startX);
+  };
+
+  const endDrag = () => {
+    dragState.current = null;
+  };
+
+  if (!entries.length) return null;
+
+  return (
+    <div className="relative mt-8 border border-[#e5e9ef] bg-white py-[30px]">
+      <div
+        ref={scrollRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={endDrag}
+        className="premium-scrollbar flex cursor-grab select-none overflow-x-auto px-6 active:cursor-grabbing"
+      >
+        {entries.map((entry, index) => (
+          <div key={entry.id} className="flex shrink-0 items-stretch">
+            {index > 0 ? (
+              <span aria-hidden="true" className="w-px shrink-0 self-center bg-[#e5e9ef]" style={{ height: 44 }} />
+            ) : null}
+            <Link
+              href={entry.detailHref}
+              draggable={false}
+              title={entry.name}
+              className="company-logo-strip-item flex w-[164px] shrink-0 flex-col items-center justify-center gap-2"
+            >
+              <img
+                src={entry.logoUrl}
+                alt={entry.name}
+                draggable={false}
+                className="company-logo-strip-img h-[42px] w-auto max-w-[120px] object-contain"
+              />
+              <span
+                title={entry.name}
+                className="company-logo-strip-name w-full max-w-[140px] truncate text-center text-[12px]"
+              >
+                {entry.name}
+              </span>
+            </Link>
+          </div>
+        ))}
+      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent max-[560px]:w-10"
+      />
+    </div>
+  );
+}
+
 function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track: TrackFilter) => void }) {
   return (
-    <nav className="mt-6 flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="기업·기관 트랙">
+    <nav className="flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="기업·기관 트랙">
       {trackFilterTabs.map((tab) => {
         const selected = active === tab.id;
         return (
@@ -106,7 +232,7 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
             className={clsx(
               "relative inline-flex h-12 shrink-0 items-center px-5 text-[14px] font-medium whitespace-nowrap transition",
               selected
-                ? "font-semibold text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
+                ? "font-semibold text-[#111111] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                 : "text-[#4f5967] hover:text-[#111111]",
             )}
           >
@@ -118,62 +244,273 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
   );
 }
 
-function CompanyListItem({ entry, onRequestWriteReview }: { entry: CompanyDirectoryEntry; onRequestWriteReview: () => void }) {
-  const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
-  const hasReviews = entry.reviewCount > 0;
+function FeedFilterTabs({ active, onChange }: { active: FeedFilter; onChange: (filter: FeedFilter) => void }) {
+  return (
+    <div className="flex shrink-0 items-center gap-4" role="tablist" aria-label="최근 올라온 이야기 필터">
+      {feedFilterTabs.map((tab) => {
+        const selected = active === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            onClick={() => onChange(tab.id)}
+            className={clsx(
+              "relative pb-1 text-[13px] font-medium transition",
+              selected ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[1.5px] after:w-full after:bg-[#111111]" : "text-[#8a94a3] hover:text-[#111111]",
+            )}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem; onRequestWriteInterviewReview: () => void }) {
+  const href = item.type === "interview" ? `/companies/${item.companyId}/interviews` : `/companies/${item.companyId}/reviews`;
+  const kindLabel = item.type === "interview" ? "면접 후기" : "현직자 리뷰";
 
   return (
-    <article className="relative grid min-h-[84px] grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-3 border border-[#e5e9ef] bg-white py-4 pl-5 pr-9 transition hover:border-[#111111] hover:bg-[#f7f8fa] max-[640px]:grid-cols-[44px_1fr]">
-      {/* 카드 전체 클릭 영역. "첫 리뷰 쓰기"는 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
+    <div className="group relative grid grid-cols-[150px_1px_1fr_auto] items-center gap-4 py-5 max-[560px]:grid-cols-1 max-[560px]:gap-2">
+      {/* 행 전체 클릭 영역. 우측 액션은 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
+      <Link href={href} aria-label={`${item.companyName} 상세 보기`} className="absolute inset-0 z-10" />
+      <div className="min-w-0">
+        <p className="line-clamp-2 text-[15px] font-extrabold text-[#171d26]">{item.companyName}</p>
+        <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">
+          <span className="font-semibold text-[#596373]">{kindLabel}</span>
+          {" · "}
+          {item.jobRole}
+        </p>
+      </div>
+      <span aria-hidden="true" className="h-10 w-px shrink-0 self-center bg-[#e5e9ef] max-[560px]:hidden" />
+      <div className="min-w-0">
+        {item.type === "company" ? (
+          <p className="line-clamp-2 text-[14px] font-normal leading-[1.65] text-[#3f4855] transition group-hover:text-[#111111]">
+            “{item.content}”
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {item.tags.map((tag) => (
+              <span key={tag} className="border border-[#e5e9ef] px-2 py-0.5 text-[12px] font-normal text-[#596373]">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="shrink-0 justify-self-end self-center whitespace-nowrap">
+        {item.type === "company" ? (
+          <p className="text-[12px] font-normal text-[#a0a9b7]">도움돼요 {item.helpfulCount}</p>
+        ) : (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRequestWriteInterviewReview();
+            }}
+            className="relative z-20 text-[12px] font-medium text-[#a0a9b7] underline decoration-[#d8dce2] underline-offset-2 transition hover:text-[#111111]"
+          >
+            후기 작성 후 원문 열람
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: RecentFeedCompanyItem[]; interviewItems: RecentFeedInterviewItem[] }) {
+  const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
+  const [interviewReviewNotice, setInterviewReviewNotice] = useState("");
+
+  const allItems = useMemo(() => buildAllFeedItems(companyItems, interviewItems), [companyItems, interviewItems]);
+
+  const displayedItems: RecentFeedItem[] =
+    feedFilter === "all" ? allItems : feedFilter === "company" ? companyItems : interviewItems;
+
+  const handleRequestWriteInterviewReview = () => {
+    setInterviewReviewNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
+    window.setTimeout(() => setInterviewReviewNotice(""), 2400);
+  };
+
+  return (
+    <section className="border border-[#e5e9ef] bg-white p-6 max-[560px]:p-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 올라온 이야기</h2>
+        <FeedFilterTabs active={feedFilter} onChange={setFeedFilter} />
+      </div>
+
+      {displayedItems.length ? (
+        <div className="mt-4 divide-y divide-[#e5e9ef] border-t-[1.5px] border-[#111111]">
+          {displayedItems.map((item) => (
+            <FeedRow key={item.id} item={item} onRequestWriteInterviewReview={handleRequestWriteInterviewReview} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 border-t-[1.5px] border-[#111111] text-center">
+          <p className="text-[13px] font-normal text-[#8791a0]">해당 조건의 이야기가 아직 없습니다.</p>
+        </div>
+      )}
+
+      {interviewReviewNotice ? <p className="mt-4 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
+    </section>
+  );
+}
+
+function SidebarBlockTitle({ children }: { children: string }) {
+  return (
+    <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
+      {children}
+    </h2>
+  );
+}
+
+function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry[] }) {
+  if (!entries.length) return null;
+
+  return (
+    <section className="border border-[#e5e9ef] bg-white p-5">
+      <SidebarBlockTitle>리뷰 많은 기업 TOP 5</SidebarBlockTitle>
+      <ol className="mt-4 space-y-3.5">
+        {entries.map((entry, index) => (
+          <li key={entry.id}>
+            <Link href={entry.detailHref} className="flex items-start gap-3 transition hover:opacity-70">
+              <span className="text-[15px] font-bold text-[#a0a9b7]">{index + 1}</span>
+              <span className="min-w-0">
+                <span className="block truncate text-[13px] font-medium text-[#303946]">{entry.name}</span>
+                <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
+                  현직자 리뷰 {entry.companyReviewCount} · 면접후기 {entry.interviewReviewCount}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function WriteReviewCtaPanel({ onCtaClick }: { onCtaClick: () => void }) {
+  return (
+    <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
+      <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">다녀온 회사의 이야기를 남겨주세요</h2>
+      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">후기를 작성하면 모든 면접 후기 원문을 열람할 수 있습니다.</p>
+      <Button type="button" variant="gradient" onClick={onCtaClick} className="mt-4 w-full">
+        후기 작성하기
+      </Button>
+    </section>
+  );
+}
+
+function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => void }) {
+  const jobCountByTrack = useMemo(() => {
+    const counts: Partial<Record<JobTrack, number>> = {};
+    for (const track of jobTracks) {
+      counts[track.id] = jobs.filter((job) => job.track === track.id).length;
+    }
+    return counts;
+  }, []);
+
+  return (
+    <section className="border border-[#e5e9ef] bg-white p-5">
+      <SidebarBlockTitle>업종별 탐색</SidebarBlockTitle>
+      <div className="mt-4 divide-y divide-[#edf1f5]">
+        {jobTracks.map((track) => (
+          <button
+            key={track.id}
+            type="button"
+            onClick={() => onExplore(track.id)}
+            className="flex w-full items-center justify-between py-3 text-left transition hover:opacity-70"
+          >
+            <span className="text-[14px] font-medium text-[#171d26]">{track.label}</span>
+            <span className="text-[13px] font-normal text-[#8a94a3]">채용중 {jobCountByTrack[track.id] ?? 0}건</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CompanyStatColumn({ label, count, href }: { label: string; count: number; href: string }) {
+  const isZero = count === 0;
+  const numberClassName = clsx(
+    "text-[19px] font-bold leading-none",
+    isZero
+      ? "font-medium text-[#c9c9c9]"
+      : "text-[#171d26] group-hover/stat:underline group-hover/stat:underline-offset-[3px]",
+  );
+
+  if (isZero) {
+    return (
+      <div className="flex w-[84px] shrink-0 cursor-default flex-col items-center gap-1.5 py-1 max-[640px]:w-[68px]">
+        <span className={numberClassName}>{count}</span>
+        <span className="text-[11px] font-normal text-[#8a94a3]">{label}</span>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      onClick={(event) => event.stopPropagation()}
+      className="group/stat relative z-20 flex w-[84px] shrink-0 flex-col items-center gap-1.5 py-1 max-[640px]:w-[68px]"
+    >
+      <span className={numberClassName}>{count}</span>
+      <span className="text-[11px] font-normal text-[#8a94a3]">{label}</span>
+    </Link>
+  );
+}
+
+/** JobCard.tsx의 [로고|구분선|정보] 문법을 따른다: 이미지 로고는 흰 배경 위에 직접, logoText 폴백만 기존 회색 이니셜 칩 스타일을 유지한다. */
+function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(entry.logoUrl) && !imageFailed;
+
+  return (
+    <div className="flex h-[52px] w-[120px] shrink-0 items-center justify-center max-[640px]:w-[100px]">
+      {showImage ? (
+        <img
+          src={entry.logoUrl}
+          alt={entry.name}
+          className="max-h-[46px] max-w-[100px] object-contain max-[640px]:max-w-[76px]"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <span className="text-[13px] font-semibold text-[#596373]">{(entry.logoText ?? entry.name).slice(0, 2)}</span>
+      )}
+    </div>
+  );
+}
+
+function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
+  const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
+
+  return (
+    <article className="relative grid grid-cols-[120px_1px_1fr_auto] items-center gap-x-4 gap-y-3 py-5 pr-9 transition hover:bg-[#f7f8fa] max-[640px]:grid-cols-[100px_1px_1fr]">
+      {/* 카드 전체 클릭 영역. 스탯 컬럼은 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
       <Link
         href={entry.detailHref}
         aria-label={`${entry.name} 상세 보기`}
         className="absolute inset-0 z-10 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
       />
-      <EntityLogo
-        name={entry.name}
-        logoText={entry.logoText}
-        logoUrl={entry.logoUrl}
-        size={44}
-      />
-      <div className="min-w-0">
+      <CompanyLogoCell entry={entry} />
+      <span aria-hidden="true" className="h-9 w-px shrink-0 self-center bg-[#eeeeee]" />
+      <div className="min-w-0 pl-[6px]">
         <div className="flex items-center gap-1.5">
           <h3 className="truncate text-[16px] font-bold text-[#171d26]">{entry.name}</h3>
           {entry.verified ? <ShieldCheck size={14} className="shrink-0 text-[#596373]" aria-label="인증된 기업·기관" /> : null}
         </div>
         <p className="mt-1 truncate text-[13px] font-normal text-[#777777]">{metaParts.join(" · ")}</p>
       </div>
-      <div className="flex flex-col items-end gap-1 max-[640px]:col-start-2 max-[640px]:row-start-2 max-[640px]:items-start">
-        {hasReviews ? (
-          <p className="text-[14px] font-medium text-[#171d26]">
-            리뷰 {entry.companyReviewCount} · 면접후기 {entry.interviewReviewCount}
-          </p>
-        ) : (
-          <p className="flex items-center gap-1.5 text-[14px] font-medium text-[#171d26]">
-            <span>아직 리뷰가 없어요</span>
-            <span aria-hidden="true" className="text-[#d8dce2]">·</span>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onRequestWriteReview();
-              }}
-              className="relative z-20 font-medium text-[#596373] underline decoration-[#d8dce2] underline-offset-2 transition hover:text-[#111111]"
-            >
-              첫 리뷰 쓰기
-            </button>
-          </p>
-        )}
-        <p className="flex items-center gap-1 text-[13px] font-normal text-[#8a94a3]">
-          {entry.interestedCount != null ? (
-            <>
-              <Heart size={12} className="shrink-0" aria-hidden="true" />
-              <span>{entry.interestedCount.toLocaleString("ko-KR")}</span>
-              <span aria-hidden="true">·</span>
-            </>
-          ) : null}
-          <span>채용중 {entry.activeJobCount}</span>
-        </p>
+      <div className="flex items-stretch max-[640px]:col-span-full max-[640px]:row-start-2">
+        <CompanyStatColumn label="리뷰" count={entry.companyReviewCount} href={`/companies/${entry.id}/reviews`} />
+        <span aria-hidden="true" className="w-px shrink-0 self-center bg-[#e5e9ef]" style={{ height: 36 }} />
+        <CompanyStatColumn label="면접 후기" count={entry.interviewReviewCount} href={`/companies/${entry.id}/interviews`} />
+        <span aria-hidden="true" className="w-px shrink-0 self-center bg-[#e5e9ef]" style={{ height: 36 }} />
+        <CompanyStatColumn label="채용중" count={entry.activeJobCount} href={`/companies/${entry.id}/jobs`} />
       </div>
       <ChevronRight
         size={18}
@@ -186,70 +523,43 @@ function CompanyListItem({ entry, onRequestWriteReview }: { entry: CompanyDirect
 
 function DirectoryEmptyState() {
   return (
-    <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 border border-[#e5e9ef] bg-[#fbfcfd] text-center">
+    <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 text-center">
       <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 기업·기관이 없습니다.</p>
       <p className="text-[13px] font-normal text-[#8791a0]">다른 분야를 선택하거나 검색어를 다시 입력해보세요.</p>
     </div>
   );
 }
 
-function InterviewReviewCard({
-  review,
-  isLoggedIn,
-  onRequestWriteReview,
-}: {
-  review: RecentInterviewReviewPreview;
-  isLoggedIn: boolean;
-  onRequestWriteReview: () => void;
-}) {
-  const locked = review.preview === null;
-
-  return (
-    <article className="border border-[#e5e9ef] bg-white p-4">
-      <div className="flex items-center justify-between gap-2">
-        <p className="truncate text-[13px] font-medium text-[#596373]">{review.companyName}</p>
-        {review.outcome ? (
-          <span
-            className={clsx(
-              "shrink-0 border px-2 py-0.5 text-[11px]",
-              review.outcome === "합격" ? "border-[#111111] font-bold text-[#111111]" : "border-[#d9d9d9] font-medium text-[#777777]",
-            )}
-          >
-            {review.outcome}
-          </span>
-        ) : null}
-      </div>
-      <p className="mt-1.5 text-[12px] font-normal text-[#8a95a5]">
-        {review.jobRole} · {review.writtenAt}
-      </p>
-      {locked ? (
-        <LockedContent
-          className="mt-3"
-          lines={2}
-          message={
-            isLoggedIn
-              ? "면접 후기를 작성하면 다른 사용자의 상세 후기를 확인할 수 있습니다."
-              : "로그인 후 면접 후기 열람 조건을 확인할 수 있습니다."
-          }
-          ctaLabel={isLoggedIn ? "면접 후기 작성하기" : "로그인하기"}
-          ctaHref={isLoggedIn ? undefined : LOGIN_HREF}
-          onCtaClick={isLoggedIn ? onRequestWriteReview : undefined}
-        />
-      ) : (
-        <p className="mt-3 line-clamp-3 text-[13px] font-normal leading-[1.65] text-[#3f4855]">{review.preview}</p>
-      )}
-    </article>
-  );
-}
-
-export function CompaniesHomeClient({ directory, recentInterviewReviews, isLoggedIn }: CompaniesHomeClientProps) {
+export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeedItems }: CompaniesHomeClientProps) {
   const [keyword, setKeyword] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("리뷰순");
   const [currentPage, setCurrentPage] = useState(1);
   const [companyReviewNotice, setCompanyReviewNotice] = useState("");
-  const [interviewReviewNotice, setInterviewReviewNotice] = useState("");
+
+  /** 로고 스트립 정렬: FEATURED_COMPANY_IDS 우선 → 프로필 보유 기업(detailHref가 /reviews로 폴백되지 않은 경우) → 나머지 로고 보유 기업 순 */
+  const logoStripEntries = useMemo(() => {
+    const featuredIds = new Set(FEATURED_COMPANY_IDS);
+    const featured: CompanyDirectoryEntry[] = [];
+    const withProfile: CompanyDirectoryEntry[] = [];
+    const rest: CompanyDirectoryEntry[] = [];
+
+    for (const entry of directory) {
+      if (!entry.logoUrl) continue;
+      if (featuredIds.has(entry.id)) featured.push(entry);
+      else if (entry.detailHref === `/companies/${entry.id}`) withProfile.push(entry);
+      else rest.push(entry);
+    }
+
+    featured.sort((a, b) => FEATURED_COMPANY_IDS.indexOf(a.id) - FEATURED_COMPANY_IDS.indexOf(b.id));
+    return [...featured, ...withProfile, ...rest];
+  }, [directory]);
+
+  const topReviewedCompanies = useMemo(
+    () => [...directory].filter((entry) => entry.reviewCount > 0).sort((a, b) => b.reviewCount - a.reviewCount).slice(0, 5),
+    [directory],
+  );
 
   const filteredDirectory = useMemo(() => {
     const normalizedKeyword = searchKeyword.trim().toLowerCase();
@@ -272,36 +582,40 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
     return [...sortedDirectory.slice(pageOffset), ...sortedDirectory.slice(0, pageOffset)].slice(0, PAGE_SIZE);
   }, [sortedDirectory, currentPage]);
 
-  const filteredInterviewReviews = useMemo(
-    () => recentInterviewReviews.filter((review) => matchesTrackFilter(review.track, review.industryGroup, trackFilter)),
-    [recentInterviewReviews, trackFilter],
-  );
-
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSearchKeyword(keyword);
   };
 
   const handleRequestWriteCompanyReview = () => {
-    setCompanyReviewNotice("기업 리뷰 작성 화면은 추후 연결될 예정입니다.");
+    setCompanyReviewNotice("현직자 리뷰 작성 화면은 추후 연결될 예정입니다.");
     window.setTimeout(() => setCompanyReviewNotice(""), 2400);
-  };
-
-  const handleRequestWriteInterviewReview = () => {
-    setInterviewReviewNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
-    window.setTimeout(() => setInterviewReviewNotice(""), 2400);
   };
 
   const handleScrollToDirectory = () => {
     document.getElementById("company-directory")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleExploreTrack = (track: JobTrack) => {
+    setTrackFilter(trackToDirectoryFilter[track] ?? "all");
+    handleScrollToDirectory();
+  };
+
   return (
     <>
       <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
-      <TrackTabs active={trackFilter} onChange={setTrackFilter} />
+      <CompanyLogoStrip entries={logoStripEntries} />
 
-      <section id="company-directory" className="mt-8">
+      <div className="mt-10 grid grid-cols-[minmax(0,1fr)_280px] gap-10 max-[1024px]:grid-cols-1 max-[1024px]:gap-8">
+        <RecentStoriesFeed companyItems={companyFeedItems} interviewItems={interviewFeedItems} />
+        <aside className="space-y-8">
+          <IndustryExplorePanel onExplore={handleExploreTrack} />
+          <TopReviewedCompaniesPanel entries={topReviewedCompanies} />
+          <WriteReviewCtaPanel onCtaClick={handleRequestWriteCompanyReview} />
+        </aside>
+      </div>
+
+      <section id="company-directory" className="mt-14 border border-[#e5e9ef] bg-white p-6 max-[560px]:p-4">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
           <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
@@ -321,62 +635,22 @@ export function CompaniesHomeClient({ directory, recentInterviewReviews, isLogge
           </div>
         </div>
 
+        <TrackTabs active={trackFilter} onChange={setTrackFilter} />
+
         {visibleDirectory.length ? (
-          <div className="flex flex-col gap-2">
+          <div className="divide-y divide-[#e5e9ef]">
             {visibleDirectory.map((entry) => (
-              <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} onRequestWriteReview={handleRequestWriteCompanyReview} />
+              <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} />
             ))}
           </div>
         ) : (
           <DirectoryEmptyState />
         )}
 
-        <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
-        {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
-      </section>
-
-      <section className="mt-12">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 면접 후기</h2>
-          <Link href="/companies/interviews" className="text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
-            전체 보기 ›
-          </Link>
+        <div className="mt-6">
+          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
         </div>
-
-        {filteredInterviewReviews.length ? (
-          <div className="grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
-            {filteredInterviewReviews.map((review) => (
-              <InterviewReviewCard
-                key={review.id}
-                review={review}
-                isLoggedIn={isLoggedIn}
-                onRequestWriteReview={handleRequestWriteInterviewReview}
-              />
-            ))}
-          </div>
-        ) : (
-          <DirectoryEmptyState />
-        )}
-        {interviewReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
-      </section>
-
-      <section className="mt-14 border border-[#e5e9ef] bg-[#fbfcfd] px-7 py-10 text-center max-[640px]:px-5 max-[640px]:py-8">
-        <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#171d26]">경험을 공유하고 더 많은 리뷰를 확인해보세요</h2>
-        <p className="mx-auto mt-3 max-w-[420px] text-[13px] font-normal leading-[1.7] text-[#596373]">기업 리뷰는 로그인 후 확인할 수 있습니다.</p>
-        <p className="mx-auto text-[13px] font-normal leading-[1.7] text-[#596373]">면접 후기를 작성하면 다른 사용자의 상세 면접 후기를 열람할 수 있습니다.</p>
-        {isLoggedIn ? (
-          <button
-            type="button"
-            onClick={handleScrollToDirectory}
-            className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]"
-          >
-            리뷰 작성하기
-          </button>
-        ) : (
-          <Link href={LOGIN_HREF} className="mt-6 inline-flex h-11 items-center bg-[#111111] px-6 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]">
-            리뷰 작성하기
-          </Link>
-        )}
+        {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
       </section>
     </>
   );

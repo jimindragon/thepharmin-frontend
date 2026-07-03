@@ -1,7 +1,10 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { BriefcaseBusiness, Building2, ChevronRight, Clock3, ExternalLink, Heart, MapPin, MessageSquareText, Users } from "lucide-react";
+import { BriefcaseBusiness, Building2, ChevronRight, Clock3, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp, Users } from "lucide-react";
+import { companyReviews } from "@/data/companies";
 import type { CompanyProfile } from "@/data/companyProfiles";
+import type { CompanyReview, CompanyReviewType } from "@/types/jobs";
 
 /** [companyId] 탭 페이지들(개요/채용공고/면접 후기/기업 리뷰/뉴스)이 공유하는 섹션 빌딩 블록.
  * 예전 앵커 스크롤 시절의 SectionShell은 id/scroll-mt를 가졌지만, 지금은 각 섹션이 별도 라우트의
@@ -90,7 +93,7 @@ export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
 
 export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) {
   return (
-    <section className="grid grid-cols-[minmax(0,1fr)_300px] gap-5 max-[980px]:grid-cols-1">
+    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
       <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
         <div className="flex items-start justify-between gap-4 max-[640px]:flex-col">
           <div>
@@ -130,6 +133,142 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
         </div>
       </div>
     </section>
+  );
+}
+
+/** tags 배열들을 합쳐 등장 빈도순 상위 N개를 뽑는다. 동빈도는 먼저 등장한 순서를 유지한다(Map 삽입 순서).
+ * 인자를 string[][]로 제한해 review 원본(특히 content)이 이 계산 경로로 흘러들 수 없게 한다. */
+function topTagsByFrequency(tagLists: string[][], limit = 5) {
+  const counts = new Map<string, number>();
+  for (const tags of tagLists) {
+    for (const tag of tags) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tag]) => tag);
+}
+
+/** 미리보기 카드가 받는 값은 companyReviews의 부분집합이다 — content가 필드 자체에 없으므로
+ * (React가 서버 컴포넌트 JSX 엘리먼트의 props까지 플라이트 페이로드에 실어 보내는 것과 무관하게)
+ * 원문이 클라이언트로 전달될 수 없다. 새 필드가 필요해지면 여기 타입에 명시적으로 추가할 것 — review 원본을
+ * 그대로 넘기지 말 것. */
+interface CompanyReviewPreviewItem {
+  id: string;
+  type: CompanyReviewType;
+  tags: string[];
+  jobRole: string;
+  authorStatus: string;
+  writtenAt: string;
+  helpfulCount: number;
+  outcome?: "합격" | "불합격";
+}
+
+function toReviewPreviewItem(review: CompanyReview): CompanyReviewPreviewItem {
+  return {
+    id: review.id,
+    type: review.type,
+    tags: review.tags,
+    jobRole: review.jobRole,
+    authorStatus: review.authorStatus,
+    writtenAt: review.writtenAt,
+    helpfulCount: review.helpfulCount,
+    outcome: review.outcome,
+  };
+}
+
+function ReviewPreviewCard({ review, showOutcome }: { review: CompanyReviewPreviewItem; showOutcome: boolean }) {
+  return (
+    <article className="border border-[#e5e9ef] bg-white p-4">
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate text-[12px] font-medium text-[#3f4855]">
+          {review.jobRole} · {review.authorStatus}
+        </span>
+        <span className="shrink-0 text-[11px] font-normal text-[#9aa5b2]">{review.writtenAt}</span>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {review.tags.map((tag) => (
+          <span key={tag} className="border border-[#e4e9ef] bg-[#f8fafb] px-2 py-1 text-[11px] font-medium text-[#596373]">
+            {tag}
+          </span>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between border-t border-[#edf1f5] pt-3 text-[11px]">
+        <span className="inline-flex items-center gap-1 font-normal text-[#8a95a5]">
+          <ThumbsUp size={12} />
+          {review.helpfulCount}
+        </span>
+        {showOutcome && review.outcome ? (
+          <span
+            className={clsx(
+              "border px-2 py-0.5",
+              review.outcome === "합격" ? "border-[#111111] font-bold text-[#111111]" : "border-[#d9d9d9] font-medium text-[#777777]",
+            )}
+          >
+            {review.outcome}
+          </span>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+/** 개요 페이지의 면접 후기/기업 리뷰 미리보기 — 원문은 절대 내려받지 않고(companyReviews는 항상 원문을 갖고 있지만
+ * 이 컴포넌트가 content를 아예 읽지 않는다), 최신 2건 + 전체 보기 링크만 보여준다. 게이팅은 전용 페이지(/interviews)의
+ * 몫이라 여기서는 고려하지 않는다. */
+export function CompanyReviewsPreviewSection({ profile, type }: { profile: CompanyProfile; type: CompanyReviewType }) {
+  const isInterview = type === "interview";
+  const title = isInterview ? "면접 후기" : "현직자 리뷰";
+  const href = `/companies/${profile.id}/${isInterview ? "interviews" : "reviews"}`;
+
+  const all = companyReviews
+    .filter((review) => review.companyId === profile.id && review.type === type)
+    .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt));
+  const preview = all.slice(0, 2).map(toReviewPreviewItem);
+  const topKeywords = all.length >= 3 ? topTagsByFrequency(all.map((review) => review.tags)) : [];
+
+  return (
+    <SectionShell
+      title={title}
+      action={
+        <Link href={href} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
+          전체 보기
+          <ChevronRight size={15} />
+        </Link>
+      }
+    >
+      {all.length ? (
+        <>
+          <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
+            {preview.map((review) => (
+              <ReviewPreviewCard key={review.id} review={review} showOutcome={isInterview} />
+            ))}
+          </div>
+          {topKeywords.length ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
+              <span className="text-[12px] font-medium text-[#8a95a5]">자주 언급된 키워드</span>
+              {topKeywords.map((keyword) => (
+                <Chip key={keyword}>{keyword}</Chip>
+              ))}
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <EmptyState
+          message={`아직 등록된 ${title}가 없습니다.`}
+          cta={
+            <Link
+              href={href}
+              className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
+            >
+              첫 후기 작성하기
+            </Link>
+          }
+        />
+      )}
+    </SectionShell>
   );
 }
 
@@ -234,22 +373,24 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
         </dl>
       </section>
 
-      <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
-        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">대표 제품</h2>
-        <div className="mt-4 grid gap-3">
-          {profile.sidebar.products.map((product) => (
-            <div key={product.name} className="flex gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center border border-[#e0e7ee] bg-[#f8fafb] text-[13px] font-medium text-[#46505f]">
-                {product.name.slice(0, 1)}
+      {profile.sidebar.products.length > 0 ? (
+        <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+          <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">대표 제품</h2>
+          <div className="mt-4 grid gap-3">
+            {profile.sidebar.products.map((product) => (
+              <div key={product.name} className="flex gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center border border-[#e0e7ee] bg-[#f8fafb] text-[13px] font-medium text-[#46505f]">
+                  {product.name.slice(0, 1)}
+                </div>
+                <div>
+                  <p className="text-[13px] font-medium text-[#202733]">{product.name}</p>
+                  <p className="mt-1 text-[12px] font-normal text-[#7b8594]">{product.description}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[13px] font-medium text-[#202733]">{product.name}</p>
-                <p className="mt-1 text-[12px] font-normal text-[#7b8594]">{product.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
         <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">위치</h2>
@@ -274,41 +415,11 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
 
       <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
         <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#202733]">후기를 더 자세히 보려면</h2>
-        <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">기업 리뷰와 면접 후기를 더 자세히 확인하려면 후기를 작성하거나 열람권을 사용하세요.</p>
+        <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">현직자 리뷰와 면접 후기를 더 자세히 확인하려면 후기를 작성하거나 열람권을 사용하세요.</p>
         <Link href={`/companies/${profile.id}/reviews`} className="mt-3 inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]">
           후기 페이지 보기
         </Link>
       </section>
     </aside>
-  );
-}
-
-export function ExtraInfoCards({ profile }: { profile: CompanyProfile }) {
-  return (
-    <section className="grid grid-cols-4 gap-3 max-[980px]:grid-cols-2 max-[560px]:grid-cols-1">
-      {profile.extraCards.map((card) => (
-        <div key={card.title} className="border border-border bg-white p-5 shadow-[var(--shadow)]">
-          <span className="inline-flex h-7 items-center bg-[#f1f3f5] px-2.5 text-[11px] font-medium text-[#6b7280]">{card.status}</span>
-          <h3 className="mt-4 text-[18px] font-bold tracking-[-0.02em] text-[#202733]">{card.title}</h3>
-          <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#667181]">{card.description}</p>
-        </div>
-      ))}
-    </section>
-  );
-}
-
-export function RelatedCompanies({ profile }: { profile: CompanyProfile }) {
-  return (
-    <section className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">관련 기업</h2>
-      <div className="mt-5 grid grid-cols-3 gap-3 max-[820px]:grid-cols-1">
-        {profile.relatedCompanies.map((company) => (
-          <Link key={company.id} href={company.href} className="border border-[#e0e6ee] p-4 transition hover:border-[#111111]">
-            <p className="text-[15px] font-medium text-[#202733]">{company.name}</p>
-            <p className="mt-2 text-[13px] font-normal text-[#667181]">{company.description}</p>
-          </Link>
-        ))}
-      </div>
-    </section>
   );
 }

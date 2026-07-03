@@ -187,7 +187,7 @@ function CompanyPanel({
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[18px] font-bold text-[#111111]">이 채용관의 기업</h2>
         <Link href="/companies" className="text-[13px] text-[#888888] transition hover:text-[#111111]">
-          기업정보 전체보기 &rsaquo;
+          기업 인사이트 전체보기 &rsaquo;
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-4 border-t border-[#eeeeee] pt-5 sm:grid-cols-2 lg:grid-cols-3">
