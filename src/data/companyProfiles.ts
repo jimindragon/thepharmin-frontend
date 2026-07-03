@@ -881,7 +881,7 @@ export const companyProfiles: CompanyProfile[] = [
     logoImage: companyLogos["분당서울대병원"],
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
-    tagline: "연구와 진료를 잇는 스마트병원 선도 상급종합병원",
+    tagline: "진료와 임상연구를 함께 운영하는 상급종합병원",
     tags: ["병원", "설립 2003년", "사원수 501명 이상"],
     coverImage: companyExampleImages.hero,
     metrics: [

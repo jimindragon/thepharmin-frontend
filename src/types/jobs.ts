@@ -552,7 +552,7 @@ export interface Job {
  * Company(약국) 기관 분류. 검색 필터의 pharmacyFeatureOptions/pharmacyWorkTypeOptions와는 별개로,
  * 약국이라는 기관 자체를 분류하는 값이다 — 필터 옵션과 섞어 쓰지 않는다.
  */
-export type PharmacyType = "general" | "clinic-floor" | "clinic-front" | "hospital-front" | "mart";
+export type PharmacyType = "general" | "clinic-floor" | "clinic-front" | "hospital-front";
 
 /**
  * Company(병원) 기관 분류. 검색 필터의 hospitalTypeOptions(4종, 기관 분류와 다른 용도)와는 별개다 —

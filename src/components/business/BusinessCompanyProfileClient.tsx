@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { FieldLabel, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import {
   businessAreaOptions,
   businessCompanyManager,
@@ -27,61 +27,6 @@ import {
   type EmployeeCountRange,
   type FileStatus,
 } from "@/data/businessCompanyProfile";
-
-function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: Array<{ id: T; label: string }>;
-  onChange: (value: T) => void;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {options.map((option) => (
-        <button
-          key={option.id}
-          type="button"
-          onClick={() => onChange(option.id)}
-          className={clsx(
-            "h-10 border px-4 text-[13px] font-medium transition",
-            value === option.id
-              ? "border-[#111111] bg-[#f7f8fa] text-[#111111]"
-              : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111] hover:text-[#111111]",
-          )}
-          aria-pressed={value === option.id}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ToggleChip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={clsx(
-        "h-9 border px-3 text-[12px] font-medium transition",
-        selected ? "border-[#111111] bg-[#f7f8fa] text-[#111111]" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-      )}
-      aria-pressed={selected}
-    >
-      {label}
-    </button>
-  );
-}
 
 function statusLabel(status: FileStatus | null) {
   if (!status) return "해당 없음";

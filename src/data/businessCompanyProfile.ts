@@ -3,7 +3,11 @@ export type CompanyType = "hospital_clinic" | "pharma_bio" | "wholesale_distribu
 export type EmployeeCountRange = "under_50" | "51_100" | "101_500" | "over_501";
 export type FileStatus = "approved" | "pending" | "rejected" | "change_requested";
 
+/** 기업정보 관리 페이지가 어떤 트랙 폼을 그려야 하는지 결정하는 값. 기본은 항상 "industry". */
+export type OrgTrack = "industry" | "hospital" | "pharmacy";
+
 export interface CompanyProfileMaster {
+  orgTrack: "industry";
   id: string;
   displayName: string;
   legalName: string;
@@ -117,6 +121,7 @@ export const keywordOptions = [
 ];
 
 export const initialBusinessCompanyProfile: CompanyProfileMaster = {
+  orgTrack: "industry",
   id: "thepharma-news",
   displayName: "더파마뉴스",
   legalName: "주식회사 더파마뉴스",

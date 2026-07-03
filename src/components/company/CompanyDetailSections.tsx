@@ -37,19 +37,40 @@ export function SectionShell({
   );
 }
 
-export function Chip({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "accent" | "dark" }) {
+export function Chip({ children, tone = "default", size = "md" }: { children: ReactNode; tone?: "default" | "accent" | "dark"; size?: "md" | "sm" }) {
+  const sizing = size === "sm" ? "h-7 px-2.5 text-[11px]" : "h-8 px-3 text-[12px]";
   return (
     <span
-      className={
+      className={clsx(
+        "inline-flex items-center font-medium",
+        sizing,
         tone === "accent"
-          ? "inline-flex h-8 items-center border border-[#d8e0e8] bg-[#f7f8fa] px-3 text-[12px] font-medium text-[#46505f]"
+          ? "border border-[#d8e0e8] bg-[#f7f8fa] text-[#46505f]"
           : tone === "dark"
-            ? "inline-flex h-8 items-center bg-[#111111] px-3 text-[12px] font-medium text-white"
-            : "inline-flex h-8 items-center border border-[#e2e7ee] bg-[#f8fafb] px-3 text-[12px] font-medium text-[#596373]"
-      }
+            ? "bg-[#111111] text-white"
+            : "border border-[#e2e7ee] bg-[#f8fafb] text-[#596373]",
+      )}
     >
       {children}
     </span>
+  );
+}
+
+/** 사이드바 "핵심 정보" 블록 바로 아래에 붙는 핵심 키워드 카드. 좌측 3px 보더 제목 + 칩 wrap.
+ * 본문의 핵심 키워드 카드(CompanyDetailOverview 등)와 달리 사이드바 밀도에 맞춰 칩을 한 단계 축소한다. */
+function SidebarKeywordsCard({ keywords }: { keywords: string[] }) {
+  if (!keywords.length) return null;
+  return (
+    <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
+      <h2 className="border-l-[3px] border-[#111111] pl-2.5 text-[14px] font-bold leading-none tracking-[-0.01em] text-[#202733]">핵심 키워드</h2>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {keywords.map((keyword) => (
+          <Chip key={keyword} tone="accent" size="sm">
+            {keyword}
+          </Chip>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -96,46 +117,34 @@ export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
 
 export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) {
   return (
-    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
-      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-        <div className="flex items-start justify-between gap-4 max-[640px]:flex-col">
-          <div>
-            <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">기업 요약</h2>
-            <p className="mt-3 text-[14px] font-normal leading-[1.85] text-[#596373]">{profile.recruitSummary}</p>
+    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+      <div className="flex items-start justify-between gap-4 max-[640px]:flex-col">
+        <div>
+          <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">기업 요약</h2>
+          <p className="mt-3 text-[14px] font-normal leading-[1.85] text-[#596373]">{profile.recruitSummary}</p>
+        </div>
+        <a
+          href={`https://${profile.details.find((item) => item.label === "홈페이지")?.value ?? "www.thepharma.co.kr"}`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-10 shrink-0 items-center gap-2 border border-[#d8e0e8] px-3 text-[12px] font-medium text-[#4f5a66] transition hover:border-[#111111] hover:text-[#111111]"
+        >
+          기업 홈페이지 바로가기
+          <ExternalLink size={14} />
+        </a>
+      </div>
+      <div className="mt-6 grid grid-cols-3 gap-x-10 gap-y-4 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+        {profile.details.map((item) => (
+          <div key={item.label} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 text-[13px]">
+            <dt className="font-medium text-[#8a94a3]">{item.label}</dt>
+            <dd className="font-medium leading-[1.6] text-[#3c4654]">
+              {item.value ?? "정보 없음"}
+              {item.estimated ? <span className="ml-1 text-[11px] font-normal text-[#b4791b]">(추정)</span> : null}
+            </dd>
           </div>
-          <a
-            href={`https://${profile.details.find((item) => item.label === "홈페이지")?.value ?? "www.thepharma.co.kr"}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-10 shrink-0 items-center gap-2 border border-[#d8e0e8] px-3 text-[12px] font-medium text-[#4f5a66] transition hover:border-[#111111] hover:text-[#111111]"
-          >
-            기업 홈페이지 바로가기
-            <ExternalLink size={14} />
-          </a>
-        </div>
-        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-4 max-[640px]:grid-cols-1">
-          {profile.details.map((item) => (
-            <div key={item.label} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 text-[13px]">
-              <dt className="font-medium text-[#8a94a3]">{item.label}</dt>
-              <dd className="font-medium leading-[1.6] text-[#3c4654]">
-                {item.value ?? "정보 없음"}
-                {item.estimated ? <span className="ml-1 text-[11px] font-normal text-[#b4791b]">(추정)</span> : null}
-              </dd>
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
-      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">핵심 키워드</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {profile.keywords.map((keyword) => (
-            <Chip key={keyword} tone="accent">
-              {keyword}
-            </Chip>
-          ))}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }
 
@@ -360,6 +369,8 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
         </dl>
       </section>
 
+      <SidebarKeywordsCard keywords={profile.keywords} />
+
       {profile.sidebar.products.length > 0 ? (
         <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
           <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">대표 제품</h2>
@@ -500,7 +511,7 @@ function InstitutionSummaryCard({
         ) : null}
       </div>
       {rows.length ? (
-        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-4 max-[640px]:grid-cols-1">
+        <div className="mt-6 grid grid-cols-3 gap-x-10 gap-y-4 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
           {rows.map((row) => (
             <div key={row.label} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 text-[13px]">
               <dt className="font-medium text-[#8a94a3]">{row.label}</dt>
@@ -526,53 +537,30 @@ function InstitutionSummaryCard({
   );
 }
 
-/** [companyId] 개요 탭 — 병원 트랙. "한눈에 보는 기업" 지표 그리드를 없애고 "병원 요약" 카드 하나로 통합한다 */
+/** [companyId] 개요 탭 — 병원 트랙. "한눈에 보는 기업" 지표 그리드를 없애고 "병원 요약" 카드 하나로 통합한다.
+ * 핵심 키워드는 사이드바(InstitutionCoreInfoCard 바로 아래)로 이동했다 — 본문에는 요약 카드만 전체 폭으로 노출한다. */
 export function HospitalSummarySection({ profile, company }: { profile: CompanyProfile; company: Company }) {
   return (
-    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
-      <InstitutionSummaryCard
-        title="병원 요약"
-        recruitSummary={profile.recruitSummary}
-        homepage={detailValue(profile, "홈페이지")}
-        rows={buildHospitalSummaryRows(profile, company)}
-        features={profile.features}
-      />
-      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">핵심 키워드</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {profile.keywords.map((keyword) => (
-            <Chip key={keyword} tone="accent">
-              {keyword}
-            </Chip>
-          ))}
-        </div>
-      </div>
-    </section>
+    <InstitutionSummaryCard
+      title="병원 요약"
+      recruitSummary={profile.recruitSummary}
+      homepage={detailValue(profile, "홈페이지")}
+      rows={buildHospitalSummaryRows(profile, company)}
+      features={profile.features}
+    />
   );
 }
 
-/** [companyId] 개요 탭 — 약국 트랙. 병원과 동일 골격, "약국 요약" 카드로 통합한다 */
+/** [companyId] 개요 탭 — 약국 트랙. 병원과 동일 골격, "약국 요약" 카드로 통합한다. 핵심 키워드는 사이드바로 이동했다. */
 export function PharmacySummarySection({ profile, company }: { profile: CompanyProfile; company: Company }) {
   return (
-    <section className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 max-[980px]:grid-cols-1">
-      <InstitutionSummaryCard
-        title="약국 요약"
-        recruitSummary={profile.recruitSummary}
-        homepage={detailValue(profile, "홈페이지")}
-        rows={buildPharmacySummaryRows(profile, company)}
-        features={profile.features}
-      />
-      <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-        <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">핵심 키워드</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {profile.keywords.map((keyword) => (
-            <Chip key={keyword} tone="accent">
-              {keyword}
-            </Chip>
-          ))}
-        </div>
-      </div>
-    </section>
+    <InstitutionSummaryCard
+      title="약국 요약"
+      recruitSummary={profile.recruitSummary}
+      homepage={detailValue(profile, "홈페이지")}
+      rows={buildPharmacySummaryRows(profile, company)}
+      features={profile.features}
+    />
   );
 }
 
@@ -738,6 +726,7 @@ export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfi
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
+      <SidebarKeywordsCard keywords={profile.keywords} />
       <ChipListCard title="전문약사 보유" items={profile.specialistPharmacists ?? []} note="기관이 등록한 분야만 표시됩니다" />
       <RelatedInstitutionsCard result={related} />
       <InstitutionLocationCard address={profile.sidebar.address} />
@@ -753,6 +742,7 @@ export function PharmacyAsidePanel({ profile, company }: { profile: CompanyProfi
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
+      <SidebarKeywordsCard keywords={profile.keywords} />
       <ChipListCard title="조제 환경·장비" items={profile.dispensingEquipment ?? []} />
       <RelatedInstitutionsCard result={related} />
       <InstitutionLocationCard address={profile.sidebar.address} />

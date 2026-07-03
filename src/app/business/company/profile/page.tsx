@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
-import { BusinessCompanyProfileClient } from "@/components/business/BusinessCompanyProfileClient";
+import { BusinessOrgProfilePageClient } from "@/components/business/BusinessOrgProfilePageClient";
 
 export const metadata: Metadata = {
   title: "기업정보 관리 | 더파마 리크루트 기업",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function BusinessCompanyProfilePage() {
   return (
     <BusinessCenterShell>
-      <BusinessCompanyProfileClient />
+      <BusinessOrgProfilePageClient />
     </BusinessCenterShell>
   );
 }

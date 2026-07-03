@@ -5,7 +5,6 @@ export const pharmacyTypeLabels: Record<PharmacyType, string> = {
   "clinic-floor": "의원층약국",
   "clinic-front": "병의원 문전약국",
   "hospital-front": "대형병원 문전약국",
-  mart: "마트약국",
 };
 
 export function getPharmacyTypeLabel(type: PharmacyType): string {
