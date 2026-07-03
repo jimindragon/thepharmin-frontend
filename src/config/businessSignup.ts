@@ -1,0 +1,49 @@
+import type { OrgTrack } from "@/data/businessCompanyProfile";
+import type { PharmacyType } from "@/types/jobs";
+
+/** STEP A에서 고르는 "기관 유형" — 기업정보 관리 페이지의 CompanyType(기업 형태)과는 별개 분류다. */
+export type SignupInstitutionType = "hospital" | "pharma" | "biotech" | "medical_device" | "cro_cdmo" | "research";
+
+export const signupInstitutionTypeOptions: Array<{ id: SignupInstitutionType; label: string }> = [
+  { id: "hospital", label: "병원" },
+  { id: "pharma", label: "제약사" },
+  { id: "biotech", label: "바이오텍" },
+  { id: "medical_device", label: "의료기기" },
+  { id: "cro_cdmo", label: "CRO·CDMO" },
+  { id: "research", label: "연구기관" },
+];
+
+/** 병원만 orgTrack "hospital", 나머지(연구기관 포함, v1 확정 사양)는 모두 "industry" 폼을 쓴다. */
+export function getOrgTrackForInstitutionType(type: SignupInstitutionType): OrgTrack {
+  return type === "hospital" ? "hospital" : "industry";
+}
+
+const ORG_TRACK_KEY = "thepharmin_signup_org_track";
+const PHARMACY_TYPE_KEY = "thepharmin_signup_pharmacy_type";
+
+const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy"];
+const validPharmacyTypes: PharmacyType[] = ["general", "clinic-floor", "clinic-front", "hospital-front"];
+
+/** 가입 완료 시 저장된 orgTrack — 기업정보 관리 페이지(BusinessOrgProfilePageClient)가 어떤 트랙 폼을 그릴지 프리필하는 데 쓰인다. */
+export function readSignupOrgTrack(): OrgTrack | null {
+  if (typeof window === "undefined") return null;
+  const value = window.localStorage.getItem(ORG_TRACK_KEY);
+  return (validOrgTracks as string[]).includes(value ?? "") ? (value as OrgTrack) : null;
+}
+
+export function writeSignupOrgTrack(track: OrgTrack) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ORG_TRACK_KEY, track);
+}
+
+/** 약국 가입 STEP1에서 고른 약국 유형 — 약국 정보 관리 페이지(PharmacyOrgProfileClient)에 프리필된다. */
+export function readSignupPharmacyType(): PharmacyType | null {
+  if (typeof window === "undefined") return null;
+  const value = window.localStorage.getItem(PHARMACY_TYPE_KEY);
+  return (validPharmacyTypes as string[]).includes(value ?? "") ? (value as PharmacyType) : null;
+}
+
+export function writeSignupPharmacyType(type: PharmacyType) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PHARMACY_TYPE_KEY, type);
+}

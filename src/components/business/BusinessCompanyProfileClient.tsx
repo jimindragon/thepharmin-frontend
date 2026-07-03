@@ -28,20 +28,11 @@ import {
   type FileStatus,
 } from "@/data/businessCompanyProfile";
 
-function statusLabel(status: FileStatus | null) {
-  if (!status) return "해당 없음";
-  if (status === "approved") return "승인 완료";
+function statusLabel(status: FileStatus) {
+  if (status === "approved") return "제출 완료 · 검토 승인";
   if (status === "pending") return "검토 중";
   if (status === "rejected") return "반려";
   return "변경 요청 필요";
-}
-
-function statusClass(status: FileStatus | null) {
-  if (status === "approved") return "border-[#cfd8e3] bg-[#f7f8fa] text-[#303946]";
-  if (status === "pending") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (status === "rejected") return "border-[#ead8d3] bg-[#fffafa] text-[#a43f31]";
-  if (status === "change_requested") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
-  return "border-[#e3e7ed] bg-[#f7f8fa] text-[#9aa3af]";
 }
 
 function LogoMark({ profile }: { profile: CompanyProfileMaster }) {
@@ -62,41 +53,18 @@ export function BusinessCompanyProfileClient() {
   const [saved, setSaved] = useState(false);
 
   const completionItems = [
-    { label: "기본 정보", done: true },
+    { label: "기업 정보", done: true },
     { label: "공개 프로필", done: Boolean(profile.shortIntro && profile.fullIntro && profile.logoUrl) },
     { label: "사업·채용 정보", done: profile.mainBusinessAreas.length > 0 && profile.mainJobCategories.length > 0 },
-    { label: "첨부 파일", done: businessCompanyVerification.businessLicenseFile.status === "approved" },
     { label: "담당자 정보", done: Boolean(businessCompanyManager.email && businessCompanyManager.phone) },
     { label: "계정 정보", done: false },
   ];
   const accountVerificationItems = [
     { label: "이메일 인증", detail: businessCompanyManager.email, done: true },
     { label: "담당자 인증", detail: `${businessCompanyManager.managerName} · ${businessCompanyManager.phone}`, done: true },
-    { label: "사업자 인증", detail: "인증기업 · 승인 완료", done: businessCompanyVerification.verificationStatus === "approved" },
+    { label: "사업자 인증", detail: "기업 인증 완료", done: businessCompanyVerification.verificationStatus === "approved" },
   ];
   const sectionStatus = (label: string) => completionItems.find((i) => i.label === label)?.done ? "완료" : "작성 중";
-  const verificationFiles: Array<{ label: string; name: string; status: FileStatus | null }> = [
-    {
-      label: "사업자등록증명원",
-      name: businessCompanyVerification.businessLicenseFile.name,
-      status: businessCompanyVerification.businessLicenseFile.status,
-    },
-    {
-      label: "약사면허증",
-      name: businessCompanyVerification.pharmacistLicenseFile.name,
-      status: businessCompanyVerification.pharmacistLicenseFile.status,
-    },
-    {
-      label: "약국 개설 등록증",
-      name: businessCompanyVerification.pharmacyRegistrationFile.name,
-      status: businessCompanyVerification.pharmacyRegistrationFile.status,
-    },
-    ...businessCompanyVerification.additionalFiles.map((file) => ({
-      label: "기타 인증 서류",
-      name: file.name,
-      status: file.status,
-    })),
-  ];
 
   const updateProfile = <K extends keyof CompanyProfileMaster>(key: K, value: CompanyProfileMaster[K]) => {
     setProfile((current) => ({ ...current, [key]: value }));
@@ -136,7 +104,7 @@ export function BusinessCompanyProfileClient() {
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "기업정보 관리" }]} />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">공고 상세와 기업 상세 페이지에 노출되는 회사 정보를 관리합니다.</p>
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">채용공고와 기업 상세 페이지에 표시되는 회사 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
           <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
@@ -147,15 +115,8 @@ export function BusinessCompanyProfileClient() {
       </div>
 
       <div className="mt-8 space-y-5">
-        <SectionCard id="verification" title="인증 정보" description="인증 정보는 운영팀 검토 후 변경됩니다. 공고 신뢰도와 인증 배지에 영향을 줄 수 있습니다." status="완료">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">
-              인증기업 · 승인 완료
-            </span>
-            <button type="button" className="ml-auto h-9 border border-[#cfd8e3] bg-white px-4 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
-              변경 요청
-            </button>
-          </div>
+        <SectionCard id="verification" title="인증 정보" description="인증 정보는 승인 상태와 인증 배지에 사용되며, 변경 시 운영팀 검토 후 반영됩니다." status="완료">
+          <span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기업 인증 완료</span>
           <div className="mt-5 grid grid-cols-4 border border-[#dfe4ea] max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
               ["사업자등록번호", profile.businessNumber],
@@ -169,41 +130,54 @@ export function BusinessCompanyProfileClient() {
               </div>
             ))}
           </div>
+          <div className="flex items-center justify-between gap-3 border border-t-0 border-[#dfe4ea] px-4 py-4">
+            <div>
+              <p className="text-[11px] font-medium text-[#8a94a3]">사업자등록증명원</p>
+              <p className="mt-2 text-[13px] font-medium text-[#17202c]">{statusLabel(businessCompanyVerification.businessLicenseFile.status)}</p>
+            </div>
+            <button type="button" className="h-9 shrink-0 border border-[#d8e0e8] bg-white px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
+              서류 변경 요청
+            </button>
+          </div>
           <div className="mt-4 flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
             <Info size={15} className="mt-0.5 shrink-0 text-[#7b8491]" />
-            사업자등록번호, 법인명, 대표자명은 직접 수정할 수 없으며 변경 요청 후 운영팀 검토가 필요합니다.
+            인증 정보 또는 제출 서류 변경이 필요한 경우 변경 요청을 보내주세요. 운영팀 검토 후 반영됩니다.
           </div>
         </SectionCard>
 
-        <SectionCard id="basic" title="기본 정보" description="기업의 공식 정보와 연락처를 관리합니다." status={sectionStatus("기본 정보")}>
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-              <div className="space-y-2">
-                <FieldLabel required>회사(법인) 이름</FieldLabel>
-                <TextInput value={profile.displayName} onChange={(value) => updateProfile("displayName", value)} />
-              </div>
-              <div className="space-y-2">
-                <FieldLabel required>기업 형태</FieldLabel>
-                <Segmented value={profile.companyType} options={companyTypeOptions} onChange={(value: CompanyType) => updateProfile("companyType", value)} />
-              </div>
+        <SectionCard id="basic" title="기업 정보" description="기업의 공식 정보와 연락처를 관리합니다." status={sectionStatus("기업 정보")}>
+          <div>
+            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">기업 유형</h3>
+            <div className="mt-4 space-y-2">
+              <FieldLabel required>기업 유형</FieldLabel>
+              <Segmented value={profile.companyType} options={companyTypeOptions} onChange={(value: CompanyType) => updateProfile("companyType", value)} />
+              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">가입 시 선택한 기업 유형과 동일한 기준이며, 공고 등록 시 산업 분류 기본값으로 활용됩니다.</p>
             </div>
+          </div>
+
+          <div className="mt-6 space-y-5 border-t border-[#f0f2f5] pt-6">
+            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">기본 사항·연락처</h3>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div className="space-y-2">
-                <FieldLabel required>사업자등록번호</FieldLabel>
-                <TextInput
-                  value={profile.businessNumber}
-                  disabled
-                  right={
-                    <button type="button" className="grid h-11 w-11 place-items-center border-y border-r border-[#d8e0e8] bg-[#f5f6f7] text-[#8a94a3]" aria-label="사업자등록번호 잠김">
-                      <Lock size={15} />
-                    </button>
-                  }
-                />
+                <FieldLabel required>회사명</FieldLabel>
+                <TextInput value={profile.displayName} onChange={(value) => updateProfile("displayName", value)} />
               </div>
               <div className="space-y-2">
                 <FieldLabel>법인등록번호</FieldLabel>
                 <TextInput value={profile.corporateRegistrationNumber} onChange={(value) => updateProfile("corporateRegistrationNumber", value)} />
               </div>
+            </div>
+            <div className="space-y-2">
+              <FieldLabel required>사업자등록번호</FieldLabel>
+              <TextInput
+                value={profile.businessNumber}
+                disabled
+                right={
+                  <button type="button" className="grid h-11 w-11 place-items-center border-y border-r border-[#d8e0e8] bg-[#f5f6f7] text-[#8a94a3]" aria-label="사업자등록번호 잠김">
+                    <Lock size={15} />
+                  </button>
+                }
+              />
             </div>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div className="space-y-2">
@@ -221,11 +195,11 @@ export function BusinessCompanyProfileClient() {
             </div>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div className="space-y-2">
-                <FieldLabel>홈페이지 주소</FieldLabel>
+                <FieldLabel>홈페이지</FieldLabel>
                 <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} />
               </div>
               <div className="space-y-2">
-                <FieldLabel required>설립연도</FieldLabel>
+                <FieldLabel required>설립 연도</FieldLabel>
                 <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} right={<span className="grid h-11 w-10 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-medium text-[#7b8491]">년</span>} />
               </div>
             </div>
@@ -239,20 +213,14 @@ export function BusinessCompanyProfileClient() {
                 <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-              <div className="space-y-2">
-                <FieldLabel>회사 팩스</FieldLabel>
-                <TextInput value={profile.fax} onChange={(value) => updateProfile("fax", value)} />
-              </div>
-              <div className="space-y-2">
-                <FieldLabel required>회사 이메일</FieldLabel>
-                <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} />
-              </div>
+            <div className="space-y-2">
+              <FieldLabel required>회사 이메일</FieldLabel>
+              <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} />
             </div>
           </div>
         </SectionCard>
 
-        <SectionCard id="profile" title="공개 프로필" description="개인 사용자에게 직접 노출되는 기업 소개 정보입니다." status={sectionStatus("공개 프로필")}>
+        <SectionCard id="profile" title="공개 프로필" description="구직자에게 공개되는 기업 소개 정보입니다." status={sectionStatus("공개 프로필")}>
           <div className="grid grid-cols-[230px_minmax(0,1fr)] gap-6 max-[820px]:grid-cols-1">
             <div>
               <FieldLabel required>기업 로고</FieldLabel>
@@ -272,6 +240,7 @@ export function BusinessCompanyProfileClient() {
               <div className="space-y-2">
                 <FieldLabel required>한 줄 소개</FieldLabel>
                 <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value)} placeholder="예: 제약·바이오 산업 전문 채용 플랫폼" />
+                <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">구직자가 확인할 수 있는 사실 중심으로 작성해 주세요.</p>
               </div>
               <div className="space-y-2">
                 <FieldLabel>기업 소개 본문</FieldLabel>
@@ -325,7 +294,7 @@ export function BusinessCompanyProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="business" title="사업·채용 정보" description="더파마 리크루트의 전문 검색과 추천에 활용되는 기업 데이터입니다." status={sectionStatus("사업·채용 정보")}>
+        <SectionCard id="business" title="사업·채용 정보" description="구직자 검색과 공고 추천에 활용되는 기업 정보입니다." status={sectionStatus("사업·채용 정보")}>
           <div className="space-y-6">
             <div>
               <FieldLabel>주요 사업 영역</FieldLabel>
@@ -385,20 +354,7 @@ export function BusinessCompanyProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="files" title="첨부 파일" description="인증 서류는 운영팀 검토 후 상태가 변경됩니다." status={sectionStatus("첨부 파일")}>
-          <div className="divide-y divide-[#e5e9ef] border border-[#dfe4ea]">
-            {verificationFiles.map(({ label, name, status }) => (
-              <div key={`${label}-${name}`} className="grid grid-cols-[180px_minmax(0,1fr)_120px_100px] items-center gap-4 px-4 py-4 max-[760px]:grid-cols-1">
-                <p className="text-[13px] font-medium text-[#303946]">{label}</p>
-                <p className="text-[13px] font-normal text-[#68717e]">{name}</p>
-                <span className={clsx("inline-flex h-7 items-center justify-center border px-2 text-[11px] font-medium", statusClass(status))}>{statusLabel(status)}</span>
-                <button type="button" className="h-9 border border-[#d8e0e8] bg-white text-[12px] font-medium text-[#303946] hover:border-[#111111]">파일 변경</button>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-
-        <SectionCard id="manager" title="담당자 정보" description="지원자 문의와 운영팀 안내를 받을 담당자 정보입니다." status={sectionStatus("담당자 정보")}>
+        <SectionCard id="manager" title="담당자 정보" description="채용 관련 문의와 서비스 안내를 받을 담당자 정보입니다." status={sectionStatus("담당자 정보")}>
           <div className="grid grid-cols-2 gap-5 max-[820px]:grid-cols-1">
             {[
               ["담당자명", businessCompanyManager.managerName],
@@ -416,7 +372,7 @@ export function BusinessCompanyProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다." status={sectionStatus("계정 정보")}>
+        <SectionCard id="account" title="계정 정보" description="계정 인증 상태와 공개 설정을 관리합니다." status={sectionStatus("계정 정보")}>
           <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
             <div>
               <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
@@ -455,6 +411,19 @@ export function BusinessCompanyProfileClient() {
               </div>
             </div>
           </div>
+          {businessCompanyVerification.additionalFiles.length > 0 ? (
+            <div className="mt-5 border-t border-[#f0f2f5] pt-4">
+              <p className="text-[12px] font-medium text-[#7b8491]">기타 인증 서류</p>
+              <div className="mt-2 space-y-1.5">
+                {businessCompanyVerification.additionalFiles.map((file) => (
+                  <div key={file.name} className="flex items-center justify-between gap-3 border border-[#dfe4ea] bg-white px-3 py-2">
+                    <span className="text-[12.5px] font-normal text-[#68717e]">{file.name}</span>
+                    <span className="text-[11.5px] font-medium text-[#8a94a3]">{statusLabel(file.status)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </SectionCard>
 
         <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">

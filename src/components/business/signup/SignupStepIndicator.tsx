@@ -1,0 +1,39 @@
+"use client";
+
+import clsx from "clsx";
+import { Check } from "lucide-react";
+
+const STEP_LABELS = ["기관 인증", "담당자 정보", "계정 생성"] as const;
+
+export function SignupStepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
+  return (
+    <ol className="flex items-center" aria-label="가입 진행 단계">
+      {STEP_LABELS.map((label, index) => {
+        const step = (index + 1) as 1 | 2 | 3;
+        const done = step < currentStep;
+        const active = step === currentStep;
+        return (
+          <li key={label} className="flex flex-1 items-center last:flex-none">
+            <div className="flex items-center gap-2.5">
+              <span
+                className={clsx(
+                  "grid h-8 w-8 shrink-0 place-items-center text-[13px] font-bold",
+                  done && "bg-[#111111] text-white",
+                  active && "border-2 border-[#111111] text-[#111111]",
+                  !done && !active && "border border-[#d8e0e8] text-[#a0a9b7]",
+                )}
+                aria-current={active ? "step" : undefined}
+              >
+                {done ? <Check size={15} /> : step}
+              </span>
+              <span className={clsx("whitespace-nowrap text-[13.5px] font-medium", active || done ? "text-[#17202c]" : "text-[#a0a9b7]")}>
+                {label}
+              </span>
+            </div>
+            {step !== STEP_LABELS.length ? <span className={clsx("mx-4 h-px flex-1", done ? "bg-[#111111]" : "bg-[#e2e6ec]")} aria-hidden="true" /> : null}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

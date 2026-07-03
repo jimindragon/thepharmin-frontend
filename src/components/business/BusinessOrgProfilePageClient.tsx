@@ -5,6 +5,7 @@ import { BusinessCompanyProfileClient } from "@/components/business/BusinessComp
 import { HospitalOrgProfileClient } from "@/components/business/HospitalOrgProfileClient";
 import { PharmacyOrgProfileClient } from "@/components/business/PharmacyOrgProfileClient";
 import { initialBusinessCompanyProfile, type OrgTrack } from "@/data/businessCompanyProfile";
+import { readSignupOrgTrack } from "@/config/businessSignup";
 
 /** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry */
 function readTrackOverride(): OrgTrack | null {
@@ -18,6 +19,9 @@ export function BusinessOrgProfilePageClient() {
   const [track, setTrack] = useState<OrgTrack>(initialBusinessCompanyProfile.orgTrack);
 
   useEffect(() => {
+    const fromSignup = readSignupOrgTrack();
+    if (fromSignup) setTrack(fromSignup);
+    // ?track= 쿼리 오버라이드는 개발 확인용으로 가입 결과보다 우선한다.
     const override = readTrackOverride();
     if (override) setTrack(override);
   }, []);

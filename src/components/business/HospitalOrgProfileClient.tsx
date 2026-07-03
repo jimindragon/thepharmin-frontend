@@ -91,7 +91,7 @@ export function HospitalOrgProfileClient() {
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "병원 정보 관리" }]} />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">병원 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">공고 상세와 병원 상세 페이지에 노출되는 기관 정보를 관리합니다.</p>
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">채용공고와 병원 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
           <Link href="/business/company/preview" className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
@@ -340,7 +340,7 @@ export function HospitalOrgProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="manager" title="담당자 정보" description="지원자 문의와 운영팀 안내를 받을 담당자 정보입니다." status="완료">
+        <SectionCard id="manager" title="담당자 정보" description="채용 관련 문의와 서비스 안내를 받을 담당자 정보입니다." status="완료">
           <div className="grid grid-cols-2 gap-5 max-[820px]:grid-cols-1">
             {[
               ["담당자명", businessCompanyManager.managerName],
@@ -358,7 +358,7 @@ export function HospitalOrgProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="account" title="계정 정보" description="계정 권한과 보안 설정은 추후 확장 예정입니다." status="작성 중">
+        <SectionCard id="account" title="계정 정보" description="계정 인증 상태와 공개 설정을 관리합니다." status="작성 중">
           <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
             <div>
               <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>

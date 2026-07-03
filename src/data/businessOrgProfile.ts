@@ -92,6 +92,23 @@ export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
   },
 };
 
+/** 브랜드 페이지 미리보기의 "부족한 정보 채우기"가 참조하는 약국 트랙 필수/권장 항목.
+ * getMissingRequiredCompanyFields(businessCompanyProfile.ts)와 동일한 목적의 약국 전용 버전 — 산업 트랙과
+ * 필드 구성이 달라 하나의 배열로 합치지 않는다. */
+export const requiredPharmacyProfileFields: Array<{ label: string; sectionId: string; missing: (profile: PharmacyOrgProfile) => boolean }> = [
+  { label: "대표 주소", sectionId: "pharmacy-info", missing: (p) => !p.address.trim() },
+  { label: "개국 연도", sectionId: "pharmacy-info", missing: (p) => !p.foundedYear.trim() },
+  { label: "약국 전화번호", sectionId: "pharmacy-info", missing: (p) => !p.phone.trim() },
+  { label: "이메일", sectionId: "pharmacy-info", missing: (p) => !p.email.trim() },
+  { label: "약국 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
+  { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
+  { label: "약국 특징", sectionId: "profile", missing: (p) => p.features.length === 0 },
+];
+
+export function getMissingRequiredPharmacyFields(profile: PharmacyOrgProfile) {
+  return requiredPharmacyProfileFields.filter((field) => field.missing(profile));
+}
+
 export const specialistPharmacistOptions = ["감염", "종양", "정맥영양(TPN)", "항응고"];
 
 /** 실데이터(keywords) + 목업에서 제시된 미선택 예시 1개. 병원 트랙엔 약국의 "특성 칩" 같은 대체 태그축이 없어 키워드가 유일한 태그 수단이다 */
@@ -131,6 +148,22 @@ export interface HospitalOrgProfile {
   clinicalTrialCenterOperating: boolean;
   specialistPharmacists: string[];
   visibilitySettings: OrgVisibilitySettings;
+}
+
+/** 브랜드 페이지 미리보기의 "부족한 정보 채우기"가 참조하는 병원 트랙 필수/권장 항목. requiredPharmacyProfileFields 참고 */
+export const requiredHospitalProfileFields: Array<{ label: string; sectionId: string; missing: (profile: HospitalOrgProfile) => boolean }> = [
+  { label: "대표 주소", sectionId: "hospital-info", missing: (p) => !p.address.trim() },
+  { label: "설립 연도", sectionId: "hospital-info", missing: (p) => !p.foundedYear.trim() },
+  { label: "대표 전화번호", sectionId: "hospital-info", missing: (p) => !p.phone.trim() },
+  { label: "이메일", sectionId: "hospital-info", missing: (p) => !p.email.trim() },
+  { label: "전문 분야", sectionId: "hospital-info", missing: (p) => p.hospitalType === "specialty" && !p.specialtyLabel.trim() },
+  { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
+  { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
+  { label: "기관 특징", sectionId: "profile", missing: (p) => p.features.length === 0 },
+];
+
+export function getMissingRequiredHospitalFields(profile: HospitalOrgProfile) {
+  return requiredHospitalProfileFields.filter((field) => field.missing(profile));
 }
 
 export const initialHospitalOrgProfile: HospitalOrgProfile = {
