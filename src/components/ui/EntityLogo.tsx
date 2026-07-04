@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 export function EntityLogo({
   name,
-  logoText,
   logoUrl,
   size = 48,
   className,
 }: {
   name: string;
-  logoText?: string;
   logoUrl?: string;
   size?: number;
   className?: string;
@@ -27,7 +26,7 @@ export function EntityLogo({
       {showImage ? (
         <img src={logoUrl} alt="" className="h-full w-full object-contain p-1.5" onError={() => setImageFailed(true)} />
       ) : (
-        <span className="text-[13px] font-bold text-[#596373]">{(logoText ?? name).slice(0, 2)}</span>
+        <span className="text-[13px] font-bold text-[#596373]">{getCompanyInitial(name)}</span>
       )}
     </div>
   );

@@ -153,6 +153,7 @@ export function PharmacySignupClient() {
   return (
     <SignupStepShell
       step={step}
+      track="pharmacy"
       title={step === 1 ? "약국 정보를 인증해 주세요" : step === 2 ? "담당자 정보를 입력해 주세요" : "계정을 생성해 주세요"}
       subtitle={
         step === 1

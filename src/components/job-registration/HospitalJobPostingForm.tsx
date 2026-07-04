@@ -1010,7 +1010,7 @@ export function HospitalJobPostingForm() {
             )}
 
             <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택됨 {keywords.size}개 · 공고 목록에는 최대 3개가 노출됩니다.
+              선택됨 {keywords.size}개 · 공고 목록에는 최대 5개가 노출됩니다.
             </p>
           </div>
 
@@ -1018,7 +1018,7 @@ export function HospitalJobPostingForm() {
             <p className={LBL} id="h-img-lbl">대표 이미지</p>
             <div role="radiogroup" aria-labelledby="h-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
-                const labels = { default: "기관 기본 이미지 사용", upload: "새 이미지 업로드", none: "대표 이미지 사용 안 함" };
+                const labels = { default: "기관 기본 이미지 사용", upload: "새 이미지 업로드", none: "이미지 없이 등록" };
                 const isOn = imageOption === opt;
                 return (
                   <button key={opt} type="button" role="radio" aria-checked={isOn} onClick={() => setImageOption(opt)}

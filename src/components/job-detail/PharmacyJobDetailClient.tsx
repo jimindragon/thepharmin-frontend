@@ -451,7 +451,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                   rel="noopener noreferrer"
                   className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-brand text-[15px] font-medium text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
                 >
-                  간편지원으로 지원하기
+                  간편지원하기
                 </a>
 
                 {job.applyInfo ? (
@@ -557,7 +557,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
             저장
           </button>
           <a href={applyUrl} target="_blank" rel="noopener noreferrer" className="flex h-12 items-center justify-center gap-2 bg-brand text-[14px] font-medium text-white">
-            간편지원으로 지원하기
+            간편지원하기
             <ArrowRight size={17} />
           </a>
         </div>

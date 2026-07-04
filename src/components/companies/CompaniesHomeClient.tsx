@@ -11,6 +11,7 @@ import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
 import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "hospital" | "pharmacy";
 type SortOption = "리뷰순" | "관심순" | "채용중순";
@@ -479,7 +480,7 @@ function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
           onError={() => setImageFailed(true)}
         />
       ) : (
-        <span className="text-[13px] font-semibold text-[#596373]">{(entry.logoText ?? entry.name).slice(0, 2)}</span>
+        <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(entry.name)}</span>
       )}
     </div>
   );

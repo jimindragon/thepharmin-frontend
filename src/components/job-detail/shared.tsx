@@ -7,6 +7,9 @@ import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
+import { getHospitalJobCoverImage } from "@/utils/hospitalImage";
+import { getResearchJobCoverImage } from "@/utils/researchImage";
+import { getCompanyInitial } from "@/utils/companyInitial";
 import { companyLogos } from "@/config/companyImages";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
@@ -100,6 +103,16 @@ export function getCoverImage(job: Job, company: Company | null) {
     return getIndustryJobCoverImage(job.slug ?? String(job.id));
   }
 
+  /** 대표 이미지가 없는 병원 트랙 공고는 slug 기준으로 결정론적으로 배정된 예시 사진을 대신 보여준다 */
+  if (job.track === "hospital") {
+    return getHospitalJobCoverImage(job.slug ?? String(job.id));
+  }
+
+  /** 대표 이미지가 없는 연구 트랙 공고는 slug 기준으로 결정론적으로 배정된 예시 사진을 대신 보여준다 */
+  if (job.track === "research") {
+    return getResearchJobCoverImage(job.slug ?? String(job.id));
+  }
+
   return undefined;
 }
 
@@ -121,7 +134,7 @@ export function CompanyLogo({
   const boxPx = size === "lg" ? 68 : 46;
 
   if (!showImage) {
-    return <EntityLogo name={name} logoText={logoText} size={boxPx} className="shrink-0" />;
+    return <EntityLogo name={name} size={boxPx} className="shrink-0" />;
   }
 
   return (
@@ -335,7 +348,7 @@ function getSimilarJobReasons(baseJob: Job, similarJob: Job) {
 function SimilarCompanyLogo({ job }: { job: Job }) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(job.logoUrl) && !imageFailed;
-  const fallback = job.company.replace(/\(.*?\)/g, "").trim().slice(0, 1) || "더";
+  const fallback = getCompanyInitial(job.company).slice(0, 1) || "더";
 
   return (
     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#dfe5ec] bg-[#f4f5f6] text-[12px] font-medium text-[#2f3845]">

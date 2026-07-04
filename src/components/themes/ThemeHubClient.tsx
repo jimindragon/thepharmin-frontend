@@ -202,7 +202,6 @@ function CompanyPanel({
                   <div className="flex items-center gap-3">
                     <EntityLogo
                       name={company.name}
-                      logoText={company.logoText}
                       logoUrl={company.logoUrl}
                       size={40}
                     />

@@ -2,10 +2,12 @@
 
 import clsx from "clsx";
 import { Check } from "lucide-react";
+import type { OrgTrack } from "@/data/businessCompanyProfile";
 
-const STEP_LABELS = ["기관 인증", "담당자 정보", "계정 생성"] as const;
+const BASE_STEP_LABELS = ["기관 인증", "담당자 정보", "계정 생성"] as const;
 
-export function SignupStepIndicator({ currentStep }: { currentStep: 1 | 2 | 3 }) {
+export function SignupStepIndicator({ currentStep, track }: { currentStep: 1 | 2 | 3; track?: OrgTrack }) {
+  const STEP_LABELS = track === "pharmacy" ? (["약국 인증", ...BASE_STEP_LABELS.slice(1)] as const) : BASE_STEP_LABELS;
   return (
     <ol className="flex items-center" aria-label="가입 진행 단계">
       {STEP_LABELS.map((label, index) => {

@@ -28,7 +28,6 @@ export function ScrapedOrganizationCard({
       <div className="flex min-w-0 flex-1 items-center gap-4">
         <EntityLogo
           name={organization.name}
-          logoText={organization.logoText}
           size={48}
         />
 

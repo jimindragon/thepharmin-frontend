@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { BriefcaseBusiness, Building2, ChevronRight, Clock3, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp, Users } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp } from "lucide-react";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
 import { companies, companyReviews } from "@/data/companies";
@@ -91,12 +91,7 @@ export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
           <div key={metric.label} className="border border-[#e2e8ef] bg-white p-4">
             <p className="text-[12px] font-medium text-[#738091]">{metric.label}</p>
             <p className="mt-3 text-[24px] font-medium tracking-[0] text-[#17212c]">{metric.value}</p>
-            {metric.caption || metric.estimated ? (
-              <p className="mt-2 text-[12px] font-medium text-[#8a95a5]">
-                {metric.caption}
-                {metric.estimated ? <span className="ml-1 text-[#b4791b]">(추정)</span> : null}
-              </p>
-            ) : null}
+            {metric.caption ? <p className="mt-2 text-[12px] font-medium text-[#8a95a5]">{metric.caption}</p> : null}
           </div>
         ))}
       </div>
@@ -104,10 +99,7 @@ export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
         {profile.businessSummary.map((item) => (
           <div key={item.label}>
             <p className="text-[12px] font-medium text-[#738091]">{item.label}</p>
-            <p className="mt-2 text-[14px] font-normal leading-[1.55] text-[#303946]">
-              {item.value ?? "정보 없음"}
-              {item.estimated ? <span className="ml-1 text-[12px] font-medium text-[#b4791b]">(추정)</span> : null}
-            </p>
+            <p className="mt-2 text-[14px] font-normal leading-[1.55] text-[#303946]">{item.value ?? "정보 없음"}</p>
           </div>
         ))}
       </div>
@@ -137,10 +129,7 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
         {profile.details.map((item) => (
           <div key={item.label} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 text-[13px]">
             <dt className="font-medium text-[#8a94a3]">{item.label}</dt>
-            <dd className="font-medium leading-[1.6] text-[#3c4654]">
-              {item.value ?? "정보 없음"}
-              {item.estimated ? <span className="ml-1 text-[11px] font-normal text-[#b4791b]">(추정)</span> : null}
-            </dd>
+            <dd className="font-medium leading-[1.6] text-[#3c4654]">{item.value ?? "정보 없음"}</dd>
           </div>
         ))}
       </div>
@@ -343,10 +332,6 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
     { label: "관심기업", value: profile.sidebar.interestedCount, icon: Heart },
     { label: "채용중 공고", value: `${getActiveJobCount(profile.id)}건`, icon: BriefcaseBusiness },
     { label: "후기 키워드", value: profile.sidebar.reviewKeywordCount, icon: MessageSquareText },
-    { label: "응답률", value: profile.sidebar.responseRate, icon: Users },
-    { label: "평균 응답 시간", value: profile.sidebar.averageResponseTime, icon: Clock3 },
-    { label: "팔로워", value: profile.sidebar.followers, icon: Users },
-    ...(profile.sidebar.industryRank ? [{ label: "동종업계 순위", value: profile.sidebar.industryRank, icon: Building2 }] : []),
   ];
 
   return (

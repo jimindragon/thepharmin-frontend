@@ -5,16 +5,12 @@ export interface CompanyMetric {
   label: string;
   value: string;
   caption?: string;
-  /** 공개 수치가 없어 사업구조 기준으로 추정한 값인지 여부. true면 실데이터와 구분되게 표시한다 */
-  estimated?: boolean;
 }
 
 export interface CompanyDetailField {
   label: string;
   /** 정보가 없는 경우 임의로 채우지 않고 null로 둔다 */
   value: string | null;
-  /** 공개 수치가 없어 사업구조 기준으로 추정한 값인지 여부. true면 실데이터와 구분되게 표시한다 */
-  estimated?: boolean;
 }
 
 export interface CompanyProduct {
@@ -74,12 +70,7 @@ export interface CompanyProfile {
   pharmacyFeatures?: string[];
   sidebar: {
     interestedCount: string;
-    responseRate: string;
-    averageResponseTime: string;
-    followers: string;
     reviewKeywordCount: string;
-    /** 동종업계 내 순위(예: "완제 의약품 제조업 1위"). 데이터가 없으면 생략하고, 생략 시 화면에 행 자체를 숨긴다 */
-    industryRank?: string;
     products: CompanyProduct[];
     address: string;
   };
@@ -168,9 +159,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "1,245",
-      responseRate: "88%",
-      averageResponseTime: "1.8일",
-      followers: "1,892",
       reviewKeywordCount: "26개",
       products: [
         { name: "나보타", description: "전문의약품" },
@@ -194,13 +182,13 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "매출액", value: "2조 1,056억 원", caption: "2025년" },
       { label: "영업이익", value: "1,101억 원", caption: "2025년" },
       { label: "R&D 투자비율", value: "11.1%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "15%", caption: "2025년", estimated: true },
+      { label: "해외 매출 비중", value: "15%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "의약품·생활용품·동물약품 제조 (신약 파이프라인 33개)" },
       { label: "주요 제품", value: "렉라자 · 삐콤씨 · 안티푸라민" },
-      { label: "글로벌 진출", value: "10개국+", estimated: true },
-      { label: "특허 보유", value: "100건+", estimated: true },
+      { label: "글로벌 진출", value: "10개국+" },
+      { label: "특허 보유", value: "100건+" },
     ],
     recruitSummary:
       "비소세포폐암 표적항암제 렉라자를 중심으로 글로벌 허가를 잇달아 획득하며 항암·면역 분야 R&D와 해외 인허가 역량을 빠르게 확장하고 있습니다.",
@@ -283,11 +271,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "25,000+",
-      responseRate: "95%",
-      averageResponseTime: "0.8일",
-      followers: "25,000+",
       reviewKeywordCount: "54개",
-      industryRank: "완제 의약품 제조업 1위",
       products: [
         { name: "렉라자", description: "비소세포폐암 표적항암제" },
         { name: "삐콤씨", description: "비타민제" },
@@ -309,14 +293,14 @@ export const companyProfiles: CompanyProfile[] = [
     metrics: [
       { label: "매출액", value: "4조 5,569억 원", caption: "2025년" },
       { label: "영업이익", value: "2조 680억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "6%", caption: "2025년", estimated: true },
-      { label: "해외 매출 비중", value: "80%", caption: "2025년", estimated: true },
+      { label: "R&D 투자비율", value: "6%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "80%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "바이오의약품 위탁개발생산(CDMO/CMO/CDO)" },
       { label: "주요 제품", value: "항체의약품 CDMO · CDO 플랫폼 · ADC" },
-      { label: "글로벌 진출", value: "해외 매출 비중 80%, 글로벌 제약사 위탁생산 중심", estimated: true },
-      { label: "특허 보유", value: "100건+", estimated: true },
+      { label: "글로벌 진출", value: "해외 매출 비중 80%, 글로벌 제약사 위탁생산 중심" },
+      { label: "특허 보유", value: "100건+" },
     ],
     recruitSummary:
       "글로벌 제약사의 항체의약품 위탁개발생산을 중심으로 송도 바이오캠퍼스 생산 능력을 지속 확장하고 있으며, ADC 등 신규 모달리티로 사업 영역을 넓히고 있습니다.",
@@ -401,11 +385,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "17,000+",
-      responseRate: "82%",
-      averageResponseTime: "2.3일",
-      followers: "17,000+",
       reviewKeywordCount: "37개",
-      industryRank: "생물학적 제제 제조업 1위",
       products: [
         { name: "CDMO", description: "항체의약품 위탁개발생산" },
         { name: "CDO 플랫폼", description: "S-Cellerate · S-DUAL 등" },
@@ -427,14 +407,14 @@ export const companyProfiles: CompanyProfile[] = [
     metrics: [
       { label: "매출액", value: "2,928억 원", caption: "2025년" },
       { label: "영업이익", value: "1,068억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "10%", caption: "2025년", estimated: true },
-      { label: "해외 매출 비중", value: "50%", caption: "2025년", estimated: true },
+      { label: "R&D 투자비율", value: "10%", caption: "2025년" },
+      { label: "해외 매출 비중", value: "50%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "보툴리눔 톡신·HA필러·바이오 화장품 제조 및 도소매" },
       { label: "주요 제품", value: "보툴렉스(Letybo) · 더채움 · 바이리즌 · 웰라쥬" },
       { label: "글로벌 진출", value: "25개국 진출 / 30여개국 인허가 추진 중" },
-      { label: "특허 보유", value: "50건+", estimated: true },
+      { label: "특허 보유", value: "50건+" },
     ],
     recruitSummary:
       "보툴리눔 톡신 보툴렉스(수출명 Letybo)와 HA필러 더채움을 중심으로 25개국 이상에 수출하며, 더마 코스메틱까지 영역을 넓힌 글로벌 에스테틱 전문기업입니다.",
@@ -517,11 +497,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "3,100+",
-      responseRate: "78%",
-      averageResponseTime: "2.8일",
-      followers: "3,100+",
       reviewKeywordCount: "15개",
-      industryRank: "생물학적 제제 제조업 2위",
       products: [
         { name: "보툴렉스", description: "보툴리눔 톡신(수출명 Letybo)" },
         { name: "더채움", description: "HA필러" },
@@ -544,12 +520,12 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "매출액", value: "3조 5,573억 원", caption: "2025년" },
       { label: "영업이익", value: "6,048억 원", caption: "2025년" },
       { label: "R&D 투자비율", value: "18.2%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "88%", caption: "2025년", estimated: true },
+      { label: "해외 매출 비중", value: "88%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "항체 바이오시밀러·신약 개발 및 생산" },
       { label: "주요 제품", value: "램시마 · 트룩시마 · 짐펜트라" },
-      { label: "글로벌 진출", value: "110개국+", estimated: true },
+      { label: "글로벌 진출", value: "110개국+" },
     ],
     recruitSummary:
       "램시마SC와 짐펜트라의 글로벌 확대를 중심으로 바이오시밀러 포트폴리오를 넓히며, 항체 신약과 ADC 분야로 파이프라인을 확장하고 있습니다.",
@@ -588,11 +564,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "18,000+",
-      responseRate: "92%",
-      averageResponseTime: "1.2일",
-      followers: "18,000+",
       reviewKeywordCount: "17개",
-      industryRank: "생물학적 제제 제조업 1위",
       products: [
         { name: "램시마", description: "자가면역질환 치료제" },
         { name: "트룩시마", description: "혈액암 치료제" },
@@ -615,12 +587,12 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "매출액", value: "1조 5,842억 원", caption: "2025년" },
       { label: "영업이익", value: "2,315억 원", caption: "2025년" },
       { label: "R&D 투자비율", value: "13.8%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "12%", caption: "2025년", estimated: true },
+      { label: "해외 매출 비중", value: "12%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "개량신약·전문의약품 및 신약 파이프라인 개발" },
       { label: "주요 제품", value: "아모잘탄 · 로수젯 · 팔팔" },
-      { label: "파이프라인", value: "30개+", estimated: true },
+      { label: "파이프라인", value: "30개+" },
     ],
     recruitSummary:
       "대사질환·항암 중심의 신약 파이프라인과 개량신약 포트폴리오를 함께 운영하며, 국내 R&D 투자 상위권을 유지하고 있는 연구 중심 제약사입니다.",
@@ -659,9 +631,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "12,000+",
-      responseRate: "90%",
-      averageResponseTime: "1.5일",
-      followers: "12,000+",
       reviewKeywordCount: "15개",
       products: [
         { name: "아모잘탄", description: "고혈압 복합제" },
@@ -685,7 +654,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "매출액", value: "1조 6,694억 원", caption: "2025년" },
       { label: "영업이익", value: "1,528억 원", caption: "2025년" },
       { label: "R&D 투자비율", value: "12.1%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "8%", caption: "2025년", estimated: true },
+      { label: "해외 매출 비중", value: "8%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "전문의약품·개량신약 개발 및 제조" },
@@ -728,9 +697,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "8,500+",
-      responseRate: "88%",
-      averageResponseTime: "1.8일",
-      followers: "8,500+",
       reviewKeywordCount: "12개",
       products: [
         { name: "종근당글리아티린", description: "뇌기능개선제" },
@@ -754,7 +720,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "매출액", value: "1조 7,208억 원", caption: "2025년" },
       { label: "영업이익", value: "682억 원", caption: "2025년" },
       { label: "R&D 투자비율", value: "11.4%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "22%", caption: "2025년", estimated: true },
+      { label: "해외 매출 비중", value: "22%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "혈액제제·백신 개발 및 제조" },
@@ -797,9 +763,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "7,200+",
-      responseRate: "91%",
-      averageResponseTime: "1.4일",
-      followers: "7,200+",
       reviewKeywordCount: "9개",
       products: [
         { name: "알리글로", description: "면역글로불린" },
@@ -822,8 +785,8 @@ export const companyProfiles: CompanyProfile[] = [
     metrics: [
       { label: "매출액", value: "892억 원", caption: "2025년" },
       { label: "영업이익", value: "96억 원", caption: "2025년" },
-      { label: "진행 과제", value: "연간 140건+", estimated: true },
-      { label: "글로벌 과제 비중", value: "35%", caption: "2025년", estimated: true },
+      { label: "진행 과제", value: "연간 140건+" },
+      { label: "글로벌 과제 비중", value: "35%", caption: "2025년" },
     ],
     businessSummary: [
       { label: "주요 사업", value: "임상 1~4상 운영·모니터링·DM·통계 수탁" },
@@ -866,9 +829,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "3,400+",
-      responseRate: "95%",
-      averageResponseTime: "0.9일",
-      followers: "3,400+",
       reviewKeywordCount: "12개",
       products: [],
       address: "서울 구로구 디지털로 300",
@@ -936,9 +896,6 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     sidebar: {
       interestedCount: "5,100+",
-      responseRate: "85%",
-      averageResponseTime: "2.1일",
-      followers: "5,100+",
       reviewKeywordCount: "9개",
       products: [],
       address: "경기 성남시 분당구 구미로173번길 82",
@@ -989,9 +946,6 @@ export const companyProfiles: CompanyProfile[] = [
       // 원고에 사이드바 수치(관심기업/응답률/평균응답)가 없어 이 회사의 다른 필드(사원수 등)와 동일하게
       // 데이터 없음을 뜻하는 기존 관례("-")를 사용했다
       interestedCount: "-",
-      responseRate: "-",
-      averageResponseTime: "-",
-      followers: "-",
       reviewKeywordCount: "9개",
       products: [],
       address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",

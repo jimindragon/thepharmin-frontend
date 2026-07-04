@@ -189,7 +189,7 @@ function KeywordInput({ keywords, onAdd, onRemove }: {
           ＋ 추가
         </button>
       </div>
-      <p className={HINT}>{keywords.length}/{MAX_KEYWORDS}개 · Enter 또는 추가 버튼으로 입력. 키워드당 20자 이내.</p>
+      <p className={HINT}>{keywords.length}/{MAX_KEYWORDS}개 · 공고 목록에는 최대 5개가 노출됩니다. · Enter 또는 추가 버튼으로 입력. 키워드당 20자 이내.</p>
     </div>
   );
 }

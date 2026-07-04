@@ -15,8 +15,8 @@ export function SignupTypeSelectClient() {
           <PageHeader
             breadcrumbLabel="기업회원 가입"
             eyebrow="기업회원 가입"
-            title="가입하실 기관 유형을 선택해 주세요"
-            description="기관 유형에 따라 필요한 인증 절차가 다릅니다. 상세 정보는 가입 후 기관 정보에서 입력할 수 있습니다."
+            title="가입 유형을 선택해 주세요"
+            description="유형에 따라 필요한 인증 절차가 다릅니다."
           />
 
           <div className={styles.choices} role="group" aria-label="가입 유형 선택">
@@ -25,11 +25,19 @@ export function SignupTypeSelectClient() {
               href="/business/signup/company"
               aria-label="기업·병원·연구기관으로 가입하기"
             >
+              <div
+                className={`${styles.cardPhoto} ${styles.cardPhotoLight}`}
+                style={{ backgroundImage: "url(/images/signup-company-bg.jpg)" }}
+                aria-hidden="true"
+              />
               <span className={styles.cardType}>기업 · 병원 · 연구기관</span>
-              <p className={styles.cardSub}>
-                제약사, 바이오텍, 의료기기, CRO·CDMO, 병원, 연구기관 채용 담당자를 위한 가입
-              </p>
-              <p className={styles.cardFootnote}>사업자등록증명원으로 인증 · 병원은 요양기관번호 추가 입력</p>
+              <div className={styles.chipRow}>
+                <span className={styles.chip}>제약사</span>
+                <span className={styles.chip}>바이오텍</span>
+                <span className={styles.chip}>의료기기</span>
+                <span className={styles.chip}>CRO·CDMO</span>
+              </div>
+              <p className={styles.cardFootnote}>사업자등록증명원 인증 · 병원은 요양기관번호 추가</p>
               <span className={`${styles.cardAction} ${styles.actionGradient}`}>
                 가입 진행
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" aria-hidden="true">
@@ -39,9 +47,18 @@ export function SignupTypeSelectClient() {
             </Link>
 
             <Link className={`${styles.card} ${styles.cardDark}`} href="/business/signup/pharmacy" aria-label="약국으로 가입하기">
+              <div
+                className={`${styles.cardPhoto} ${styles.cardPhotoDark}`}
+                style={{ backgroundImage: "url(/images/signup-pharmacy-bg.jpg)" }}
+                aria-hidden="true"
+              />
               <span className={`${styles.cardType} ${styles.cardTypeDark}`}>약국</span>
-              <p className={`${styles.cardSub} ${styles.cardSubDark}`}>약국을 운영하며 약사 인력을 채용하려는 약국장·관리약사</p>
-              <p className={`${styles.cardFootnote} ${styles.cardFootnoteDark}`}>약사면허번호와 요양기관번호로 인증</p>
+              <div className={styles.chipRow}>
+                <span className={`${styles.chip} ${styles.chipDark}`}>일반약국</span>
+                <span className={`${styles.chip} ${styles.chipDark}`}>의원층약국</span>
+                <span className={`${styles.chip} ${styles.chipDark}`}>문전약국</span>
+              </div>
+              <p className={`${styles.cardFootnote} ${styles.cardFootnoteDark}`}>약사면허번호 · 요양기관번호 인증</p>
               <span className={`${styles.cardAction} ${styles.cardActionDark}`}>
                 가입 진행
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

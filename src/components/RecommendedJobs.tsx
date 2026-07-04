@@ -3,7 +3,6 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
-import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import type { RecommendedJob } from "@/types/jobs";

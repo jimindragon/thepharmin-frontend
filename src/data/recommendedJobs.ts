@@ -23,6 +23,20 @@ const tierMap: Record<string, "premium" | "featured" | "standard"> = {
   "hwagok-gibeum-pharmacy-short-term-pharmacist":  "standard",
   "yeongdong-365-pharmacy-wed-parttime":           "standard",
   "buldang-central-pharmacy-fulltime":             "standard",
+
+  // 연구 트랙: 기관유형별 대표 공고 STANDARD 노출
+  "snuh-neurology-data-researcher":                      "standard",
+  "kist-neurochannel-postdoc":                           "standard",
+  "kbri-dementia-postdoc":                               "standard",
+  "unt-brain-organoid-postdoc":                          "standard",
+  "kangwon-univ-natural-product-postdoc":                "standard",
+
+  // 병원 트랙: 근무형태·기관종류 다양성 기준 STANDARD 노출
+  "hanbit-hospital-multi-dept-pharmacist":             "standard",
+  "nsmc-clinical-specialist-pharmacist":               "standard",
+  "national-firefighters-hospital-pharmacy-staff":     "standard",
+  "muju-county-care-hospital-twice-weekly-pharmacist": "standard",
+  "sungae-hospital-morning-parttime-pharmacist":       "standard",
 };
 
 // 노출 순서: premium 3 → featured 4 → standard 5
@@ -33,6 +47,10 @@ const orderedSlugs = [
   "eunhaeng-pharmacy-part-time-pharmacist", "hyundai-pharmacy-fulltime-pharmacist",
   "hwagok-gibeum-pharmacy-short-term-pharmacist", "yeongdong-365-pharmacy-wed-parttime",
   "buldang-central-pharmacy-fulltime",
+  "snuh-neurology-data-researcher", "kist-neurochannel-postdoc", "kbri-dementia-postdoc",
+  "unt-brain-organoid-postdoc", "kangwon-univ-natural-product-postdoc",
+  "hanbit-hospital-multi-dept-pharmacist", "nsmc-clinical-specialist-pharmacist", "national-firefighters-hospital-pharmacy-staff",
+  "muju-county-care-hospital-twice-weekly-pharmacist", "sungae-hospital-morning-parttime-pharmacist",
 ] as const;
 
 const jobsBySlug = new Map(

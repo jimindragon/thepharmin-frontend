@@ -697,7 +697,7 @@ export function IndustryJobPostingForm() {
             )}
 
             <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택됨 {keywords.size}개 · 공고 목록에는 최대 3개가 노출됩니다.
+              선택됨 {keywords.size}개 · 공고 목록에는 최대 5개가 노출됩니다.
             </p>
           </div>
 
@@ -709,7 +709,7 @@ export function IndustryJobPostingForm() {
                 const labels = {
                   default: "기관 기본 이미지 사용",
                   upload:  "새 이미지 업로드",
-                  none:    "대표 이미지 사용 안 함",
+                  none:    "이미지 없이 등록",
                 };
                 const on = imageOption === opt;
                 return (
@@ -785,7 +785,7 @@ export function IndustryJobPostingForm() {
 
           <ToggleRow
             title="채용 시 마감(조기 마감 가능)"
-            description="지정 마감일과 별개로, 채용이 완료되면 조기 마감합니다. 켜면 마감일을 '예정일'로 표시됩니다."
+            description="정한 마감일과 별개로, 채용이 완료되면 조기 마감합니다. 켜면 마감일은 '예정일'로 표시됩니다."
             checked={rollingToggle}
             onChange={setRollingToggle}
             ariaLabel="채용 시 마감"

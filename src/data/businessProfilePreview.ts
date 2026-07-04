@@ -66,9 +66,6 @@ export function buildIndustryPreviewProfile(master: CompanyProfileMaster): Compa
     news: [],
     sidebar: {
       interestedCount: "-",
-      responseRate: "-",
-      averageResponseTime: "-",
-      followers: "-",
       reviewKeywordCount: "-",
       products: [],
       address: master.address,
@@ -133,9 +130,6 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     specialistPharmacists: org.specialistPharmacists.length ? org.specialistPharmacists : undefined,
     sidebar: {
       interestedCount: "-",
-      responseRate: "-",
-      averageResponseTime: "-",
-      followers: "-",
       reviewKeywordCount: "-",
       products: [],
       address: org.address,
@@ -204,9 +198,6 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
     pharmacyFeatures: org.pharmacyFeatureIds.length ? org.pharmacyFeatureIds : undefined,
     sidebar: {
       interestedCount: "-",
-      responseRate: "-",
-      averageResponseTime: "-",
-      followers: "-",
       reviewKeywordCount: "-",
       products: [],
       address: org.address,

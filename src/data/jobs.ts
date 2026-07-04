@@ -1721,8 +1721,6 @@ export const jobs: Job[] = [
         "국책과제",
       ],
       deadlineType: "untilHired",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "서울아산병원 대장항문외과 박은정 PI 연구팀에서 대장암 환자 유래 오가노이드와 PDX(patient-derived xenograft) 모델을 활용한 종양 연구를 수행할 연구원을 채용합니다. 국책과제를 기반으로 진행되는 연구로, 종양의학·유전·유전체의학·바이오·의료융합 분야의 지식과 실험 역량을 함께 키울 수 있는 자리입니다.",
       oneLineIntro: "대장암 오가노이드·PDX 모델 기반 종양 연구를 함께할 연구원을 찾습니다.",
@@ -1812,8 +1810,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["고려대학교", "성형외과", "전재한", "재건성형", "미세수술", "림프부종", "연구원", "PCR"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "고려대학교 의과대학 성형외과학교실 전재한 교수 연구팀에서 재건성형 및 미세수술 분야를 중심으로 임상과 기초연구를 통합하는 연구를 함께할 연구원을 채용합니다. 림프부종·림프혈관 수술(LVA, VLNT, ILR), 전방사건, 조직재생, 재수술형 수술, 미세수술, 의료 빅데이터 분석을 주제로 동물실험부터 임상연구, 전국 단위 데이터베이스 연구까지 수행합니다.",
       oneLineIntro: "재건성형·미세수술 관련 기초실험과 임상연구를 함께 담당할 연구원을 찾습니다.",
@@ -1913,8 +1909,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["project-based"],
       searchKeywords: ["경북대학교병원", "인체조직", "남시원", "Single-cell RNA-seq", "Multi-omics", "AI", "바이오인포마틱스"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "경북대학교병원 인체조직·동물실험/융합연구치료센터에서 단일세포 전사체·멀티오믹스 분석과 바이오 빅데이터 연구를 함께할 석사 연구원을 채용합니다. 경북대학교병원 인체조직·동물실험에서 인체조직 인프라(주요 7대 조직, 희귀기증 특화 조직, 일증성 장지하 및 전신인대 대조군)를 기반으로 오믹스, 공간 및 단일세포 전사체 분석, 기능적 연구를 수행합니다.",
       oneLineIntro: "단일세포 전사체·멀티오믹스 분석과 AI 기반 바이오 빅데이터 연구를 함께할 석사연구원을 모집합니다.",
@@ -2018,8 +2012,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["KIST", "신경생리연구실", "한규철", "neurogenesis", "중추신경발달", "정신질환", "스고가브레인", "포닥"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "한국과학기술연구원(KIST) 뇌과학연구소 신경생리연구실에서 중추신경발달의 이온채널성도와 신경의 정신질환 관련성을 연구할 박사후연구원을 모집합니다. 스고가브레인 연구 변화 예정이며, 신경질환 치료제 개발(Medicinal Chemistry) 과제에도 참여할 수 있습니다.",
       oneLineIntro: "중추신경발달과 스고가브레인·정신질환 기초연구를 함께 수행할 박사후연구원을 모집합니다.",
@@ -2107,8 +2099,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["강원대학교", "천연물의약합성", "이구연", "천연물화학", "의약화학", "카나비노이드", "포닥", "신약"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "강원대학교 춘천캠퍼스 천연물의약합성 연구실은 천연물 유효성분으로부터 유도체를 합성해 콜리파어 효율을 극대화하는 연구를 수행합니다. 학내 벤처기업을 이운하며 기초연구(학교)와 응용연구(기업)를 병행하며, 학교 내 post-doc 또는 기업 연구원으로 지원 가능합니다.",
       oneLineIntro: "천연물 유효성분 합성과 신약 후보물질 개발 연구를 함께할 연구원을 모집합니다.",
@@ -2228,8 +2218,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["서울대학교병원", "신경내과", "강경미", "알츠하이머", "치매", "데이터분석", "통계", "R", "SAS"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "서울대학교병원 신경내과 교수의 국성과제 개인 연구원으로, 알츠하이머병 및 치매 관련 신경내과 연구 데이터의 수집·관리·분석을 담당할 연구원을 모집합니다. (학위 연구원 모집 아님)",
       oneLineIntro: "알츠하이머·치매 관련 신경내과 연구 데이터의 수집·관리·분석을 담당할 연구원을 모집합니다.",
@@ -2327,8 +2315,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["한국뇌연구원", "치매연구그룹", "김도근", "PM2.5", "미세플라스틱", "뇌질환", "IHC", "Western blot", "Real-time PCR", "포닥"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "한국뇌연구원 치매연구그룹에서 미세먼지(PM2.5)·미세플라스틱 등 환경 유해 인자 노출에 따른 중추신경계 병리 기전을 규명하는 전임상 연구를 수행할 박사급 연수연구원을 모집합니다.",
       oneLineIntro: "환경 유해 인자 기반 뇌질환 전임상 연구를 함께 수행할 박사후 연수연구원을 모집합니다.",
@@ -2433,8 +2419,6 @@ export const jobs: Job[] = [
         "J-1",
       ],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "University of North Texas(UNT) 연구실에서 인간 iPSC 및 뇌 오가노이드를 기반으로 신경생물학·기능 분석 연구를 수행할 박사후연구원을 모집합니다. J-1 비자로 미국 현지 파견되며, 세종대학교 단기 파견을 병행할 수 있습니다.",
       oneLineIntro: "인간 iPSC 기반 뇌 오가노이드 연구를 수행할 박사후연구원을 모집합니다. (J-1 비자 파견)",
@@ -2539,8 +2523,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["포항공과대학교", "생명과학과", "조윤제", "구조생물학", "cloning", "protein purification", "cell culture", "연구원"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "포항공과대학교 생명과학과 조윤제 교수 연구실에서 구조생물학 연구를 위해 클로닝, 세포배양, 단백질 분리·정제 등을 담당할 연구계약직 연구원을 모집합니다.",
       oneLineIntro: "구조생물학 연구를 위한 클로닝·단백질 정제 실험을 담당할 연구계약직 연구원을 모집합니다.",
@@ -2628,8 +2610,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["동국대학교", "약학대학", "최영희", "PK-PD", "DMPK", "LC-MS/MS", "network pharmacology", "생체시료 분석", "연구원"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "동국대학교 약학대학 약물학/약동학 실험실에서 저분자·천연물 성분·펩타이드·miRNA 등의 체내동태-약효 평가 및 기전 연구를 수행할 연구원을 모집합니다. 난치성 만성 질환의 정량적 치료효과 및 기전 규명을 통해 예측 가능한 단일·병용 요법 개발을 목표로 합니다.",
       oneLineIntro: "PK-PD 모델링과 생체시료 분석 기반 DMPK 연구를 함께할 연구원을 모집합니다.",
@@ -2721,8 +2701,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["부산대학교", "구강점막면역", "김태성", "점막면역", "숙주-미생물 상호작용", "염증", "미생물총", "동물모델", "연구원"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "부산대학교 구강점막면역 연구실에서 점막(구강·피부·장 등) 조직의 미생물-숙주 세포 상호작용을 연구할 연구원을 모집합니다. 미생물 불균형이 조직 염증과 질병으로 이어지는 기전을 분자생물학적으로 규명하고, 새로운 치료·진단 전략 개발을 목표로 합니다.",
       oneLineIntro: "점막 조직에서 미생물-숙주 상호작용을 규명할 연구원을 모집합니다.",
@@ -2816,8 +2794,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["건양대학교", "명곡안연구소", "류정묵", "망막재생", "iPS Cells", "망막오가노이드", "줄기세포", "전임상", "연구원"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "건양대학교의료원 산하 명곡안연구소에서 망막재생 및 망막오가노이드 기반 안질환 치료기술을 연구할 연구원을 모집합니다. 내인성 줄기세포를 이용한 망막재생, iPS Cells 유래 망막오가노이드 제조 및 이식용 시트 개발, 첨단 융복합치료제의 비임상 유효성·안전성 평가 연구를 수행합니다.",
       oneLineIntro: "망막재생·망막오가노이드 기반 안질환 치료기술 연구를 함께할 연구원을 모집합니다.",
@@ -2904,8 +2880,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["한림대학교", "미생물학교실", "김원근", "바이러스", "NGS", "Virome", "항바이러스", "랩매니저", "연구행정"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "한림대학교 의과대학 미생물학교실 김원근 교수 연구실에서 호흡기 및 인수공통 바이러스에 대한 감시·진단·치료제·대응책 개발 연구를 지원할 랩매니저를 모집합니다. 실험실 운영과 과제·연구실 행정을 담당하며, 경력 단절 여성 과학자도 지원 가능합니다.",
       oneLineIntro: "호흡기·인수공통 바이러스 연구실의 운영과 연구행정을 담당할 랩매니저를 모집합니다.",
@@ -2997,8 +2971,6 @@ export const jobs: Job[] = [
       contractPeriodIds: ["1-2-years"],
       searchKeywords: ["인제대학교", "심혈관 및 대사질환 핵심연구지원센터", "한진", "심혈관질환", "대사질환", "전임상", "연구장비", "영상장비", "연구원"],
       deadlineType: "date",
-      coverImageMode: "upload",
-      coverImageUrl: companyExampleImages.research,
       introduction:
         "인제대학교 심혈관 및 대사질환 핵심연구지원센터에서 연구장비 운영·관리와 전임상 실험을 담당할 전담운영인력(연구원)을 모집합니다. 소동물 MRI·CT, Echocardiography 등 첨단 영상장비와 분자·세포 분석장비를 활용한 연구지원 업무를 수행합니다.",
       oneLineIntro: "심혈관·대사질환 연구지원 인프라의 연구장비 운영과 전임상 실험을 담당할 연구원을 모집합니다.",

@@ -16,6 +16,7 @@ const orgTrackCompleteLabel: Record<OrgTrack, string> = {
 /** STEP C — 가입 완료 화면. 목데이터 단계라 실제 계정 생성 대신 배정된 orgTrack을 안내하고 기관정보 입력으로 유도한다. */
 export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: OrgTrack; institutionName: string }) {
   const router = useRouter();
+  const infoLabel = orgTrack === "pharmacy" ? "약국 정보" : "기관 정보";
 
   useEffect(() => {
     // eslint-disable-next-line no-console
@@ -34,11 +35,11 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
         <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">가입이 완료되었습니다</h1>
         <p className="mt-3 text-[14px] font-normal leading-[1.7] text-[#68717e]">
           {institutionName ? `${institutionName}, ` : ""}
-          {orgTrackCompleteLabel[orgTrack]}으로 가입되었습니다. 상세 정보는 기관 정보에서 입력할 수 있습니다.
+          {orgTrackCompleteLabel[orgTrack]}으로 가입되었습니다. 상세 정보는 {infoLabel}에서 입력할 수 있습니다.
         </p>
         <div className="mt-8 flex flex-col gap-2.5">
           <LinkButton href="/business/company/profile" variant="gradient" className="w-full">
-            기관 정보 입력하러 가기
+            {infoLabel} 입력하러 가기
           </LinkButton>
           <Button type="button" variant="secondary" className="w-full" onClick={() => router.push("/business/dashboard")}>
             나중에 하기

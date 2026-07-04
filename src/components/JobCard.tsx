@@ -8,6 +8,7 @@ import { companies } from "@/data/companies";
 import { companyLogos } from "@/config/companyImages";
 import type { Job } from "@/types/jobs";
 import { formatHospitalSalary } from "@/utils/salary";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 interface JobCardProps {
   job: Job;
@@ -65,7 +66,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
               onError={() => setLogoFailed(true)}
             />
           ) : (
-            <span className="text-[13px] font-semibold text-[#596373]">{job.company.slice(0, 2)}</span>
+            <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>
           )}
         </div>
 
@@ -110,7 +111,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
             </p>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {job.tags.map((tag) => (
+              {job.tags.slice(0, 5).map((tag) => (
                 <span
                   key={tag}
                   className="rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]"
@@ -136,7 +137,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
                 "relative z-20 grid h-10 w-10 place-items-center rounded-[var(--radius)] transition-colors",
                 isBookmarked ? "text-brand" : "text-[#a0a9b7] hover:bg-[#f4f7f9] hover:text-brand",
               )}
-              aria-label={isScrapContext ? `${job.title} 스크랩 해제` : `${job.title} 북마크 ${isBookmarked ? "해제" : "저장"}`}
+              aria-label={`${job.title} ${isBookmarked ? "스크랩 해제" : "스크랩"}`}
             >
               <Bookmark size={21} strokeWidth={1.7} fill={isBookmarked ? "currentColor" : "none"} />
             </button>
