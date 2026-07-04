@@ -16,6 +16,10 @@ export interface CompanyReviewCardItem {
   helpfulCount: number;
   /** 면접 후기에만 존재. 값이 있을 때만 하단 액션 행에 합/불 배지를 그린다 */
   outcome?: "합격" | "불합격";
+  /** 면접 후기에만 존재. 값이 있을 때만 난이도·유형 배지를 그린다 */
+  interviewDifficulty?: "상" | "중" | "하";
+  /** 면접 후기에만 존재. 값이 있을 때만 난이도·유형 배지를 그린다 */
+  interviewFormat?: string;
 }
 
 interface CompanyReviewCardProps {
@@ -33,6 +37,9 @@ export function CompanyReviewCard({ review, lockedMessage, lockedCtaLabel, locke
   const locked = review.content === null;
   const [helpful, setHelpful] = useState({ active: false, count: review.helpfulCount });
   const [saved, setSaved] = useState(false);
+  const interviewMeta = [review.interviewDifficulty ? `난이도 ${review.interviewDifficulty}` : null, review.interviewFormat ?? null]
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
 
   return (
     <article className="border border-[#e5e9ef] bg-white p-4">
@@ -49,6 +56,11 @@ export function CompanyReviewCard({ review, lockedMessage, lockedCtaLabel, locke
           </span>
         ))}
       </div>
+      {interviewMeta ? (
+        <div className="mt-2">
+          <span className="inline-block border border-[#d9d9d9] bg-white px-2 py-1 text-[11px] font-semibold text-[#3f4855]">{interviewMeta}</span>
+        </div>
+      ) : null}
       {locked ? (
         <LockedContent
           className="mt-3"

@@ -47,11 +47,11 @@ interface CompaniesHomeClientProps {
   interviewFeedItems: RecentFeedInterviewItem[];
 }
 
-const FEED_COMPANY_QUOTA = 3;
-const FEED_INTERVIEW_QUOTA = 2;
+const FEED_COMPANY_QUOTA = 4;
+const FEED_INTERVIEW_QUOTA = 3;
 const FEED_TOTAL = FEED_COMPANY_QUOTA + FEED_INTERVIEW_QUOTA;
 
-/** "전체" 필터 기본 구성: 기업 리뷰 3 + 면접 후기 2(각 타입 내 최신순), 한쪽이 부족하면 다른 타입으로 채운다 */
+/** "전체" 필터 기본 구성: 기업 리뷰 4 + 면접 후기 3(각 타입 내 최신순), 한쪽이 부족하면 다른 타입으로 채운다 */
 function buildAllFeedItems(companyItems: RecentFeedCompanyItem[], interviewItems: RecentFeedInterviewItem[]): RecentFeedItem[] {
   const companyPick = companyItems.slice(0, FEED_COMPANY_QUOTA);
   const interviewPick = interviewItems.slice(0, FEED_INTERVIEW_QUOTA);

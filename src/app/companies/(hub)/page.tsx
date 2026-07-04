@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function CompaniesPage() {
   /**
-   * "최근 올라온 이야기" 피드: 타입별로 최신순 상위 5건씩 따로 내려보낸다 — 클라이언트가
-   * "전체" 탭에서는 기업 리뷰 3 + 면접 후기 2로 섞고, 타입 탭에서는 해당 타입 5건을 그대로 쓴다.
+   * "최근 올라온 이야기" 피드: 타입별로 최신순 상위 7건씩 따로 내려보낸다 — 클라이언트가
+   * "전체" 탭에서는 기업 리뷰 4 + 면접 후기 3으로 섞고, 타입 탭에서는 해당 타입 7건을 그대로 쓴다.
    * 면접 후기는 이 피드에서 원문을 절대 보여주지 않으므로 content 자체를 내려보내지 않고
    * tags만 슬림하게 담는다 — /companies 메인의 기존 개요 미리보기와 동일한 원칙.
    */
@@ -22,7 +22,7 @@ export default function CompaniesPage() {
   const companyFeedItems = companyReviews
     .filter((review) => review.type === "company")
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
-    .slice(0, 5)
+    .slice(0, 7)
     .map((review) => ({
       id: review.id,
       companyId: review.companyId,
@@ -37,7 +37,7 @@ export default function CompaniesPage() {
   const interviewFeedItems = companyReviews
     .filter((review) => review.type === "interview")
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
-    .slice(0, 5)
+    .slice(0, 7)
     .map((review) => ({
       id: review.id,
       companyId: review.companyId,

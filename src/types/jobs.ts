@@ -606,6 +606,17 @@ export interface CompanyReview {
   isRead?: boolean;
   /** 면접 후기(type: "interview")의 합격 여부. 값이 없으면 미리보기에서 배지를 표시하지 않는다 */
   outcome?: "합격" | "불합격";
+  /** 면접 후기(type: "interview") 전용. 면접 난이도 */
+  interviewDifficulty?: "상" | "중" | "하";
+  /** 면접 후기(type: "interview") 전용. 면접 유형 */
+  interviewFormat?:
+    | "대면 면접"
+    | "화상 면접"
+    | "전화 면접"
+    | "실무진 면접"
+    | "임원 면접"
+    | "실무진·임원 순차 면접"
+    | "직무 과제 후 면접";
 }
 
 export interface ReviewAccessState {

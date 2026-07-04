@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell";
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
+import { LinkButton } from "@/components/ui/Button";
 import { companyReviews } from "@/data/companies";
 import { getCompanyProfile } from "@/data/companyProfiles";
 
@@ -31,16 +32,28 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
       helpfulCount: review.helpfulCount,
     }));
 
+  const writeHref = `/companies/${companyId}/reviews/new`;
+
   const body = items.length ? (
-    <div className="mt-6 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
-      {items.map((item) => (
-        <CompanyReviewCard key={item.id} review={item} />
-      ))}
-    </div>
+    <>
+      <div className="mt-6 flex justify-end">
+        <LinkButton href={writeHref} variant="gradient" size="sm">
+          리뷰 작성
+        </LinkButton>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+        {items.map((item) => (
+          <CompanyReviewCard key={item.id} review={item} />
+        ))}
+      </div>
+    </>
   ) : (
-    <div className="mt-6 flex h-[140px] flex-col items-center justify-center gap-1.5 border border-[#e1e8ef] bg-[#fbfcfd] text-center">
+    <div className="mt-6 flex h-[160px] flex-col items-center justify-center gap-2 border border-[#e1e8ef] bg-[#fbfcfd] text-center">
       <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 현직자 리뷰가 없습니다.</p>
       <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
+      <LinkButton href={writeHref} variant="gradient" size="sm" className="mt-1">
+        첫 리뷰 작성하기
+      </LinkButton>
     </div>
   );
 

@@ -35,9 +35,11 @@ export default async function CompanyInterviewsPage({ params, searchParams }: Co
       authorStatus: review.authorStatus,
       writtenAt: review.writtenAt,
       helpfulCount: review.helpfulCount,
+      interviewDifficulty: review.interviewDifficulty,
+      interviewFormat: review.interviewFormat,
     }));
 
-  const body = <CompanyInterviewsListClient items={items} isLoggedIn={isLoggedIn} />;
+  const body = <CompanyInterviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />;
 
   if (!profile) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
