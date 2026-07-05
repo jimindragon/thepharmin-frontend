@@ -4,8 +4,8 @@ import { Check, ExternalLink, Info, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ExposurePreview, FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
-import { getHospitalCombinedTypeLabel, getHospitalOperatorLabel, getHospitalTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
+import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { getHospitalOperatorLabel, getHospitalTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { businessCompanyManager, type FileStatus } from "@/data/businessCompanyProfile";
 import { hospitalKeywordOptions, initialHospitalOrgProfile, specialistPharmacistOptions, type HospitalOrgProfile, type OrgFeatureItem } from "@/data/businessOrgProfile";
 import type { HospitalOperator, HospitalType } from "@/types/jobs";
@@ -282,19 +282,6 @@ export function HospitalOrgProfileClient() {
             </div>
             <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">상세 페이지 사이드바와 검색에 활용됩니다.</p>
           </div>
-
-          <ExposurePreview
-            name={profile.institutionName}
-            shortIntro={profile.shortIntro}
-            metaLine={`${getHospitalCombinedTypeLabel(profile.hospitalType, profile.hospitalOperator, profile.specialtyLabel)} · ${profile.foundedYear}년 설립`}
-            logo={
-              profile.logoUrl ? (
-                <img src={profile.logoUrl} alt="" className="h-full w-full object-contain p-1" />
-              ) : (
-                <span className="text-[13px] font-bold text-[#4f5968]">{profile.institutionName.slice(0, 2)}</span>
-              )
-            }
-          />
         </SectionCard>
 
         <SectionCard id="pharmacy-environment" title="약제부 근무 환경" description="병원 상세 요약 표에 노출되고, 공고 등록 시 관련 항목의 기본값으로 채워집니다." status="선택 사항">

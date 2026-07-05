@@ -109,54 +109,6 @@ export function TextInput({
   );
 }
 
-/** 공고 상세 카드 / 상세 페이지 hero의 노출 미리보기 블록. 병원·약국 기관정보 폼에서 공용으로 쓴다 */
-export function ExposurePreview({
-  name,
-  shortIntro,
-  metaLine,
-  logo,
-}: {
-  name: string;
-  shortIntro: string;
-  metaLine: string;
-  logo: ReactNode;
-}) {
-  return (
-    <div className="mt-6 border border-[#e2e8ef] bg-[#fbfcfd] p-4">
-      <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">노출 미리보기</h3>
-      <div className="mt-4 grid grid-cols-2 gap-4 max-[820px]:grid-cols-1">
-        <div className="border border-[#dfe4ea] bg-white p-4">
-          <p className="text-[11px] font-medium text-[#8a94a3]">공고 상세 · 기업 정보 카드</p>
-          <div className="mt-4 flex gap-3">
-            <div className="grid h-12 w-12 shrink-0 place-items-center border border-[#dfe4ea] bg-white p-1">{logo}</div>
-            <div>
-              <p className="text-[14px] font-medium text-[#17202c]">{name}</p>
-              <p className="mt-1 text-[12px] font-normal text-[#6f7783]">{shortIntro}</p>
-              <p className="mt-2 text-[11px] font-medium text-[#8a94a3]">{metaLine}</p>
-            </div>
-          </div>
-        </div>
-        <div
-          className="border border-[#dfe4ea] bg-cover bg-center p-4 text-white"
-          style={{
-            backgroundImage: "linear-gradient(90deg, rgba(5,5,5,0.78), rgba(5,5,5,0.32)), url('/images/company/company_pic_example.jpg')",
-          }}
-        >
-          <p className="text-[11px] font-medium text-white/60">기업 상세 페이지 · hero 영역</p>
-          <div className="mt-5 flex items-center gap-4">
-            <div className="grid h-14 w-14 shrink-0 place-items-center bg-white p-1.5">{logo}</div>
-            <div>
-              <p className="text-[16px] font-medium">{name}</p>
-              <p className="mt-1 text-[12px] font-normal text-white/80">{shortIntro}</p>
-              <p className="mt-3 text-[11px] font-medium text-white/65">{metaLine}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function SectionCard({
   id,
   title,

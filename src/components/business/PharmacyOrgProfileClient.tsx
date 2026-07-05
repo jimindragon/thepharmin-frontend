@@ -4,7 +4,7 @@ import { Check, ExternalLink, Info, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ExposurePreview, FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import { getPharmacyTypeLabel, PHARMACY_TYPE_DEFAULT_FEATURE_ID, PHARMACY_TYPE_LOCKED_FEATURE_ID, pharmacyTypeLabels } from "@/config/companyTypes";
 import { readSignupPharmacyType } from "@/config/businessSignup";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -309,19 +309,6 @@ export function PharmacyOrgProfileClient() {
             </button>
             <p className="mt-2 text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">[제목 + 내용] 자유 구성 (예: 근무 형태 / 교육 루틴 / 주차·교통). 상세 페이지 &apos;약국 특징&apos;에 그대로 노출됩니다.</p>
           </div>
-
-          <ExposurePreview
-            name={profile.pharmacyName}
-            shortIntro={profile.shortIntro}
-            metaLine={`${profile.foundedYear} 개국`}
-            logo={
-              profile.logoUrl ? (
-                <img src={profile.logoUrl} alt="" className="h-full w-full object-contain p-1" />
-              ) : (
-                <span className="text-[13px] font-bold text-[#4f5968]">{profile.pharmacyName.slice(0, 2)}</span>
-              )
-            }
-          />
         </SectionCard>
 
         <SectionCard id="work-environment" title="근무·조제 환경" description="약국 상세 요약 표에 노출되고, 공고 등록 시 &apos;약국 근무 환경&apos; 섹션에 기본값으로 채워집니다." status="선택 사항">

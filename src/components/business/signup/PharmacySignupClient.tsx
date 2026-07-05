@@ -99,9 +99,6 @@ function PharmacyVerificationStep({
             accept=".pdf,.jpg,.jpeg,.png"
             onFileSelected={(name) => onChange("pharmacistLicenseFileName", name)}
           />
-          <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">
-            사업자등록번호, 약사면허번호, 요양기관번호를 기준으로 확인하며, 약국 개설등록증 제출은 필요하지 않습니다.
-          </p>
         </div>
 
         <div className="space-y-2">
