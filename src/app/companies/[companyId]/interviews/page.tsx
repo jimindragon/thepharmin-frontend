@@ -37,6 +37,9 @@ export default async function CompanyInterviewsPage({ params, searchParams }: Co
       helpfulCount: review.helpfulCount,
       interviewDifficulty: review.interviewDifficulty,
       interviewFormat: review.interviewFormat,
+      applyYear: review.applyYear,
+      applyHalf: review.applyHalf,
+      isInterview: true,
     }));
 
   const body = <CompanyInterviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />;

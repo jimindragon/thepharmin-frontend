@@ -9,6 +9,9 @@ export interface ReviewFeedItem {
   writtenAt: string;
   tags: string[];
   outcome?: "합격" | "불합격";
+  /** 지원(면접)한 시기. writtenAt(작성일)과 별개 — 값이 있을 때만 하단에 한 줄 노출한다. 면접 후기 피드에서만 채워진다 */
+  applyYear?: number;
+  applyHalf?: "상반기" | "하반기";
   /** 게이팅 대상이 아니면 항상 문자열, 잠긴 경우에만 서버에서부터 null로 내려온다 */
   preview: string | null;
 }
@@ -26,6 +29,7 @@ interface ReviewFeedCardProps {
 /** /companies 허브의 "최근 면접 후기" 카드와 같은 수준의 마크업을 전체 기업 크로스 피드(면접 후기/기업 리뷰)에서 재사용한다 */
 export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lockedCtaHref, onLockedCtaClick }: ReviewFeedCardProps) {
   const locked = review.preview === null;
+  const applyLabel = review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} 면접` : null;
 
   return (
     <article className="relative border border-[#e5e9ef] bg-white p-4">
@@ -46,6 +50,7 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
       <p className="mt-1.5 text-[12px] font-normal text-[#8a95a5]">
         {review.jobRole} · {review.writtenAt}
       </p>
+      {applyLabel ? <p className="mt-1 text-[11px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       {review.tags.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {review.tags.map((tag) => (

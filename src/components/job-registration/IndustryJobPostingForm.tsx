@@ -213,7 +213,7 @@ function ToggleRow({
 
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
-const LBL = "block mb-1.5 text-[13px] font-medium text-[#2f3845]";
+const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
 const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 
@@ -383,7 +383,7 @@ export function IndustryJobPostingForm() {
 
           {/* 모집 직무 — 2단계 선택기 */}
           <div className="mb-5" ref={setRef("selectedJobs")}>
-            <p className="mb-2 text-[13px] font-medium text-[#2f3845]">
+            <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
               모집 직무{REQ}
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">1차 분류를 고르고 세부 직무를 선택하세요.</span>
             </p>

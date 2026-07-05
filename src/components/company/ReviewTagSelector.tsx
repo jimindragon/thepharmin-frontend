@@ -17,6 +17,8 @@ interface ReviewTagSelectorProps {
 /** 기업 리뷰·면접 후기 작성 화면에서 재사용할 태그 선택 UI. OptionChip을 그대로 재사용하고 최대 선택 개수 제한만 얹는다. */
 export function ReviewTagSelector({ track, reviewType, selected, onToggle, max = REVIEW_TAG_MAX }: ReviewTagSelectorProps) {
   const groups = getReviewTagGroups(track, reviewType);
+  const midpoint = Math.ceil(groups.length / 2);
+  const columns = [groups.slice(0, midpoint), groups.slice(midpoint)];
 
   return (
     <div className="grid gap-4">
@@ -26,18 +28,24 @@ export function ReviewTagSelector({ track, reviewType, selected, onToggle, max =
           선택 {selected.length} / {max}
         </p>
       </div>
-      {groups.map((group) => (
-        <div key={group.category} className="grid gap-2">
-          <p className="text-[12px] font-medium text-[#8a95a5]">{group.category}</p>
-          <div className="flex flex-wrap gap-2">
-            {group.tags.map((tag) => {
-              const active = selected.includes(tag);
-              const disabled = selected.length >= max && !active;
-              return <OptionChip key={tag} option={{ id: tag, label: tag }} active={active} disabled={disabled} onClick={() => onToggle(tag)} />;
-            })}
+      <div className="grid grid-cols-2 gap-x-12 gap-y-6 max-[640px]:grid-cols-1">
+        {columns.map((columnGroups, columnIndex) => (
+          <div key={columnIndex} className="grid content-start gap-6">
+            {columnGroups.map((group) => (
+              <div key={group.category}>
+                <p className="mb-3 text-[14px] font-semibold text-[#4a5361]">{group.category}</p>
+                <div className="flex flex-wrap gap-2">
+                  {group.tags.map((tag) => {
+                    const active = selected.includes(tag);
+                    const disabled = selected.length >= max && !active;
+                    return <OptionChip key={tag} option={{ id: tag, label: tag }} active={active} disabled={disabled} onClick={() => onToggle(tag)} />;
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

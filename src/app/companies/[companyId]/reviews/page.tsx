@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell";
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
-import { LinkButton } from "@/components/ui/Button";
+import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { companyReviews } from "@/data/companies";
 import { getCompanyProfile } from "@/data/companyProfiles";
 
 interface CompanyReviewsPageProps {
   params: Promise<{ companyId: string }>;
+  searchParams: Promise<{ guest?: string }>;
 }
 
 export const metadata: Metadata = {
@@ -14,9 +15,12 @@ export const metadata: Metadata = {
 };
 
 /** 기업 리뷰(회사 후기)는 이 앱 어디에도 열람 게이팅이 없다 — 1A와 동일한 기준으로 항상 원문을 내려준다.
- * KeywordReview 기반 요약 섹션(긍정/개선 키워드 포함)은 제거됐다 — companyReviews 원문 목록 하나가 이 페이지의 전체 내용이다. */
-export default async function CompanyReviewsPage({ params }: CompanyReviewsPageProps) {
+ * KeywordReview 기반 요약 섹션(긍정/개선 키워드 포함)은 제거됐다 — companyReviews 원문 목록 하나가 이 페이지의 전체 내용이다.
+ * 작성 카드의 로그인 분기만 interviews/page.tsx와 동일한 ?guest=true 컨벤션을 재사용한다 — 본문 열람 게이팅과는 무관하다. */
+export default async function CompanyReviewsPage({ params, searchParams }: CompanyReviewsPageProps) {
   const { companyId } = await params;
+  const sp = await searchParams;
+  const isLoggedIn = sp.guest !== "true";
   const profile = getCompanyProfile(companyId);
 
   const items = companyReviews
@@ -30,30 +34,16 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
       authorStatus: review.authorStatus,
       writtenAt: review.writtenAt,
       helpfulCount: review.helpfulCount,
+      applyYear: review.applyYear,
+      applyHalf: review.applyHalf,
     }));
 
-  const writeHref = `/companies/${companyId}/reviews/new`;
-
-  const body = items.length ? (
-    <>
-      <div className="mt-6 flex justify-end">
-        <LinkButton href={writeHref} variant="gradient" size="sm">
-          리뷰 작성
-        </LinkButton>
-      </div>
-      <div className="mt-3 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
-        {items.map((item) => (
-          <CompanyReviewCard key={item.id} review={item} />
-        ))}
-      </div>
-    </>
-  ) : (
-    <div className="mt-6 flex h-[160px] flex-col items-center justify-center gap-2 border border-[#e1e8ef] bg-[#fbfcfd] text-center">
-      <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 현직자 리뷰가 없습니다.</p>
-      <p className="text-[13px] font-normal text-[#8791a0]">새로운 리뷰가 등록되면 이 페이지에서 확인할 수 있습니다.</p>
-      <LinkButton href={writeHref} variant="gradient" size="sm" className="mt-1">
-        첫 리뷰 작성하기
-      </LinkButton>
+  const body = (
+    <div className="mt-3 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+      <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
+      {items.map((item) => (
+        <CompanyReviewCard key={item.id} review={item} />
+      ))}
     </div>
   );
 

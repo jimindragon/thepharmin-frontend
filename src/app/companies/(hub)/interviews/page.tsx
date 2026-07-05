@@ -33,6 +33,8 @@ export default async function CompaniesInterviewsPage({ searchParams }: Companie
         writtenAt: review.writtenAt,
         tags: review.tags,
         outcome: review.outcome,
+        applyYear: review.applyYear,
+        applyHalf: review.applyHalf,
         preview: canReadInterviewReviews ? review.content : null,
       };
     });

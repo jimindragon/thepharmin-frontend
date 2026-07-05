@@ -72,7 +72,7 @@ export function ToggleChip({
 
 export function FieldLabel({ children, required = false }: { children: ReactNode; required?: boolean }) {
   return (
-    <label className="text-[13px] font-medium text-[#2f3845]">
+    <label className="text-[14px] font-medium text-[#2f3845]">
       {children}
       {required ? <span className="ml-1 text-danger">*</span> : null}
     </label>

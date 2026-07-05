@@ -20,6 +20,11 @@ export interface CompanyReviewCardItem {
   interviewDifficulty?: "상" | "중" | "하";
   /** 면접 후기에만 존재. 값이 있을 때만 난이도·유형 배지를 그린다 */
   interviewFormat?: string;
+  /** 지원(면접)한 시기. writtenAt(작성일)과 별개 — 값이 있을 때만 하단에 한 줄 노출한다 */
+  applyYear?: number;
+  applyHalf?: "상반기" | "하반기";
+  /** "지원"/"면접" 표현 분기용 — 면접 후기 목록에서만 true로 내려온다 */
+  isInterview?: boolean;
 }
 
 interface CompanyReviewCardProps {
@@ -40,6 +45,8 @@ export function CompanyReviewCard({ review, lockedMessage, lockedCtaLabel, locke
   const interviewMeta = [review.interviewDifficulty ? `난이도 ${review.interviewDifficulty}` : null, review.interviewFormat ?? null]
     .filter((part): part is string => Boolean(part))
     .join(" · ");
+  const applyLabel =
+    review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} ${review.isInterview ? "면접" : "지원"}` : null;
 
   return (
     <article className="border border-[#e5e9ef] bg-white p-4">
@@ -74,6 +81,7 @@ export function CompanyReviewCard({ review, lockedMessage, lockedCtaLabel, locke
       ) : (
         <p className="mt-3 text-[13px] font-normal leading-[1.7] text-[#3f4855]">{review.content}</p>
       )}
+      {applyLabel ? <p className="mt-2 text-[11px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       <div className="mt-3 flex items-center justify-between border-t border-[#edf1f5] pt-3 text-[11px]">
         <div className="flex items-center gap-3">
           <button

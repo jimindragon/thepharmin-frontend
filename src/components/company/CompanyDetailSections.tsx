@@ -402,6 +402,20 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
         <Link href={`/companies/${profile.id}/reviews`} className="mt-3 inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]">
           후기 페이지 보기
         </Link>
+        <div className="mt-2 grid gap-2">
+          <Link
+            href={`/companies/${profile.id}/reviews/new`}
+            className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+          >
+            현직자 리뷰 작성
+          </Link>
+          <Link
+            href={`/companies/${profile.id}/interviews/new`}
+            className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+          >
+            면접 후기 작성
+          </Link>
+        </div>
       </section>
     </aside>
   );
@@ -701,6 +715,20 @@ function InstitutionReviewMoreCard({ companyId }: { companyId: string }) {
       >
         후기 페이지 보기
       </Link>
+      <div className="mt-2 grid gap-2">
+        <Link
+          href={`/companies/${companyId}/reviews/new`}
+          className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+        >
+          현직자 리뷰 작성
+        </Link>
+        <Link
+          href={`/companies/${companyId}/interviews/new`}
+          className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+        >
+          면접 후기 작성
+        </Link>
+      </div>
     </section>
   );
 }

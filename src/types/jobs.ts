@@ -617,6 +617,9 @@ export interface CompanyReview {
     | "임원 면접"
     | "실무진·임원 순차 면접"
     | "직무 과제 후 면접";
+  /** 지원(면접)한 시기. writtenAt(작성일)과 별개 개념 — 리뷰·면접후기 둘 다 옵셔널로 받는다 */
+  applyYear?: number;
+  applyHalf?: "상반기" | "하반기";
 }
 
 export interface ReviewAccessState {

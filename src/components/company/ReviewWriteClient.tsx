@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { FieldLabel, Segmented, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import { Button } from "@/components/ui/Button";
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
@@ -28,6 +29,8 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
 
   const [jobRole, setJobRole] = useState("");
   const [authorStatus, setAuthorStatus] = useState<"현직자" | "전직자">("현직자");
+  const [applyYear, setApplyYear] = useState<number | "">("");
+  const [applyHalf, setApplyHalf] = useState<"상반기" | "하반기" | "">("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [content, setContent] = useState("");
   const [outcome, setOutcome] = useState<"합격" | "불합격" | "">("");
@@ -35,9 +38,10 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const [interviewFormat, setInterviewFormat] = useState<InterviewFormat | "">("");
   const [showToast, setShowToast] = useState(false);
 
-  const title = isInterview ? `${companyName} 면접 후기 작성` : `${companyName} 현직자 리뷰 작성`;
+  const titleLabel = isInterview ? "면접 후기 작성" : "현직자 리뷰 작성";
   const contentGuide = isInterview ? "200~350자 권장" : "100~150자 권장";
   const listHref = isInterview ? `/companies/${companyId}/interviews` : `/companies/${companyId}/reviews`;
+  const applyYearOptions = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - index);
 
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) => {
@@ -56,10 +60,13 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
 
   return (
     <div className="grid gap-5 py-8">
-      <h1 className="text-[24px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h1>
+      <h1 className="flex items-baseline gap-3 text-[24px] font-bold tracking-[-0.02em] text-[#1f2733]">
+        {titleLabel}
+        <span className="border-l border-[#dfe5ec] pl-3 text-[20px] font-medium text-[#8791a0]">{companyName}</span>
+      </h1>
 
       <SectionCard title="기본 정보" description="작성자 정보를 입력해주세요.">
-        <div className="grid gap-5 max-[640px]:grid-cols-1 grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
           <div>
             <FieldLabel>직무</FieldLabel>
             <div className="mt-1.5">
@@ -84,6 +91,41 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
             </div>
           </div>
         </div>
+        {isInterview ? (
+          <div className="mt-5 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
+            <div>
+              <FieldLabel>면접 시기</FieldLabel>
+              <div className="relative mt-1.5">
+                <select
+                  value={applyYear}
+                  onChange={(event) => setApplyYear(event.target.value ? Number(event.target.value) : "")}
+                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                >
+                  <option value="">선택 안 함</option>
+                  {applyYearOptions.map((year) => (
+                    <option key={year} value={year}>
+                      {year}년
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
+              </div>
+            </div>
+            <div>
+              <FieldLabel>반기</FieldLabel>
+              <div className="mt-1.5">
+                <Segmented<"상반기" | "하반기" | "">
+                  value={applyHalf}
+                  options={[
+                    { id: "상반기", label: "상반기" },
+                    { id: "하반기", label: "하반기" },
+                  ]}
+                  onChange={(value) => setApplyHalf((prev) => (prev === value ? "" : value))}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </SectionCard>
 
       <SectionCard title="태그 선택" description={`가장 가깝게 느낀 항목을 최대 ${REVIEW_TAG_MAX}개까지 골라주세요.`}>
@@ -107,7 +149,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
 
       {isInterview ? (
         <SectionCard title="면접 정보" description="선택 입력 항목입니다.">
-          <div className="grid gap-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
             <div>
               <FieldLabel>합격 여부</FieldLabel>
               <div className="mt-1.5">
@@ -133,18 +175,21 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
             </div>
             <div>
               <FieldLabel>면접 유형</FieldLabel>
-              <select
-                value={interviewFormat}
-                onChange={(event) => setInterviewFormat(event.target.value as InterviewFormat | "")}
-                className="mt-1.5 h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
-              >
-                <option value="">선택 안 함</option>
-                {interviewFormatOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <div className="relative mt-1.5">
+                <select
+                  value={interviewFormat}
+                  onChange={(event) => setInterviewFormat(event.target.value as InterviewFormat | "")}
+                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                >
+                  <option value="">선택 안 함</option>
+                  {interviewFormatOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
+              </div>
             </div>
           </div>
         </SectionCard>

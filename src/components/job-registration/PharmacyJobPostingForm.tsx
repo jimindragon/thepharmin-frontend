@@ -135,7 +135,7 @@ const MAX_KW = 8;
 
 const IN  = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
-const LBL = "block mb-1.5 text-[13px] font-medium text-[#2f3845]";
+const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
 const REQ  = <span className="ml-1 text-danger" aria-hidden>*</span>;
 
