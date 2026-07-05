@@ -60,6 +60,8 @@ export interface CompanyProfile {
   departments?: string;
   /** 병원 트랙 전용. 미등록 시 "전문약사 보유" 블록 자체를 숨긴다 */
   specialistPharmacists?: string[];
+  /** 병원 트랙 전용. pharmacyDutyAreaOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다. 미등록 시 "약제부 업무 영역" 블록 자체를 숨긴다 */
+  pharmacyDutyAreas?: string[];
   /** 약국 트랙 전용 */
   pharmacySoftware?: string;
   /** 약국 트랙 전용 */

@@ -8,6 +8,7 @@ import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/com
 import { getHospitalOperatorLabel, getHospitalTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { businessCompanyManager, type FileStatus } from "@/data/businessCompanyProfile";
 import { hospitalKeywordOptions, initialHospitalOrgProfile, specialistPharmacistOptions, type HospitalOrgProfile, type OrgFeatureItem } from "@/data/businessOrgProfile";
+import { pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
 import type { HospitalOperator, HospitalType } from "@/types/jobs";
 
 const MAX_KEYWORDS = 6;
@@ -48,6 +49,15 @@ export function HospitalOrgProfileClient() {
     }));
   };
 
+  const toggleDutyArea = (id: string) => {
+    setProfile((current) => ({
+      ...current,
+      pharmacyDutyAreas: current.pharmacyDutyAreas.includes(id)
+        ? current.pharmacyDutyAreas.filter((x) => x !== id)
+        : [...current.pharmacyDutyAreas, id],
+    }));
+  };
+
   const updateFeatureItem = (id: string, key: "label" | "text", value: string) => {
     setProfile((current) => ({
       ...current,
@@ -68,10 +78,9 @@ export function HospitalOrgProfileClient() {
     window.setTimeout(() => setSaved(false), 2200);
   };
 
-  const isSpecialty = profile.hospitalType === "specialty";
-  const basicComplete = Boolean(
-    profile.address && profile.foundedYear && profile.phone && profile.email && (!isSpecialty || profile.specialtyLabel),
-  );
+  /** "hospital"(병원) 유형만 보건복지부 지정 전문병원 대상이라 이 필드를 보여준다 — 선택 입력이라 완료 여부엔 영향 없음 */
+  const showSpecialtyField = profile.hospitalType === "hospital";
+  const basicComplete = Boolean(profile.address && profile.foundedYear && profile.phone && profile.email);
   const profileComplete = Boolean(profile.shortIntro && profile.features.length > 0);
   const accountVerificationItems = [
     { label: "이메일 인증", detail: businessCompanyManager.email, done: true },
@@ -162,9 +171,9 @@ export function HospitalOrgProfileClient() {
                 onChange={(value) => updateProfile("hospitalOperator", value)}
               />
             </div>
-            {isSpecialty ? (
+            {showSpecialtyField ? (
               <div className="mt-5 max-w-[320px] space-y-2 border-l-2 border-[#111111] pl-4">
-                <FieldLabel required>전문 분야</FieldLabel>
+                <FieldLabel>전문 분야</FieldLabel>
                 <TextInput value={profile.specialtyLabel} onChange={(value) => updateProfile("specialtyLabel", value)} placeholder="예: 정형외과" />
                 <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">보건복지부 지정 전문병원인 경우에만 선택해 주세요.</p>
               </div>
@@ -324,6 +333,22 @@ export function HospitalOrgProfileClient() {
               </div>
               <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
             </div>
+            <div className="space-y-2">
+              <FieldLabel>
+                약제부 업무 영역 <span className="font-normal text-[#9aa3af]">(복수 선택)</span>
+              </FieldLabel>
+              <div className="flex flex-wrap gap-2">
+                {pharmacyDutyAreaOptions.map((option) => (
+                  <ToggleChip
+                    key={option.id}
+                    label={option.label}
+                    selected={profile.pharmacyDutyAreas.includes(option.id)}
+                    onClick={() => toggleDutyArea(option.id)}
+                  />
+                ))}
+              </div>
+              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
+            </div>
           </div>
         </SectionCard>
 
@@ -345,38 +370,21 @@ export function HospitalOrgProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="account" title="계정 정보" description="계정 인증 상태와 공개 설정을 관리합니다." status="작성 중">
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
-            <div>
-              <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
-              <div className="mt-3 space-y-2">
-                {accountVerificationItems.map((item) => (
-                  <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
-                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-[11px] text-white">
-                      <Check size={13} />
-                    </span>
-                    <span>
-                      <span className="block text-[13px] font-medium text-[#303946]">{item.label}</span>
-                      <span className="mt-1 block text-[12px] font-normal text-[#7b8491]">{item.detail}</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">공개 설정</h3>
-              <div className="mt-3 space-y-2">
-                {[
-                  ["병원 페이지를 공개합니다.", profile.visibilitySettings.publicCompanyPage],
-                  ["공고에 병원 정보를 함께 노출합니다.", profile.visibilitySettings.exposeOnJobs],
-                  ["검색 결과에 병원 프로필을 노출합니다.", profile.visibilitySettings.exposeOnSearch],
-                ].map(([label, checked]) => (
-                  <label key={String(label)} className="flex min-h-[48px] items-center gap-3 border border-[#dfe4ea] bg-white px-4">
-                    <input type="checkbox" defaultChecked={Boolean(checked)} className="h-4 w-4 accent-[#111111]" />
-                    <span className="text-[13px] font-medium text-[#303946]">{label}</span>
-                  </label>
-                ))}
-              </div>
+        <SectionCard id="account" title="계정 정보" description="계정 인증 상태를 관리합니다." status="작성 중">
+          <div>
+            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
+            <div className="mt-3 space-y-2">
+              {accountVerificationItems.map((item) => (
+                <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-[11px] text-white">
+                    <Check size={13} />
+                  </span>
+                  <span>
+                    <span className="block text-[13px] font-medium text-[#303946]">{item.label}</span>
+                    <span className="mt-1 block text-[12px] font-normal text-[#7b8491]">{item.detail}</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </SectionCard>

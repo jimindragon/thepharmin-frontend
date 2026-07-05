@@ -387,38 +387,21 @@ export function PharmacyOrgProfileClient() {
           </div>
         </SectionCard>
 
-        <SectionCard id="account" title="계정 정보" description="계정 인증 상태와 공개 설정을 관리합니다." status="작성 중">
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5 max-[900px]:grid-cols-1">
-            <div>
-              <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
-              <div className="mt-3 space-y-2">
-                {accountVerificationItems.map((item) => (
-                  <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
-                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-[11px] text-white">
-                      <Check size={13} />
-                    </span>
-                    <span>
-                      <span className="block text-[13px] font-medium text-[#303946]">{item.label}</span>
-                      <span className="mt-1 block text-[12px] font-normal text-[#7b8491]">{item.detail}</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">공개 설정</h3>
-              <div className="mt-3 space-y-2">
-                {[
-                  ["약국 페이지를 공개합니다.", profile.visibilitySettings.publicCompanyPage],
-                  ["공고에 약국 정보를 함께 노출합니다.", profile.visibilitySettings.exposeOnJobs],
-                  ["검색 결과에 약국 프로필을 노출합니다.", profile.visibilitySettings.exposeOnSearch],
-                ].map(([label, checked]) => (
-                  <label key={String(label)} className="flex min-h-[48px] items-center gap-3 border border-[#dfe4ea] bg-white px-4">
-                    <input type="checkbox" defaultChecked={Boolean(checked)} className="h-4 w-4 accent-[#111111]" />
-                    <span className="text-[13px] font-medium text-[#303946]">{label}</span>
-                  </label>
-                ))}
-              </div>
+        <SectionCard id="account" title="계정 정보" description="계정 인증 상태를 관리합니다." status="작성 중">
+          <div>
+            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">계정 인증 상태</h3>
+            <div className="mt-3 space-y-2">
+              {accountVerificationItems.map((item) => (
+                <div key={item.label} className="flex items-start gap-3 border border-[#dfe4ea] bg-white px-4 py-3">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center border border-[#111111] bg-[#111111] text-[11px] text-white">
+                    <Check size={13} />
+                  </span>
+                  <span>
+                    <span className="block text-[13px] font-medium text-[#303946]">{item.label}</span>
+                    <span className="mt-1 block text-[12px] font-normal text-[#7b8491]">{item.detail}</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </SectionCard>

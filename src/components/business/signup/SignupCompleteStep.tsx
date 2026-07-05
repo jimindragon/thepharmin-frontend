@@ -35,7 +35,9 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
         <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">가입이 완료되었습니다</h1>
         <p className="mt-3 text-[14px] font-normal leading-[1.7] text-[#68717e]">
           {institutionName ? `${institutionName}, ` : ""}
-          {orgTrackCompleteLabel[orgTrack]}으로 가입되었습니다. 상세 정보는 {infoLabel}에서 입력할 수 있습니다.
+          {orgTrackCompleteLabel[orgTrack]}으로 가입되었습니다.
+          <br />
+          상세 정보는 {infoLabel}에서 입력할 수 있습니다.
         </p>
         <div className="mt-8 flex flex-col gap-2.5">
           <LinkButton href="/business/company/profile" variant="gradient" className="w-full">

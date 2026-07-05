@@ -555,10 +555,11 @@ export interface Job {
 export type PharmacyType = "general" | "clinic-floor" | "clinic-front" | "hospital-front";
 
 /**
- * Company(병원) 기관 분류. 검색 필터의 hospitalTypeOptions(4종, 기관 분류와 다른 용도)와는 별개다 —
- * 필터 옵션은 이 타입 신설과 무관하게 그대로 유지한다. "specialty"는 필터에는 노출하지 않는다.
+ * Company(병원) 기관 분류이자 공고 필터 hospitalTypeOptions/Job.hospitalTypeId(s)와 공유하는 단일 6종 분류.
+ * 옛 "specialty"(전문병원)는 법적으로 병원급 의료기관이라 "hospital"로 흡수됐다 — 전문분야 표기는
+ * Company.specialtyLabel로 별도 유지(getHospitalCombinedTypeLabel 참고).
  */
-export type HospitalType = "tertiary" | "general" | "hospital" | "specialty" | "long-term";
+export type HospitalType = "tertiary" | "general" | "long-term" | "psychiatric" | "hospital" | "public-health";
 
 /** Company(병원)의 운영 주체. */
 export type HospitalOperator = "private" | "public" | "military" | "university";
@@ -587,7 +588,7 @@ export interface Company {
   hospitalType?: HospitalType;
   /** track === "hospital"인 기관만 설정 */
   hospitalOperator?: HospitalOperator;
-  /** hospitalType이 "specialty"일 때만 의미 있는 전문 분야명 (예: "정형외과") */
+  /** hospitalType이 "hospital"(보건복지부 지정 전문병원)일 때만 의미 있는 전문 분야명 (예: "정형외과") */
   specialtyLabel?: string;
 }
 

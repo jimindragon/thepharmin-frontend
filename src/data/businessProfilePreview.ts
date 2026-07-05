@@ -128,6 +128,7 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     dutySystem: org.dutySystem || undefined,
     departments: org.departments || undefined,
     specialistPharmacists: org.specialistPharmacists.length ? org.specialistPharmacists : undefined,
+    pharmacyDutyAreas: org.pharmacyDutyAreas.length ? org.pharmacyDutyAreas : undefined,
     sidebar: {
       interestedCount: "-",
       reviewKeywordCount: "-",

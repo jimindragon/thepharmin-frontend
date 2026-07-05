@@ -17,7 +17,8 @@ import {
   Share2,
   Sparkles,
 } from "lucide-react";
-import type { Company, HospitalDepartment, Job } from "@/types/jobs";
+import type { Company, HospitalDepartment, HospitalType, Job } from "@/types/jobs";
+import { hospitalTypeLabels } from "@/config/companyTypes";
 import { formatHeadcount } from "@/utils/headcount";
 import { formatHospitalSalary } from "@/utils/salary";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
@@ -54,15 +55,8 @@ interface SectionItem {
   visible: boolean;
 }
 
-const HOSPITAL_TYPE_LABELS: Record<string, string> = {
-  tertiary_general_hospital: "상급종합병원",
-  general_hospital: "종합병원",
-  hospital: "병원",
-  long_term_care_hospital: "요양병원",
-};
-
 function hospitalTypeLabel(id?: string): string {
-  return (id && HOSPITAL_TYPE_LABELS[id]) ?? "병원";
+  return (id && hospitalTypeLabels[id as HospitalType]) ?? "병원";
 }
 
 function shiftSummary(ids?: string[]): string {

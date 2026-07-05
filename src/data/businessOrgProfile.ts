@@ -124,8 +124,9 @@ export interface HospitalOrgProfile {
   institutionCode: string;
   businessLicenseFile: { name: string; status: FileStatus };
   // 병원 정보 — 유형
-  /** 공고 등록 프리필 연동은 이번 구현 범위 아님. 향후 연동 시 "specialty"는 공고 필터의 사업장 분류(4종)에 없으므로 "hospital"로 매핑해야 한다 */
+  /** 공고 등록 프리필 연동은 이번 구현 범위 아님. hospitalType은 공고 필터의 사업장 분류(hospitalTypeOptions)와 동일한 slug를 쓴다 */
   hospitalType: HospitalType;
+  /** hospitalType이 "hospital"(병원)일 때만 노출되는 보건복지부 지정 전문병원 분야명. 선택 입력 */
   specialtyLabel: string;
   hospitalOperator: HospitalOperator;
   // 병원 정보 — 기본 사항·연락처
@@ -147,6 +148,9 @@ export interface HospitalOrgProfile {
   annualClinicalTrials: string;
   clinicalTrialCenterOperating: boolean;
   specialistPharmacists: string[];
+  /** 약제부 업무 영역(선택, 다중선택). pharmacyDutyAreaOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다.
+   * specialistPharmacists(전문약사 자격)와는 별개 개념(업무 vs 자격)이라 공존한다. */
+  pharmacyDutyAreas: string[];
   visibilitySettings: OrgVisibilitySettings;
 }
 
@@ -156,7 +160,6 @@ export const requiredHospitalProfileFields: Array<{ label: string; sectionId: st
   { label: "설립 연도", sectionId: "hospital-info", missing: (p) => !p.foundedYear.trim() },
   { label: "대표 전화번호", sectionId: "hospital-info", missing: (p) => !p.phone.trim() },
   { label: "이메일", sectionId: "hospital-info", missing: (p) => !p.email.trim() },
-  { label: "전문 분야", sectionId: "hospital-info", missing: (p) => p.hospitalType === "specialty" && !p.specialtyLabel.trim() },
   { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
   { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
   { label: "기관 특징", sectionId: "profile", missing: (p) => p.features.length === 0 },
@@ -197,6 +200,7 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   annualClinicalTrials: "600건+",
   clinicalTrialCenterOperating: true,
   specialistPharmacists: ["감염", "종양", "정맥영양(TPN)"],
+  pharmacyDutyAreas: [],
   visibilitySettings: {
     publicCompanyPage: true,
     exposeOnJobs: true,

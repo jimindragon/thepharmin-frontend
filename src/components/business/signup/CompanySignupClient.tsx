@@ -176,7 +176,7 @@ export function CompanySignupClient() {
     >
       {step === 1 ? <OrgVerificationStep value={orgInfo} onChange={updateOrgInfo} onNext={() => setStep(2)} /> : null}
       {step === 2 ? (
-        <ManagerInfoStep value={managerInfo} onChange={updateManagerInfo} onBack={() => setStep(1)} onNext={() => setStep(3)} />
+        <ManagerInfoStep value={managerInfo} onChange={updateManagerInfo} onBack={() => setStep(1)} onNext={() => setStep(3)} isPharmacy={false} />
       ) : null}
       {step === 3 ? (
         <AccountCreationStep value={accountInfo} onChange={updateAccountInfo} onBack={() => setStep(2)} onSubmit={handleComplete} />

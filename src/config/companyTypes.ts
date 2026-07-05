@@ -14,9 +14,10 @@ export function getPharmacyTypeLabel(type: PharmacyType): string {
 export const hospitalTypeLabels: Record<HospitalType, string> = {
   tertiary: "상급종합병원",
   general: "종합병원",
-  hospital: "병원",
-  specialty: "전문병원",
   "long-term": "요양병원",
+  psychiatric: "정신병원",
+  hospital: "병원",
+  "public-health": "보건기관",
 };
 
 export function getHospitalTypeLabel(type: HospitalType): string {
@@ -36,10 +37,11 @@ export function getHospitalOperatorLabel(operator: HospitalOperator): string {
 
 /**
  * 병원 기관 분류 조합 렌더 규칙: operator가 "private"이면 유형 라벨만, 그 외엔 "{운영주체}·{유형}".
- * type이 "specialty"면 유형 라벨 자리에 specialtyLabel을 붙인 "{specialtyLabel} 전문병원"을 쓴다.
+ * type이 "hospital"(병원)이고 specialtyLabel이 있으면(보건복지부 지정 전문병원) 유형 라벨 자리에
+ * "{specialtyLabel} 전문병원"을 쓴다 — 전문병원은 병원급 의료기관이라 이 조합에서만 나타난다.
  */
 export function getHospitalCombinedTypeLabel(type: HospitalType, operator: HospitalOperator, specialtyLabel?: string): string {
-  const typeLabel = type === "specialty" && specialtyLabel ? `${specialtyLabel} 전문병원` : hospitalTypeLabels[type];
+  const typeLabel = type === "hospital" && specialtyLabel ? `${specialtyLabel} 전문병원` : hospitalTypeLabels[type];
   return operator === "private" ? typeLabel : `${hospitalOperatorLabels[operator]}·${typeLabel}`;
 }
 

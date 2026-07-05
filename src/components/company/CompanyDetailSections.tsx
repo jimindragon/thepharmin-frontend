@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 import { BriefcaseBusiness, ChevronRight, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp } from "lucide-react";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+import { pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { companies, companyReviews } from "@/data/companies";
 import { type CompanyDirectoryEntry, companyDirectory, getActiveJobCount, getActiveJobs, provinceFromAddress } from "@/data/companyDirectory";
@@ -737,11 +738,15 @@ function InstitutionReviewMoreCard({ companyId }: { companyId: string }) {
 /** [companyId] 개요 탭 사이드바 — 병원 트랙. 대표 제품 블록은 병원·약국 트랙에서 노출하지 않는다 */
 export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfile; company: Company }) {
   const related = relatedHospitals(profile.id, company.hospitalType);
+  const pharmacyDutyAreaLabels = (profile.pharmacyDutyAreas ?? [])
+    .map((id) => pharmacyDutyAreaOptions.find((option) => option.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
       <SidebarKeywordsCard keywords={profile.keywords} />
       <ChipListCard title="전문약사 보유" items={profile.specialistPharmacists ?? []} note="기관이 등록한 분야만 표시됩니다" />
+      <ChipListCard title="약제부 업무 영역" items={pharmacyDutyAreaLabels} />
       <RelatedInstitutionsCard result={related} />
       <InstitutionLocationCard address={profile.sidebar.address} />
       <InstitutionApplyCTACard companyId={profile.id} />

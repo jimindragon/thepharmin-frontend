@@ -162,7 +162,14 @@ export function PharmacySignupClient() {
     >
       {step === 1 ? <PharmacyVerificationStep value={pharmacyInfo} onChange={updatePharmacyInfo} onNext={() => setStep(2)} /> : null}
       {step === 2 ? (
-        <ManagerInfoStep value={managerInfo} onChange={updateManagerInfo} onBack={() => setStep(1)} onNext={() => setStep(3)} />
+        <ManagerInfoStep
+          value={managerInfo}
+          onChange={updateManagerInfo}
+          onBack={() => setStep(1)}
+          onNext={() => setStep(3)}
+          isPharmacy
+          representativePharmacistName={pharmacyInfo.representativePharmacistName}
+        />
       ) : null}
       {step === 3 ? (
         <AccountCreationStep value={accountInfo} onChange={updateAccountInfo} onBack={() => setStep(2)} onSubmit={handleComplete} />

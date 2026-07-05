@@ -266,7 +266,7 @@ function deriveResearchFacet(job: CalendarJob) {
 }
 
 function deriveHospitalTypeIds(job: CalendarJob) {
-  if (job.companyName.includes("서울대병원") || job.companyName.includes("아산병원")) return ["tertiary_general_hospital"];
+  if (job.companyName.includes("서울대병원") || job.companyName.includes("아산병원")) return ["tertiary"];
   return ["hospital"];
 }
 

@@ -588,7 +588,7 @@ export const companies: Company[] = [
     verified: false,
     description: "제일정형외과병원은 서울 강남구 청담동에 위치한 정형외과 전문병원입니다.",
     industry: "정형외과 전문병원",
-    hospitalType: "specialty",
+    hospitalType: "hospital",
     hospitalOperator: "private",
     specialtyLabel: "정형외과",
     employeeCount: "101~500명",
