@@ -36,6 +36,7 @@ import {
   careerLabel,
   deadlineDetail,
   deadlineLabel,
+  getCompanyDetailHref,
   getCoverImage,
   readSavedJobs,
   writeSavedJobs,
@@ -252,7 +253,7 @@ function LocationSection({ job }: { job: Job }) {
   );
 }
 
-function InstitutionInfo({ job }: { job: Job }) {
+function InstitutionInfo({ job, companyDetailHref }: { job: Job; companyDetailHref?: string }) {
   const typeLabel = hospitalTypeLabel(job.hospitalTypeId ?? job.hospitalTypeIds?.[0]);
 
   return (
@@ -261,7 +262,15 @@ function InstitutionInfo({ job }: { job: Job }) {
         <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} size="sm" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-[18px] font-bold text-[#252d39]">{job.company}</h3>
+            <h3 className="text-[18px] font-bold text-[#252d39]">
+              {companyDetailHref ? (
+                <Link href={companyDetailHref} className="hover:text-brand">
+                  {job.company}
+                </Link>
+              ) : (
+                job.company
+              )}
+            </h3>
             <VerifiedBadge label="병원 인증" />
           </div>
           {job.companyDescription && (
@@ -294,6 +303,7 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
   const applyUrl = applyHref(job);
   const canApply = !isClosed && Boolean(applyUrl);
   const coverImage = getCoverImage(job, company);
+  const companyDetailHref = getCompanyDetailHref(job.companyId);
 
   const overview = useMemo(
     () => [
@@ -426,10 +436,22 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
                 <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
+                      {companyDetailHref ? (
+                        <Link href={companyDetailHref} className="shrink-0" aria-label={`${job.company} 기업 상세 보기`}>
+                          <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
+                        </Link>
+                      ) : (
+                        <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={job.logoUrl} />
+                      )}
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          {companyDetailHref ? (
+                            <Link href={companyDetailHref} className="text-[15px] font-normal text-[#667181] hover:text-brand">
+                              {job.company}
+                            </Link>
+                          ) : (
+                            <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          )}
                           <VerifiedBadge label="병원 인증" />
                           <span className="rounded-[var(--radius)] border border-[#d8e3ed] bg-[#f0f6fc] px-2.5 py-1 text-[11px] font-medium text-[#3b5a7a]">
                             {hospitalTypeLabel(job.hospitalTypeId ?? job.hospitalTypeIds?.[0])}
@@ -619,7 +641,7 @@ export function HospitalJobDetailClient({ job, company, similarJobs }: HospitalJ
 
               {/* 기관 정보 */}
               <SectionShell id="institution" title="기관 정보">
-                <InstitutionInfo job={job} />
+                <InstitutionInfo job={job} companyDetailHref={companyDetailHref} />
               </SectionShell>
 
               {/* 비슷한 공고 */}

@@ -136,9 +136,13 @@ function CompanySearchBar({
   );
 }
 
+/** 클릭과 드래그-스크롤을 구분하는 이동 임계값(px). 이 값을 넘기 전까지는 포인터 캡처를 걸지 않아
+ *  단순 클릭 시 Link가 정상적으로 click 이벤트를 받도록 한다(캡처 즉시 호출 시 click이 컨테이너로 리타겟됨). */
+const DRAG_THRESHOLD_PX = 6;
+
 function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const dragState = useRef<{ startX: number; startScrollLeft: number } | null>(null);
+  const dragState = useRef<{ pointerId: number; startX: number; startScrollLeft: number; isDragging: boolean } | null>(null);
 
   useEffect(() => {
     const node = scrollRef.current;
@@ -158,17 +162,29 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
     if (event.pointerType !== "mouse") return;
     const node = scrollRef.current;
     if (!node) return;
-    dragState.current = { startX: event.clientX, startScrollLeft: node.scrollLeft };
-    node.setPointerCapture(event.pointerId);
+    dragState.current = { pointerId: event.pointerId, startX: event.clientX, startScrollLeft: node.scrollLeft, isDragging: false };
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const node = scrollRef.current;
-    if (!node || !dragState.current) return;
-    node.scrollLeft = dragState.current.startScrollLeft - (event.clientX - dragState.current.startX);
+    const state = dragState.current;
+    if (!node || !state) return;
+
+    const delta = event.clientX - state.startX;
+    if (!state.isDragging) {
+      if (Math.abs(delta) < DRAG_THRESHOLD_PX) return;
+      state.isDragging = true;
+      node.setPointerCapture(state.pointerId);
+    }
+    node.scrollLeft = state.startScrollLeft - delta;
   };
 
-  const endDrag = () => {
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const node = scrollRef.current;
+    const state = dragState.current;
+    if (node && state?.isDragging && node.hasPointerCapture(state.pointerId)) {
+      node.releasePointerCapture(state.pointerId);
+    }
     dragState.current = null;
   };
 

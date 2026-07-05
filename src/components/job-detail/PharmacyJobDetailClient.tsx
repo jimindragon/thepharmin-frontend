@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Bookmark, Copy, FileCheck, ListChecks, Phone, Share2, Sparkles } from "lucide-react";
 import type { Company, Job, JobWorkShift } from "@/types/jobs";
@@ -19,6 +20,7 @@ import {
   careerLabel,
   deadlineDetail,
   deadlineLabel,
+  getCompanyDetailHref,
   getCoverImage,
   readSavedJobs,
   writeSavedJobs,
@@ -196,6 +198,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
     .slice(0, 6);
 
   const applyUrl = `/jobs/${job.slug ?? job.id}/apply`;
+  const companyDetailHref = getCompanyDetailHref(job.companyId);
 
   const matchReasons = [
     "직무 일치",
@@ -218,10 +221,22 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                 <div className="px-7 pb-7 pt-7 max-[720px]:px-5">
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={company?.logoUrl ?? job.logoUrl} />
+                      {companyDetailHref ? (
+                        <Link href={companyDetailHref} className="shrink-0" aria-label={`${job.company} 기업 상세 보기`}>
+                          <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={company?.logoUrl ?? job.logoUrl} />
+                        </Link>
+                      ) : (
+                        <CompanyLogo name={job.company} logoText={job.logoText} logoUrl={company?.logoUrl ?? job.logoUrl} />
+                      )}
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          {companyDetailHref ? (
+                            <Link href={companyDetailHref} className="text-[15px] font-normal text-[#667181] hover:text-brand">
+                              {job.company}
+                            </Link>
+                          ) : (
+                            <p className="text-[15px] font-normal text-[#667181]">{job.company}</p>
+                          )}
                           {company?.verified ? <VerifiedBadge label="약사 인증" /> : null}
                         </div>
                       </div>
@@ -418,7 +433,15 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-[18px] font-bold text-[#252d39]">{company?.name ?? job.company}</h3>
+                      <h3 className="text-[18px] font-bold text-[#252d39]">
+                        {companyDetailHref ? (
+                          <Link href={companyDetailHref} className="hover:text-brand">
+                            {company?.name ?? job.company}
+                          </Link>
+                        ) : (
+                          company?.name ?? job.company
+                        )}
+                      </h3>
                       {company?.verified ? <VerifiedBadge label="약사 인증" /> : null}
                     </div>
                     <p className="mt-2 text-[14px] font-normal leading-[1.75] text-[#566171]">{company?.description}</p>

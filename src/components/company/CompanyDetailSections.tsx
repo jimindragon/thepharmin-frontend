@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 import { BriefcaseBusiness, ChevronRight, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp } from "lucide-react";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { companies, companyReviews } from "@/data/companies";
 import { type CompanyDirectoryEntry, companyDirectory, getActiveJobCount, getActiveJobs, provinceFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
@@ -752,11 +753,15 @@ export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfi
 /** [companyId] 개요 탭 사이드바 — 약국 트랙. 대표 제품 블록은 병원·약국 트랙에서 노출하지 않는다 */
 export function PharmacyAsidePanel({ profile, company }: { profile: CompanyProfile; company: Company }) {
   const related = relatedPharmacies(profile.id, company.address);
+  const pharmacyFeatureLabels = (profile.pharmacyFeatures ?? [])
+    .map((id) => pharmacyFeatureOptions.find((option) => option.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
       <SidebarKeywordsCard keywords={profile.keywords} />
       <ChipListCard title="조제 환경·장비" items={profile.dispensingEquipment ?? []} />
+      <ChipListCard title="조제 특성" items={pharmacyFeatureLabels} />
       <RelatedInstitutionsCard result={related} />
       <InstitutionLocationCard address={profile.sidebar.address} />
       <InstitutionApplyCTACard companyId={profile.id} />

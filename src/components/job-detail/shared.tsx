@@ -11,6 +11,7 @@ import { getHospitalJobCoverImage } from "@/utils/hospitalImage";
 import { getResearchJobCoverImage } from "@/utils/researchImage";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { companyLogos } from "@/config/companyImages";
+import { companyDirectory } from "@/data/companyDirectory";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
 /**
@@ -77,6 +78,12 @@ export function deadlineDetail(job: Job) {
   }
 
   return job.deadlineDate;
+}
+
+/** companyId를 기업 상세 링크로 바꾼다. 프로필이 없는 기업은 companyDirectory.detailHref가 /reviews로 폴백하므로 여기서도 같은 값을 그대로 쓴다. 매칭되는 기업이 없으면 undefined를 반환해 호출부가 링크 없이 렌더할 수 있게 한다. */
+export function getCompanyDetailHref(companyId?: string) {
+  if (!companyId) return undefined;
+  return companyDirectory.find((entry) => entry.id === companyId)?.detailHref;
 }
 
 export function getCoverImage(job: Job, company: Company | null) {

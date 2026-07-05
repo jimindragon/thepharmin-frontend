@@ -47,6 +47,7 @@ import {
   careerLabel,
   deadlineDetail,
   deadlineLabel,
+  getCompanyDetailHref,
   getCoverImage,
   readSavedJobs,
   writeSavedJobs,
@@ -613,6 +614,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
   const applyUrl = applyHref(job);
   const canApply = !isClosed && Boolean(applyUrl);
   const coverImage = getCoverImage(job, company);
+  const companyDetailHref = company ? (getCompanyDetailHref(company.id) ?? `/companies/${company.id}`) : undefined;
 
   const overview = useMemo(
     () => [
@@ -761,8 +763,8 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                   {/* 상단 행: 로고+회사 정보(좌) / 저장·공유(우) */}
                   <div className="flex items-start justify-between gap-5 max-[720px]:flex-col">
                     <div className="flex items-center gap-4">
-                      {company ? (
-                        <Link href={`/companies/${company.id}`} className="shrink-0" aria-label={`${job.company} 기업 상세 보기`}>
+                      {companyDetailHref ? (
+                        <Link href={companyDetailHref} className="shrink-0" aria-label={`${job.company} 기업 상세 보기`}>
                           <CompanyLogo
                             name={company?.name ?? job.company}
                             logoText={company?.logoText ?? job.logoText}
@@ -774,8 +776,8 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                       )}
                       <div className="flex min-w-0 flex-col items-start gap-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          {company ? (
-                            <Link href={`/companies/${company.id}`} className="text-[15px] font-normal text-[#667181] hover:text-brand">
+                          {companyDetailHref ? (
+                            <Link href={companyDetailHref} className="text-[15px] font-normal text-[#667181] hover:text-brand">
                               {job.company}
                             </Link>
                           ) : (
