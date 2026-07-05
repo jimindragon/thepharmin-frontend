@@ -3,7 +3,7 @@
 import { Info } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { FieldLabel, Segmented, TextInput } from "@/components/business/BusinessFormControls";
+import { FieldLabel, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
 import { SignupStepShell } from "@/components/business/signup/SignupStepShell";
@@ -11,7 +11,8 @@ import { ManagerInfoStep, emptyManagerInfo, type ManagerInfo } from "@/component
 import { AccountCreationStep, emptyAccountCreationInfo, type AccountCreationInfo } from "@/components/business/signup/AccountCreationStep";
 import { SignupCompleteStep } from "@/components/business/signup/SignupCompleteStep";
 import { getPharmacyTypeLabel, pharmacyTypeLabels } from "@/config/companyTypes";
-import { writeSignupOrgTrack, writeSignupPharmacyType } from "@/config/businessSignup";
+import { writeSignupOrgTrack, writeSignupPharmacyFeatureId, writeSignupPharmacyType } from "@/config/businessSignup";
+import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import type { PharmacyType } from "@/types/jobs";
 
 interface PharmacyVerificationInfo {
@@ -22,6 +23,8 @@ interface PharmacyVerificationInfo {
   institutionCode: string;
   pharmacistLicenseFileName: string | null;
   pharmacyType: PharmacyType;
+  /** 조제 특성, 단일선택(선택 항목). pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용 */
+  pharmacyFeatureIds?: string;
 }
 
 const emptyPharmacyVerificationInfo: PharmacyVerificationInfo = {
@@ -31,7 +34,8 @@ const emptyPharmacyVerificationInfo: PharmacyVerificationInfo = {
   pharmacistLicenseNumber: "",
   institutionCode: "",
   pharmacistLicenseFileName: null,
-  pharmacyType: "general",
+  pharmacyType: "local",
+  pharmacyFeatureIds: undefined,
 };
 
 function PharmacyVerificationStep({
@@ -59,8 +63,8 @@ function PharmacyVerificationStep({
           <FieldLabel required>사업자등록번호</FieldLabel>
           <DuplicateCheckField
             value={value.businessNumber}
-            onChange={(v) => onChange("businessNumber", v)}
-            placeholder="'-' 없이 숫자만 입력"
+            onChange={(v) => onChange("businessNumber", v.replace(/\D/g, ""))}
+            placeholder="숫자만 입력"
             availableMessage="사용 가능한 사업자등록번호입니다."
           />
         </div>
@@ -79,11 +83,19 @@ function PharmacyVerificationStep({
         <div className="grid grid-cols-2 gap-4 max-[520px]:grid-cols-1">
           <div className="space-y-2">
             <FieldLabel required>약사면허번호</FieldLabel>
-            <TextInput value={value.pharmacistLicenseNumber} onChange={(v) => onChange("pharmacistLicenseNumber", v)} placeholder="제 00000호" />
+            <TextInput
+              value={value.pharmacistLicenseNumber}
+              onChange={(v) => onChange("pharmacistLicenseNumber", v.replace(/\D/g, ""))}
+              placeholder="숫자만 입력"
+            />
           </div>
           <div className="space-y-2">
             <FieldLabel required>요양기관번호</FieldLabel>
-            <TextInput value={value.institutionCode} onChange={(v) => onChange("institutionCode", v)} placeholder="요양기관번호 8자리" />
+            <TextInput
+              value={value.institutionCode}
+              onChange={(v) => onChange("institutionCode", v.replace(/\D/g, ""))}
+              placeholder="숫자만 입력"
+            />
           </div>
         </div>
         <div className="flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
@@ -108,6 +120,22 @@ function PharmacyVerificationStep({
             options={(Object.keys(pharmacyTypeLabels) as PharmacyType[]).map((id) => ({ id, label: getPharmacyTypeLabel(id) }))}
             onChange={(next) => onChange("pharmacyType", next)}
           />
+        </div>
+
+        <div className="space-y-2">
+          <FieldLabel>
+            조제 특성 <span className="font-normal text-[#9aa3af]">(선택)</span>
+          </FieldLabel>
+          <div className="flex flex-wrap gap-2">
+            {pharmacyFeatureOptions.map((option) => (
+              <ToggleChip
+                key={option.id}
+                label={option.label}
+                selected={value.pharmacyFeatureIds === option.id}
+                onClick={() => onChange("pharmacyFeatureIds", value.pharmacyFeatureIds === option.id ? undefined : option.id)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -140,6 +168,7 @@ export function PharmacySignupClient() {
   const handleComplete = () => {
     writeSignupOrgTrack("pharmacy");
     writeSignupPharmacyType(pharmacyInfo.pharmacyType);
+    writeSignupPharmacyFeatureId(pharmacyInfo.pharmacyFeatureIds);
     setStep("complete");
   };
 

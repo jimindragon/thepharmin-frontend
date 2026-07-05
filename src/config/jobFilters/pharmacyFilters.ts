@@ -37,11 +37,9 @@ export const hourlyPayRangeOptions: FilterOption[] = [
 ];
 
 export const pharmacyFeatureOptions: FilterOption[] = [
-  { id: "prescription_focused", label: "처방조제 중심" },
-  { id: "otc_focused", label: "일반약 중심" },
-  { id: "clinic_front", label: "병·의원 문전" },
-  { id: "tertiary_hospital_front", label: "대형병원 문전" },
-  { id: "foreign_customer_focused", label: "외국인 중심" },
+  { id: "otc_focused", label: "매약 중심" },
+  { id: "prescription_focused", label: "조제 중심" },
+  { id: "mixed", label: "혼합" },
 ];
 
 export const pharmacyFilterConfig: TrackFilterConfig = {

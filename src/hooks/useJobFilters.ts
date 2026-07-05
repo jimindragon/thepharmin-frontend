@@ -663,7 +663,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
     if (filters.institutionTypeIds.length && !(job.researchLab && filters.institutionTypeIds.includes(job.researchLab.institutionType))) return false;
     if (filters.contractPeriodIds.length && !includesAny(job.contractPeriodIds, filters.contractPeriodIds)) return false;
     if (filters.workTypeIds.length && !includesAny(job.pharmacyWorkTypeIds, filters.workTypeIds)) return false;
-    if (filters.pharmacyFeatureIds.length && !includesAny(job.pharmacyFeatureIds, filters.pharmacyFeatureIds)) return false;
+    if (filters.pharmacyFeatureIds.length && !includesAny(job.pharmacyFeatureIds ? [job.pharmacyFeatureIds] : [], filters.pharmacyFeatureIds)) return false;
     if (filters.scheduleIds.length && !includesAny(job.scheduleIds, filters.scheduleIds)) return false;
     if (filters.hospitalTypeIds.length && !includesAny(job.hospitalTypeIds ?? (job.hospitalTypeId ? [job.hospitalTypeId] : []), filters.hospitalTypeIds)) return false;
     if (filters.shiftTypeIds.length && !includesAny(job.shiftTypeIds, filters.shiftTypeIds)) return false;

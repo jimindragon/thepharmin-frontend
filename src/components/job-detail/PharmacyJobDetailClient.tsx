@@ -204,7 +204,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
     "직무 일치",
     `${job.location.split(" ")[0]}권 근무지`,
     job.pharmacyWorkTypeIds?.includes("part_time") ? "파트타임 일치" : null,
-    job.pharmacyFeatureIds?.includes("prescription_focused") || job.tags.includes("처방조제") ? "처방 조제" : null,
+    job.pharmacyFeatureIds === "prescription_focused" || job.tags.includes("처방조제") ? "처방 조제" : null,
   ]
     .filter((reason): reason is string => Boolean(reason))
     .slice(0, 4);

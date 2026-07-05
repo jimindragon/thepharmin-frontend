@@ -120,7 +120,6 @@ function ToggleRow({ title, description, checked, onChange, ariaLabel }: {
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const PHARMACY_JOB_TYPES = ["풀타임약사","파트타임약사","토요일주말약사","단기대체약사","관리약사","전산약무","조제보조","매장관리판매","사무보조"];
-const PHARMACY_TYPES = ["문전약국","의원층약국","일반약국","마트약국","기타"];
 // 약국 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions에서 정규직/계약직/파트타임 3종만 id로 명시 ("아르바이트"는 파트타임으로 라벨 통일, "기타"는 정본에 없어 제외)
 const PHARMACY_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time"];
 const WORK_TYPE_OPTS = ["상근직","시간제","교대제","기타"];
@@ -146,7 +145,6 @@ export function PharmacyJobPostingForm() {
   // §1 기본 정보
   const [title,          setTitle]          = useState("");
   const [role,           setRole]           = useState("");
-  const [pharmacyType,   setPharmacyType]   = useState("");
   const [employmentType, setEmploymentType] = useState("");
   const [workType,       setWorkType]       = useState("");
   const [career,         setCareer]         = useState("");
@@ -323,7 +321,6 @@ export function PharmacyJobPostingForm() {
     // §1
     if (!title.trim())        next.title        = "공고 제목을 입력해 주세요.";
     if (!role)                next.role         = "직종을 선택해 주세요.";
-    if (!pharmacyType)        next.pharmacyType = "약국 유형을 선택해 주세요.";
     if (!employmentType)      next.employmentType = "고용형태를 선택해 주세요.";
     if (!career)              next.career       = "경력을 선택해 주세요.";
     if (!education)           next.education    = "학력을 선택해 주세요.";
@@ -445,8 +442,8 @@ export function PharmacyJobPostingForm() {
       <div className="mt-8 space-y-5">
 
         {/* ── §1 기본 정보 ──────────────────────────────────────────────────────── */}
-        <SectionCard title="기본 정보" description="공고 제목, 직종, 약국 유형, 채용 조건을 입력합니다."
-          status={errors.title || errors.role || errors.pharmacyType || errors.employmentType || errors.career || errors.education || errors.headcount ? "필수 입력 필요" : "작성 중"}>
+        <SectionCard title="기본 정보" description="공고 제목, 직종, 채용 조건을 입력합니다."
+          status={errors.title || errors.role || errors.employmentType || errors.career || errors.education || errors.headcount ? "필수 입력 필요" : "작성 중"}>
 
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="p-title" className={LBL}>공고 제목{REQ}</label>
@@ -455,23 +452,13 @@ export function PharmacyJobPostingForm() {
             <FieldError message={errors.title} />
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <div ref={setRef("role")}>
-              <label htmlFor="p-role" className={LBL}>직종{REQ}</label>
-              <select id="p-role" value={role} onChange={e => setRole(e.target.value)} className={SEL} aria-required="true">
-                <option value="" disabled>직종을 선택해 주세요</option>
-                {PHARMACY_JOB_TYPES.map(t => <option key={t}>{t}</option>)}
-              </select>
-              <FieldError message={errors.role} />
-            </div>
-            <div ref={setRef("pharmacyType")}>
-              <label htmlFor="p-phartype" className={LBL}>약국 유형{REQ}</label>
-              <select id="p-phartype" value={pharmacyType} onChange={e => setPharmacyType(e.target.value)} className={SEL} aria-required="true">
-                <option value="" disabled>약국 유형을 선택해 주세요</option>
-                {PHARMACY_TYPES.map(t => <option key={t}>{t}</option>)}
-              </select>
-              <FieldError message={errors.pharmacyType} />
-            </div>
+          <div className="mb-5" ref={setRef("role")}>
+            <label htmlFor="p-role" className={LBL}>직종{REQ}</label>
+            <select id="p-role" value={role} onChange={e => setRole(e.target.value)} className={SEL} aria-required="true">
+              <option value="" disabled>직종을 선택해 주세요</option>
+              {PHARMACY_JOB_TYPES.map(t => <option key={t}>{t}</option>)}
+            </select>
+            <FieldError message={errors.role} />
           </div>
 
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">

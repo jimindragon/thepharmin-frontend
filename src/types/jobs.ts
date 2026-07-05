@@ -469,7 +469,8 @@ export interface Job {
   researchFieldIds?: string[];
   contractPeriodIds?: string[];
   pharmacyWorkTypeIds?: string[];
-  pharmacyFeatureIds?: string[];
+  /** 조제 특성, 단일선택(선택 항목). pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용 */
+  pharmacyFeatureIds?: string;
   scheduleIds?: string[];
   hospitalTypeId?: string;
   hospitalTypeIds?: string[];
@@ -552,7 +553,7 @@ export interface Job {
  * Company(약국) 기관 분류. 검색 필터의 pharmacyFeatureOptions/pharmacyWorkTypeOptions와는 별개로,
  * 약국이라는 기관 자체를 분류하는 값이다 — 필터 옵션과 섞어 쓰지 않는다.
  */
-export type PharmacyType = "general" | "clinic-floor" | "clinic-front" | "hospital-front";
+export type PharmacyType = "local" | "clinic-front" | "large" | "beauty";
 
 /**
  * Company(병원) 기관 분류이자 공고 필터 hospitalTypeOptions/Job.hospitalTypeId(s)와 공유하는 단일 6종 분류.

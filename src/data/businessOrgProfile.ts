@@ -31,8 +31,8 @@ export interface PharmacyOrgProfile {
   pharmacistLicenseFile: { name: string; status: FileStatus };
   // 약국 정보 — 유형·특성
   pharmacyType: PharmacyType;
-  /** pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용 */
-  pharmacyFeatureIds: string[];
+  /** 약국 특성, 단일선택(선택 항목). pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용 */
+  pharmacyFeatureIds?: string;
   // 약국 정보 — 기본 사항·연락처
   address: string;
   foundedYear: string;
@@ -64,8 +64,9 @@ export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
   pharmacistLicenseNumber: "제 12***호",
   institutionCode: "31*****9",
   pharmacistLicenseFile: { name: "약사면허증.pdf", status: "approved" },
-  pharmacyType: "clinic-floor",
-  pharmacyFeatureIds: ["clinic_front"],
+  pharmacyType: "local",
+  // 조제 특성 미선택(선택 항목) — 기존 clinic_front 하드코딩 값은 옵션 재정비로 제거됨
+  pharmacyFeatureIds: undefined,
   address: "경기 용인시 처인구 양지읍 양지로138번길 14 2층",
   foundedYear: "2026.02.11",
   headPharmacistName: "",

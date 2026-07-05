@@ -1,5 +1,4 @@
 import { companyExampleImages, companyLogos } from "@/config/companyImages";
-import { PHARMACY_TYPE_DEFAULT_FEATURE_ID } from "@/config/companyTypes";
 
 export interface CompanyMetric {
   label: string;
@@ -68,8 +67,8 @@ export interface CompanyProfile {
   businessHours?: string;
   /** 약국 트랙 전용. 미등록 시 "조제 환경·장비" 블록 자체를 숨긴다 */
   dispensingEquipment?: string[];
-  /** 약국 트랙 전용. pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용한다 */
-  pharmacyFeatures?: string[];
+  /** 약국 트랙 전용, 단일선택. pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용한다 */
+  pharmacyFeatures?: string;
   sidebar: {
     interestedCount: string;
     reviewKeywordCount: string;
@@ -1163,8 +1162,8 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "근무 형태", text: "주 5일 협의 가능, 마감 시간 준수 문화" },
       { label: "교육 루틴", text: "신규 약사 대상 조제 검토·복약지도 루틴 교육, 재고·마약류 관리 체계 정리됨" },
     ],
-    // clinic-floor 기본 매핑(기관이 해제 가능한 프리체크 값)을 그대로 반영 — PHARMACY_TYPE_DEFAULT_FEATURE_ID 참고
-    pharmacyFeatures: [PHARMACY_TYPE_DEFAULT_FEATURE_ID["clinic-floor"]].filter((id): id is string => Boolean(id)),
+    // 조제 특성 미선택(선택 항목) — 기존 clinic-floor 유형 자동매핑 값은 옵션 재정비로 제거됨
+    pharmacyFeatures: undefined,
     news: [],
     sidebar: {
       // 원고에 사이드바 수치(관심기업/응답률/평균응답)가 없어 이 회사의 다른 필드(사원수 등)와 동일하게
@@ -1207,7 +1206,7 @@ export const companyProfiles: CompanyProfile[] = [
     pharmacySoftware: "PM+20",
     businessHours: "평일 08:40~18:40 · 토 08:40~14:00 · 일요일·공휴일 휴무",
     dispensingEquipment: ["자동 정제 분류기"],
-    pharmacyFeatures: ["otc_focused"],
+    pharmacyFeatures: "otc_focused",
     features: [
       { label: "운영 시간", text: "평일 08:40~18:40 · 토 08:40~14:00" },
       { label: "주요 업무", text: "처방조제, 일반의약품 상담" },
@@ -1253,7 +1252,7 @@ export const companyProfiles: CompanyProfile[] = [
     pharmacySoftware: "유팜",
     businessHours: "평일 09:00~19:00 · 토 09:00~15:00 · 일요일·공휴일 휴무",
     dispensingEquipment: ["전자동 정제 분류기(ATC)", "산제 자동 분포기", "조제 로봇 보조 시스템"],
-    pharmacyFeatures: ["clinic_front", "prescription_focused"],
+    pharmacyFeatures: "mixed",
     features: [
       { label: "주요 업무", text: "병의원 처방조제, 복약지도, 일반의약품 상담" },
       { label: "근무 형태", text: "약사·직원 다인 팀 근무, 파트 분담" },
@@ -1299,7 +1298,7 @@ export const companyProfiles: CompanyProfile[] = [
     pharmacySoftware: "PM+20",
     businessHours: "평일 09:00~20:00 · 토 09:00~16:00 · 일요일·공휴일 휴무",
     dispensingEquipment: ["자동 정제 분류기", "키오스크 접수 시스템"],
-    pharmacyFeatures: ["otc_focused"],
+    pharmacyFeatures: "otc_focused",
     features: [
       { label: "운영 시간", text: "평일 09:00~20:00 · 토 09:00~16:00" },
       { label: "주요 업무", text: "처방조제, 일반의약품 상담, 접수 응대" },
@@ -1345,7 +1344,7 @@ export const companyProfiles: CompanyProfile[] = [
     pharmacySoftware: "PM+20",
     businessHours: "평일 09:00~19:00 · 토 09:00~14:00 · 일요일·공휴일 휴무",
     dispensingEquipment: ["전자동 정제 분류기(ATC)", "산제 자동 분포기"],
-    pharmacyFeatures: ["clinic_front"],
+    pharmacyFeatures: "mixed",
     features: [
       { label: "주요 업무", text: "다진료과 처방조제, 복약지도, 일반의약품 상담" },
       { label: "처방 특성", text: "내과·산부인과·외과 등 진료과별 처방 대응" },
@@ -1391,7 +1390,7 @@ export const companyProfiles: CompanyProfile[] = [
     pharmacySoftware: "팜IT3000",
     businessHours: "평일 08:30~18:30 · 토요일 오전 · 일요일·공휴일 휴무",
     dispensingEquipment: ["전자동 정제 분류기(ATC)"],
-    pharmacyFeatures: ["clinic_front"],
+    pharmacyFeatures: "mixed",
     features: [
       { label: "운영 시간", text: "평일 08:30~18:30" },
       { label: "주요 업무", text: "내과 처방조제, 복약지도" },

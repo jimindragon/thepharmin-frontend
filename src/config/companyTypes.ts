@@ -1,10 +1,10 @@
 import type { HospitalOperator, HospitalType, PharmacyType } from "@/types/jobs";
 
 export const pharmacyTypeLabels: Record<PharmacyType, string> = {
-  general: "일반약국",
-  "clinic-floor": "의원층약국",
-  "clinic-front": "병의원 문전약국",
-  "hospital-front": "대형병원 문전약국",
+  local: "로컬 약국",
+  "clinic-front": "문전 약국",
+  large: "대형 약국",
+  beauty: "뷰티 특화 약국",
 };
 
 export function getPharmacyTypeLabel(type: PharmacyType): string {
@@ -44,17 +44,3 @@ export function getHospitalCombinedTypeLabel(type: HospitalType, operator: Hospi
   const typeLabel = type === "hospital" && specialtyLabel ? `${specialtyLabel} 전문병원` : hospitalTypeLabels[type];
   return operator === "private" ? typeLabel : `${hospitalOperatorLabels[operator]}·${typeLabel}`;
 }
-
-/**
- * 약국 유형 → 특성(pharmacyFeatureOptions id) 기본 매핑. N3 PART B(등록폼 프리체크 구현)에서 사용 예정 —
- * 아직 어떤 UI도 이 상수를 참조하지 않는다.
- * LOCKED: 기관이 해제 불가(자동 확정). DEFAULT: 프리체크 상태로 시작하되 기관이 해제 가능.
- */
-export const PHARMACY_TYPE_LOCKED_FEATURE_ID: Partial<Record<PharmacyType, string>> = {
-  "clinic-front": "clinic_front",
-  "hospital-front": "tertiary_hospital_front",
-};
-
-export const PHARMACY_TYPE_DEFAULT_FEATURE_ID: Partial<Record<PharmacyType, string>> = {
-  "clinic-floor": "clinic_front",
-};

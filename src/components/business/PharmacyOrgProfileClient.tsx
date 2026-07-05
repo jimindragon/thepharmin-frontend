@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
-import { getPharmacyTypeLabel, PHARMACY_TYPE_DEFAULT_FEATURE_ID, PHARMACY_TYPE_LOCKED_FEATURE_ID, pharmacyTypeLabels } from "@/config/companyTypes";
-import { readSignupPharmacyType } from "@/config/businessSignup";
+import { getPharmacyTypeLabel, pharmacyTypeLabels } from "@/config/companyTypes";
+import { readSignupPharmacyFeatureId, readSignupPharmacyType } from "@/config/businessSignup";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { businessCompanyManager, type FileStatus } from "@/data/businessCompanyProfile";
 import {
@@ -37,32 +37,22 @@ export function PharmacyOrgProfileClient() {
     setProfile((current) => ({ ...current, [key]: value }));
   };
 
-  const autoFeatureId = (type: PharmacyType) => PHARMACY_TYPE_LOCKED_FEATURE_ID[type] ?? PHARMACY_TYPE_DEFAULT_FEATURE_ID[type];
-  const lockedFeatureId = PHARMACY_TYPE_LOCKED_FEATURE_ID[profile.pharmacyType];
-
   const handleTypeChange = (nextType: PharmacyType) => {
-    setProfile((current) => {
-      const prevAuto = autoFeatureId(current.pharmacyType);
-      const nextAuto = autoFeatureId(nextType);
-      let nextFeatureIds = current.pharmacyFeatureIds.filter((id) => id !== prevAuto);
-      if (nextAuto && !nextFeatureIds.includes(nextAuto)) nextFeatureIds = [...nextFeatureIds, nextAuto];
-      return { ...current, pharmacyType: nextType, pharmacyFeatureIds: nextFeatureIds };
-    });
+    updateProfile("pharmacyType", nextType);
   };
 
   useEffect(() => {
     const fromSignup = readSignupPharmacyType();
     if (fromSignup) handleTypeChange(fromSignup);
+    const featureFromSignup = readSignupPharmacyFeatureId();
+    if (featureFromSignup) updateProfile("pharmacyFeatureIds", featureFromSignup);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const toggleFeatureId = (id: string) => {
-    if (id === lockedFeatureId) return;
+  const selectFeatureId = (id: string) => {
     setProfile((current) => ({
       ...current,
-      pharmacyFeatureIds: current.pharmacyFeatureIds.includes(id)
-        ? current.pharmacyFeatureIds.filter((item) => item !== id)
-        : [...current.pharmacyFeatureIds, id],
+      pharmacyFeatureIds: current.pharmacyFeatureIds === id ? undefined : id,
     }));
   };
 
@@ -94,9 +84,6 @@ export function PharmacyOrgProfileClient() {
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
   };
-
-  const autoId = autoFeatureId(profile.pharmacyType);
-  const autoLabel = pharmacyFeatureOptions.find((option) => option.id === autoId)?.label;
 
   const basicComplete = Boolean(profile.address && profile.foundedYear && profile.phone && profile.email);
   const profileComplete = Boolean(profile.shortIntro && profile.features.length > 0);
@@ -188,29 +175,18 @@ export function PharmacyOrgProfileClient() {
             </div>
             <div className="mt-5 space-y-2">
               <FieldLabel>
-                약국 특성 <span className="font-normal text-[#9aa3af]">(복수 선택)</span>
+                약국 특성 <span className="font-normal text-[#9aa3af]">(선택, 미선택 가능)</span>
               </FieldLabel>
               <div className="flex flex-wrap gap-2">
-                {pharmacyFeatureOptions.map((option) => {
-                  const selected = profile.pharmacyFeatureIds.includes(option.id);
-                  const isAuto = option.id === autoId && selected;
-                  return (
-                    <ToggleChip
-                      key={option.id}
-                      label={option.label}
-                      selected={selected}
-                      auto={isAuto}
-                      disabled={option.id === lockedFeatureId}
-                      onClick={() => toggleFeatureId(option.id)}
-                    />
-                  );
-                })}
+                {pharmacyFeatureOptions.map((option) => (
+                  <ToggleChip
+                    key={option.id}
+                    label={option.label}
+                    selected={profile.pharmacyFeatureIds === option.id}
+                    onClick={() => selectFeatureId(option.id)}
+                  />
+                ))}
               </div>
-              {autoId && autoLabel ? (
-                <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">
-                  &apos;{getPharmacyTypeLabel(profile.pharmacyType)}&apos; 유형에 따라 &apos;{autoLabel}&apos;이 기본 선택되었습니다. 해당하지 않으면 해제할 수 있습니다.
-                </p>
-              ) : null}
             </div>
           </div>
 

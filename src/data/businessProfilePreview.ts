@@ -201,7 +201,7 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
     pharmacySoftware: org.software || undefined,
     businessHours: org.businessHours || undefined,
     dispensingEquipment: org.dispensingEquipment.length ? org.dispensingEquipment : undefined,
-    pharmacyFeatures: org.pharmacyFeatureIds.length ? org.pharmacyFeatureIds : undefined,
+    pharmacyFeatures: org.pharmacyFeatureIds,
     sidebar: {
       interestedCount: "-",
       reviewKeywordCount: "-",
