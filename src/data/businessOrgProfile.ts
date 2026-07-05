@@ -111,9 +111,6 @@ export function getMissingRequiredPharmacyFields(profile: PharmacyOrgProfile) {
 
 export const specialistPharmacistOptions = ["감염", "종양", "정맥영양(TPN)", "항응고"];
 
-/** 실데이터(keywords) + 목업에서 제시된 미선택 예시 1개. 병원 트랙엔 약국의 "특성 칩" 같은 대체 태그축이 없어 키워드가 유일한 태그 수단이다 */
-export const hospitalKeywordOptions = ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계", "공공의료"];
-
 export interface HospitalOrgProfile {
   orgTrack: "hospital";
   // 인증 정보 (읽기 전용)
@@ -133,7 +130,8 @@ export interface HospitalOrgProfile {
   address: string;
   foundedYear: string;
   bedCount: string;
-  departments: string;
+  /** 진료과목(필수, 다중선택). medicalDepartmentOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다 */
+  medicalDepartments: string[];
   homepageUrl: string;
   phone: string;
   email: string;
@@ -141,7 +139,6 @@ export interface HospitalOrgProfile {
   logoUrl: string | null;
   shortIntro: string;
   features: OrgFeatureItem[];
-  keywords: string[];
   // 약제부 근무 환경
   pharmacyStaffCount: string;
   dutySystem: string;
@@ -160,6 +157,7 @@ export const requiredHospitalProfileFields: Array<{ label: string; sectionId: st
   { label: "설립 연도", sectionId: "hospital-info", missing: (p) => !p.foundedYear.trim() },
   { label: "대표 전화번호", sectionId: "hospital-info", missing: (p) => !p.phone.trim() },
   { label: "이메일", sectionId: "hospital-info", missing: (p) => !p.email.trim() },
+  { label: "진료과목", sectionId: "hospital-info", missing: (p) => p.medicalDepartments.length === 0 },
   { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
   { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
   { label: "기관 특징", sectionId: "profile", missing: (p) => p.features.length === 0 },
@@ -183,7 +181,34 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   address: "경기 성남시 분당구 구미로173번길 82",
   foundedYear: "2003",
   bedCount: "1,335",
-  departments: "40개+ · 주요 센터 12",
+  medicalDepartments: [
+    "family_medicine",
+    "tuberculosis",
+    "internal_medicine",
+    "anesthesiology_pain_medicine",
+    "radiation_oncology",
+    "pathology",
+    "urology",
+    "obstetrics_gynecology",
+    "plastic_surgery",
+    "pediatrics",
+    "neurology",
+    "neurosurgery",
+    "ophthalmology",
+    "radiology",
+    "preventive_medicine",
+    "surgery",
+    "emergency_medicine",
+    "otolaryngology",
+    "rehabilitation_medicine",
+    "psychiatry",
+    "orthopedics",
+    "occupational_environmental_medicine",
+    "laboratory_medicine",
+    "dermatology",
+    "nuclear_medicine",
+    "thoracic_surgery",
+  ],
   homepageUrl: "www.snubh.org",
   phone: "031-787-0114",
   email: "pharm@snubh.org",
@@ -194,7 +219,6 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
     { id: "feature-2", label: "임상연구 환경", text: "임상시험센터 상시 운영, CRC·연구약사 채용이 주기적으로 발생" },
     { id: "feature-3", label: "의료정보화", text: "국내 최초 전면 디지털 병원, HIMSS 최고 등급 인증 경험" },
   ],
-  keywords: ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계"],
   pharmacyStaffCount: "110명+",
   dutySystem: "야간 당직 월 2~3회",
   annualClinicalTrials: "600건+",

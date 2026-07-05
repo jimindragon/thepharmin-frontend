@@ -20,8 +20,6 @@ import {
   companyTypeOptions,
   employeeCountOptions,
   initialBusinessCompanyProfile,
-  jobCategoryOptions,
-  keywordOptions,
   type CompanyProfileMaster,
   type CompanyType,
   type EmployeeCountRange,
@@ -55,7 +53,7 @@ export function BusinessCompanyProfileClient() {
   const completionItems = [
     { label: "기업 정보", done: true },
     { label: "공개 프로필", done: Boolean(profile.shortIntro && profile.fullIntro && profile.logoUrl) },
-    { label: "사업·채용 정보", done: profile.mainBusinessAreas.length > 0 && profile.mainJobCategories.length > 0 },
+    { label: "사업·채용 정보", done: profile.mainBusinessAreas.length > 0 },
     { label: "담당자 정보", done: Boolean(businessCompanyManager.email && businessCompanyManager.phone) },
     { label: "계정 정보", done: false },
   ];
@@ -70,7 +68,7 @@ export function BusinessCompanyProfileClient() {
     setProfile((current) => ({ ...current, [key]: value }));
   };
 
-  const toggleArrayValue = (key: "mainBusinessAreas" | "mainJobCategories" | "keywords", value: string) => {
+  const toggleArrayValue = (key: "mainBusinessAreas", value: string) => {
     setProfile((current) => {
       const exists = current[key].includes(value);
       return {
@@ -267,14 +265,6 @@ export function BusinessCompanyProfileClient() {
               </div>
             </div>
             <div>
-              <FieldLabel>주요 채용 직무</FieldLabel>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {jobCategoryOptions.map((item) => (
-                  <ToggleChip key={item} label={item} selected={profile.mainJobCategories.includes(item)} onClick={() => toggleArrayValue("mainJobCategories", item)} />
-                ))}
-              </div>
-            </div>
-            <div>
               <FieldLabel>대표 제품/서비스</FieldLabel>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.products.map((product) => (
@@ -303,14 +293,6 @@ export function BusinessCompanyProfileClient() {
                   <Plus size={14} />
                   추가
                 </button>
-              </div>
-            </div>
-            <div>
-              <FieldLabel>기업 핵심 키워드</FieldLabel>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {keywordOptions.map((item) => (
-                  <ToggleChip key={item} label={item} selected={profile.keywords.includes(item)} onClick={() => toggleArrayValue("keywords", item)} />
-                ))}
               </div>
             </div>
           </div>

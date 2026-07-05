@@ -157,8 +157,9 @@ export function CompanySignupClient() {
     setStep("complete");
   };
 
+  const orgTrack = orgInfo.institutionType ? getOrgTrackForInstitutionType(orgInfo.institutionType) : "industry";
+
   if (step === "complete") {
-    const orgTrack = orgInfo.institutionType ? getOrgTrackForInstitutionType(orgInfo.institutionType) : "industry";
     return <SignupCompleteStep orgTrack={orgTrack} institutionName={orgInfo.institutionName} />;
   }
 
@@ -176,7 +177,7 @@ export function CompanySignupClient() {
     >
       {step === 1 ? <OrgVerificationStep value={orgInfo} onChange={updateOrgInfo} onNext={() => setStep(2)} /> : null}
       {step === 2 ? (
-        <ManagerInfoStep value={managerInfo} onChange={updateManagerInfo} onBack={() => setStep(1)} onNext={() => setStep(3)} isPharmacy={false} />
+        <ManagerInfoStep value={managerInfo} onChange={updateManagerInfo} onBack={() => setStep(1)} onNext={() => setStep(3)} track={orgTrack} />
       ) : null}
       {step === 3 ? (
         <AccountCreationStep value={accountInfo} onChange={updateAccountInfo} onBack={() => setStep(2)} onSubmit={handleComplete} />

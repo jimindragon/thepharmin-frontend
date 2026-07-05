@@ -52,6 +52,36 @@ export const pharmacyDutyAreaOptions: FilterOption[] = [
   { id: "infection_control_participation", label: "감염관리 참여" },
 ];
 
+/** 병원 프로필의 "진료과목"(필수, 다중선택). 공고 등록/필터엔 노출하지 않는다 — 병원 프로필 입력과 구직자 상세 조회 전용 */
+export const medicalDepartmentOptions: FilterOption[] = [
+  { id: "family_medicine", label: "가정의학과" },
+  { id: "tuberculosis", label: "결핵과" },
+  { id: "internal_medicine", label: "내과" },
+  { id: "anesthesiology_pain_medicine", label: "마취통증의학과" },
+  { id: "radiation_oncology", label: "방사선종양학과" },
+  { id: "pathology", label: "병리과" },
+  { id: "urology", label: "비뇨의학과" },
+  { id: "obstetrics_gynecology", label: "산부인과" },
+  { id: "plastic_surgery", label: "성형외과" },
+  { id: "pediatrics", label: "소아청소년과" },
+  { id: "neurology", label: "신경과" },
+  { id: "neurosurgery", label: "신경외과" },
+  { id: "ophthalmology", label: "안과" },
+  { id: "radiology", label: "영상의학과" },
+  { id: "preventive_medicine", label: "예방의학과" },
+  { id: "surgery", label: "외과" },
+  { id: "emergency_medicine", label: "응급의학과" },
+  { id: "otolaryngology", label: "이비인후과" },
+  { id: "rehabilitation_medicine", label: "재활의학과" },
+  { id: "psychiatry", label: "정신건강의학과" },
+  { id: "orthopedics", label: "정형외과" },
+  { id: "occupational_environmental_medicine", label: "직업환경의학과" },
+  { id: "laboratory_medicine", label: "진단검사의학과" },
+  { id: "dermatology", label: "피부과" },
+  { id: "nuclear_medicine", label: "핵의학과" },
+  { id: "thoracic_surgery", label: "흉부외과" },
+];
+
 export const shiftTypeOptions: FilterOption[] = [
   { id: "day_shift", label: "주간근무" },
   { id: "shift_work", label: "교대근무" },

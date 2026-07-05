@@ -167,7 +167,7 @@ export function PharmacySignupClient() {
           onChange={updateManagerInfo}
           onBack={() => setStep(1)}
           onNext={() => setStep(3)}
-          isPharmacy
+          track="pharmacy"
           representativePharmacistName={pharmacyInfo.representativePharmacistName}
         />
       ) : null}

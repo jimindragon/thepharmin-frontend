@@ -52,7 +52,8 @@ export function buildIndustryPreviewProfile(master: CompanyProfileMaster): Compa
       { label: "설립", value: master.foundedYear ? `${master.foundedYear}년` : "-" },
       { label: "주요 사업분야", value: master.mainBusinessAreas.slice(0, 2).join(" · ") || "-" },
     ],
-    businessSummary: master.mainJobCategories.length ? [{ label: "주요 직무", value: master.mainJobCategories.join(" · ") }] : [],
+    /** 산업 프로필은 더 이상 mainJobCategories를 입력받지 않는다(채용 직무는 공고에서 관리) — 빈 배열로 채운다. */
+    businessSummary: [],
     recruitSummary: master.fullIntro,
     details: [
       { label: "대표자", value: master.representativeName || null },
@@ -62,7 +63,9 @@ export function buildIndustryPreviewProfile(master: CompanyProfileMaster): Compa
       { label: "기업 형태", value: typeLabel },
       { label: "업종", value: master.industry || null },
     ],
-    keywords: master.keywords,
+    /** 산업 프로필은 더 이상 keywords를 입력받지 않는다 — CompanyProfile.keywords가 필수 타입이라 빈 배열로 채운다.
+     * CompanyAsidePanel이 산업 트랙에서 SidebarKeywordsCard를 렌더하지 않으므로 실제로 노출되지 않는다. */
+    keywords: [],
     news: [],
     sidebar: {
       interestedCount: "-",
@@ -122,11 +125,13 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
       { label: "본사 위치", value: org.address || null },
       { label: "홈페이지", value: org.homepageUrl || null },
     ],
-    keywords: org.keywords,
+    /** 병원 프로필은 더 이상 keywords를 입력받지 않는다(진료과목으로 대체) — CompanyProfile.keywords가 필수 타입이라 빈 배열로 채운다.
+     * HospitalAsidePanel이 병원 트랙에서 SidebarKeywordsCard를 렌더하지 않으므로 실제로 노출되지 않는다. */
+    keywords: [],
     news: [],
     features: toProfileFeatures(org.features),
     dutySystem: org.dutySystem || undefined,
-    departments: org.departments || undefined,
+    medicalDepartments: org.medicalDepartments.length ? org.medicalDepartments : undefined,
     specialistPharmacists: org.specialistPharmacists.length ? org.specialistPharmacists : undefined,
     pharmacyDutyAreas: org.pharmacyDutyAreas.length ? org.pharmacyDutyAreas : undefined,
     sidebar: {

@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { BriefcaseBusiness, ChevronRight, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp } from "lucide-react";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
-import { pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
+import { medicalDepartmentOptions, pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { companies, companyReviews } from "@/data/companies";
 import { type CompanyDirectoryEntry, companyDirectory, getActiveJobCount, getActiveJobs, provinceFromAddress } from "@/data/companyDirectory";
@@ -356,8 +356,6 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
         </dl>
       </section>
 
-      <SidebarKeywordsCard keywords={profile.keywords} />
-
       {profile.sidebar.products.length > 0 ? (
         <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
           <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">대표 제품</h2>
@@ -452,7 +450,6 @@ function buildHospitalSummaryRows(profile: CompanyProfile, company: Company): Su
     { label: "약제부 인력", value: metricValue(profile, "약제부 인력") },
     { label: "당직 체계", value: profile.dutySystem },
     { label: "연간 임상시험", value: metricValue(profile, "연간 임상시험") },
-    { label: "진료과", value: profile.departments },
     { label: "위치", value: detailValue(profile, "본사 위치") },
     { label: "홈페이지", value: detailValue(profile, "홈페이지") },
   ];
@@ -738,13 +735,16 @@ function InstitutionReviewMoreCard({ companyId }: { companyId: string }) {
 /** [companyId] 개요 탭 사이드바 — 병원 트랙. 대표 제품 블록은 병원·약국 트랙에서 노출하지 않는다 */
 export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfile; company: Company }) {
   const related = relatedHospitals(profile.id, company.hospitalType);
+  const medicalDepartmentLabels = (profile.medicalDepartments ?? [])
+    .map((id) => medicalDepartmentOptions.find((option) => option.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
   const pharmacyDutyAreaLabels = (profile.pharmacyDutyAreas ?? [])
     .map((id) => pharmacyDutyAreaOptions.find((option) => option.id === id)?.label)
     .filter((label): label is string => Boolean(label));
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
-      <SidebarKeywordsCard keywords={profile.keywords} />
+      <ChipListCard title="진료과목" items={medicalDepartmentLabels} />
       <ChipListCard title="전문약사 보유" items={profile.specialistPharmacists ?? []} note="기관이 등록한 분야만 표시됩니다" />
       <ChipListCard title="약제부 업무 영역" items={pharmacyDutyAreaLabels} />
       <RelatedInstitutionsCard result={related} />

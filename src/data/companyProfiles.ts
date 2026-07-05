@@ -56,8 +56,8 @@ export interface CompanyProfile {
   features?: CompanyProfileFeature[];
   /** 병원 트랙 전용 */
   dutySystem?: string;
-  /** 병원 트랙 전용 */
-  departments?: string;
+  /** 병원 트랙 전용. medicalDepartmentOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다. 미등록 시 "진료과목" 블록 자체를 숨긴다 */
+  medicalDepartments?: string[];
   /** 병원 트랙 전용. 미등록 시 "전문약사 보유" 블록 자체를 숨긴다 */
   specialistPharmacists?: string[];
   /** 병원 트랙 전용. pharmacyDutyAreaOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다. 미등록 시 "약제부 업무 영역" 블록 자체를 숨긴다 */
@@ -865,7 +865,34 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계"],
     dutySystem: "야간 당직 월 2~3회",
-    departments: "40개+ · 주요 센터 12",
+    medicalDepartments: [
+      "family_medicine",
+      "tuberculosis",
+      "internal_medicine",
+      "anesthesiology_pain_medicine",
+      "radiation_oncology",
+      "pathology",
+      "urology",
+      "obstetrics_gynecology",
+      "plastic_surgery",
+      "pediatrics",
+      "neurology",
+      "neurosurgery",
+      "ophthalmology",
+      "radiology",
+      "preventive_medicine",
+      "surgery",
+      "emergency_medicine",
+      "otolaryngology",
+      "rehabilitation_medicine",
+      "psychiatry",
+      "orthopedics",
+      "occupational_environmental_medicine",
+      "laboratory_medicine",
+      "dermatology",
+      "nuclear_medicine",
+      "thoracic_surgery",
+    ],
     features: [
       { label: "신입 교육", text: "신입 약사 6개월 조제·병동 로테이션, 프리셉터 배정 운영" },
       { label: "임상연구 환경", text: "임상시험센터 상시 운영, CRC·연구약사 채용이 주기적으로 발생" },
@@ -935,7 +962,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["공공병원", "종합병원", "소방 특화", "신설"],
     dutySystem: "약제팀 교대 근무 기반, 공공병원 표준 근무 체계 운영",
-    departments: "내과계·외과계·정신건강의학과·재활의학과 및 소방 특화 센터",
+    medicalDepartments: ["internal_medicine", "surgery", "psychiatry", "rehabilitation_medicine"],
     features: [
       { label: "진료 특성", text: "화상·정신건강·재활·건강증진 등 소방 특화 진료" },
       { label: "약제 업무", text: "입원·외래 조제, 복약지도, 의약품 관리" },
@@ -984,7 +1011,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["요양병원", "재활", "만성질환", "입원"],
     dutySystem: "약제팀 주간 근무 중심, 입원 환자 조제 대응 체계 운영",
-    departments: "내과·외과·신경외과·가정의학과·재활의학과·한방",
+    medicalDepartments: ["internal_medicine", "surgery", "neurosurgery", "family_medicine", "rehabilitation_medicine"],
     features: [
       { label: "진료 특성", text: "노인성 질환·만성질환 입원, 재활 치료 병행" },
       { label: "약제 업무", text: "입원 조제, 만성질환 복약 관리, 의약품 관리" },
@@ -1032,7 +1059,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["전문병원", "정형외과", "척추·관절"],
     dutySystem: "약제팀 교대 근무, 수술 일정에 맞춘 조제 대응 체계",
-    departments: "정형외과(척추·관절)·재활의학과·내과",
+    medicalDepartments: ["orthopedics", "rehabilitation_medicine", "internal_medicine"],
     features: [
       { label: "진료 특성", text: "척추·관절·재활 및 내과 진료" },
       { label: "약제 업무", text: "수술 전후 조제, 통증 관리 복약지도, 의약품 관리" },
@@ -1080,7 +1107,7 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     keywords: ["종합병원", "응급의료", "지역 거점"],
     dutySystem: "약제팀 교대 근무 및 당직 체계, 응급 조제 대응 운영",
-    departments: "내과·외과 등 종합진료 및 응급의료·인공신장센터",
+    medicalDepartments: ["internal_medicine", "surgery", "emergency_medicine"],
     specialistPharmacists: ["종양", "중환자", "감염"],
     features: [
       { label: "진료 특성", text: "종합진료·응급·검진·인공신장·간호간병통합" },

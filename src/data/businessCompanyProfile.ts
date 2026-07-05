@@ -31,9 +31,7 @@ export interface CompanyProfileMaster {
   shortIntro: string;
   fullIntro: string;
   mainBusinessAreas: string[];
-  mainJobCategories: string[];
   products: string[];
-  keywords: string[];
   visibilitySettings: {
     publicCompanyPage: boolean;
     exposeOnJobs: boolean;
@@ -94,33 +92,6 @@ export const businessAreaOptions = [
   "기타",
 ];
 
-export const jobCategoryOptions = [
-  "RA",
-  "CRA",
-  "MSL",
-  "PV",
-  "QC/QA",
-  "생산",
-  "R&D",
-  "약무",
-  "영업·마케팅",
-  "BD",
-  "Medical Affairs",
-  "Market Access",
-];
-
-export const keywordOptions = [
-  "환자 중심",
-  "글로벌 진출",
-  "R&D 중심",
-  "품질 중심",
-  "규제 대응",
-  "신약개발",
-  "생산시설 보유",
-  "해외 인허가",
-  "디지털 헬스케어",
-];
-
 export const initialBusinessCompanyProfile: CompanyProfileMaster = {
   orgTrack: "industry",
   id: "thepharma-news",
@@ -147,9 +118,7 @@ export const initialBusinessCompanyProfile: CompanyProfileMaster = {
   fullIntro:
     "더파마뉴스는 제약·바이오 산업 정보를 기반으로 채용 정보와 기업 정보를 제공하는 전문 플랫폼입니다. 데이터 기반 매칭과 산업 특화 콘텐츠를 통해 기업과 구직자가 더 쉽게 연결될 수 있도록 돕습니다.",
   mainBusinessAreas: ["규제·인허가(RA)", "품질관리(QA/QC)", "의약·메디컬"],
-  mainJobCategories: ["RA", "PV", "QC/QA", "Medical Affairs"],
   products: ["전문 뉴스 서비스", "데이터 리포트", "컨설팅 서비스", "교육/세미나"],
-  keywords: ["글로벌 진출", "R&D 중심", "규제 대응", "디지털 헬스케어"],
   visibilitySettings: {
     publicCompanyPage: true,
     exposeOnJobs: true,

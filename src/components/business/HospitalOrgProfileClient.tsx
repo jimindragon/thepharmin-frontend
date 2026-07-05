@@ -7,11 +7,9 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { FieldLabel, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import { getHospitalOperatorLabel, getHospitalTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { businessCompanyManager, type FileStatus } from "@/data/businessCompanyProfile";
-import { hospitalKeywordOptions, initialHospitalOrgProfile, specialistPharmacistOptions, type HospitalOrgProfile, type OrgFeatureItem } from "@/data/businessOrgProfile";
-import { pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
+import { initialHospitalOrgProfile, specialistPharmacistOptions, type HospitalOrgProfile, type OrgFeatureItem } from "@/data/businessOrgProfile";
+import { medicalDepartmentOptions, pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
 import type { HospitalOperator, HospitalType } from "@/types/jobs";
-
-const MAX_KEYWORDS = 6;
 
 function statusLabel(status: FileStatus) {
   if (status === "approved") return "제출 완료 · 검토 승인";
@@ -32,12 +30,13 @@ export function HospitalOrgProfileClient() {
     setProfile((current) => ({ ...current, [key]: value }));
   };
 
-  const toggleKeyword = (item: string) => {
-    setProfile((current) => {
-      if (current.keywords.includes(item)) return { ...current, keywords: current.keywords.filter((x) => x !== item) };
-      if (current.keywords.length >= MAX_KEYWORDS) return current;
-      return { ...current, keywords: [...current.keywords, item] };
-    });
+  const toggleMedicalDepartment = (id: string) => {
+    setProfile((current) => ({
+      ...current,
+      medicalDepartments: current.medicalDepartments.includes(id)
+        ? current.medicalDepartments.filter((x) => x !== id)
+        : [...current.medicalDepartments, id],
+    }));
   };
 
   const toggleSpecialistPharmacist = (item: string) => {
@@ -80,7 +79,9 @@ export function HospitalOrgProfileClient() {
 
   /** "hospital"(병원) 유형만 보건복지부 지정 전문병원 대상이라 이 필드를 보여준다 — 선택 입력이라 완료 여부엔 영향 없음 */
   const showSpecialtyField = profile.hospitalType === "hospital";
-  const basicComplete = Boolean(profile.address && profile.foundedYear && profile.phone && profile.email);
+  const basicComplete = Boolean(
+    profile.address && profile.foundedYear && profile.phone && profile.email && profile.medicalDepartments.length > 0,
+  );
   const profileComplete = Boolean(profile.shortIntro && profile.features.length > 0);
   const accountVerificationItems = [
     { label: "이메일 인증", detail: businessCompanyManager.email, done: true },
@@ -197,15 +198,24 @@ export function HospitalOrgProfileClient() {
                   <TextInput value={profile.bedCount} onChange={(value) => updateProfile("bedCount", value)} placeholder="예: 1,335" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-                <div className="space-y-2">
-                  <FieldLabel>진료과</FieldLabel>
-                  <TextInput value={profile.departments} onChange={(value) => updateProfile("departments", value)} placeholder="예: 40개+ · 주요 센터 12" />
+              <div className="space-y-2">
+                <FieldLabel required>
+                  진료과목 <span className="font-normal text-[#9aa3af]">(복수 선택)</span>
+                </FieldLabel>
+                <div className="flex flex-wrap gap-2">
+                  {medicalDepartmentOptions.map((option) => (
+                    <ToggleChip
+                      key={option.id}
+                      label={option.label}
+                      selected={profile.medicalDepartments.includes(option.id)}
+                      onClick={() => toggleMedicalDepartment(option.id)}
+                    />
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <FieldLabel>홈페이지</FieldLabel>
-                  <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} />
-                </div>
+              </div>
+              <div className="space-y-2">
+                <FieldLabel>홈페이지</FieldLabel>
+                <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} />
               </div>
               <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div className="space-y-2">
@@ -278,18 +288,6 @@ export function HospitalOrgProfileClient() {
             <button type="button" onClick={addFeatureItem} className="mt-3 inline-flex h-9 items-center gap-1.5 border border-dashed border-[#d8e0e8] bg-white px-3 text-[12.5px] font-medium text-[#4f5967] hover:border-[#111111] hover:text-[#111111]">
               <Plus size={14} /> 항목 추가
             </button>
-          </div>
-
-          <div className="mt-6 space-y-2">
-            <FieldLabel>
-              핵심 키워드 <span className="font-normal text-[#9aa3af]">(최대 {MAX_KEYWORDS}개)</span>
-            </FieldLabel>
-            <div className="flex flex-wrap gap-2">
-              {hospitalKeywordOptions.map((item) => (
-                <ToggleChip key={item} label={item} selected={profile.keywords.includes(item)} onClick={() => toggleKeyword(item)} />
-              ))}
-            </div>
-            <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">상세 페이지 사이드바와 검색에 활용됩니다.</p>
           </div>
         </SectionCard>
 
