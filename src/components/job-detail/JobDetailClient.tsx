@@ -17,7 +17,6 @@ import {
   Heart,
   MapPin,
   Share2,
-  Sparkles,
   ThumbsUp,
   WalletCards,
   X,
@@ -50,6 +49,7 @@ import {
   getCompanyDetailHref,
   getCoverImage,
   readSavedJobs,
+  useStickySidebarTop,
   writeSavedJobs,
 } from "@/components/job-detail/shared";
 
@@ -117,7 +117,7 @@ function applyHref(job: Job) {
 
 function getVisibleJobTags(job: Job) {
   return [
-    job.role ?? job.jobCategory ?? job.tags[0],
+    job.role ?? job.jobCategory ?? job.coreKeywords?.[0],
     job.industry ?? job.category,
     careerLabel(job),
     job.education,
@@ -215,9 +215,7 @@ function WorkConditions({ job }: { job: Job }) {
     const [label, ...rest] = item.split(":");
     return { label, value: rest.join(":").trim() || item };
   }) ?? [];
-  const [expanded, setExpanded] = useState(false);
   const benefitItems = job.benefits ?? [];
-  const visibleBenefits = expanded ? benefitItems : benefitItems.slice(0, 5);
 
   return (
     <div className="space-y-5">
@@ -232,21 +230,12 @@ function WorkConditions({ job }: { job: Job }) {
       {benefitItems.length > 0 ? (
         <div>
           <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#303947]">복리후생</h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {visibleBenefits.map((benefit) => (
-              <span key={benefit} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3.5 py-2 text-[13px] font-normal text-[#4f5a66]">
-                {benefit}
+          <div className="mt-2.5 flex flex-wrap gap-x-2.5 gap-y-1.5">
+            {benefitItems.map((benefit) => (
+              <span key={benefit} className="text-[13px] font-medium text-[#667181]">
+                #{benefit}
               </span>
             ))}
-            {benefitItems.length > 5 ? (
-              <button
-                type="button"
-                onClick={() => setExpanded((value) => !value)}
-                className="border border-brand bg-white px-3.5 py-2 text-[13px] font-medium text-brand transition hover:bg-brand-soft"
-              >
-                {expanded ? "접기" : `더 보기 ${benefitItems.length - 5}개`}
-              </button>
-            ) : null}
           </div>
         </div>
       ) : null}
@@ -532,7 +521,7 @@ function ReviewsSection({
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {review.tags.slice(0, 2).map((tag) => (
-                  <span key={tag} className="rounded-[var(--radius)] border border-[#e4e9ef] bg-white px-2 py-1 text-[11px] font-medium text-[#687382]">
+                  <span key={tag} className="border border-[#d7dce2] bg-white px-2 py-1 text-[11px] font-medium text-[#2f3845]">
                     {tag}
                   </span>
                 ))}
@@ -604,6 +593,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
   const [activeSection, setActiveSection] = useState("intro");
   const [shareMessage, setShareMessage] = useState("");
   const [applyMessage, setApplyMessage] = useState("");
+  const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
   useEffect(() => {
     setSavedIds(readSavedJobs());
@@ -644,11 +634,10 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
           job.preferredQualifications?.length,
       ),
     },
-    { id: "keywords", label: "핵심 키워드", visible: Boolean(job.coreKeywords?.length || job.tags.length) },
     { id: "work", label: "근무조건", visible: Boolean(job.workConditionItems?.length || job.workConditions?.length) },
     { id: "company", label: "기업정보", visible: true },
     { id: "news", label: "기업뉴스", visible: true },
-    { id: "reviews", label: "후기·비슷한 공고", visible: true },
+    { id: "reviews", label: "후기·더파마 매칭", visible: true },
   ].filter((section) => section.visible);
 
   useEffect(() => {
@@ -742,7 +731,7 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
   };
 
   const topTags = getVisibleJobTags(job);
-  const bodyKeywords = (job.coreKeywords?.length ? job.coreKeywords : job.tags).slice(0, 8);
+  const bodyKeywords = (job.coreKeywords ?? []).slice(0, 8);
   const hasAdditionalMaterials = Boolean(
     job.additionalMaterials?.images?.length ||
       job.additionalMaterials?.files?.length ||
@@ -896,17 +885,6 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 </div>
               </SectionShell>
 
-              <SectionShell id="keywords" title="핵심 키워드">
-                <div className="flex flex-wrap gap-2">
-                  {bodyKeywords.map((keyword) => (
-                    <span key={keyword} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-medium text-[#2f3845]">
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">선택된 키워드를 기준으로 유사 공고와 맞춤 추천이 제공됩니다.</p>
-              </SectionShell>
-
               {hasAdditionalMaterials ? (
                 <SectionShell id="detail-materials" title="기업 추가 자료">
                   <AdditionalMaterials job={job} />
@@ -982,15 +960,33 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 <ReviewsSection company={company} job={job} reviews={reviews} initialAccess={reviewAccess} />
               </SectionShell>
 
-              <SectionShell id="similar" title="비슷한 공고">
+              <SectionShell id="similar" title="더파마 매칭 공고">
                 <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
-                  이 공고와 직무, 키워드, 경력 조건이 비슷한 공고입니다.
+                  이 공고의 직무·지역·근무조건과 비슷한 공고를 추천합니다.
                 </p>
-                <SimilarJobs baseJob={job} jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
+                <SimilarJobs
+                  baseJob={job}
+                  jobs={similarJobs}
+                  savedIds={savedIds}
+                  onToggleSave={toggleSave}
+                  matchReasons={[
+                    `${job.role ?? job.jobCategory ?? "직무"} 직무 일치`,
+                    bodyKeywords[0] ? `${bodyKeywords[0]} 키워드 일치` : "",
+                    job.industry ?? job.category,
+                    `${job.location.split(" ")[0]}권 근무지`,
+                  ]
+                    .filter((reason): reason is string => Boolean(reason))
+                    .slice(0, 4)}
+                  matchKeywords={bodyKeywords}
+                />
               </SectionShell>
             </div>
 
-            <aside className="sticky top-[88px] self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
+            <aside
+              ref={sidebarRef}
+              style={{ top: sidebarTop }}
+              className="sticky self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden"
+            >
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
                 <h2 className={clsx("mt-2 text-[30px] font-bold", isClosed ? "text-danger" : "text-brand")}>{deadlineLabel(job)}</h2>
@@ -1070,31 +1066,6 @@ export function JobDetailClient({ job, company, similarJobs, reviews, reviewAcce
                 <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">
                   {applyNotice(job)}
                 </p>
-              </section>
-
-              <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
-                <h2 className="flex items-center gap-2 text-[18px] font-bold tracking-[-0.02em] text-[#252d39]">
-                  <Sparkles size={18} className="text-[#6b7280]" />
-                  더파마 매칭
-                </h2>
-                <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#667181]">
-                  이 공고의 직무 키워드와 최근 본 공고를 바탕으로 유사 공고를 추천합니다.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {[
-                    `${job.role ?? job.jobCategory ?? "직무"} 직무 일치`,
-                    bodyKeywords[0] ? `${bodyKeywords[0]} 키워드 일치` : "",
-                    job.industry ?? job.category,
-                    `${job.location.split(" ")[0]}권 근무지`,
-                  ]
-                    .filter((reason): reason is string => Boolean(reason))
-                    .slice(0, 4)
-                    .map((reason) => (
-                      <span key={reason} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-2 py-1 text-[11px] font-medium text-[#596373]">
-                        {reason}
-                      </span>
-                    ))}
-                </div>
               </section>
             </aside>
           </div>

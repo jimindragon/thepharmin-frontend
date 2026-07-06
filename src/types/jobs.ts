@@ -439,7 +439,6 @@ export interface Job {
   location: string;
   address?: string;
   salary: string;
-  tags: string[];
   deadline?: string;
   deadlineLabel: string;
   deadlineDate: string;

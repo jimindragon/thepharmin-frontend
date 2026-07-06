@@ -111,7 +111,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
             </p>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {job.tags.slice(0, 5).map((tag) => (
+              {(job.coreKeywords ?? []).slice(0, 5).map((tag) => (
                 <span
                   key={tag}
                   className="rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]"

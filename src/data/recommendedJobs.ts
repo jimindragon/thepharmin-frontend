@@ -69,7 +69,7 @@ export const recommendedJobs: RecommendedJob[] = orderedSlugs.flatMap<Recommende
     logoUrl: (companyLogos as Record<string, string | undefined>)[job.company],
     title: job.title,
     condition: `${job.career} · ${job.education} · ${job.location}`,
-    tags: job.tags,
+    tags: job.coreKeywords ?? [],
     dDay: job.deadlineLabel.replace("마감 ", ""),
     applyMethod: job.applyMethod,
     image: job.coverImage ?? job.coverImageUrl ?? companyExampleImages.workspace,

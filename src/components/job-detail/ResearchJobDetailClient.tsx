@@ -31,6 +31,7 @@ import {
   deadlineLabel,
   getCoverImage,
   readSavedJobs,
+  useStickySidebarTop,
   writeSavedJobs,
 } from "@/components/job-detail/shared";
 import { getResearchFieldLabel, getResearchFieldShortLabel } from "@/config/researchFields";
@@ -58,12 +59,12 @@ function OverflowChips({ items, max }: { items: string[]; max: number }) {
   return (
     <div className="flex flex-wrap gap-2">
       {visible.map((item) => (
-        <span key={item} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-medium text-[#2f3845]">
+        <span key={item} className="border border-[#d7dce2] bg-white px-2.5 py-1 text-[13px] font-medium text-[#2f3845]">
           {item}
         </span>
       ))}
       {rest > 0 ? (
-        <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-white px-3.5 py-2 text-[13px] font-medium text-[#8a95a5]">+{rest}</span>
+        <span className="border border-[#d7dce2] bg-white px-2.5 py-1 text-[13px] font-medium text-[#8a95a5]">+{rest}</span>
       ) : null}
     </div>
   );
@@ -83,12 +84,12 @@ function ResearchFieldChips({ fieldIds, max = 4 }: { fieldIds: string[]; max?: n
   return (
     <div className="flex flex-wrap gap-2">
       {visible.map((label) => (
-        <span key={label} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-medium text-[#2f3845]">
+        <span key={label} className="border border-[#d7dce2] bg-white px-2.5 py-1 text-[13px] font-medium text-[#2f3845]">
           {label}
         </span>
       ))}
       {rest > 0 ? (
-        <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-white px-3.5 py-2 text-[13px] font-medium text-[#8a95a5]">+{rest}</span>
+        <span className="border border-[#d7dce2] bg-white px-2.5 py-1 text-[13px] font-medium text-[#8a95a5]">+{rest}</span>
       ) : null}
     </div>
   );
@@ -237,6 +238,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
   const [activeSection, setActiveSection] = useState("intro");
   const [shareMessage, setShareMessage] = useState("");
   const [applyMessage, setApplyMessage] = useState("");
+  const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
   useEffect(() => {
     setSavedIds(readSavedJobs());
@@ -302,7 +304,7 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
     },
     { id: "workApply", label: "근무·지원", visible: true },
     { id: "lab", label: "연구실 정보", visible: Boolean(lab) },
-    { id: "similar", label: "비슷한 공고", visible: true },
+    { id: "similar", label: "더파마 매칭 공고", visible: true },
   ].filter((section) => section.visible);
 
   useEffect(() => {
@@ -537,8 +539,12 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
                   {job.benefits?.length ? (
                     <div className="border-t border-[#edf1f4] pt-6">
                       <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">복리후생</h3>
-                      <div className="mt-3">
-                        <OverflowChips items={job.benefits} max={10} />
+                      <div className="mt-2.5 flex flex-wrap gap-x-2.5 gap-y-1.5">
+                        {job.benefits.map((benefit) => (
+                          <span key={benefit} className="text-[13px] font-medium text-[#667181]">
+                            #{benefit}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   ) : null}
@@ -569,13 +575,17 @@ export function ResearchJobDetailClient({ job, similarJobs, otherLabJobsCount }:
                 </SectionShell>
               ) : null}
 
-              <SectionShell id="similar" title="비슷한 공고">
+              <SectionShell id="similar" title="더파마 매칭 공고">
                 <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">같은 전공분야, 같은 채용 형태, 유사 근무지역의 공고입니다.</p>
                 <SimilarJobs baseJob={job} jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
               </SectionShell>
             </div>
 
-            <aside className="sticky top-[88px] self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
+            <aside
+              ref={sidebarRef}
+              style={{ top: sidebarTop }}
+              className="sticky self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden"
+            >
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
                 <h2 className="mt-2 text-[30px] font-bold text-brand">{deadlineLabel(job)}</h2>

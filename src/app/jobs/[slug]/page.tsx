@@ -25,7 +25,7 @@ function getSimilarJobs(job: Job) {
 
     const sameCategory = item.jobSubcategoryIds.some((id) => job.jobSubcategoryIds.includes(id));
     const sameRegion = item.regionId === job.regionId;
-    const sharedKeyword = item.tags.some((tag) => job.tags.includes(tag));
+    const sharedKeyword = (item.coreKeywords ?? []).some((tag) => (job.coreKeywords ?? []).includes(tag));
 
     return sameCategory || sameRegion || sharedKeyword;
   });

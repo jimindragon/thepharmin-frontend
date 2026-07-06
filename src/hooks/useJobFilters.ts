@@ -692,7 +692,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
         job.employmentType,
         job.salary,
         job.industry ?? "",
-        ...job.tags,
+        ...(job.coreKeywords ?? []),
         ...job.searchKeywords,
       ]
         .join(" ")

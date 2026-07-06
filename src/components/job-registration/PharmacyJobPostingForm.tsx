@@ -5,9 +5,15 @@ import { AlertCircle, Info, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { SectionCard, ToggleChip } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
-import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
+import {
+  educationOptions,
+  employmentTypeOptions,
+  experienceOptions,
+  pharmacyFeatureOptions,
+  pharmacyWorkTypeOptions,
+} from "@/config/jobFilters/index";
 import type { SalaryDetail } from "@/types/jobs";
 import { convertToHourly, formatSalaryDetail, formatWon } from "@/utils/salary";
 
@@ -122,7 +128,6 @@ function ToggleRow({ title, description, checked, onChange, ariaLabel }: {
 const PHARMACY_JOB_TYPES = ["풀타임약사","파트타임약사","토요일주말약사","단기대체약사","관리약사","전산약무","조제보조","매장관리판매","사무보조"];
 // 약국 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions에서 정규직/계약직/파트타임 3종만 id로 명시 ("아르바이트"는 파트타임으로 라벨 통일, "기타"는 정본에 없어 제외)
 const PHARMACY_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time"];
-const WORK_TYPE_OPTS = ["상근직","시간제","교대제","기타"];
 const SOFTWARE_PRESETS = ["유팜","팜IT 3000","팜트리","비트컴퓨터","이지팜"];
 const DEVICE_PRESETS = ["계수기","산제자동포장기","자동정제반절기","약포지인쇄기","자동투약기"];
 const BENEFIT_PRESETS = ["4대보험","퇴직연금","식사 제공","숙소 제공","연차","경조 지원","교통비 지원","명절 상여","직원 주차","복지포인트"];
@@ -146,11 +151,14 @@ export function PharmacyJobPostingForm() {
   const [title,          setTitle]          = useState("");
   const [role,           setRole]           = useState("");
   const [employmentType, setEmploymentType] = useState("");
-  const [workType,       setWorkType]       = useState("");
+  // 더파마 매칭이 읽는 Job.pharmacyWorkTypeIds(배열)에 대응 — 실제 저장은 백엔드 연동 시
+  const [pharmacyWorkTypeIds, setPharmacyWorkTypeIds] = useState<string[]>([]);
   const [career,         setCareer]         = useState("");
   const [education,      setEducation]      = useState("");
   const [headcount,      setHeadcount]      = useState("");
   const [simpyeong,      setSimpyeong]      = useState<Simpyeong>("");
+  // 더파마 매칭이 읽는 Job.pharmacyFeatureIds(단일)에 대응 — 실제 저장은 백엔드 연동 시
+  const [pharmacyFeatureIds, setPharmacyFeatureIds] = useState<string | undefined>(undefined);
 
   // §2 모집부문
   const [recruitPart,          setRecruitPart]          = useState("");
@@ -474,9 +482,10 @@ export function PharmacyJobPostingForm() {
             </div>
             <div>
               <label htmlFor="p-worktype" className={LBL}>근무형태</label>
-              <select id="p-worktype" value={workType} onChange={e => setWorkType(e.target.value)} className={SEL}>
+              <select id="p-worktype" value={pharmacyWorkTypeIds[0] ?? ""}
+                onChange={e => setPharmacyWorkTypeIds(e.target.value ? [e.target.value] : [])} className={SEL}>
                 <option value="">선택 안 함</option>
-                {WORK_TYPE_OPTS.map(t => <option key={t}>{t}</option>)}
+                {pharmacyWorkTypeOptions.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
             </div>
           </div>
@@ -512,6 +521,18 @@ export function PharmacyJobPostingForm() {
 
           <SegControl label="심평원 등록" options={["필요", "불필요"]} value={simpyeong} onChange={v => setSimpyeong(v as Simpyeong)} />
           <p className={HINT} style={{ marginTop: 6 }}>공고 상세에 강조 배지로 노출됩니다. 해당 없으면 선택하지 않아도 됩니다.</p>
+
+          <div className="mt-5">
+            <p className={LBL}>조제 특성 <span className="text-[#9aa3af] font-normal">(선택)</span></p>
+            <div className="flex flex-wrap gap-2">
+              {pharmacyFeatureOptions.map(option => (
+                <ToggleChip key={option.id} label={option.label}
+                  selected={pharmacyFeatureIds === option.id}
+                  onClick={() => setPharmacyFeatureIds(pharmacyFeatureIds === option.id ? undefined : option.id)} />
+              ))}
+            </div>
+            <p className={HINT}>공고 상세·매칭에 반영됩니다. 해당 없으면 선택하지 않아도 됩니다.</p>
+          </div>
         </SectionCard>
 
         {/* ── §2 모집부문 및 자격요건 ───────────────────────────────────────────── */}

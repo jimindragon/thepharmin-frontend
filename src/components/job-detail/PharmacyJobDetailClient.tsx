@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Bookmark, Copy, FileCheck, ListChecks, Phone, Share2, Sparkles } from "lucide-react";
+import { ArrowRight, Bookmark, Copy, FileCheck, ListChecks, Phone, Share2 } from "lucide-react";
 import type { Company, Job, JobWorkShift } from "@/types/jobs";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import {
@@ -23,6 +23,7 @@ import {
   getCompanyDetailHref,
   getCoverImage,
   readSavedJobs,
+  useStickySidebarTop,
   writeSavedJobs,
 } from "@/components/job-detail/shared";
 import { formatWon } from "@/utils/salary";
@@ -102,7 +103,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
   const [savedIds, setSavedIds] = useState<Set<number>>(() => new Set());
   const [activeSection, setActiveSection] = useState("intro");
   const [shareMessage, setShareMessage] = useState("");
-  const [benefitsExpanded, setBenefitsExpanded] = useState(false);
+  const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
   useEffect(() => {
     setSavedIds(readSavedJobs());
@@ -113,7 +114,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
   const scheduleBullets = useMemo(() => buildScheduleBullets(job.workShifts), [job.workShifts]);
   const workEnvBullets = useMemo(() => buildWorkEnvBullets(job), [job]);
   const locationBullets = useMemo(() => buildLocationBullets(job), [job]);
-  const bodyKeywords = (job.coreKeywords?.length ? job.coreKeywords : job.tags).slice(0, 8);
+  const bodyKeywords = (job.coreKeywords ?? []).slice(0, 8);
 
   const overview = useMemo(
     () => [
@@ -139,11 +140,10 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
         job.responsibilitiesContent?.items.length || job.requirementsContent?.items.length || job.preferredContent?.items.length || job.preferredQualifications?.length || job.benefits?.length,
       ),
     },
-    { id: "keywords", label: "핵심 키워드", visible: Boolean(bodyKeywords.length) },
     { id: "work", label: "근무조건", visible: true },
     { id: "workenv", label: "근무 환경 안내", visible: Boolean(job.hrTips?.some((qa) => qa.answer)) },
     { id: "company", label: "기업정보", visible: true },
-    { id: "similar", label: "비슷한 공고", visible: true },
+    { id: "similar", label: "더파마 매칭 공고", visible: true },
   ].filter((section) => section.visible);
 
   useEffect(() => {
@@ -204,7 +204,7 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
     "직무 일치",
     `${job.location.split(" ")[0]}권 근무지`,
     job.pharmacyWorkTypeIds?.includes("part_time") ? "파트타임 일치" : null,
-    job.pharmacyFeatureIds === "prescription_focused" || job.tags.includes("처방조제") ? "처방 조제" : null,
+    job.pharmacyFeatureIds === "prescription_focused" ? "처방 조제" : null,
   ]
     .filter((reason): reason is string => Boolean(reason))
     .slice(0, 4);
@@ -347,38 +347,16 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                     {job.benefits?.length ? (
                       <div>
                         <h3 className="text-[18px] font-bold tracking-[-0.02em] text-[#2f3845]">복리후생</h3>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {(benefitsExpanded ? job.benefits : job.benefits.slice(0, 5)).map((benefit) => (
-                            <span key={benefit} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3.5 py-2 text-[13px] font-normal text-[#4f5a66]">
-                              {benefit}
+                        <div className="mt-2.5 flex flex-wrap gap-x-2.5 gap-y-1.5">
+                          {job.benefits.map((benefit) => (
+                            <span key={benefit} className="text-[13px] font-medium text-[#667181]">
+                              #{benefit}
                             </span>
                           ))}
-                          {job.benefits.length > 5 ? (
-                            <button
-                              type="button"
-                              onClick={() => setBenefitsExpanded((v) => !v)}
-                              className="border border-brand bg-white px-3.5 py-2 text-[13px] font-medium text-brand transition hover:bg-brand-soft"
-                            >
-                              {benefitsExpanded ? "접기" : `더 보기 ${job.benefits.length - 5}개`}
-                            </button>
-                          ) : null}
                         </div>
                       </div>
                     ) : null}
                   </div>
-                </SectionShell>
-              ) : null}
-
-              {bodyKeywords.length ? (
-                <SectionShell id="keywords" title="핵심 키워드">
-                  <div className="flex flex-wrap gap-2">
-                    {bodyKeywords.map((keyword) => (
-                      <span key={keyword} className="rounded-[var(--radius)] border border-[#dedede] bg-[#f7f7f7] px-3.5 py-2 text-[13px] font-medium text-[#2f3845]">
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">선택된 키워드를 기준으로 유사 공고와 맞춤 추천이 제공됩니다.</p>
                 </SectionShell>
               ) : null}
 
@@ -456,13 +434,26 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                 </div>
               </SectionShell>
 
-              <SectionShell id="similar" title="비슷한 공고">
-                <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">같은 약국 직종, 유사 지역의 공고입니다.</p>
-                <SimilarJobs baseJob={job} jobs={similarJobs} savedIds={savedIds} onToggleSave={toggleSave} />
+              <SectionShell id="similar" title="더파마 매칭 공고">
+                <p className="-mt-1 mb-5 text-[14px] font-normal leading-[1.7] text-[#667181]">
+                  이 공고의 직무·근무 조건과 비슷한 공고를 추천합니다.
+                </p>
+                <SimilarJobs
+                  baseJob={job}
+                  jobs={similarJobs}
+                  savedIds={savedIds}
+                  onToggleSave={toggleSave}
+                  matchReasons={matchReasons}
+                  matchKeywords={bodyKeywords}
+                />
               </SectionShell>
             </div>
 
-            <aside className="sticky top-[88px] self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden">
+            <aside
+              ref={sidebarRef}
+              style={{ top: sidebarTop }}
+              className="sticky self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden"
+            >
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
                 <h2 className="mt-2 text-[30px] font-bold text-brand">{deadlineLabel(job)}</h2>
@@ -546,23 +537,6 @@ export function PharmacyJobDetailClient({ job, company, similarJobs }: PharmacyJ
                     <p className="mt-1.5 font-normal text-[#8993a1]">면접 및 합격 여부는 대상자에게 개별 안내드립니다.</p>
                   </div>
                 ) : null}
-              </section>
-
-              <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
-                <h2 className="flex items-center gap-2 text-[18px] font-bold tracking-[-0.02em] text-[#252d39]">
-                  <Sparkles size={18} className="text-[#6b7280]" />
-                  더파마 매칭
-                </h2>
-                <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#667181]">
-                  이 공고의 직무·근무 조건과 최근 본 공고를 바탕으로 유사 공고를 추천합니다.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {matchReasons.map((reason) => (
-                    <span key={reason} className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-2 py-1 text-[11px] font-medium text-[#596373]">
-                      {reason}
-                    </span>
-                  ))}
-                </div>
               </section>
             </aside>
           </div>

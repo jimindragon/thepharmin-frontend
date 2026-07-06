@@ -183,7 +183,7 @@ function HomeRecommendationCard({
         <p className="pr-8 text-[12px] font-normal text-[#6b7280]">{job.company}</p>
         <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111]")}>{job.title}</h3>
         <div className="mt-2.5 flex flex-wrap gap-2">
-          {job.tags.slice(0, 4).map((tag) => (
+          {(job.coreKeywords ?? []).slice(0, 4).map((tag) => (
             <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
               {tag}
             </span>

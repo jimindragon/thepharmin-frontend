@@ -14,6 +14,7 @@ import {
   experienceOptions,
   hospitalJobCategoryOptions,
   hospitalTypeOptions,
+  shiftTypeOptions,
 } from "@/config/jobFilters/index";
 import type { PayType, SalaryRange } from "@/types/jobs";
 import { formatHeadcount } from "@/utils/headcount";
@@ -108,6 +109,10 @@ function InlineNote({ children }: { children: React.ReactNode }) {
   );
 }
 
+type ChipOption = string | { id: string; label: string };
+function chipOptionId(opt: ChipOption): string { return typeof opt === "string" ? opt : opt.id; }
+function chipOptionLabel(opt: ChipOption): string { return typeof opt === "string" ? opt : opt.label; }
+
 function ChipGroup({
   label,
   required,
@@ -119,7 +124,7 @@ function ChipGroup({
 }: {
   label: string;
   required?: boolean;
-  options: string[];
+  options: ChipOption[];
   selected: Set<string>;
   onToggle: (item: string) => void;
   max?: number;
@@ -135,16 +140,18 @@ function ChipGroup({
       </p>
       <div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-2">
         {options.map((opt) => {
-          const isOn = selected.has(opt);
+          const id = chipOptionId(opt);
+          const text = chipOptionLabel(opt);
+          const isOn = selected.has(id);
           const atMax = max !== undefined && selected.size >= max && !isOn;
           return (
             <button
-              key={opt}
+              key={id}
               type="button"
               role="checkbox"
               aria-checked={isOn}
               aria-disabled={atMax}
-              onClick={() => !atMax && onToggle(opt)}
+              onClick={() => !atMax && onToggle(id)}
               className={clsx(
                 "h-9 border px-3.5 text-[12px] font-medium inline-flex items-center gap-1.5 transition-colors",
                 isOn
@@ -155,7 +162,7 @@ function ChipGroup({
               )}
             >
               {isOn && <span className="text-[10px]" aria-hidden>✓</span>}
-              {opt}
+              {text}
             </button>
           );
         })}
@@ -250,7 +257,6 @@ const JOB_SUBCATEGORY_LABEL_BY_ID = new Map(
 const MAX_KW = 8;
 const WELFARE_OPTS = ["4대보험", "퇴직연금", "본인·가족 의료비", "교육비 지원", "경조 지원", "사내식당", "직원 주차", "연·월차", "휴양시설", "직장 어린이집"];
 const SUBMISSION_OPTS = ["입사지원서(자사양식)", "최종학력 성적증명서", "약사 면허증 사본", "자기소개서", "경력증명서", "자격증 사본"];
-const WORK_TYPE_OPTS = ["주간", "야간·당직", "주말", "파트타임", "교대"];
 // 병원 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions(5종)에서 "인턴" 제외 4종만 id로 명시
 const HOSPITAL_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time", "freelance"];
 
@@ -268,7 +274,8 @@ export function HospitalJobPostingForm() {
   const [title, setTitle] = useState("");
   const [jobCategory, setJobCategory] = useState("");
   const [workplaceCategory, setWorkplaceCategory] = useState("");
-  const [workTypes, setWorkTypes] = useState<Set<string>>(new Set(["주간"]));
+  // 더파마 매칭이 읽는 Job.shiftTypeIds에 대응 — 실제 저장은 백엔드 연동 시
+  const [shiftTypeIds, setShiftTypeIds] = useState<Set<string>>(new Set(["day_shift"]));
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
   const [educationType, setEducationType] = useState("any");
@@ -379,7 +386,7 @@ export function HospitalJobPostingForm() {
     if (!title.trim()) next.title = "공고 제목을 입력해 주세요.";
     if (!jobCategory) next.jobCategory = "직무 분류를 선택해 주세요.";
     if (!workplaceCategory) next.workplaceCategory = "사업장 분류를 선택해 주세요.";
-    if (workTypes.size === 0) next.workTypes = "근무형태를 하나 이상 선택해 주세요.";
+    if (shiftTypeIds.size === 0) next.shiftTypeIds = "근무형태를 하나 이상 선택해 주세요.";
     if (isSplitByDept) {
       departments.forEach((dept, i) => {
         if (!dept.name.trim()) next[`dept_${i}_name`] = "부문명을 입력해 주세요.";
@@ -490,7 +497,7 @@ export function HospitalJobPostingForm() {
         <SectionCard
           title="기본 정보"
           description="공고 제목과 직무, 채용 조건을 입력합니다."
-          status={errors.title || errors.jobCategory || errors.workplaceCategory || errors.workTypes ? "필수 입력 필요" : "작성 중"}
+          status={errors.title || errors.jobCategory || errors.workplaceCategory || errors.shiftTypeIds ? "필수 입력 필요" : "작성 중"}
         >
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="h-title" className={LBL}>공고 제목{REQ}</label>
@@ -526,10 +533,10 @@ export function HospitalJobPostingForm() {
             </div>
           </div>
 
-          <div className="mb-5" ref={setRef("workTypes")}>
-            <ChipGroup label="근무유형" required options={WORK_TYPE_OPTS} selected={workTypes}
-              onToggle={(item) => setWorkTypes(toggleSet(workTypes, item))} hint="복수 선택 가능" />
-            <FieldError message={errors.workTypes} />
+          <div className="mb-5" ref={setRef("shiftTypeIds")}>
+            <ChipGroup label="근무유형" required options={shiftTypeOptions} selected={shiftTypeIds}
+              onToggle={(item) => setShiftTypeIds(toggleSet(shiftTypeIds, item))} hint="복수 선택 가능" />
+            <FieldError message={errors.shiftTypeIds} />
           </div>
 
           <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">

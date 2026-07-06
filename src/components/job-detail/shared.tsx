@@ -2,8 +2,8 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { useState } from "react";
-import { Bookmark, MapPin, ShieldCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bookmark, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
@@ -37,6 +37,39 @@ export function readSavedJobs() {
 
 export function writeSavedJobs(ids: Set<number>) {
   window.localStorage.setItem(saveStorageKey, JSON.stringify(Array.from(ids)));
+}
+
+/**
+ * 상세 사이드바 sticky top 값을 계산한다. 사이드바가 뷰포트보다 짧으면 topOffset에 고정(기존과 동일),
+ * 사이드바가 뷰포트보다 길면 top을 줄여 사이드바 하단이 "뷰포트 하단 - bottomGap"에서 멈추게 한다.
+ * 스크롤 리스너 없이 position:sticky 자체가 나머지(자연스러운 노출→고정 전환)를 처리하도록,
+ * 뷰포트/콘텐츠 높이가 바뀔 때만(ResizeObserver·resize) top 값을 재계산한다.
+ */
+export function useStickySidebarTop(topOffset = 88, bottomGap = 24) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [top, setTop] = useState(topOffset);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    function recalc() {
+      const height = el!.getBoundingClientRect().height;
+      const minTop = window.innerHeight - height - bottomGap;
+      setTop(Math.min(topOffset, minTop));
+    }
+
+    recalc();
+    const resizeObserver = new ResizeObserver(recalc);
+    resizeObserver.observe(el);
+    window.addEventListener("resize", recalc);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", recalc);
+    };
+  }, [topOffset, bottomGap]);
+
+  return { ref, top };
 }
 
 export function careerLabel(job: Job) {
@@ -159,7 +192,7 @@ export function CompanyLogo({
 
 export function HeaderTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-[var(--radius)] border border-[#e0e0e0] bg-[#f8f8f8] px-3 py-1.5 text-[13px] font-normal text-[#4f5a66]">
+    <span className="border border-[#d7dce2] bg-white px-2.5 py-1 text-[13px] font-medium text-[#2f3845]">
       {children}
     </span>
   );
@@ -336,7 +369,7 @@ function getSimilarJobReasons(baseJob: Job, similarJob: Job) {
     reasons.push("직무 분류 유사");
   }
 
-  const sharedKeyword = similarJob.tags.find((tag) => [...baseJob.tags, ...(baseJob.coreKeywords ?? [])].includes(tag));
+  const sharedKeyword = (similarJob.coreKeywords ?? []).find((tag) => (baseJob.coreKeywords ?? []).includes(tag));
   if (sharedKeyword) {
     reasons.push(`${sharedKeyword} 키워드 일치`);
   }
@@ -369,72 +402,106 @@ function SimilarCompanyLogo({ job }: { job: Job }) {
 }
 
 /** 직무/지역/키워드가 비슷한 공고 카드 그리드. 트랙에 상관없이 동일한 카드 스타일을 쓴다. */
+/**
+ * 사이드바에 있던 "더파마 매칭"(matchReasons/matchKeywords)을 본문 "비슷한 공고" 섹션에 흡수한 것.
+ * matchReasons/matchKeywords가 없으면(연구 트랙 등) 공고 카드 그리드만 렌더링된다.
+ */
 export function SimilarJobs({
   baseJob,
   jobs,
   savedIds,
   onToggleSave,
+  matchReasons,
+  matchKeywords,
 }: {
   baseJob: Job;
   jobs: Job[];
   savedIds: Set<number>;
   onToggleSave: (jobId: number) => void;
+  matchReasons?: string[];
+  matchKeywords?: string[];
 }) {
-  if (!jobs.length) {
-    return <p className="text-[14px] font-normal text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>;
-  }
-
   return (
-    <div className="grid grid-cols-4 gap-3 max-[1180px]:grid-cols-2 max-[720px]:flex max-[720px]:overflow-x-auto">
-      {jobs.slice(0, 4).map((similarJob) => {
-        const reasons = getSimilarJobReasons(baseJob, similarJob);
-        const card = (
-          <article className="group h-full rounded-[var(--radius)] border border-border bg-white p-4 transition hover:border-brand/45 hover:bg-[#fbfbfb] max-[720px]:w-[270px] max-[720px]:shrink-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <SimilarCompanyLogo job={similarJob} />
-                <p className="min-w-0 truncate text-[12px] font-medium text-[#596373]">{similarJob.company}</p>
-              </div>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onToggleSave(similarJob.id);
-                }}
-                className={clsx("grid h-8 w-8 shrink-0 place-items-center", savedIds.has(similarJob.id) ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand")}
-                aria-label={`${similarJob.title} 저장`}
-              >
-                <Bookmark size={18} fill={savedIds.has(similarJob.id) ? "currentColor" : "none"} />
-              </button>
-            </div>
-            <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.4] text-[#2b3340]">{similarJob.title}</h3>
-            <p className="mt-2 text-[12px] font-medium text-[#7d8796]">
-              {careerLabel(similarJob)} · {similarJob.employmentType} · {similarJob.location}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {reasons.map((reason) => (
-                <span key={reason} className="rounded-[var(--radius)] border border-[#dfe5ec] bg-[#f4f5f6] px-2 py-1 text-[11px] font-medium text-[#4f5a66]">
-                  {reason}
-                </span>
-              ))}
-              {similarJob.tags.slice(0, Math.max(0, 2 - reasons.length)).map((tag) => (
-                <span key={tag} className="rounded-[var(--radius)] border border-[#e4e8ef] bg-white px-2 py-1 text-[11px] font-medium text-[#777f8c]">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </article>
-        );
+    <div>
+      {matchReasons && matchReasons.length > 0 ? (
+        <div className="mb-5 flex flex-wrap items-center gap-1.5">
+          <Sparkles size={15} className="mr-0.5 shrink-0 text-[#6b7280]" />
+          {matchReasons.map((reason) => (
+            <span key={reason} className="border border-[#d7dce2] bg-white px-2 py-1 text-[11px] font-medium text-[#2f3845]">
+              {reason}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
-        return similarJob.slug ? (
-          <Link key={similarJob.id} href={`/jobs/${similarJob.slug}`} className="block rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.2)]">
-            {card}
-          </Link>
-        ) : (
-          <div key={similarJob.id}>{card}</div>
-        );
-      })}
+      {!jobs.length ? (
+        <p className="text-[14px] font-normal text-[#667181]">조건이 비슷한 공고를 준비 중입니다.</p>
+      ) : (
+        <div className="grid grid-cols-4 gap-3 max-[1180px]:grid-cols-2 max-[720px]:flex max-[720px]:overflow-x-auto">
+          {jobs.slice(0, 4).map((similarJob) => {
+            const reasons = getSimilarJobReasons(baseJob, similarJob);
+            const card = (
+              <article className="group h-full rounded-[var(--radius)] border border-border bg-white p-4 transition hover:border-brand/45 hover:bg-[#fbfbfb] max-[720px]:w-[270px] max-[720px]:shrink-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <SimilarCompanyLogo job={similarJob} />
+                    <p className="min-w-0 truncate text-[12px] font-medium text-[#596373]">{similarJob.company}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onToggleSave(similarJob.id);
+                    }}
+                    className={clsx("grid h-8 w-8 shrink-0 place-items-center", savedIds.has(similarJob.id) ? "text-brand" : "text-[#8a95a5] hover:bg-[#f4f7f9] hover:text-brand")}
+                    aria-label={`${similarJob.title} 저장`}
+                  >
+                    <Bookmark size={18} fill={savedIds.has(similarJob.id) ? "currentColor" : "none"} />
+                  </button>
+                </div>
+                <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.4] text-[#2b3340]">{similarJob.title}</h3>
+                <p className="mt-2 text-[12px] font-medium text-[#7d8796]">
+                  {careerLabel(similarJob)} · {similarJob.employmentType} · {similarJob.location}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {reasons.map((reason) => (
+                    <span key={reason} className="border border-[#d7dce2] bg-white px-2 py-1 text-[11px] font-medium text-[#2f3845]">
+                      {reason}
+                    </span>
+                  ))}
+                  {(similarJob.coreKeywords ?? []).slice(0, Math.max(0, 2 - reasons.length)).map((tag) => (
+                    <span key={tag} className="border border-[#d7dce2] bg-white px-2 py-1 text-[11px] font-medium text-[#2f3845]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            );
+
+            return similarJob.slug ? (
+              <Link key={similarJob.id} href={`/jobs/${similarJob.slug}`} className="block rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.2)]">
+                {card}
+              </Link>
+            ) : (
+              <div key={similarJob.id}>{card}</div>
+            );
+          })}
+        </div>
+      )}
+
+      {matchKeywords && matchKeywords.length > 0 ? (
+        <div className="mt-5 border-t border-[#f0f2f5] pt-4">
+          <h3 className="text-[13px] font-medium text-[#7d8796]">매칭 키워드</h3>
+          <div className="mt-2.5 flex flex-wrap gap-x-2.5 gap-y-1.5">
+            {matchKeywords.map((keyword) => (
+              <span key={keyword} className="text-[13px] font-medium text-[#667181]">
+                #{keyword}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
