@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, Info, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
@@ -15,6 +15,7 @@ import {
   industryJobCategoryOptions,
   workModeOptions,
 } from "@/config/jobFilters/index";
+import { initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import type { JobSubcategoryOption } from "@/types/jobs";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -52,19 +53,20 @@ const SUBCATEGORY_LABEL_BY_ID = new Map(
 );
 
 const KW_BY_CAT: Record<JobCat, string[]> = {
-  rnd:      ["신약개발", "전임상", "콜리", "독성", "합성", "전임 연구", "바이오의약품", "CMC", "스크린", "후보물질", "의료기기 R&D", "특허"],
-  sales:    ["제약영업", "MR", "의료기기 영업", "마케팅", "PM", "브랜드전략", "디지털마케팅", "해외영업", "KOL", "시장분석", "영업기획"],
-  clinical: ["임상시험이사", "CRA", "CRC", "Medical Writing", "임상 QA", "임상 PM", "ICH-GCP", "프로토콜", "DM", "통계", "모니터링", "SAE"],
-  ra:       ["RA", "CTD", "인허가", "규제기관", "IND/NDA", "FDA", "EMA", "CMC RA", "허가전략", "의료기기 RA", "변경허가", "글로벌 인허가"],
-  ma:       ["Medical Affairs", "MSL", "HEOR", "RWE", "약가", "보험", "근거생성", "KOL", "임상논문", "Market Access", "약물경제성"],
-  qc:       ["GMP", "QC", "QA", "QMS", "Validation", "CAPA", "품질보증", "품질관리", "SOP", "공정기술", "제조관리", "일탈관리"],
-  pv:       ["PV", "Pharmacovigilance", "약물감시", "약물감사", "안전성", "ICSR", "시그널", "안전정보", "복약지도", "조제", "마약류 관리", "DUR"],
-  strategy: ["BD", "Licensing", "License-in", "사업개발", "기술이전", "파트너링", "투자", "M&A", "IR", "사업전략", "계약협상"],
-  data:     ["AI 신약개발", "Bioinformatics", "Data Science", "RWE 데이터", "머신러닝", "빅데이터", "IT", "Software", "데이터분석"],
-  biz:      ["HR", "채용", "재무", "회계", "법무", "컴플라이언스", "구매", "이무", "홍보", "PR", "디자인", "경영지원"],
+  rnd: ["신약개발", "전임상 연구", "후보물질 발굴", "스크리닝", "약리평가", "독성평가", "약동학/약력학", "제형연구", "분석법 개발", "CMC", "바이오의약품", "세포주 개발", "의료기기 R&D", "특허/IP"],
+  sales: ["제약영업", "MR", "의료기기 영업", "병원영업", "KOL 관리", "Product Marketing", "브랜드 전략", "디지털 마케팅", "시장분석", "영업기획", "Key Account", "해외영업"],
+  clinical: ["CRA", "CRC", "임상 PM", "Clinical Operations", "Medical Writing", "임상 QA", "ICH-GCP", "프로토콜", "Site Management", "모니터링", "SAE", "Data Management", "Biostatistics", "eTMF"],
+  ra: ["RA", "인허가", "CTD", "eCTD", "IND/NDA", "MFDS", "FDA", "EMA", "허가전략", "변경허가", "CMC RA", "의료기기 RA", "글로벌 인허가", "규제기관 대응"],
+  ma: ["Medical Affairs", "MSL", "Medical Science", "KOL Engagement", "Scientific Communication", "Medical Education", "HEOR", "RWE", "근거생성", "Market Access", "보험등재", "약가전략", "약물경제성", "논문·학술자료"],
+  qc: ["GMP", "QA", "QC", "품질보증", "품질관리", "QMS", "Validation", "CSV", "SOP", "CAPA", "Deviation", "Audit", "공정관리", "제조관리", "LIMS"],
+  pv: ["PV", "Drug Safety", "Pharmacovigilance", "이상사례", "ICSR", "Safety Database", "Signal Detection", "Literature Review", "DSUR", "PSUR/PBRER", "RMP", "안전성 보고", "SOP", "규제기관 보고"],
+  strategy: ["BD", "사업개발", "Licensing", "License-in", "License-out", "기술이전", "파트너링", "Alliance Management", "M&A", "IR", "사업전략", "시장성 평가", "기술가치평가", "계약협상"],
+  data: ["AI 신약개발", "Bioinformatics", "Data Science", "의료데이터", "RWE 데이터", "머신러닝", "빅데이터 분석", "데이터 파이프라인", "Python", "SQL", "CDISC", "SAS", "헬스케어 소프트웨어", "SaMD"],
+  biz: ["HR", "채용", "조직문화", "재무", "회계", "법무", "컴플라이언스", "구매", "SCM", "물류", "홍보", "PR", "IR 지원", "총무"],
 };
 
-const WELFARE_OPTS = ["4대보험", "연차", "교육비 지원", "성과금", "유연근무", "재택근무", "글로벌 교육", "건강검진", "사내카페", "직원 주차"];
+const WELFARE_OPTS = ["유연근무제", "재택근무", "성과급", "인센티브", "연차·반차", "건강검진", "식대 지원", "교통비 지원", "교육비 지원", "자격증 취득 지원", "어학 교육 지원", "학회·세미나 지원", "셔틀버스", "기숙사·사택"];
+const SALARY_OPTS = ["회사 내규", "3,000만↑", "5,000만↑", "7,000만↑", "9,000만↑"];
 
 const MAX_KW = 8;
 
@@ -121,7 +123,7 @@ function ChipGroup({
   const id = labelId ?? internalId;
   return (
     <div>
-      <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
+      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
         {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
@@ -237,13 +239,12 @@ export function IndustryJobPostingForm() {
   const [preferred, setPreferred] = useState("");
 
   // §3 근무조건
-  const [workplaceMode, setWorkplaceMode] = useState("기관 대표 주소 불러오기");
   const [workRegion, setWorkRegion] = useState("서울 강남구");
   const [workMode, setWorkMode] = useState("");
   const [address, setAddress] = useState("서울 강남구 역삼로 226, 오신 카세코빌딩");
-  const [workSchedule, setWorkSchedule] = useState("");
+  const [sameAsCompanyAddress, setSameAsCompanyAddress] = useState(false);
   const [salary, setSalary] = useState("");
-  const [welfare, setWelfare] = useState<Set<string>>(new Set(["4대보험", "연차", "교육비 지원", "성과금"]));
+  const [welfare, setWelfare] = useState<Set<string>>(new Set());
   const [workCondDetail, setWorkCondDetail] = useState("");
 
   // §4 키워드·이미지 — kwCategory tracks which category's pool to show
@@ -258,6 +259,9 @@ export function IndustryJobPostingForm() {
   const [applyTarget, setApplyTarget] = useState("");
   const [deadline, setDeadline] = useState("2026-07-07");
   const [rollingToggle, setRollingToggle] = useState(false);
+
+  // §6 상세 이미지·첨부 자료
+  const [attachments, setAttachments] = useState<{ type: "image" | "file"; name: string }[]>([]);
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -274,10 +278,12 @@ export function IndustryJobPostingForm() {
     if (!summary.trim())         next.summary      = "한 줄 요약을 입력해 주세요.";
     if (!mainDuties.trim())      next.mainDuties   = "주요업무를 입력해 주세요.";
     if (!requiredQual.trim())    next.requiredQual = "자격조건을 입력해 주세요.";
-    if (!workRegion.trim())      next.workRegion   = "근무지역을 입력해 주세요.";
     if (!workMode)               next.workMode     = "근무 방식을 선택해 주세요.";
-    if (!address.trim())         next.address      = "주소를 입력해 주세요.";
-    if (!workSchedule.trim())    next.workSchedule = "근무 요일/시간을 입력해 주세요.";
+    if (workMode !== "remote") {
+      if (!workRegion.trim())    next.workRegion   = "근무지역을 입력해 주세요.";
+      if (!address.trim())       next.address      = "주소를 입력해 주세요.";
+    }
+    if (!salary)                 next.salary       = "급여를 선택해 주세요.";
     if ((applyMethod === "url" || applyMethod === "email") && !applyTarget.trim()) {
       next.applyTarget = applyMethod === "url" ? "지원 페이지 URL을 입력해 주세요." : "지원 이메일 주소를 입력해 주세요.";
     }
@@ -318,7 +324,7 @@ export function IndustryJobPostingForm() {
 
   function addCustomKeyword() {
     const v = customKwInput.trim();
-    if (!v || v.length > 20 || keywords.has(v) || keywords.size >= MAX_KW) return;
+    if (!v || v.length > 10 || keywords.has(v) || keywords.size >= MAX_KW) return;
     setKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
     setCustomKeywords((prev) => [...prev, v]);
     setCustomKwInput("");
@@ -327,6 +333,28 @@ export function IndustryJobPostingForm() {
   function removeCustomKeyword(kw: string) {
     setKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
     setCustomKeywords((prev) => prev.filter((k) => k !== kw));
+  }
+
+  function toggleSameAsCompanyAddress(checked: boolean) {
+    setSameAsCompanyAddress(checked);
+    if (checked) {
+      const companyAddress = initialBusinessCompanyProfile.detailAddress
+        ? `${initialBusinessCompanyProfile.address} ${initialBusinessCompanyProfile.detailAddress}`
+        : initialBusinessCompanyProfile.address;
+      setAddress(companyAddress);
+    }
+  }
+
+  function addAttachment(type: "image" | "file") {
+    setAttachments((prev) => {
+      const count = prev.filter((item) => item.type === type).length + 1;
+      const name = type === "image" ? `이미지 ${count}` : `파일 ${count}`;
+      return [...prev, { type, name }];
+    });
+  }
+
+  function removeAttachment(index: number) {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -349,17 +377,18 @@ export function IndustryJobPostingForm() {
             ]}
           />
           <h1 className="mt-5 flex flex-wrap items-center gap-3 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
-            산업 공고 등록
-            <span className="inline-flex items-center gap-1.5 border border-[#dfe4ea] bg-white px-2.5 py-1 text-[12px] font-semibold text-[#4f5967]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0d7369]" aria-hidden />
-              더팜인뉴스(주) 명의로 작성 중 ·{" "}
-              <Link href="#" className="ml-0.5 font-bold text-[#0d7369] underline-offset-2 hover:underline">
-                기업정보
-              </Link>
-            </span>
+            공고 등록
+            <span className="h-6 w-px bg-[#dfe5ec]" aria-hidden />
+            <span className="font-medium text-[#8791a0]">산업</span>
           </h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
-            제약·바이오·포스케어 기업 채용 공고를 등록합니다. 입력한 내용은 공고 상세 페이지에 그대로 노출됩니다.
+          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-normal text-[#68717e]">
+            <span>등록 기업</span>
+            <span className="font-semibold text-[#303946]">더팜인뉴스(주)</span>
+            <span className="text-[#c0c8d2]">·</span>
+            <Link href="/business/company/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
+              기업 정보 관리
+              <ArrowUpRight size={12} aria-hidden />
+            </Link>
           </p>
         </div>
       </div>
@@ -370,14 +399,13 @@ export function IndustryJobPostingForm() {
         {/* ── §1 기본 정보 ──────────────────────────────────────────────────── */}
         <SectionCard
           title="기본 정보"
-          description="공고 제목과 직무, 채용 조건을 입력합니다."
-          status={errors.title || errors.selectedJobs || errors.industryCat || errors.headcount ? "필수 입력 필요" : "작성 중"}
+          description=""
         >
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="i-title" className={LBL}>공고 제목{REQ}</label>
             <input id="i-title" value={title} onChange={(e) => setTitle(e.target.value)}
-              className={IN} placeholder="예: [한국오신 카세코] 신규직 MI/PV 채용" aria-required="true" />
+              className={IN} placeholder="의약품 안전관리(PV) 담당자 채용" aria-required="true" />
             <FieldError message={errors.title} />
           </div>
 
@@ -462,7 +490,7 @@ export function IndustryJobPostingForm() {
               <label htmlFor="i-headcount" className={LBL}>모집인원{REQ}</label>
               <select id="i-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
                 className={SEL} aria-required="true">
-                <option value="" disabled>인원을 선택해 주세요</option>
+                <option value="" disabled>채용 예정 인원을 선택해 주세요</option>
                 <option>1명</option>
                 <option>2명</option>
                 <option>3명</option>
@@ -491,123 +519,129 @@ export function IndustryJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="i-edu" className={LBL}>학력{REQ}</label>
+              <label htmlFor="i-edu" className={LBL}>
+                학력{REQ}
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
+              </label>
               <select id="i-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
                 ))}
               </select>
-              <p className={HINT}>선택한 학력 이상의 지원자를 대상으로 합니다.</p>
             </div>
           </div>
         </SectionCard>
 
         {/* ── §2 포지션 소개 · 업무 · 자격 ─────────────────────────────────── */}
         <SectionCard
-          title="포지션 소개 · 업무 · 자격"
-          description="포지션 요약과 담당 업무, 자격을 입력합니다."
-          status={errors.summary || errors.mainDuties || errors.requiredQual ? "필수 입력 필요" : "작성 중"}
+          title="모집 내용"
+          description=""
         >
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="i-summary" className={LBL}>한 줄 요약{REQ}</label>
+            <label htmlFor="i-summary" className={LBL}>
+              공고 요약{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
+            </label>
             <input id="i-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
-              placeholder="예: 의약품 안전정보(MI) 제공과 의약품감시(PV) 업무를 담당할 인재를 찾습니다."
+              placeholder="국내외 허가자료 작성과 규제기관 대응을 담당할 RA 담당자를 찾습니다."
+              maxLength={100}
               aria-required="true" />
-            <p className={HINT}>공고 목록과 상세 상단에 노출되는 요약 문장입니다.</p>
+            <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{summary.length} / 100</p>
             <FieldError message={errors.summary} />
           </div>
 
           <div className="mb-5" ref={setRef("mainDuties")}>
-            <label htmlFor="i-duties" className={LBL}>주요업무{REQ}</label>
-            <p className={`${HINT} mb-1.5`}>한 줄에 하나씩 입력하면 항목으로 표시됩니다.</p>
+            <label htmlFor="i-duties" className={LBL}>
+              주요업무{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
+            </label>
             <textarea id="i-duties" value={mainDuties} onChange={(e) => setMainDuties(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder={"의약품 안전정보(MI) 문의 대응 및 자료 관리\n의약품 이상사례(PV) 수집·평가·보고 및 안전성 자료 관리\n규제 기관 보고 및 안전성 문서 작성"}
+              placeholder={"국내외 허가자료 작성 및 제출\nCTD 문서 검토 및 관리\n규제기관 질의 대응 및 변경허가 업무 수행"}
               aria-required="true" />
             <FieldError message={errors.mainDuties} />
           </div>
 
           <div className="mb-5" ref={setRef("requiredQual")}>
-            <label htmlFor="i-reqQual" className={LBL}>자격조건(필수){REQ}</label>
-            <p className={`${HINT} mb-1.5`}>한 줄에 하나씩 입력하세요.</p>
+            <label htmlFor="i-reqQual" className={LBL}>
+              필수 자격요건{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
+            </label>
             <textarea id="i-reqQual" value={requiredQual} onChange={(e) => setRequiredQual(e.target.value)} rows={3}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder={"의약·생명과학 관련 전공 학사 이상\n경력무관(신입 지원 가능)"}
+              placeholder={"약학, 생명과학, 화학, 생명공학 등 관련 전공 학사 이상\n신입 또는 관련 업무 경험 보유자"}
               aria-required="true" />
             <FieldError message={errors.requiredQual} />
           </div>
 
           <div>
-            <label htmlFor="i-preferred" className={LBL}>우대사항</label>
-            <textarea id="i-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={2}
+            <label htmlFor="i-preferred" className={LBL}>
+              우대사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
+            </label>
+            <textarea id="i-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder="예: 약사 면허 보유자 / 영어 커뮤니케이션 가능자 (한 줄에 하나씩)" />
+              placeholder={"관련 인턴 또는 프로젝트 경험\n영어 문서 작성 및 커뮤니케이션 가능자\n약사 등 관련 면허 보유자"} />
           </div>
         </SectionCard>
 
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard
           title="근무조건"
-          description="근무지, 근무 방식, 급여와 복리후생을 입력합니다."
-          status={errors.workRegion || errors.workMode || errors.address || errors.workSchedule ? "필수 입력 필요" : "작성 중"}
+          description=""
         >
-          <div className="mb-5">
-            <SegControl
-              label="근무지 입력"
-              options={["기관 대표 주소 불러오기", "직접 입력", "재택/하이브리드"]}
-              value={workplaceMode}
-              onChange={setWorkplaceMode}
-            />
+          <div className="mb-5" ref={setRef("workMode")}>
+            <label htmlFor="i-workmode" className={LBL}>근무 방식{REQ}</label>
+            <select id="i-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
+              className={SEL} aria-required="true">
+              <option value="" disabled>근무 방식을 선택해 주세요</option>
+              {workModeOptions.map((option) => (
+                <option key={option.id} value={option.id}>{option.label}</option>
+              ))}
+            </select>
+            <FieldError message={errors.workMode} />
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <div ref={setRef("workRegion")}>
-              <label htmlFor="i-region" className={LBL}>근무지역{REQ}</label>
-              <input id="i-region" value={workRegion} onChange={(e) => setWorkRegion(e.target.value)}
-                className={IN} aria-required="true" />
-              <FieldError message={errors.workRegion} />
-            </div>
-            <div ref={setRef("workMode")}>
-              <label htmlFor="i-workmode" className={LBL}>근무 방식{REQ}</label>
-              <select id="i-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
-                className={SEL} aria-required="true">
-                <option value="" disabled>근무 방식을 선택해 주세요</option>
-                {workModeOptions.map((option) => (
-                  <option key={option.id} value={option.id}>{option.label}</option>
-                ))}
-              </select>
-              <FieldError message={errors.workMode} />
-            </div>
-          </div>
-
-          <div className="mb-5" ref={setRef("address")}>
-            <label htmlFor="i-address" className={LBL}>주소{REQ}</label>
-            <input id="i-address" value={address} onChange={(e) => setAddress(e.target.value)}
-              className={IN} aria-required="true" />
-            {!address.trim() && (
-              <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[11.5px] text-[#9a6b00]">
-                <AlertCircle size={13} aria-hidden />
-                기관정보에 가까운 역·교통 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
+          {workMode !== "remote" && (
+            <>
+              <div className="mb-5" ref={setRef("workRegion")}>
+                <label htmlFor="i-region" className={LBL}>근무지역{REQ}</label>
+                <input id="i-region" value={workRegion} onChange={(e) => setWorkRegion(e.target.value)}
+                  className={IN} aria-required="true" />
+                <FieldError message={errors.workRegion} />
               </div>
-            )}
-            <FieldError message={errors.address} />
-          </div>
+
+              <div className="mb-5" ref={setRef("address")}>
+                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor="i-address" className="text-[14px] font-medium text-[#2f3845]">주소{REQ}</label>
+                  <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
+                    <input type="checkbox" checked={sameAsCompanyAddress}
+                      onChange={(e) => toggleSameAsCompanyAddress(e.target.checked)}
+                      className="h-4 w-4 accent-[#111111]" />
+                    기업 주소와 동일
+                  </label>
+                </div>
+                <input id="i-address" value={address} onChange={(e) => setAddress(e.target.value)}
+                  readOnly={sameAsCompanyAddress}
+                  className={clsx(IN, sameAsCompanyAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
+                  aria-required="true" />
+                {!address.trim() && (
+                  <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[11.5px] text-[#9a6b00]">
+                    <AlertCircle size={13} aria-hidden />
+                    기관정보에 가까운 역·교통 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
+                  </div>
+                )}
+                <FieldError message={errors.address} />
+              </div>
+            </>
+          )}
 
           <div className="my-5 border-t border-[#f0f2f5]" />
 
-          <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <div ref={setRef("workSchedule")}>
-              <label htmlFor="i-schedule" className={LBL}>근무 요일/시간{REQ}</label>
-              <input id="i-schedule" value={workSchedule} onChange={(e) => setWorkSchedule(e.target.value)}
-                className={IN} placeholder="예: 주 5일, 09:00~18:00" aria-required="true" />
-              <FieldError message={errors.workSchedule} />
-            </div>
-            <div>
-              <label htmlFor="i-salary" className={LBL}>급여</label>
-              <input id="i-salary" value={salary} onChange={(e) => setSalary(e.target.value)}
-                className={IN} placeholder="예: 회사 내규에 따름 / 연봉 5,500만~7,000만원" />
-            </div>
+          <div className="mb-5" ref={setRef("salary")}>
+            <SegControl label="급여" required options={SALARY_OPTS} value={salary} onChange={setSalary} />
+            <FieldError message={errors.salary} />
           </div>
 
           <div className="mb-5">
@@ -617,25 +651,24 @@ export function IndustryJobPostingForm() {
 
           <div>
             <label htmlFor="i-workcond" className={LBL}>근무조건 상세</label>
-            <textarea id="i-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={3}
+            <textarea id="i-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder="예: 다국적 제약사 기준 복리후생 수준을 이용합니다." />
+              placeholder="주 2회 재택근무 가능, 프로젝트 일정에 따라 유연근무를 운영합니다." />
           </div>
         </SectionCard>
 
         {/* ── §4 키워드 · 이미지 ────────────────────────────────────────────── */}
         <SectionCard
-          title="키워드 · 이미지"
-          description="검색·추천에 쓰일 키워드와 대표 이미지를 선택합니다. (선택)"
-          status="선택 사항"
+          title="검색 노출 설정"
+          description="검색과 추천에 활용할 키워드와 대표 이미지를 설정합니다. 선택 입력 항목입니다."
         >
           <div className="mb-6">
-            <p className="mb-1.5 text-[13px] font-medium text-[#2f3845]">
-              핵심 키워드
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {MAX_KW}개</span>
+            <p className={LBL}>
+              검색 키워드
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{keywords.size} / {MAX_KW}개 선택</span>
             </p>
             <p className={`${HINT} mb-3`}>
-              선택한 직무({kwCatLabel})에 맞춰 추천 키워드가 표시됩니다.
+              모집 직무에 맞춰 자주 쓰이는 키워드를 추천합니다.
             </p>
 
             {/* Recommended pool — changes with job category */}
@@ -662,14 +695,14 @@ export function IndustryJobPostingForm() {
             <div className="my-4 border-t border-[#f0f2f5]" />
 
             {/* Custom keyword input */}
-            <p className="mb-1 text-[12.5px] font-semibold text-[#7b8491]">기타 키워드 직접 추가</p>
-            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요. (Enter로 추가, 키워드당 20자 이내)</p>
+            <p className={LBL}>기타 키워드 직접 추가</p>
+            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요.</p>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
                 onChange={(e) => setCustomKwInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
-                maxLength={20}
+                maxLength={10}
                 placeholder="예: ICH-GCP"
                 className={`${IN} flex-1`}
                 aria-label="키워드 직접 입력"
@@ -677,9 +710,10 @@ export function IndustryJobPostingForm() {
               <button type="button" onClick={addCustomKeyword}
                 disabled={keywords.size >= MAX_KW}
                 className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:text-[#aeb6c0]">
-                ＋ 추가
+                ＋ 직접 추가
               </button>
             </div>
+            <p className={HINT}>(10자 이내)</p>
 
             {/* Custom keywords as chips (always "on", click removes) */}
             {customKeywords.length > 0 && (
@@ -697,19 +731,20 @@ export function IndustryJobPostingForm() {
             )}
 
             <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택됨 {keywords.size}개 · 공고 목록에는 최대 5개가 노출됩니다.
+              선택한 키워드는 공고 목록과 추천 매칭에 활용되며, 목록에는 최대 5개까지 표시됩니다.
             </p>
           </div>
 
           {/* 대표 이미지 */}
           <div>
             <p className={LBL} id="i-img-lbl">대표 이미지</p>
+            <p className={`${HINT} mb-3`}>공고 상세 상단에 표시할 이미지를 선택합니다.</p>
             <div role="radiogroup" aria-labelledby="i-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
-                  default: "기관 기본 이미지 사용",
+                  default: "기업 기본 이미지 사용",
                   upload:  "새 이미지 업로드",
-                  none:    "이미지 없이 등록",
+                  none:    "기본 배경 사용",
                 };
                 const on = imageOption === opt;
                 return (
@@ -732,68 +767,138 @@ export function IndustryJobPostingForm() {
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard
           title="지원방법 및 마감일"
-          description="지원 방식에 따라 공고 상세에 필요한 정보가 노출됩니다."
-          status={errors.applyTarget || errors.deadline ? "필수 입력 필요" : "작성 중"}
+          description="지원자가 공고에 지원할 방법과 접수 마감일을 설정합니다."
         >
           <div className="mb-5">
-            <SegControl
-              label="지원 방식"
-              required
-              options={["기업 홈페이지 지원", "더팜인 간편지원", "이메일 지원"]}
-              value={applyMethod === "url" ? "기업 홈페이지 지원" : applyMethod === "quick" ? "더팜인 간편지원" : "이메일 지원"}
-              onChange={(v) =>
-                setApplyMethod(
-                  v === "기업 홈페이지 지원" ? "url" : v === "더팜인 간편지원" ? "quick" : "email",
-                )
-              }
-            />
+            <p id="apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
+              지원 방식{REQ}
+            </p>
+            <div role="radiogroup" aria-labelledby="apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
+              {(
+                [
+                  { value: "url" as const, label: "기업 채용페이지 지원" },
+                  { value: "quick" as const, label: "더파마 간편지원", badge: "추천" },
+                  { value: "email" as const, label: "이메일 지원" },
+                ]
+              ).map(({ value: v, label, badge }) => {
+                const on = applyMethod === v;
+                return (
+                  <button key={v} type="button" role="radio" aria-checked={on} onClick={() => setApplyMethod(v)}
+                    className={clsx(
+                      "inline-flex h-11 items-center gap-1.5 border-r border-[#d8e0e8] px-5 text-[13px] font-medium last:border-r-0 transition-colors",
+                      on ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
+                    )}>
+                    {label}
+                    {badge && (
+                      <span className={clsx(
+                        "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                        on ? "bg-white text-[#111111]" : "bg-[#111111] text-white",
+                      )}>
+                        {badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            {applyMethod !== "quick" ? (
+          {applyMethod === "quick" ? (
+            <div className="mb-5">
+              <div className="mb-4">
+                <InlineNote>
+                  <span className="mb-1 block font-semibold text-[#2f3845]">더파마에서 바로 지원받기</span>
+                  <span className="block text-[#6b7280]">
+                    별도 채용페이지나 이메일 이동 없이, 지원자가 더파마 프로필과 이력서로 바로 지원할 수 있습니다. 접수 내역은 기업 센터에서 관리됩니다.
+                  </span>
+                </InlineNote>
+              </div>
+              <div className="max-w-sm" ref={setRef("deadline")}>
+                <label htmlFor="i-deadline" className={LBL}>
+                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
+                </label>
+                <input id="i-deadline" type="date" value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  disabled={rollingToggle}
+                  className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
+                  aria-required={!rollingToggle ? "true" : undefined} />
+                <FieldError message={errors.deadline} />
+              </div>
+            </div>
+          ) : (
+            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyTarget")}>
                 <label htmlFor="i-apply-target" className={LBL}>
-                  {applyMethod === "url" ? "지원 페이지 URL" : "지원 이메일 주소"}{REQ}
+                  {applyMethod === "url" ? "채용페이지 URL" : "지원 이메일 주소"}{REQ}
                 </label>
                 <input id="i-apply-target" type={applyMethod === "url" ? "url" : "email"}
                   value={applyTarget} onChange={(e) => setApplyTarget(e.target.value)}
                   className={IN}
-                  placeholder={applyMethod === "url" ? "예: https://company.com/careers/..." : "예: recruit@company.com"}
+                  placeholder={applyMethod === "url" ? "예: https://company.com/careers/job-123" : "예: recruit@company.com"}
                   aria-required="true" />
                 <FieldError message={errors.applyTarget} />
               </div>
-            ) : (
-              <div>
-                <InlineNote>
-                  더팜인 간편지원은 더팜인 리크루트 지원자로 연동됩니다. 별도 URL·이메일이 필요 없습니다.
-                </InlineNote>
-              </div>
-            )}
 
-            <div ref={setRef("deadline")}>
-              <label htmlFor="i-deadline" className={LBL}>
-                {rollingToggle ? "마감 예정일" : <>지원 마감일{REQ}</>}
-              </label>
-              <input id="i-deadline" type="date" value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                disabled={rollingToggle}
-                className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
-                aria-required={!rollingToggle ? "true" : undefined} />
-              <FieldError message={errors.deadline} />
+              <div ref={setRef("deadline")}>
+                <label htmlFor="i-deadline" className={LBL}>
+                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
+                </label>
+                <input id="i-deadline" type="date" value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  disabled={rollingToggle}
+                  className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
+                  aria-required={!rollingToggle ? "true" : undefined} />
+                <FieldError message={errors.deadline} />
+              </div>
             </div>
-          </div>
+          )}
 
           <ToggleRow
-            title="채용 시 마감(조기 마감 가능)"
-            description="정한 마감일과 별개로, 채용이 완료되면 조기 마감합니다. 켜면 마감일은 '예정일'로 표시됩니다."
+            title="조기 마감 가능"
+            description="채용이 완료되면 마감일 전에도 공고를 마감할 수 있습니다."
             checked={rollingToggle}
             onChange={setRollingToggle}
             ariaLabel="채용 시 마감"
           />
+        </SectionCard>
+
+        {/* ── §6 상세 이미지·첨부 자료 ─────────────────────────────────────── */}
+        <SectionCard
+          title="상세 이미지 및 첨부 자료"
+          description="회사·직무 소개 이미지나 포스터를 첨부합니다. 공고 상세 본문에 표시됩니다."
+        >
+          <div>
+            <p className={LBL}>첨부 자료</p>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => addAttachment("image")}
+                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa]">
+                이미지 추가
+              </button>
+              <button type="button" onClick={() => addAttachment("file")}
+                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa]">
+                파일 추가
+              </button>
+            </div>
+
+            {attachments.length === 0 ? (
+              <p className={`${HINT} mt-3`}>첨부된 상세 자료가 없습니다.</p>
+            ) : (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {attachments.map((item, index) => (
+                  <button key={`${item.type}-${index}`} type="button" onClick={() => removeAttachment(index)}
+                    aria-label={`${item.name} 삭제`}
+                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white">
+                    {item.name}
+                    <X size={11} className="ml-0.5 opacity-70" aria-hidden />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="mt-4">
             <InlineNote>
-              이미지·포스터를 첨부할 수 있지만, 검색·추천을 위해 주요업무·자격조건·근무조건은 반드시 입력해 주세요.
+              검색과 추천 품질을 위해 주요업무·자격요건·근무조건은 텍스트로 입력해 주세요.
             </InlineNote>
           </div>
         </SectionCard>
