@@ -113,7 +113,7 @@ export const hospitalFilterConfig: TrackFilterConfig = {
       kind: "group",
       sections: [
         { id: "employment", title: "고용 형태", stateKey: "employmentTypeIds", selection: "multiple", options: employmentTypeOptions },
-        { id: "shiftType", title: "근무시간·교대 형태", stateKey: "shiftTypeIds", selection: "multiple", options: shiftTypeOptions },
+        { id: "shiftType", title: "근무 형태", stateKey: "shiftTypeIds", selection: "multiple", options: shiftTypeOptions },
         { id: "education", title: "학력·자격", stateKey: "educationId", selection: "single", options: educationOptions },
       ],
     },

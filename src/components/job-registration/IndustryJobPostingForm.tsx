@@ -386,10 +386,7 @@ export function IndustryJobPostingForm() {
       <div className="mt-8 space-y-5">
 
         {/* ── §1 기본 정보 ──────────────────────────────────────────────────── */}
-        <SectionCard
-          title="기본 정보"
-          description=""
-        >
+        <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="i-title" className={LBL}>공고 제목{REQ}</label>
@@ -532,10 +529,7 @@ export function IndustryJobPostingForm() {
         </SectionCard>
 
         {/* ── §2 포지션 소개 · 업무 · 자격 ─────────────────────────────────── */}
-        <SectionCard
-          title="모집 내용"
-          description=""
-        >
+        <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
             <label htmlFor="i-summary" className={LBL}>
               공고 요약{REQ}
@@ -586,10 +580,7 @@ export function IndustryJobPostingForm() {
         </SectionCard>
 
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
-        <SectionCard
-          title="근무조건"
-          description=""
-        >
+        <SectionCard title="근무조건">
           <div className="mb-5" ref={setRef("workMode")}>
             <label htmlFor="i-workmode" className={LBL}>근무 방식{REQ}</label>
             <select id="i-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
@@ -649,10 +640,7 @@ export function IndustryJobPostingForm() {
         </SectionCard>
 
         {/* ── §4 키워드 · 이미지 ────────────────────────────────────────────── */}
-        <SectionCard
-          title="검색 노출 설정"
-          description="검색과 추천에 활용할 키워드와 대표 이미지를 설정합니다. 선택 입력 항목입니다."
-        >
+        <SectionCard title="검색 노출 설정">
           <div className="mb-6">
             <p className={LBL}>
               검색 키워드
@@ -756,10 +744,7 @@ export function IndustryJobPostingForm() {
         </SectionCard>
 
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
-        <SectionCard
-          title="지원방법 및 마감일"
-          description="지원자가 공고에 지원할 방법과 접수 마감일을 설정합니다."
-        >
+        <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
             <p id="apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
               지원 방식{REQ}
@@ -854,10 +839,7 @@ export function IndustryJobPostingForm() {
         </SectionCard>
 
         {/* ── §6 상세 이미지·첨부 자료 ─────────────────────────────────────── */}
-        <SectionCard
-          title="상세 이미지 및 첨부 자료"
-          description="회사·직무 소개 이미지나 포스터를 첨부합니다. 공고 상세 본문에 표시됩니다."
-        >
+        <SectionCard title="상세 이미지 및 첨부 자료">
           <div className="grid grid-cols-2 gap-6 max-[640px]:grid-cols-1">
             <AttachmentUploader
               label="이미지"

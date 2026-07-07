@@ -456,7 +456,7 @@ export function ResearchJobPostingForm() {
             <span>등록 기관</span>
             <span className="font-semibold text-[#303946]">{mockLab.institution}</span>
             <span className="text-[#c0c8d2]">·</span>
-            <Link href="/business/company/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
+            <Link href="/business/research/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
               기관 정보 관리
               <ArrowUpRight size={12} aria-hidden />
             </Link>
@@ -468,10 +468,7 @@ export function ResearchJobPostingForm() {
       <div className="mt-8 space-y-5">
 
         {/* ── §1 기본 정보 ──────────────────────────────────────────────────── */}
-        <SectionCard
-          title="기본 정보"
-          description="공고 제목, 모집 직무, 연구 분야 등 기본 채용 정보를 입력합니다."
-        >
+        <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="r-title" className={LBL}>공고 제목{REQ}</label>
@@ -573,10 +570,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §2 연구실 정보 ────────────────────────────────────────────────── */}
-        <SectionCard
-          title="연구실 정보"
-          description="공고를 게시할 기관과 연구실 정보를 입력합니다."
-        >
+        <SectionCard title="연구실 정보">
           <div className="mb-5" ref={setRef("labInstitutionType")}>
             <label htmlFor="r-lab-type" className={LBL}>기관 분류{REQ}</label>
             <select id="r-lab-type" value={labInstitutionType} onChange={(e) => setLabInstitutionType(e.target.value)}
@@ -654,10 +648,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §3 모집 내용 ──────────────────────────────────────────────────── */}
-        <SectionCard
-          title="모집 내용"
-          description="공고 요약, 주요 업무, 자격요건을 입력합니다."
-        >
+        <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
             <label htmlFor="r-summary" className={LBL}>
               공고 요약{REQ}
@@ -717,10 +708,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §4 근무조건 ───────────────────────────────────────────────────── */}
-        <SectionCard
-          title="근무조건"
-          description="근무 방식, 급여, 계약 기간과 복리후생을 입력합니다."
-        >
+        <SectionCard title="근무조건">
           <div className="mb-5" ref={setRef("workMode")}>
             <label htmlFor="r-workmode" className={LBL}>근무 방식{REQ}</label>
             <select id="r-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
@@ -763,10 +751,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §5 검색 노출 설정 ─────────────────────────────────────────────── */}
-        <SectionCard
-          title="검색 노출 설정"
-          description="검색과 추천에 활용할 키워드와 대표 이미지를 설정합니다. 선택 입력 항목입니다."
-        >
+        <SectionCard title="검색 노출 설정">
           <div className="mb-6">
             <p className={LBL}>
               검색 키워드
@@ -876,10 +861,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §6 지원방법 및 마감일 ─────────────────────────────────────────── */}
-        <SectionCard
-          title="지원방법 및 마감일"
-          description="지원자가 공고에 지원할 방법과 접수 마감일을 설정합니다."
-        >
+        <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
             <p id="r-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
               지원 방식{REQ}
@@ -982,10 +964,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── §7 상세 이미지 및 첨부 자료 ───────────────────────────────────── */}
-        <SectionCard
-          title="상세 이미지 및 첨부 자료"
-          description="연구실·연구 소개 이미지나 포스터를 첨부합니다. 공고 상세 본문에 표시됩니다."
-        >
+        <SectionCard title="상세 이미지 및 첨부 자료">
           <div className="grid grid-cols-2 gap-6 max-[640px]:grid-cols-1">
             <AttachmentUploader
               label="이미지"

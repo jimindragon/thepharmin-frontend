@@ -1,94 +1,43 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, Info, Plus, Trash2, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
 import Link from "next/link";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { SectionCard } from "@/components/business/BusinessFormControls";
-import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
-import {
-  educationOptions,
-  employmentTypeOptions,
-  experienceOptions,
-  hospitalJobCategoryOptions,
-  hospitalTypeOptions,
-  shiftTypeOptions,
-} from "@/config/jobFilters/index";
-import type { PayType, SalaryRange } from "@/types/jobs";
-import { formatHeadcount } from "@/utils/headcount";
-import { formatHospitalSalary } from "@/utils/salary";
+import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
+import { hospitalJobCategoryOptions, shiftTypeOptions } from "@/config/jobFilters/hospitalFilters";
+import { initialHospitalOrgProfile } from "@/data/businessOrgProfile";
+import type { JobCategoryOption } from "@/types/jobs";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
+// ── Static data ────────────────────────────────────────────────────────────────
 
-interface Dept {
-  id: number;
-  name: string;
-  headcount: string;
-  headcountUndetermined: boolean;
-  schedule: string;
-  duties: string;
-  requirements: string;
-}
-
-interface HiringStep {
-  id: number;
-  label: string;
-}
-
-interface ExtraWorkItem {
-  id: number;
-  label: string;
-  value: string;
-}
-
-const MAX_EXTRA_WORK_ITEMS = 4;
+const WEEKDAY_OPTS = ["월", "화", "수", "목", "금", "토", "일"];
+const SALARY_OPTS = ["기관 내규", "3,000만↑", "5,000만↑", "7,000만↑", "9,000만↑"];
+const WELFARE_OPTS = [
+  "퇴직연금", "연차·휴가", "의료비 지원", "식대 지원", "구내식당", "당직·휴일수당",
+  "교육 지원", "학회·연수 지원", "전문약사 교육 지원", "경조사 지원", "직원 주차", "기숙사·사택",
+];
+// 병원은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다(산업의 KW_BY_CAT 같은 분기 로직 없음)
+const HOSPITAL_KEYWORDS = [
+  "조제", "투약", "처방검토", "복약상담", "병동약료", "임상약료", "무균조제", "항암조제",
+  "TPN", "NST", "ASP", "감염약료", "종양약료", "DI", "마약류 관리", "의약품 관리", "임상시험약 관리",
+];
+const MAX_KW = 8;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-function toggleSet<T>(set: Set<T>, item: T): Set<T> {
-  const next = new Set(set);
-  if (next.has(item)) next.delete(item);
-  else next.add(item);
-  return next;
+function toggleSet<T>(s: Set<T>, item: T): Set<T> {
+  const n = new Set(s);
+  if (n.has(item)) n.delete(item);
+  else n.add(item);
+  return n;
 }
 
-type SalaryTypeOption = "연봉" | "월급" | "시급" | "일급·회당" | "면접 후 결정";
-const SALARY_TYPE_OPTIONS: SalaryTypeOption[] = ["연봉", "월급", "시급", "일급·회당", "면접 후 결정"];
-
-const SALARY_TYPE_TO_PAY_TYPE: Partial<Record<SalaryTypeOption, PayType>> = {
-  "연봉": "annual",
-  "월급": "monthly",
-  "시급": "hourly",
-  "일급·회당": "daily",
-};
-
-function parseSalaryAmount(value: string): number | null {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  const parsed = Number(trimmed.replace(/,/g, ""));
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function parseCount(value: string): number | null {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) && parsed >= 0 ? Math.trunc(parsed) : null;
-}
-
-function makeBlankDept(id: number): Dept {
-  return { id, name: "", headcount: "", headcountUndetermined: false, schedule: "", duties: "", requirements: "" };
-}
-
-function buildSalaryRange(salaryType: string, min: string, max: string): SalaryRange | null {
-  const payType = SALARY_TYPE_TO_PAY_TYPE[salaryType as SalaryTypeOption];
-  if (!payType) return null;
-  return { payType, min: parseSalaryAmount(min), max: parseSalaryAmount(max) };
-}
-
-// ── Shared field components ────────────────────────────────────────────────────
+// ── Sub-components (로컬 정의 — 산업/연구 폼과 동일, 공유 모듈 아님) ───────────────
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -102,7 +51,7 @@ function FieldError({ message }: { message?: string }) {
 
 function InlineNote({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2 bg-[#f7f8fa] border border-[#dfe4ea] px-3.5 py-2.5 text-[12px] text-[#6b7280]">
+    <div className="flex items-start gap-2 border border-[#dfe4ea] bg-[#f7f8fa] px-3.5 py-2.5 text-[12px] text-[#6b7280]">
       <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
       <span>{children}</span>
     </div>
@@ -114,55 +63,50 @@ function chipOptionId(opt: ChipOption): string { return typeof opt === "string" 
 function chipOptionLabel(opt: ChipOption): string { return typeof opt === "string" ? opt : opt.label; }
 
 function ChipGroup({
+  labelId,
   label,
   required,
+  max,
   options,
   selected,
   onToggle,
-  max,
   hint,
 }: {
+  labelId?: string;
   label: string;
   required?: boolean;
+  max?: number;
   options: ChipOption[];
   selected: Set<string>;
-  onToggle: (item: string) => void;
-  max?: number;
+  onToggle: (v: string) => void;
   hint?: string;
 }) {
-  const labelId = useId();
+  const internalId = useId();
+  const id = labelId ?? internalId;
   return (
     <div>
-      <p id={labelId} className="mb-2 text-[13px] font-medium text-[#2f3845]">
+      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-        {max && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+        {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
       </p>
-      <div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-2">
+      <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
-          const id = chipOptionId(opt);
-          const text = chipOptionLabel(opt);
-          const isOn = selected.has(id);
-          const atMax = max !== undefined && selected.size >= max && !isOn;
+          const optId = chipOptionId(opt);
+          const optLabel = chipOptionLabel(opt);
+          const on = selected.has(optId);
+          const blocked = max != null && selected.size >= max && !on;
           return (
-            <button
-              key={id}
-              type="button"
-              role="checkbox"
-              aria-checked={isOn}
-              aria-disabled={atMax}
-              onClick={() => !atMax && onToggle(id)}
+            <button key={optId} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
+              onClick={() => !blocked && onToggle(optId)}
               className={clsx(
-                "h-9 border px-3.5 text-[12px] font-medium inline-flex items-center gap-1.5 transition-colors",
-                isOn
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : atMax
-                    ? "border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0] cursor-not-allowed"
+                "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
+                on ? "border-[#111111] bg-[#111111] text-white"
+                  : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
                     : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-              )}
-            >
-              {isOn && <span className="text-[10px]" aria-hidden>✓</span>}
-              {text}
+              )}>
+              {on && <span className="text-[10px]" aria-hidden>✓</span>}
+              {optLabel}
             </button>
           );
         })}
@@ -175,39 +119,30 @@ function ChipGroup({
 function SegControl({
   label,
   required,
-  labelId: externalLabelId,
   options,
   value,
   onChange,
 }: {
   label: string;
   required?: boolean;
-  labelId?: string;
   options: string[];
   value: string;
   onChange: (v: string) => void;
 }) {
-  const internalId = useId();
-  const id = externalLabelId ?? internalId;
+  const id = useId();
   return (
     <div>
       <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
       </p>
-      <div role="radiogroup" aria-labelledby={id} className="inline-flex border border-[#d8e0e8] overflow-hidden">
+      <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
         {options.map((opt) => (
-          <button
-            key={opt}
-            type="button"
-            role="radio"
-            aria-checked={value === opt}
-            onClick={() => onChange(opt)}
+          <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
             className={clsx(
-              "h-11 px-5 border-r border-[#d8e0e8] last:border-r-0 text-[13px] font-medium transition-colors",
+              "h-11 border-r border-[#d8e0e8] px-5 text-[13px] font-medium last:border-r-0 transition-colors",
               value === opt ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
-            )}
-          >
+            )}>
             {opt}
           </button>
         ))}
@@ -230,37 +165,112 @@ function ToggleRow({
   ariaLabel: string;
 }) {
   return (
-    <div className="flex items-start justify-between border border-[#dfe4ea] px-4 py-3 gap-4 bg-white">
+    <div className="flex items-start justify-between gap-4 border border-[#dfe4ea] bg-white px-4 py-3">
       <div>
         <p className="text-[13px] font-medium text-[#303946]">{title}</p>
-        {description && <p className="text-[11.5px] text-[#7b8491] mt-1">{description}</p>}
+        {description && <p className="mt-1 text-[11.5px] text-[#7b8491]">{description}</p>}
       </div>
       <ToggleSwitch checked={checked} onChange={onChange} label={ariaLabel} />
     </div>
   );
 }
 
-// ── Constant data ──────────────────────────────────────────────────────────────
+/** 2단(대분류 → 세부 항목) 선택기 — 모집 직무 등에 공용 (연구 폼의 TwoTierPicker와 동일) */
+function TwoTierPicker({
+  label,
+  hint,
+  required,
+  categories,
+  activeCategoryId,
+  onActiveCategoryChange,
+  selected,
+  onToggle,
+  error,
+  categoryAriaLabel,
+  detailAriaLabel,
+}: {
+  label: string;
+  hint?: string;
+  required?: boolean;
+  categories: JobCategoryOption[];
+  activeCategoryId: string;
+  onActiveCategoryChange: (id: string) => void;
+  selected: Set<string>;
+  onToggle: (id: string) => void;
+  error?: string;
+  categoryAriaLabel: string;
+  detailAriaLabel: string;
+}) {
+  const activeCategory = categories.find((c) => c.id === activeCategoryId);
+  const labelById = new Map(categories.flatMap((c) => c.subcategories).map((s) => [s.id, s.label] as const));
 
-const LICENSE_OPTS = ["약사 면허", "감염전문약사", "종양전문약사", "정맥영양(TPN)", "항응고전문약사", "심평원 등록"];
-// 직무 소분류 id(hospitalJobCategoryOptions 정본) 기준 추천 키워드 풀
-const KW_BY_JOBCAT: Record<string, string[]> = {
-  hospital_pharmacist: ["조제", "복약지도", "처방감사", "투약", "입원조제", "외래조제", "마약류 관리", "의약품 관리", "무균조제", "주사제"],
-  clinical_pharmacist: ["ASP", "감염관리", "항생제", "종양약사", "TPN", "정맥영양", "항응고", "DUR", "약물상담", "전문약사", "임상약학"],
-  clinical_trial_pharmacist: ["임상시험", "IP 관리", "임상시험약", "프로토콜", "GCP", "SAE", "임상연구", "CRC 협업"],
-  pharmacy_department_management: ["약제부 운영", "약사 인력관리", "의약품 구매", "재고관리", "DUR", "처방 모니터링", "약무 통계", "위원회 운영"],
-  hospital_pharmacy_administration: ["약무행정", "보험심사", "삭감관리", "약가", "청구", "인증평가", "규정 관리", "문서 관리"],
-};
-const JOB_SUBCATEGORY_LABEL_BY_ID = new Map(
-  hospitalJobCategoryOptions.flatMap((category) => category.subcategories).map((sub) => [sub.id, sub.label] as const),
-);
-const MAX_KW = 8;
-const WELFARE_OPTS = ["4대보험", "퇴직연금", "본인·가족 의료비", "교육비 지원", "경조 지원", "사내식당", "직원 주차", "연·월차", "휴양시설", "직장 어린이집"];
-const SUBMISSION_OPTS = ["입사지원서(자사양식)", "최종학력 성적증명서", "약사 면허증 사본", "자기소개서", "경력증명서", "자격증 사본"];
-// 병원 트랙에서 사용하는 고용형태 — 정본 employmentTypeOptions(5종)에서 "인턴" 제외 4종만 id로 명시
-const HOSPITAL_EMPLOYMENT_TYPE_IDS = ["permanent", "contract", "part-time", "freelance"];
+  return (
+    <div>
+      <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
+        {label}
+        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
+        {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
+      </p>
+      <div className="grid grid-cols-[180px_1fr] border border-[#d8e0e8] max-[640px]:grid-cols-1">
+        <div
+          role="radiogroup"
+          aria-label={categoryAriaLabel}
+          className="max-h-[260px] overflow-auto border-r border-[#dfe4ea] bg-[#fbfcfd] max-[640px]:max-h-none max-[640px]:border-b max-[640px]:border-r-0"
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              role="radio"
+              aria-checked={activeCategoryId === cat.id}
+              onClick={() => onActiveCategoryChange(cat.id)}
+              className={clsx(
+                "block w-full border-b border-[#f0f2f5] px-3.5 py-2.5 text-left text-[13px] font-medium last:border-b-0 transition-colors",
+                activeCategoryId === cat.id
+                  ? "bg-[#111111] text-white"
+                  : "bg-transparent text-[#4f5967] hover:bg-[#f5f6f7]",
+              )}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+        <div className="p-4">
+          <p className="mb-3 text-[12.5px] font-semibold text-[#4f5967]">
+            {activeCategory?.label} · 세부 항목
+          </p>
+          <div role="group" aria-label={detailAriaLabel} className="flex flex-wrap gap-2">
+            {activeCategory?.subcategories.map((sub) => {
+              const on = selected.has(sub.id);
+              return (
+                <button key={sub.id} type="button" role="checkbox" aria-checked={on}
+                  onClick={() => onToggle(sub.id)}
+                  className={clsx(
+                    "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
+                    on
+                      ? "border-[#111111] bg-[#111111] text-white"
+                      : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
+                  )}>
+                  {on && <span className="text-[10px]" aria-hidden>✓</span>}
+                  {sub.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      {selected.size > 0 && (
+        <p className="mt-2 text-[11.5px] text-[#7b8491]">
+          선택됨: {Array.from(selected).map((id) => labelById.get(id) ?? id).join(", ")}
+        </p>
+      )}
+      <FieldError message={error} />
+    </div>
+  );
+}
 
-// Shared input class — no rounding (sharp corners), matches BusinessFormControls.TextInput style
+// ── Style constants ────────────────────────────────────────────────────────────
+
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
 const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
@@ -270,110 +280,46 @@ const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function HospitalJobPostingForm() {
-  // §1 기본정보
+  // §1 기본 정보
   const [title, setTitle] = useState("");
-  const [jobCategory, setJobCategory] = useState("");
-  const [workplaceCategory, setWorkplaceCategory] = useState("");
-  // 더파마 매칭이 읽는 Job.shiftTypeIds에 대응 — 실제 저장은 백엔드 연동 시
-  const [shiftTypeIds, setShiftTypeIds] = useState<Set<string>>(new Set(["day_shift"]));
+  const [activeJobCategory, setActiveJobCategory] = useState(hospitalJobCategoryOptions[0].id);
+  const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
   const [educationType, setEducationType] = useState("any");
-  const [basicHeadcount, setBasicHeadcount] = useState("");
-  const [basicHeadcountUndetermined, setBasicHeadcountUndetermined] = useState(false);
+  const [isLeadership, setIsLeadership] = useState(false);
 
-  // §2 모집부문 — 기본값은 미분할(단일). "+모집부문 나누기"로 전환한다.
-  const [isSplitByDept, setIsSplitByDept] = useState(false);
-  const [showMergeConfirm, setShowMergeConfirm] = useState(false);
-  const nextDeptId = useRef(1);
-  const [departments, setDepartments] = useState<Dept[]>([]);
-
-  const aggregateHeadcount = useMemo(
-    () => formatHeadcount(departments.map((dept) => (dept.headcountUndetermined ? null : parseCount(dept.headcount)))),
-    [departments],
-  );
-
-  function handleSplitByDept() {
-    setIsSplitByDept(true);
-    setDepartments((prev) => (prev.length > 0 ? prev : [makeBlankDept(nextDeptId.current++), makeBlankDept(nextDeptId.current++)]));
-  }
-
-  function handleConfirmMerge() {
-    setIsSplitByDept(false);
-    setDepartments([]);
-    nextDeptId.current = 1;
-    setBasicHeadcount("");
-    setBasicHeadcountUndetermined(false);
-    setShowMergeConfirm(false);
-  }
-
-  // §3 업무·자격
+  // §2 모집 내용
   const [summary, setSummary] = useState("");
-  const [mainDuties, setMainDuties] = useState("");
-  const [requiredQual, setRequiredQual] = useState("");
+  const [responsibilities, setResponsibilities] = useState("");
+  const [requirements, setRequirements] = useState("");
   const [preferred, setPreferred] = useState("");
-  const [licenses, setLicenses] = useState<Set<string>>(new Set(["약사 면허"]));
 
-  // §4 근무조건
-  const [workSchedule, setWorkSchedule] = useState("");
-  const [nightShift, setNightShift] = useState("");
-  const [overtimeToggle, setOvertimeToggle] = useState(true);
-  const [salaryType, setSalaryType] = useState<SalaryTypeOption>("연봉");
-  const [salaryMin, setSalaryMin] = useState("");
-  const [salaryMax, setSalaryMax] = useState("");
-  const [salaryNote, setSalaryNote] = useState("");
-  const salaryPreview = useMemo(
-    () => formatHospitalSalary(buildSalaryRange(salaryType, salaryMin, salaryMax), salaryNote.trim() || undefined),
-    [salaryType, salaryMin, salaryMax, salaryNote],
-  );
-  const [welfare, setWelfare] = useState<Set<string>>(new Set(["4대보험", "퇴직연금", "본인·가족 의료비", "교육비 지원"]));
+  // §3 근무조건
+  const [shiftTypeIds, setShiftTypeIds] = useState<Set<string>>(new Set());
+  const [workDays, setWorkDays] = useState<Set<string>>(new Set());
+  const [address, setAddress] = useState("");
+  const [sameAsInstitutionAddress, setSameAsInstitutionAddress] = useState(false);
+  const [salary, setSalary] = useState("");
+  const [selectedBenefits, setSelectedBenefits] = useState<Set<string>>(new Set());
   const [workCondDetail, setWorkCondDetail] = useState("");
-  const nextExtraWorkItemId = useRef(1);
-  const [extraWorkItems, setExtraWorkItems] = useState<ExtraWorkItem[]>([]);
-  const [workplaceName, setWorkplaceName] = useState("더파마병원");
-  const [nearStation, setNearStation] = useState("");
-  const [address, setAddress] = useState("서울 강남구 테헤란로 123, 8층");
 
-  const workConditionItemsPreview = useMemo(() => {
-    const items: { label: string; value: string }[] = [
-      { label: "근무일정", value: workSchedule.trim() },
-      { label: "급여", value: salaryPreview },
-    ];
-    if (nightShift.trim()) items.push({ label: "당직", value: nightShift.trim() });
-    if (overtimeToggle) items.push({ label: "연장·휴일 수당", value: "발생 시 별도 지급" });
-    extraWorkItems.forEach((item) => {
-      if (item.label.trim() && item.value.trim()) {
-        items.push({ label: item.label.trim(), value: item.value.trim() });
-      }
-    });
-    return items;
-  }, [workSchedule, salaryPreview, nightShift, overtimeToggle, extraWorkItems]);
-
-  // §5 전형·서류
-  const nextStepId = useRef(6);
-  const [steps, setSteps] = useState<HiringStep[]>([
-    { id: 1, label: "서류전형" },
-    { id: 2, label: "1차 면접" },
-    { id: 3, label: "최종 면접" },
-    { id: 4, label: "채용검진" },
-    { id: 5, label: "최종합격" },
-  ]);
-  const [submissionDocs, setSubmissionDocs] = useState<Set<string>>(
-    new Set(["입사지원서(자사양식)", "최종학력 성적증명서", "약사 면허증 사본"])
-  );
-  const [blindHire, setBlindHire] = useState(false);
-
-  // §6 키워드·이미지
-  const [keywords, setKeywords] = useState<Set<string>>(new Set());
+  // §4 검색 노출 설정
+  const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const [customKeywords, setCustomKeywords] = useState<string[]>([]);
   const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
-  // §7 지원·마감
-  const [applyMethod, setApplyMethod] = useState<"quick" | "url" | "email">("quick");
-  const [applyTarget, setApplyTarget] = useState("");
-  const [deadline, setDeadline] = useState("2026-07-20");
+  // §5 지원방법 및 마감일
+  const [applyMethod, setApplyMethod] = useState<"url" | "quick" | "email">("url");
+  const [applyUrl, setApplyUrl] = useState("");
+  const [applyEmail, setApplyEmail] = useState("");
+  const [deadline, setDeadline] = useState("");
   const [rollingToggle, setRollingToggle] = useState(false);
+
+  // §6 상세 이미지 및 첨부 자료
+  const [imageAttachments, setImageAttachments] = useState<AttachmentItem[]>([]);
+  const [fileAttachments, setFileAttachments] = useState<AttachmentItem[]>([]);
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -384,29 +330,16 @@ export function HospitalJobPostingForm() {
   function validate(): boolean {
     const next: Record<string, string> = {};
     if (!title.trim()) next.title = "공고 제목을 입력해 주세요.";
-    if (!jobCategory) next.jobCategory = "직무 분류를 선택해 주세요.";
-    if (!workplaceCategory) next.workplaceCategory = "사업장 분류를 선택해 주세요.";
-    if (shiftTypeIds.size === 0) next.shiftTypeIds = "근무형태를 하나 이상 선택해 주세요.";
-    if (isSplitByDept) {
-      departments.forEach((dept, i) => {
-        if (!dept.name.trim()) next[`dept_${i}_name`] = "부문명을 입력해 주세요.";
-        if (!dept.headcountUndetermined && !dept.headcount.trim()) next[`dept_${i}_headcount`] = "모집인원을 입력하거나 '인원 미정'을 선택해 주세요.";
-        if (!dept.schedule.trim()) next[`dept_${i}_schedule`] = "근무시간을 입력해 주세요.";
-      });
-    } else if (!basicHeadcountUndetermined && !basicHeadcount.trim()) {
-      next.basicHeadcount = "모집인원을 입력하거나 '인원 미정'을 선택해 주세요.";
-    }
-    if (!summary.trim()) next.summary = "한 줄 요약을 입력해 주세요.";
-    if (!mainDuties.trim()) next.mainDuties = "주요업무를 입력해 주세요.";
-    if (!requiredQual.trim()) next.requiredQual = "필수 자격조건을 입력해 주세요.";
-    if (!workSchedule.trim()) next.workSchedule = "근무 요일/시간을 입력해 주세요.";
-    if (!workplaceName.trim()) next.workplaceName = "근무지명을 입력해 주세요.";
-    if (!address.trim()) next.address = "주소를 입력해 주세요.";
-    if (steps.length === 0) next.steps = "전형 단계를 하나 이상 입력해 주세요.";
-    if ((applyMethod === "url" || applyMethod === "email") && !applyTarget.trim()) {
-      next.applyTarget = applyMethod === "url" ? "지원 페이지 URL을 입력해 주세요." : "지원 이메일 주소를 입력해 주세요.";
-    }
-    if (!rollingToggle && !deadline) next.deadline = "지원 마감일을 입력해 주세요.";
+    if (selectedJobs.size === 0) next.selectedJobs = "모집 직무를 하나 이상 선택해 주세요.";
+    if (!summary.trim()) next.summary = "공고 요약을 입력해 주세요.";
+    if (!responsibilities.trim()) next.responsibilities = "주요 업무를 입력해 주세요.";
+    if (!requirements.trim()) next.requirements = "필수 자격요건을 입력해 주세요.";
+    if (shiftTypeIds.size === 0) next.shiftTypeIds = "근무 형태를 하나 이상 선택해 주세요.";
+    if (!address.trim()) next.address = "근무지를 입력해 주세요.";
+    if (!salary) next.salary = "급여를 선택해 주세요.";
+    if (applyMethod === "url" && !applyUrl.trim()) next.applyUrl = "채용페이지 URL을 입력해 주세요.";
+    if (applyMethod === "email" && !applyEmail.trim()) next.applyEmail = "지원 이메일 주소를 입력해 주세요.";
+    if (!rollingToggle && !deadline) next.deadline = "접수 마감일을 입력해 주세요.";
 
     setErrors(next);
     const count = Object.keys(next).length;
@@ -422,32 +355,29 @@ export function HospitalJobPostingForm() {
     return count === 0;
   }
 
-  // Dept helpers
-  function addDept() {
-    setDepartments((prev) => [...prev, makeBlankDept(nextDeptId.current++)]);
-  }
-  function removeDept(id: number) { setDepartments((prev) => prev.filter((d) => d.id !== id)); }
-  function updateDept<K extends keyof Omit<Dept, "id">>(id: number, field: K, value: Dept[K]) {
-    setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, [field]: value } : d)));
+  function toggleJob(id: string) {
+    setSelectedJobs((prev) => toggleSet(prev, id));
   }
 
-  // Step helpers
-  function addStep() { setSteps((prev) => [...prev, { id: nextStepId.current++, label: "" }]); }
-  function removeStep(id: number) { setSteps((prev) => prev.filter((s) => s.id !== id)); }
-  function updateStep(id: number, label: string) { setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, label } : s))); }
-
-  // Extra work item helpers
-  function addExtraWorkItem() {
-    setExtraWorkItems((prev) => (prev.length >= MAX_EXTRA_WORK_ITEMS ? prev : [...prev, { id: nextExtraWorkItemId.current++, label: "", value: "" }]));
-  }
-  function removeExtraWorkItem(id: number) { setExtraWorkItems((prev) => prev.filter((item) => item.id !== id)); }
-  function updateExtraWorkItem(id: number, field: keyof Omit<ExtraWorkItem, "id">, value: string) {
-    setExtraWorkItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  function toggleShiftType(id: string) {
+    setShiftTypeIds((prev) => toggleSet(prev, id));
   }
 
-  // Keyword helpers
+  function toggleWorkDay(day: string) {
+    setWorkDays((prev) => toggleSet(prev, day));
+  }
+
+  function toggleBenefit(item: string) {
+    setSelectedBenefits((prev) => toggleSet(prev, item));
+  }
+
+  function toggleSameAsInstitutionAddress(checked: boolean) {
+    setSameAsInstitutionAddress(checked);
+    if (checked) setAddress(initialHospitalOrgProfile.address);
+  }
+
   function toggleKeyword(kw: string) {
-    setKeywords((prev) => {
+    setSelectedKeywords((prev) => {
       const n = new Set(prev);
       if (n.has(kw)) n.delete(kw);
       else if (n.size < MAX_KW) n.add(kw);
@@ -457,14 +387,14 @@ export function HospitalJobPostingForm() {
 
   function addCustomKeyword() {
     const v = customKwInput.trim();
-    if (!v || v.length > 20 || keywords.has(v) || keywords.size >= MAX_KW) return;
-    setKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
+    if (!v || v.length > 10 || selectedKeywords.has(v) || selectedKeywords.size >= MAX_KW) return;
+    setSelectedKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
     setCustomKeywords((prev) => [...prev, v]);
     setCustomKwInput("");
   }
 
   function removeCustomKeyword(kw: string) {
-    setKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
+    setSelectedKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
     setCustomKeywords((prev) => prev.filter((k) => k !== kw));
   }
 
@@ -472,80 +402,71 @@ export function HospitalJobPostingForm() {
 
   return (
     <div>
-      {/* Page header — matches BusinessCompanyProfileClient pattern */}
+      {/* Page header */}
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
-          <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "채용관리" }, { label: "공고 등록" }]} />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c] flex flex-wrap items-center gap-3">
-            병원약사 공고 등록
-            <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#4f5967] bg-white border border-[#dfe4ea] px-2.5 py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0d7369]" aria-hidden />
-              더파마병원 명의로 작성 중 ·{" "}
-              <Link href="#" className="text-[#0d7369] font-bold ml-0.5 hover:underline underline-offset-2">기관정보</Link>
-            </span>
+          <PageBreadcrumb
+            items={[
+              { label: "기업센터", href: "/business/dashboard" },
+              { label: "채용관리" },
+              { label: "공고 등록" },
+            ]}
+          />
+          <h1 className="mt-5 flex flex-wrap items-center gap-3 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
+            공고 등록
+            <span className="h-6 w-px bg-[#dfe5ec]" aria-hidden />
+            <span className="font-medium text-[#8791a0]">병원 약사</span>
           </h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
-            병원·약제부 채용 공고를 등록합니다. 입력한 내용은 공고 상세 페이지에 그대로 노출됩니다.
+          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-normal text-[#68717e]">
+            <span>등록 기관</span>
+            <span className="font-semibold text-[#303946]">분당서울대학교병원</span>
+            <span className="text-[#c0c8d2]">·</span>
+            <Link href="/business/hospital/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
+              기관 정보 관리
+              <ArrowUpRight size={12} aria-hidden />
+            </Link>
           </p>
         </div>
       </div>
 
-      {/* Section stack — fills full column width; save bar is last child so sticky works */}
+      {/* Section stack — save bar is last child so position:sticky works */}
       <div className="mt-8 space-y-5">
 
-        {/* ── §1 기본 정보 ──────────────────────────────────────────────────────── */}
-        <SectionCard
-          title="기본 정보"
-          description="공고 제목과 직무, 채용 조건을 입력합니다."
-          status={errors.title || errors.jobCategory || errors.workplaceCategory || errors.shiftTypeIds ? "필수 입력 필요" : "작성 중"}
-        >
+        {/* ── §1 기본 정보 ──────────────────────────────────────────────────── */}
+        <SectionCard title="기본 정보">
+          {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
             <label htmlFor="h-title" className={LBL}>공고 제목{REQ}</label>
             <input id="h-title" value={title} onChange={(e) => setTitle(e.target.value)}
-              className={IN} placeholder="예: 약제팀 약사 / ASP팀 감염전문약사 채용" aria-required="true" />
+              className={IN} placeholder="약제부 병원약사 채용" aria-required="true" />
             <FieldError message={errors.title} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
-            <div ref={setRef("jobCategory")}>
-              <label htmlFor="h-jobcat" className={LBL}>직무 분류{REQ}</label>
-              <select id="h-jobcat" value={jobCategory} onChange={(e) => setJobCategory(e.target.value)} className={SEL} aria-required="true">
-                <option value="" disabled>직무를 선택해 주세요</option>
-                {hospitalJobCategoryOptions.map((category) => (
-                  <optgroup key={category.id} label={category.label}>
-                    {category.subcategories.map((sub) => (
-                      <option key={sub.id} value={sub.id}>{sub.label}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-              <FieldError message={errors.jobCategory} />
-            </div>
-            <div ref={setRef("workplaceCategory")}>
-              <label htmlFor="h-wpcat" className={LBL}>사업장 분류{REQ}</label>
-              <select id="h-wpcat" value={workplaceCategory} onChange={(e) => setWorkplaceCategory(e.target.value)} className={SEL} aria-required="true">
-                <option value="" disabled>의료기관 유형을 선택해 주세요</option>
-                {hospitalTypeOptions.map((option) => (
-                  <option key={option.id} value={option.id}>{option.label}</option>
-                ))}
-              </select>
-              <FieldError message={errors.workplaceCategory} />
-            </div>
+          {/* 모집 직무 — 2단계 선택기 */}
+          <div className="mb-5" ref={setRef("selectedJobs")}>
+            <TwoTierPicker
+              label="모집 직무"
+              required
+              hint="1차 분류를 고르고 세부 직무를 선택하세요."
+              categories={hospitalJobCategoryOptions}
+              activeCategoryId={activeJobCategory}
+              onActiveCategoryChange={setActiveJobCategory}
+              selected={selectedJobs}
+              onToggle={toggleJob}
+              error={errors.selectedJobs}
+              categoryAriaLabel="직무 대분류"
+              detailAriaLabel="세부 직무"
+            />
           </div>
 
-          <div className="mb-5" ref={setRef("shiftTypeIds")}>
-            <ChipGroup label="근무유형" required options={shiftTypeOptions} selected={shiftTypeIds}
-              onToggle={(item) => setShiftTypeIds(toggleSet(shiftTypeIds, item))} hint="복수 선택 가능" />
-            <FieldError message={errors.shiftTypeIds} />
-          </div>
-
+          {/* 고용형태 + 경력 + 학력 */}
           <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="h-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="h-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
-                {employmentTypeOptions
-                  .filter((option) => HOSPITAL_EMPLOYMENT_TYPE_IDS.includes(option.id))
-                  .map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+                {employmentTypeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
               </select>
             </div>
             <div>
@@ -557,7 +478,10 @@ export function HospitalJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="h-edu" className={LBL}>학력{REQ}</label>
+              <label htmlFor="h-edu" className={LBL}>
+                학력{REQ}
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
+              </label>
               <select id="h-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -566,441 +490,168 @@ export function HospitalJobPostingForm() {
             </div>
           </div>
 
-          <div className="mt-5" ref={setRef("basicHeadcount")}>
-            <label htmlFor="h-headcount" className={LBL}>모집인원{!isSplitByDept && REQ}</label>
-            {isSplitByDept ? (
-              <>
-                <div className={`${IN} flex items-center bg-[#f5f6f8] text-[#4f5967]`}>{aggregateHeadcount}</div>
-                <p className={HINT}>모집부문별 인원의 합계입니다. 부문에서 수정하세요.</p>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-3">
-                  <input id="h-headcount" type="number" min={0} inputMode="numeric" value={basicHeadcount}
-                    onChange={(e) => setBasicHeadcount(e.target.value)}
-                    disabled={basicHeadcountUndetermined}
-                    className={clsx(IN, "flex-1", basicHeadcountUndetermined && "bg-[#f5f6f8] text-[#a4adba] cursor-not-allowed")}
-                    placeholder="예: 2" aria-required="true" />
-                  <label className="inline-flex h-11 shrink-0 items-center gap-2 text-[13px] font-medium text-[#4c5665] whitespace-nowrap">
-                    <input type="checkbox" checked={basicHeadcountUndetermined}
-                      onChange={(e) => setBasicHeadcountUndetermined(e.target.checked)}
-                      className="h-4 w-4 accent-[#111111]" />
-                    인원 미정
-                  </label>
-                </div>
-                <FieldError message={errors.basicHeadcount} />
-              </>
-            )}
-          </div>
-
           <div className="mt-4">
-            {!isSplitByDept ? (
-              <button type="button" onClick={handleSplitByDept}
-                className="h-9 px-4 border border-dashed border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-[#111111] hover:text-[#111111] transition-colors">
-                <Plus size={13} aria-hidden /> 모집부문 나누기
-              </button>
-            ) : (
-              <button type="button" onClick={() => setShowMergeConfirm(true)}
-                className="h-9 px-4 border border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-danger hover:text-danger transition-colors">
-                부문 합치기
-              </button>
-            )}
-            <p className={HINT}>
-              {isSplitByDept
-                ? "부문을 합치면 아래 모집부문에 입력한 내용이 모두 삭제됩니다."
-                : "모집부문마다 인원·근무시간·자격요건이 다르면 부문을 나눠 입력하세요."}
-            </p>
+            <ToggleRow
+              title="리더급 공고"
+              description="약제부 관리자, 파트장급 등 리더 포지션 채용일 때 선택해 주세요."
+              checked={isLeadership}
+              onChange={setIsLeadership}
+              ariaLabel="리더급 공고"
+            />
           </div>
         </SectionCard>
 
-        {/* ── §2 모집부문 — "모집부문 나누기"로 전환했을 때만 노출 ──────────────── */}
-        {isSplitByDept && (
-          <SectionCard
-            title="모집부문"
-            description="모집하는 부문을 부문별로 입력합니다. 부문이 2개 이상이면 공고 상세에서 비교 표로 노출됩니다."
-            status="작성 중"
-          >
-            {departments.map((dept, i) => (
-              <div key={dept.id} className="border border-[#dfe4ea] p-5 mb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[12px] font-black text-white bg-[#111111] px-3 py-1">부문 {i + 1}</span>
-                  {departments.length > 1 && (
-                    <button type="button" onClick={() => removeDept(dept.id)} aria-label={`부문 ${i + 1} 삭제`}
-                      className="h-7 px-3 border border-[#dfe4ea] text-[12px] font-medium text-danger bg-white hover:bg-[#fff3f0] transition-colors">
-                      삭제
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4 max-[640px]:grid-cols-1">
-                  <div ref={setRef(`dept_${i}_name`)}>
-                    <label htmlFor={`h-dept-${dept.id}-name`} className={LBL}>부문명{REQ}</label>
-                    <input id={`h-dept-${dept.id}-name`} value={dept.name}
-                      onChange={(e) => updateDept(dept.id, "name", e.target.value)}
-                      className={IN} placeholder="예: 약제팀 평일약사" aria-required="true" />
-                    <FieldError message={errors[`dept_${i}_name`]} />
-                  </div>
-                  <div ref={setRef(`dept_${i}_headcount`)}>
-                    <label htmlFor={`h-dept-${dept.id}-hc`} className={LBL}>모집인원{REQ}</label>
-                    <div className="flex items-center gap-3">
-                      <input id={`h-dept-${dept.id}-hc`} type="number" min={0} inputMode="numeric" value={dept.headcount}
-                        onChange={(e) => updateDept(dept.id, "headcount", e.target.value)}
-                        disabled={dept.headcountUndetermined}
-                        className={clsx(IN, "flex-1", dept.headcountUndetermined && "bg-[#f5f6f8] text-[#a4adba] cursor-not-allowed")}
-                        placeholder="예: 1" aria-required="true" />
-                      <label className="inline-flex h-11 shrink-0 items-center gap-2 text-[13px] font-medium text-[#4c5665] whitespace-nowrap">
-                        <input type="checkbox" checked={dept.headcountUndetermined}
-                          onChange={(e) => updateDept(dept.id, "headcountUndetermined", e.target.checked)}
-                          className="h-4 w-4 accent-[#111111]" />
-                        인원 미정
-                      </label>
-                    </div>
-                    <FieldError message={errors[`dept_${i}_headcount`]} />
-                  </div>
-                </div>
-
-                <div className="mb-4" ref={setRef(`dept_${i}_schedule`)}>
-                  <label htmlFor={`h-dept-${dept.id}-sched`} className={LBL}>근무시간{REQ}</label>
-                  <input id={`h-dept-${dept.id}-sched`} value={dept.schedule}
-                    onChange={(e) => updateDept(dept.id, "schedule", e.target.value)}
-                    className={IN} placeholder="예: 월–금 08:30~16:30 (탄력근무제)" aria-required="true" />
-                  <FieldError message={errors[`dept_${i}_schedule`]} />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor={`h-dept-${dept.id}-duties`} className={LBL}>담당업무</label>
-                  <textarea id={`h-dept-${dept.id}-duties`} value={dept.duties}
-                    onChange={(e) => updateDept(dept.id, "duties", e.target.value)} rows={2}
-                    className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-                    placeholder={"예: 처방 감사, 입·퇴원 조제 및 투약설명, 의약품·마약류 관리"} />
-                </div>
-
-                <div>
-                  <label htmlFor={`h-dept-${dept.id}-req`} className={LBL}>자격요건</label>
-                  <textarea id={`h-dept-${dept.id}-req`} value={dept.requirements}
-                    onChange={(e) => updateDept(dept.id, "requirements", e.target.value)} rows={2}
-                    className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-                    placeholder="예: 약사 면허 소지자 / 경력 무관" />
-                </div>
-              </div>
-            ))}
-
-            <button type="button" onClick={addDept}
-              className="w-full h-11 border border-dashed border-[#d8e0e8] bg-white text-[13px] font-medium text-[#4f5967] flex items-center justify-center gap-2 hover:border-[#111111] hover:text-[#111111] transition-colors">
-              <Plus size={14} aria-hidden /> 모집부문 추가
-            </button>
-          </SectionCard>
-        )}
-
-        {showMergeConfirm && (
-          <ConfirmDialog
-            title="모집부문을 합칠까요?"
-            description="모집부문에 입력한 내용이 모두 삭제되고, 모집인원은 기본 정보에서 다시 입력해야 합니다."
-            confirmLabel="합치기"
-            onConfirm={handleConfirmMerge}
-            onCancel={() => setShowMergeConfirm(false)}
-          />
-        )}
-
-        {/* ── §3 업무·자격 (부문 공통) ──────────────────────────────────────────── */}
-        <SectionCard
-          title="업무·자격"
-          description="모든 모집부문에 공통으로 적용되는 소개와 자격을 입력합니다. 부문마다 다른 내용은 위 '모집부문'의 각 부문에 입력하세요."
-          status="작성 중"
-          action={
-            <span className="text-[12px] font-bold text-[#0d7369] bg-[rgba(31,191,146,0.10)] border border-[rgba(31,191,146,0.30)] px-2.5 py-0.5 whitespace-nowrap">
-              부문 공통
-            </span>
-          }
-        >
+        {/* ── §2 모집 내용 ──────────────────────────────────────────────────── */}
+        <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="h-summary" className={LBL}>한 줄 소개{REQ}</label>
+            <label htmlFor="h-summary" className={LBL}>
+              공고 요약{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
+            </label>
             <input id="h-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
-              className={IN} placeholder="예: 약제 전반 업무를 담당할 병원약사를 모집합니다." aria-required="true" />
-            <p className={HINT}>공고 목록과 상세 상단에 노출되는 요약 문장입니다.</p>
+              className={IN}
+              placeholder="조제 및 의약품 관리를 담당해주실 약사님을 모집합니다."
+              maxLength={100}
+              aria-required="true" />
+            <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{summary.length} / 100</p>
             <FieldError message={errors.summary} />
           </div>
 
-          <div className="mb-5" ref={setRef("mainDuties")}>
-            <label htmlFor="h-duties" className={LBL}>주요업무{REQ}</label>
-            <p className={`${HINT} mb-1.5`}>한 줄에 하나씩 입력하면 항목으로 표시됩니다.</p>
-            <textarea id="h-duties" value={mainDuties} onChange={(e) => setMainDuties(e.target.value)} rows={4}
-              className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-              placeholder={"처방 감사를 통한 처방 오류 사전 점검\n입·퇴원 환자 처방 조제 및 투약 설명\n의약품 및 마약류 관리, 부작용 모니터링"}
+          <div className="mb-5" ref={setRef("responsibilities")}>
+            <label htmlFor="h-duties" className={LBL}>
+              주요 업무{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
+            </label>
+            <textarea id="h-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder={"입원·외래 처방 검토 및 조제\n복약상담 및 투약 설명\n의약품 재고·마약류 관리"}
               aria-required="true" />
-            <FieldError message={errors.mainDuties} />
+            <FieldError message={errors.responsibilities} />
           </div>
 
-          <div className="mb-5" ref={setRef("requiredQual")}>
-            <label htmlFor="h-reqQual" className={LBL}>자격조건(필수){REQ}</label>
-            <p className={`${HINT} mb-1.5`}>한 줄에 하나씩 입력하세요.</p>
-            <textarea id="h-reqQual" value={requiredQual} onChange={(e) => setRequiredQual(e.target.value)} rows={3}
-              className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-              placeholder={"약사 면허 소지자\n대졸(약학과) 이상"} aria-required="true" />
-            <FieldError message={errors.requiredQual} />
+          <div className="mb-5" ref={setRef("requirements")}>
+            <label htmlFor="h-reqQual" className={LBL}>
+              필수 자격요건{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
+            </label>
+            <textarea id="h-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder="약사 면허 소지자" aria-required="true" />
+            <FieldError message={errors.requirements} />
           </div>
 
-          <div className="mb-5">
-            <label htmlFor="h-preferred" className={LBL}>우대사항</label>
-            <textarea id="h-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={2}
-              className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-              placeholder="예: 종합병원 약제 경력 보유자 (한 줄에 하나씩)" />
-          </div>
-
-          <ChipGroup label="자격·면허 및 전문분야" options={LICENSE_OPTS} selected={licenses}
-            onToggle={(item) => setLicenses(toggleSet(licenses, item))}
-            hint="상세 페이지에 강조 배지로 노출됩니다." />
-        </SectionCard>
-
-        {/* ── §4 근무조건 ───────────────────────────────────────────────────────── */}
-        <SectionCard title="근무조건" description="근무 일정, 급여, 복리후생과 근무지를 입력합니다." status="작성 중">
-          <div className="mb-5" ref={setRef("workSchedule")}>
-            <label htmlFor="h-wsched" className={LBL}>근무 요일/시간{REQ}</label>
-            <input id="h-wsched" value={workSchedule} onChange={(e) => setWorkSchedule(e.target.value)}
-              className={IN} placeholder="예: 주 5일 / 월~금 08:30~16:30 (부문별로 다르면 모집부문에 입력)" aria-required="true" />
-            <FieldError message={errors.workSchedule} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
-            <div>
-              <label htmlFor="h-nightshift" className={LBL}>당직 여부·빈도</label>
-              <input id="h-nightshift" value={nightShift} onChange={(e) => setNightShift(e.target.value)}
-                className={IN} placeholder="예: 야간 당직 월 2~3회" />
-            </div>
-            <div>
-              <p className={LBL} id="h-overtime-lbl">연장·휴일 수당</p>
-              <div aria-labelledby="h-overtime-lbl"
-                className="flex items-center justify-between border border-[#dfe4ea] px-4 bg-white" style={{ height: 44 }}>
-                <div>
-                  <span className="text-[13px] font-medium text-[#303946]">별도 지급</span>
-                  <span className="text-[11.5px] text-[#7b8491] ml-2">발생 시 수당 별도 지급</span>
-                </div>
-                <ToggleSwitch checked={overtimeToggle} onChange={setOvertimeToggle} label="연장·휴일 수당 별도 지급" />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-[#f0f2f5] my-5" />
-
-          <div className="mb-5">
-            <SegControl label="급여 표기 방식" required options={SALARY_TYPE_OPTIONS}
-              value={salaryType} onChange={(v) => setSalaryType(v as SalaryTypeOption)} />
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
-            <div>
-              <label htmlFor="h-salary-min" className={LBL}>최소 금액</label>
-              <div className="relative">
-                <input id="h-salary-min" value={salaryMin} onChange={(e) => setSalaryMin(e.target.value)}
-                  disabled={salaryType === "면접 후 결정"}
-                  className={`${IN} pr-10 disabled:bg-[#f5f6f8] disabled:text-[#a4adba] disabled:cursor-not-allowed`}
-                  placeholder="예: 6,000" />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>만원</span>
-              </div>
-              <p className={HINT}>신규(1년차) 기준 등 산정 기준이 있으면 급여 비고에 적어주세요.</p>
-            </div>
-            <div>
-              <label htmlFor="h-salary-max" className={LBL}>최대 금액 <span className="text-[#9aa3af] font-normal">(선택)</span></label>
-              <div className="relative">
-                <input id="h-salary-max" value={salaryMax} onChange={(e) => setSalaryMax(e.target.value)}
-                  disabled={salaryType === "면접 후 결정"}
-                  className={`${IN} pr-10 disabled:bg-[#f5f6f8] disabled:text-[#a4adba] disabled:cursor-not-allowed`}
-                  placeholder="예: 9,000" />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>만원</span>
-              </div>
-            </div>
-          </div>
-          <div className="mb-5">
-            <label htmlFor="h-salary-note" className={LBL}>급여 비고</label>
-            <input id="h-salary-note" value={salaryNote} onChange={(e) => setSalaryNote(e.target.value)}
-              className={IN} placeholder="예: 신규 기준, 경력·근무횟수에 따라 상이" />
-          </div>
-          <InlineNote>미리보기: {salaryPreview}</InlineNote>
-
-          <div className="border-t border-[#f0f2f5] my-5" />
-
-          <div className="mb-5">
-            <ChipGroup label="복리후생" options={WELFARE_OPTS} selected={welfare}
-              onToggle={(item) => setWelfare(toggleSet(welfare, item))} />
-          </div>
-
-          <div className="mb-5">
-            <label htmlFor="h-workcond" className={LBL}>근무조건 상세</label>
-            <textarea id="h-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={3}
-              className={`${IN} h-auto py-2.5 resize-y leading-relaxed`}
-              placeholder="예: 4대 보험, 퇴직연금, 본인·가족 의료비 지원, 교육비 지원, 경조 휴가 등을 운영합니다." />
-          </div>
-
-          <div className="mb-2">
-            <p className={LBL} id="h-extra-items-lbl">
-              추가 항목 <span className="text-[#9aa3af] font-normal">(선택, 최대 {MAX_EXTRA_WORK_ITEMS}개)</span>
-            </p>
-            <div aria-labelledby="h-extra-items-lbl" className="flex flex-col gap-2">
-              {extraWorkItems.map((item, i) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input aria-label={`추가 항목 ${i + 1} 라벨`} value={item.label} maxLength={20}
-                    onChange={(e) => updateExtraWorkItem(item.id, "label", e.target.value)}
-                    className={`w-[140px] shrink-0 ${IN}`} placeholder="예: 식대" />
-                  <input aria-label={`추가 항목 ${i + 1} 값`} value={item.value} maxLength={60}
-                    onChange={(e) => updateExtraWorkItem(item.id, "value", e.target.value)}
-                    className={`flex-1 ${IN}`} placeholder="예: 중식 제공" />
-                  <button type="button" aria-label={`추가 항목 ${i + 1} 삭제`} onClick={() => removeExtraWorkItem(item.id)}
-                    className="w-9 h-9 border border-[#dfe4ea] bg-white text-[#a0a9b7] grid place-items-center hover:text-danger hover:border-danger/30 transition-colors shrink-0">
-                    <Trash2 size={14} aria-hidden />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <button type="button" onClick={addExtraWorkItem} disabled={extraWorkItems.length >= MAX_EXTRA_WORK_ITEMS}
-              className="mt-2 h-9 px-4 border border-dashed border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-[#111111] hover:text-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#d8e0e8] disabled:hover:text-[#4f5967]">
-              <Plus size={13} aria-hidden /> 항목 추가
-            </button>
-          </div>
-
-          <div className="mt-4">
-            <InlineNote>
-              근무조건 미리보기: {workConditionItemsPreview.map((item) => `${item.label}: ${item.value}`).join(" · ")}
-            </InlineNote>
-          </div>
-
-          <div className="border-t border-[#f0f2f5] my-5" />
-
-          <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
-            <div ref={setRef("workplaceName")}>
-              <label htmlFor="h-wpname" className={LBL}>근무지명{REQ}</label>
-              <input id="h-wpname" value={workplaceName} onChange={(e) => setWorkplaceName(e.target.value)}
-                className={IN} aria-required="true" />
-              <FieldError message={errors.workplaceName} />
-            </div>
-            <div>
-              <label htmlFor="h-nearstation" className={LBL}>가까운 역·교통</label>
-              <input id="h-nearstation" value={nearStation} onChange={(e) => setNearStation(e.target.value)}
-                className={IN} placeholder="예: 2호선 강남역 도보 6분" />
-            </div>
-          </div>
-
-          <div ref={setRef("address")}>
-            <label htmlFor="h-address" className={LBL}>주소{REQ}</label>
-            <input id="h-address" value={address} onChange={(e) => setAddress(e.target.value)}
-              className={IN} aria-required="true" />
-            {!address.trim() && (
-              <div className="mt-2 flex items-center gap-1.5 text-[11.5px] text-[#9a6b00] bg-[#fff9ef] border border-[#f1dcb7] px-3 py-1.5">
-                <AlertCircle size={13} aria-hidden />
-                기관정보에 설립연도·가까운 역 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
-              </div>
-            )}
-            <FieldError message={errors.address} />
+          <div>
+            <label htmlFor="h-preferred" className={LBL}>
+              우대사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
+            </label>
+            <textarea id="h-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder={"병원 약제부 근무 경험 보유자\n전문약사 자격 또는 관련 교육 이수자"} />
           </div>
         </SectionCard>
 
-        {/* ── §5 전형절차 & 제출서류 ────────────────────────────────────────────── */}
-        <SectionCard title="전형절차 & 제출서류" description="전형 단계와 지원자가 제출할 서류를 입력합니다." status="작성 중">
-          <div className="mb-6" ref={setRef("steps")}>
-            <p className={LBL} id="h-steps-lbl">전형 단계{REQ}</p>
-            <ol aria-labelledby="h-steps-lbl" className="flex flex-col gap-2">
-              {steps.map((step, i) => (
-                <li key={step.id} className="flex items-center gap-2">
-                  <span aria-hidden className="w-7 h-7 bg-[#111111] text-white text-[12px] font-bold grid place-items-center shrink-0 select-none">
-                    {i + 1}
-                  </span>
-                  <input aria-label={`전형 단계 ${i + 1}`} value={step.label}
-                    onChange={(e) => updateStep(step.id, e.target.value)}
-                    className={`flex-1 ${IN}`} />
-                  <button type="button" aria-label={`${i + 1}단계 삭제`} onClick={() => removeStep(step.id)}
-                    className="w-9 h-9 border border-[#dfe4ea] bg-white text-[#a0a9b7] grid place-items-center hover:text-danger hover:border-danger/30 transition-colors shrink-0">
-                    <Trash2 size={14} aria-hidden />
-                  </button>
-                </li>
-              ))}
-            </ol>
-            <button type="button" onClick={addStep}
-              className="mt-3 h-9 px-4 border border-dashed border-[#d8e0e8] bg-white text-[12.5px] font-medium text-[#4f5967] inline-flex items-center gap-1.5 hover:border-[#111111] hover:text-[#111111] transition-colors">
-              <Plus size={13} aria-hidden /> 단계 추가
-            </button>
-            <FieldError message={errors.steps} />
+        {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
+        <SectionCard title="근무조건">
+          <div className="mb-5" ref={setRef("shiftTypeIds")}>
+            <ChipGroup label="근무 형태" required options={shiftTypeOptions} selected={shiftTypeIds}
+              onToggle={toggleShiftType} hint="해당하는 근무 형태를 모두 선택해 주세요." />
+            <FieldError message={errors.shiftTypeIds} />
           </div>
 
-          <div className="mb-6">
-            <ChipGroup label="제출서류" options={SUBMISSION_OPTS} selected={submissionDocs}
-              onToggle={(item) => setSubmissionDocs(toggleSet(submissionDocs, item))} />
+          <div className="mb-5">
+            <ChipGroup label="근무 요일" options={WEEKDAY_OPTS} selected={workDays} onToggle={toggleWorkDay} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <div>
-              <p className={LBL}>지원 양식 첨부</p>
-              <label className="border border-dashed border-[#d8e0e8] bg-[#fbfcfd] flex flex-col items-center justify-center gap-1.5 py-6 cursor-pointer hover:border-[#111111] transition-colors"
-                tabIndex={0} role="button" aria-label="자사양식 파일 업로드">
-                <span className="text-[13px] font-medium text-[#303946]">+ 자사양식 업로드</span>
-                <span className="text-[11.5px] text-[#7b8491]">.hwp, .docx</span>
-                <span className="text-[11.5px] text-[#7b8491]">지정 양식이 있으면 첨부하세요.</span>
-                <input type="file" accept=".hwp,.docx" className="sr-only" tabIndex={-1} />
+          <div className="mb-5" ref={setRef("address")}>
+            <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+              <label htmlFor="h-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+              <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
+                <input type="checkbox" checked={sameAsInstitutionAddress}
+                  onChange={(e) => toggleSameAsInstitutionAddress(e.target.checked)}
+                  className="h-4 w-4 accent-[#111111]" />
+                기관 주소와 동일
               </label>
             </div>
-            <div>
-              <p className={LBL}>블라인드 채용</p>
-              <ToggleRow title="블라인드 적용"
-                description="학교·나이·출신지 등 인적사항을 평가에서 제외합니다. 국공립·공공의료기관에서 주로 사용합니다."
-                checked={blindHire} onChange={setBlindHire} ariaLabel="블라인드 채용 적용" />
-            </div>
+            <input id="h-address" value={address} onChange={(e) => setAddress(e.target.value)}
+              readOnly={sameAsInstitutionAddress}
+              placeholder="예: 서울 강남구 테헤란로 123, 8층"
+              className={clsx(IN, sameAsInstitutionAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
+              aria-required="true" />
+            <FieldError message={errors.address} />
+          </div>
+
+          <div className="my-5 border-t border-[#f0f2f5]" />
+
+          <div className="mb-5" ref={setRef("salary")}>
+            <SegControl label="급여" required options={SALARY_OPTS} value={salary} onChange={setSalary} />
+            <FieldError message={errors.salary} />
+          </div>
+
+          <div className="mb-5">
+            <ChipGroup label="복리후생" options={WELFARE_OPTS} selected={selectedBenefits} onToggle={toggleBenefit} />
+          </div>
+
+          <div>
+            <label htmlFor="h-workcond" className={LBL}>근무조건 상세</label>
+            <textarea id="h-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder="당직 여부, 휴일 수당 등 구체적인 근무 조건을 적어주세요." />
           </div>
         </SectionCard>
 
-        {/* ── §6 키워드·이미지 ──────────────────────────────────────────────────── */}
-        <SectionCard title="키워드 · 이미지" description="검색·추천에 쓰일 키워드와 대표 이미지를 선택합니다. (선택)" status="선택 사항">
+        {/* ── §4 검색 노출 설정 ─────────────────────────────────────────────── */}
+        <SectionCard title="검색 노출 설정">
           <div className="mb-6">
-            <p className="mb-1.5 text-[13px] font-medium text-[#2f3845]">
-              핵심 키워드
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {MAX_KW}개</span>
+            <p className={LBL}>
+              검색 키워드
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
+            </p>
+            <p className={`${HINT} mb-3`}>
+              병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.
             </p>
 
-            {jobCategory && KW_BY_JOBCAT[jobCategory] ? (
-              <>
-                <p className={`${HINT} mb-3`}>
-                  선택한 직무({JOB_SUBCATEGORY_LABEL_BY_ID.get(jobCategory) ?? jobCategory})에 맞춰 추천 키워드가 표시됩니다.
-                </p>
-                <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
-                  {KW_BY_JOBCAT[jobCategory].map((kw) => {
-                    const on = keywords.has(kw);
-                    const blocked = keywords.size >= MAX_KW && !on;
-                    return (
-                      <button key={kw} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
-                        onClick={() => !blocked && toggleKeyword(kw)}
-                        className={clsx(
-                          "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
-                          on ? "border-[#111111] bg-[#111111] text-white"
-                            : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
-                              : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-                        )}>
-                        {on && <span className="text-[10px]" aria-hidden>✓</span>}
-                        {kw}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <p className={`${HINT} mb-3`}>직무를 먼저 선택하면 추천 키워드가 표시됩니다.</p>
-            )}
+            <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
+              {HOSPITAL_KEYWORDS.map((kw) => {
+                const on = selectedKeywords.has(kw);
+                const blocked = selectedKeywords.size >= MAX_KW && !on;
+                return (
+                  <button key={kw} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
+                    onClick={() => !blocked && toggleKeyword(kw)}
+                    className={clsx(
+                      "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
+                      on ? "border-[#111111] bg-[#111111] text-white"
+                        : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
+                          : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
+                    )}>
+                    {on && <span className="text-[10px]" aria-hidden>✓</span>}
+                    {kw}
+                  </button>
+                );
+              })}
+            </div>
 
             <div className="my-4 border-t border-[#f0f2f5]" />
 
-            <p className="mb-1 text-[12.5px] font-semibold text-[#7b8491]">기타 키워드 직접 추가</p>
-            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요. (Enter로 추가, 키워드당 20자 이내)</p>
+            <p className={LBL}>기타 키워드 직접 추가</p>
+            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요.</p>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
                 onChange={(e) => setCustomKwInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
-                maxLength={20}
-                placeholder="예: 무균조제"
+                maxLength={10}
+                placeholder="예: DUR, 조제실 관리, 약물상담"
                 className={`${IN} flex-1`}
                 aria-label="키워드 직접 입력"
               />
               <button type="button" onClick={addCustomKeyword}
-                disabled={keywords.size >= MAX_KW}
+                disabled={selectedKeywords.size >= MAX_KW}
                 className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:text-[#aeb6c0]">
-                ＋ 추가
+                ＋ 직접 추가
               </button>
             </div>
+            <p className={HINT}>(10자 이내)</p>
 
             {customKeywords.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -1017,21 +668,28 @@ export function HospitalJobPostingForm() {
             )}
 
             <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택됨 {keywords.size}개 · 공고 목록에는 최대 5개가 노출됩니다.
+              선택한 키워드는 공고 목록과 추천 매칭에 활용되며, 목록에는 최대 5개까지 표시됩니다.
             </p>
           </div>
 
           <div>
             <p className={LBL} id="h-img-lbl">대표 이미지</p>
+            <p className={`${HINT} mb-3`}>공고 상세 상단에 표시할 이미지를 선택합니다.</p>
             <div role="radiogroup" aria-labelledby="h-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
-                const labels = { default: "기관 기본 이미지 사용", upload: "새 이미지 업로드", none: "이미지 없이 등록" };
-                const isOn = imageOption === opt;
+                const labels = {
+                  default: "기관 기본 이미지 사용",
+                  upload: "새 이미지 업로드",
+                  none: "기본 배경 사용",
+                };
+                const on = imageOption === opt;
                 return (
-                  <button key={opt} type="button" role="radio" aria-checked={isOn} onClick={() => setImageOption(opt)}
+                  <button key={opt} type="button" role="radio" aria-checked={on}
+                    onClick={() => setImageOption(opt)}
                     className={clsx(
-                      "h-12 border text-[13px] font-medium flex items-center justify-center transition-colors",
-                      isOn ? "border-[#111111] shadow-[inset_0_0_0_1px_#111111] text-[#111111] bg-white"
+                      "flex h-12 items-center justify-center border text-[13px] font-medium transition-colors",
+                      on
+                        ? "border-[#111111] bg-white text-[#111111] shadow-[inset_0_0_0_1px_#111111]"
                         : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
                     )}>
                     {labels[opt]}
@@ -1042,58 +700,152 @@ export function HospitalJobPostingForm() {
           </div>
         </SectionCard>
 
-        {/* ── §7 지원방법 및 마감일 ─────────────────────────────────────────────── */}
-        <SectionCard title="지원방법 및 마감일" description="지원 방식에 따라 공고 상세에 필요한 정보가 노출됩니다."
-          status={errors.applyTarget || errors.deadline ? "필수 입력 필요" : "작성 중"}>
+        {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
+        <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <SegControl label="지원 방식" required
-              options={["간편지원", "기관 홈페이지 지원", "이메일 지원"]}
-              value={applyMethod === "quick" ? "간편지원" : applyMethod === "url" ? "기관 홈페이지 지원" : "이메일 지원"}
-              onChange={(v) => setApplyMethod(v === "간편지원" ? "quick" : v === "기관 홈페이지 지원" ? "url" : "email")} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-5 max-[640px]:grid-cols-1">
-            {applyMethod !== "quick" ? (
-              <div ref={setRef("applyTarget")}>
-                <label htmlFor="h-apply-target" className={LBL}>
-                  {applyMethod === "url" ? "지원 페이지 URL" : "지원 이메일 주소"}{REQ}
-                </label>
-                <input id="h-apply-target" type={applyMethod === "url" ? "url" : "email"}
-                  value={applyTarget} onChange={(e) => setApplyTarget(e.target.value)}
-                  className={IN}
-                  placeholder={applyMethod === "url" ? "예: https://hospital.or.kr/recruit" : "예: hr@hospital.or.kr"}
-                  aria-required="true" />
-                <FieldError message={errors.applyTarget} />
-              </div>
-            ) : (
-              <div>
-                <p className={LBL}>지원 안내</p>
-                <InlineNote>간편지원은 더파마 지원서로 접수됩니다. 별도 URL·이메일이 필요 없습니다.</InlineNote>
-              </div>
-            )}
-
-            <div ref={setRef("deadline")}>
-              <label htmlFor="h-deadline" className={LBL}>
-                {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-              </label>
-              <input id="h-deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}
-                disabled={rollingToggle}
-                className={clsx(IN, rollingToggle && "opacity-45 cursor-not-allowed")}
-                aria-required={!rollingToggle ? "true" : undefined} />
-              <FieldError message={errors.deadline} />
+            <p id="h-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
+              지원 방식{REQ}
+            </p>
+            <div role="radiogroup" aria-labelledby="h-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
+              {(
+                [
+                  { value: "url" as const, label: "채용페이지 지원" },
+                  { value: "quick" as const, label: "더파마 간편지원", badge: "추천" },
+                  { value: "email" as const, label: "이메일 지원" },
+                ]
+              ).map(({ value: v, label, badge }) => {
+                const on = applyMethod === v;
+                return (
+                  <button key={v} type="button" role="radio" aria-checked={on} onClick={() => setApplyMethod(v)}
+                    className={clsx(
+                      "inline-flex h-11 items-center gap-1.5 border-r border-[#d8e0e8] px-5 text-[13px] font-medium last:border-r-0 transition-colors",
+                      on ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
+                    )}>
+                    {label}
+                    {badge && (
+                      <span className={clsx(
+                        "rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+                        on ? "bg-white text-[#111111]" : "bg-[#111111] text-white",
+                      )}>
+                        {badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <ToggleRow title="채용 시 마감(조기 마감 가능)"
-            description="정한 마감일과 별개로, 채용이 완료되면 조기 마감합니다. 켜면 마감일은 '예정일'로 표시됩니다."
-            checked={rollingToggle} onChange={setRollingToggle} ariaLabel="채용 시 마감" />
+          {applyMethod === "quick" ? (
+            <div className="mb-5">
+              <div className="mb-4">
+                <InlineNote>
+                  <span className="mb-1 block font-semibold text-[#2f3845]">더파마에서 바로 지원받기</span>
+                  <span className="block text-[#6b7280]">
+                    별도 채용페이지나 이메일 이동 없이, 지원자가 더파마 프로필과 이력서로 바로 지원할 수 있습니다. 접수 내역은 기관 센터에서 관리됩니다.
+                  </span>
+                </InlineNote>
+              </div>
+              <div className="max-w-sm" ref={setRef("deadline")}>
+                <label htmlFor="h-deadline" className={LBL}>
+                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
+                </label>
+                <input id="h-deadline" type="date" value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  disabled={rollingToggle}
+                  className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
+                  aria-required={!rollingToggle ? "true" : undefined} />
+                <FieldError message={errors.deadline} />
+              </div>
+            </div>
+          ) : applyMethod === "url" ? (
+            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+              <div ref={setRef("applyUrl")}>
+                <label htmlFor="h-apply-url" className={LBL}>채용페이지 URL{REQ}</label>
+                <input id="h-apply-url" type="url"
+                  value={applyUrl} onChange={(e) => setApplyUrl(e.target.value)}
+                  className={IN}
+                  placeholder="예: https://hospital.or.kr/careers/..."
+                  aria-required="true" />
+                <FieldError message={errors.applyUrl} />
+              </div>
+              <div ref={setRef("deadline")}>
+                <label htmlFor="h-deadline" className={LBL}>
+                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
+                </label>
+                <input id="h-deadline" type="date" value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  disabled={rollingToggle}
+                  className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
+                  aria-required={!rollingToggle ? "true" : undefined} />
+                <FieldError message={errors.deadline} />
+              </div>
+            </div>
+          ) : (
+            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+              <div ref={setRef("applyEmail")}>
+                <label htmlFor="h-apply-email" className={LBL}>지원 이메일 주소{REQ}</label>
+                <input id="h-apply-email" type="email"
+                  value={applyEmail} onChange={(e) => setApplyEmail(e.target.value)}
+                  className={IN}
+                  placeholder="예: recruit@hospital.or.kr"
+                  aria-required="true" />
+                <FieldError message={errors.applyEmail} />
+              </div>
+              <div ref={setRef("deadline")}>
+                <label htmlFor="h-deadline" className={LBL}>
+                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
+                </label>
+                <input id="h-deadline" type="date" value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  disabled={rollingToggle}
+                  className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
+                  aria-required={!rollingToggle ? "true" : undefined} />
+                <FieldError message={errors.deadline} />
+              </div>
+            </div>
+          )}
+
+          <ToggleRow
+            title="조기 마감 가능"
+            description="채용이 완료되면 마감일 전에도 공고를 마감할 수 있습니다."
+            checked={rollingToggle}
+            onChange={setRollingToggle}
+            ariaLabel="채용 시 마감"
+          />
+        </SectionCard>
+
+        {/* ── §6 상세 이미지 및 첨부 자료 ───────────────────────────────────── */}
+        <SectionCard title="상세 이미지 및 첨부 자료">
+          <div className="grid grid-cols-2 gap-6 max-[640px]:grid-cols-1">
+            <AttachmentUploader
+              label="이미지"
+              description="공고 상세 본문에 표시됩니다."
+              accept="image/*"
+              buttonLabel="이미지 추가"
+              emptyText="첨부된 이미지가 없습니다."
+              value={imageAttachments}
+              onChange={setImageAttachments}
+            />
+            <AttachmentUploader
+              label="첨부 파일"
+              description="공고 상세에서 다운로드 링크로 제공됩니다."
+              accept=".pdf,.hwp,.docx"
+              buttonLabel="파일 추가"
+              emptyText="첨부된 파일이 없습니다."
+              value={fileAttachments}
+              onChange={setFileAttachments}
+            />
+          </div>
 
           <div className="mt-4">
-            <InlineNote>이미지·포스터를 첨부할 수 있지만, 검색·추천을 위해 주요업무·자격요건·근무조건은 반드시 입력해 주세요.</InlineNote>
+            <InlineNote>
+              검색과 추천 품질을 위해 주요 업무 · 자격요건 · 근무조건은 텍스트로 입력해 주세요.
+            </InlineNote>
           </div>
         </SectionCard>
 
-        {/* ── 하단 저장바 — space-y-5 스택의 마지막 자식으로 sticky가 정상 동작 ── */}
+        {/* ── 하단 저장바 — space-y-5 스택의 마지막 자식 ── */}
         <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
             <p className="text-[12px] font-normal text-[#7b8491]">
