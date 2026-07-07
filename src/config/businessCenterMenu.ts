@@ -33,7 +33,7 @@ export const businessCenterMenuGroups: BusinessCenterMenuGroup[] = [
   {
     title: "기업관리",
     items: [
-      { label: "기업정보 관리", href: "/business/company/profile" },
+      { label: "기업정보 관리", href: "/business/profile-hub" },
       { label: "브랜드 페이지 미리보기", href: "/business/company/preview" },
     ],
   },

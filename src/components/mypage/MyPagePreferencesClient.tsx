@@ -245,7 +245,7 @@ export function MyPagePreferencesClient() {
                     : setSingleFilter(openDefinition.stateKey as SingleFilterStateKey, id)
                 }
               />
-            ) : (
+            ) : openDefinition.kind === "researchField" ? null : (
               <GroupPanel
                 sections={openDefinition.sections}
                 filters={draftFilters}

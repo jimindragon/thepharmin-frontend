@@ -1,4 +1,5 @@
 import type { FilterOption, JobCategoryOption, TrackFilterConfig } from "@/types/jobs";
+import { researchFieldCategoryOptions } from "@/config/researchFields";
 import {
   contractPeriodOptions,
   educationOptions,
@@ -14,33 +15,38 @@ export const researchJobCategoryOptions: JobCategoryOption[] = [
     id: "research-position",
     label: "연구직",
     subcategories: [
-      { id: "research_scientist", label: "연구원", categoryId: "research-position" },
-      { id: "postdoctoral_researcher", label: "박사후연구원·포닥", categoryId: "research-position" },
-      { id: "research_professor_pi", label: "연구교수·연구책임자·PI", categoryId: "research-position" },
+      { id: "researcher", label: "연구원", categoryId: "research-position" },
+      { id: "senior-researcher", label: "선임·책임연구원", categoryId: "research-position" },
+      { id: "postdoc", label: "박사후연구원·포닥", categoryId: "research-position" },
+      { id: "research-professor-pi", label: "연구교수·PI", categoryId: "research-position" },
+      { id: "technician", label: "테크니션·연구보조", categoryId: "research-position" },
     ],
   },
   {
     id: "research-operations",
-    label: "연구운영",
+    label: "연구지원·운영",
     subcategories: [
-      {
-        id: "research_administration",
-        label: "연구지원·과제관리",
-        description: "연구행정, 연구비 관리, 과제 운영",
-        categoryId: "research-operations",
-      },
+      { id: "research-support", label: "연구지원·과제관리", categoryId: "research-operations" },
+      { id: "research-admin", label: "연구행정·연구비 관리", categoryId: "research-operations" },
+      { id: "lab-management", label: "연구실 운영·장비관리", categoryId: "research-operations" },
     ],
   },
   {
-    id: "clinical-translational",
-    label: "임상·중개연구",
+    id: "clinical-research-ops",
+    label: "임상연구 운영",
     subcategories: [
-      {
-        id: "clinical_translational_research",
-        label: "임상연구",
-        description: "병원 기반 중개연구, 임상연구, 연구 코디네이션",
-        categoryId: "clinical-translational",
-      },
+      { id: "crc", label: "임상연구 코디네이터", categoryId: "clinical-research-ops" },
+      { id: "trial-operations", label: "임상시험 운영", categoryId: "clinical-research-ops" },
+      { id: "clinical-dm", label: "임상데이터 관리", categoryId: "clinical-research-ops" },
+    ],
+  },
+  {
+    id: "data-analysis",
+    label: "데이터·분석",
+    subcategories: [
+      { id: "data-analyst", label: "데이터 분석 연구원", categoryId: "data-analysis" },
+      { id: "bioinformatics-researcher", label: "바이오인포매틱스 연구원", categoryId: "data-analysis" },
+      { id: "computational-biology", label: "AI·계산생물학 연구원", categoryId: "data-analysis" },
     ],
   },
 ];
@@ -61,6 +67,7 @@ export const researchFilterConfig: TrackFilterConfig = {
   track: "research",
   filters: [
     { id: "job", label: "직무", kind: "job", categories: researchJobCategoryOptions },
+    { id: "researchField", label: "연구 분야", kind: "researchField", categories: researchFieldCategoryOptions },
     {
       id: "institutionType",
       label: "기관 유형",

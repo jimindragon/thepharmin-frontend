@@ -5,6 +5,7 @@ import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
@@ -231,6 +232,7 @@ export function IndustryJobPostingForm() {
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
   const [educationType, setEducationType] = useState("any");
+  const [isLeadership, setIsLeadership] = useState(false);
 
   // §2 포지션 소개·업무·자격
   const [summary, setSummary] = useState("");
@@ -239,7 +241,6 @@ export function IndustryJobPostingForm() {
   const [preferred, setPreferred] = useState("");
 
   // §3 근무조건
-  const [workRegion, setWorkRegion] = useState("서울 강남구");
   const [workMode, setWorkMode] = useState("");
   const [address, setAddress] = useState("서울 강남구 역삼로 226, 오신 카세코빌딩");
   const [sameAsCompanyAddress, setSameAsCompanyAddress] = useState(false);
@@ -261,7 +262,8 @@ export function IndustryJobPostingForm() {
   const [rollingToggle, setRollingToggle] = useState(false);
 
   // §6 상세 이미지·첨부 자료
-  const [attachments, setAttachments] = useState<{ type: "image" | "file"; name: string }[]>([]);
+  const [imageAttachments, setImageAttachments] = useState<AttachmentItem[]>([]);
+  const [fileAttachments, setFileAttachments] = useState<AttachmentItem[]>([]);
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -280,8 +282,7 @@ export function IndustryJobPostingForm() {
     if (!requiredQual.trim())    next.requiredQual = "자격조건을 입력해 주세요.";
     if (!workMode)               next.workMode     = "근무 방식을 선택해 주세요.";
     if (workMode !== "remote") {
-      if (!workRegion.trim())    next.workRegion   = "근무지역을 입력해 주세요.";
-      if (!address.trim())       next.address      = "주소를 입력해 주세요.";
+      if (!address.trim())       next.address      = "근무지를 입력해 주세요.";
     }
     if (!salary)                 next.salary       = "급여를 선택해 주세요.";
     if ((applyMethod === "url" || applyMethod === "email") && !applyTarget.trim()) {
@@ -345,18 +346,6 @@ export function IndustryJobPostingForm() {
     }
   }
 
-  function addAttachment(type: "image" | "file") {
-    setAttachments((prev) => {
-      const count = prev.filter((item) => item.type === type).length + 1;
-      const name = type === "image" ? `이미지 ${count}` : `파일 ${count}`;
-      return [...prev, { type, name }];
-    });
-  }
-
-  function removeAttachment(index: number) {
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
-  }
-
   // ── Render ────────────────────────────────────────────────────────────────────
 
   const activeCategory = JOB_CATEGORIES.find((c) => c.key === activeJobCat);
@@ -385,7 +374,7 @@ export function IndustryJobPostingForm() {
             <span>등록 기업</span>
             <span className="font-semibold text-[#303946]">더팜인뉴스(주)</span>
             <span className="text-[#c0c8d2]">·</span>
-            <Link href="/business/company/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
+            <Link href="/business/industry/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
               기업 정보 관리
               <ArrowUpRight size={12} aria-hidden />
             </Link>
@@ -530,6 +519,16 @@ export function IndustryJobPostingForm() {
               </select>
             </div>
           </div>
+
+          <div className="mt-4">
+            <ToggleRow
+              title="리더급 공고"
+              description="팀장·임원급 등 리더 포지션 채용일 때 켜 주세요."
+              checked={isLeadership}
+              onChange={setIsLeadership}
+              ariaLabel="리더급 공고"
+            />
+          </div>
         </SectionCard>
 
         {/* ── §2 포지션 소개 · 업무 · 자격 ─────────────────────────────────── */}
@@ -604,37 +603,29 @@ export function IndustryJobPostingForm() {
           </div>
 
           {workMode !== "remote" && (
-            <>
-              <div className="mb-5" ref={setRef("workRegion")}>
-                <label htmlFor="i-region" className={LBL}>근무지역{REQ}</label>
-                <input id="i-region" value={workRegion} onChange={(e) => setWorkRegion(e.target.value)}
-                  className={IN} aria-required="true" />
-                <FieldError message={errors.workRegion} />
+            <div className="mb-5" ref={setRef("address")}>
+              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                <label htmlFor="i-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+                <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
+                  <input type="checkbox" checked={sameAsCompanyAddress}
+                    onChange={(e) => toggleSameAsCompanyAddress(e.target.checked)}
+                    className="h-4 w-4 accent-[#111111]" />
+                  기업 주소와 동일
+                </label>
               </div>
-
-              <div className="mb-5" ref={setRef("address")}>
-                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                  <label htmlFor="i-address" className="text-[14px] font-medium text-[#2f3845]">주소{REQ}</label>
-                  <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
-                    <input type="checkbox" checked={sameAsCompanyAddress}
-                      onChange={(e) => toggleSameAsCompanyAddress(e.target.checked)}
-                      className="h-4 w-4 accent-[#111111]" />
-                    기업 주소와 동일
-                  </label>
+              <input id="i-address" value={address} onChange={(e) => setAddress(e.target.value)}
+                readOnly={sameAsCompanyAddress}
+                placeholder="예: 서울 강남구 역삼로 226, 오신 카세코빌딩"
+                className={clsx(IN, sameAsCompanyAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
+                aria-required="true" />
+              {!address.trim() && (
+                <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[11.5px] text-[#9a6b00]">
+                  <AlertCircle size={13} aria-hidden />
+                  기관정보에 가까운 역·교통 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
                 </div>
-                <input id="i-address" value={address} onChange={(e) => setAddress(e.target.value)}
-                  readOnly={sameAsCompanyAddress}
-                  className={clsx(IN, sameAsCompanyAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
-                  aria-required="true" />
-                {!address.trim() && (
-                  <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[11.5px] text-[#9a6b00]">
-                    <AlertCircle size={13} aria-hidden />
-                    기관정보에 가까운 역·교통 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
-                  </div>
-                )}
-                <FieldError message={errors.address} />
-              </div>
-            </>
+              )}
+              <FieldError message={errors.address} />
+            </div>
           )}
 
           <div className="my-5 border-t border-[#f0f2f5]" />
@@ -867,38 +858,30 @@ export function IndustryJobPostingForm() {
           title="상세 이미지 및 첨부 자료"
           description="회사·직무 소개 이미지나 포스터를 첨부합니다. 공고 상세 본문에 표시됩니다."
         >
-          <div>
-            <p className={LBL}>첨부 자료</p>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => addAttachment("image")}
-                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa]">
-                이미지 추가
-              </button>
-              <button type="button" onClick={() => addAttachment("file")}
-                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa]">
-                파일 추가
-              </button>
-            </div>
-
-            {attachments.length === 0 ? (
-              <p className={`${HINT} mt-3`}>첨부된 상세 자료가 없습니다.</p>
-            ) : (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {attachments.map((item, index) => (
-                  <button key={`${item.type}-${index}`} type="button" onClick={() => removeAttachment(index)}
-                    aria-label={`${item.name} 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white">
-                    {item.name}
-                    <X size={11} className="ml-0.5 opacity-70" aria-hidden />
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className="grid grid-cols-2 gap-6 max-[640px]:grid-cols-1">
+            <AttachmentUploader
+              label="이미지"
+              description="공고 상세 본문에 표시됩니다."
+              accept="image/*"
+              buttonLabel="이미지 추가"
+              emptyText="첨부된 이미지가 없습니다."
+              value={imageAttachments}
+              onChange={setImageAttachments}
+            />
+            <AttachmentUploader
+              label="첨부 파일"
+              description="공고 상세에서 다운로드 링크로 제공됩니다."
+              accept=".pdf,.hwp,.docx"
+              buttonLabel="파일 추가"
+              emptyText="첨부된 파일이 없습니다."
+              value={fileAttachments}
+              onChange={setFileAttachments}
+            />
           </div>
 
           <div className="mt-4">
             <InlineNote>
-              검색과 추천 품질을 위해 주요업무·자격요건·근무조건은 텍스트로 입력해 주세요.
+              검색과 추천 품질을 위해 주요업무 · 자격요건 · 근무조건은 텍스트로 입력해 주세요.
             </InlineNote>
           </div>
         </SectionCard>

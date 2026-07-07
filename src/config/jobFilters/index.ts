@@ -1,4 +1,5 @@
 import type { FilterOption, JobTrack, TrackFilterConfig } from "@/types/jobs";
+import { researchFieldCategoryOptions } from "@/config/researchFields";
 import { hospitalFilterConfig, hospitalJobCategoryOptions, hospitalTypeOptions, shiftTypeOptions } from "./hospitalFilters";
 import { industryFilterConfig, industryJobCategoryOptions } from "./industryFilters";
 import { hourlyPayRangeOptions, pharmacyFeatureOptions, pharmacyFilterConfig, pharmacyJobCategoryOptions, pharmacyWorkTypeOptions } from "./pharmacyFilters";
@@ -70,6 +71,8 @@ export const allFilterOptions: Record<string, FilterOption[]> = {
   workMode: workModeOptions,
   companyType: companyTypeOptions,
   institutionType: researchInstitutionTypeOptions,
+  researchFieldCategory: researchFieldCategoryOptions,
+  researchField: researchFieldCategoryOptions.flatMap((category) => category.subcategories),
   contractPeriod: contractPeriodOptions,
   workType: pharmacyWorkTypeOptions,
   hourlyPay: hourlyPayRangeOptions,

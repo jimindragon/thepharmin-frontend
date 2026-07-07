@@ -91,6 +91,8 @@ export type FilterKind =
   | "keyword"
   | "jobCategory"
   | "jobSubcategory"
+  | "researchFieldCategory"
+  | "researchField"
   | "experience"
   | "education"
   | "region"
@@ -173,6 +175,12 @@ export type FilterDefinition =
       categories: JobCategoryOption[];
     }
   | {
+      id: "researchField";
+      label: string;
+      kind: "researchField";
+      categories: JobCategoryOption[];
+    }
+  | {
       id: string;
       label: string;
       kind: "options";
@@ -236,6 +244,8 @@ export interface JobFilters {
   workModeIds: string[];
   companyTypeIds: string[];
   institutionTypeIds: string[];
+  researchFieldCategoryIds: string[];
+  researchFieldIds: string[];
   contractPeriodIds: string[];
   workTypeIds: string[];
   hourlyPayRangeId: string | null;
@@ -453,6 +463,8 @@ export interface Job {
   employmentTypeIds?: string[];
   experienceMin: number;
   experienceMax: number | null;
+  /** 리더급 공고 여부. 팀장·임원급 채용일 때 true */
+  isLeadership?: boolean;
   educationId: string;
   regionId: string;
   employmentTypeId: string;

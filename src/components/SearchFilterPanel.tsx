@@ -29,6 +29,8 @@ interface SearchFilterPanelProps {
   onSubmitKeyword: () => void;
   onToggleJobCategory: (id: string) => void;
   onToggleJobSubcategory: (id: string) => void;
+  onToggleResearchFieldCategory: (id: string) => void;
+  onToggleResearchFieldSubcategory: (id: string) => void;
   onToggleMultiFilter: (key: FilterStateKey, id: string) => void;
   onSetSingleFilter: (key: SingleFilterStateKey, id: string | null) => void;
   onSetSpecialFilter: (key: SpecialJobFilterKey, checked: boolean) => void;
@@ -75,6 +77,15 @@ export function summaryForDefinition(definition: FilterDefinition, filters: JobF
 
   if (definition.kind === "options") {
     return summaryFromOptions(definition.options, selectedIds(filters, definition.stateKey));
+  }
+
+  if (definition.kind === "researchField") {
+    const categoryOptions = definition.categories.map((category) => ({
+      ...category,
+      label: `${category.label} 전체`,
+    }));
+    const options = [...categoryOptions, ...definition.categories.flatMap((category) => category.subcategories)];
+    return summaryFromOptions(options, [...filters.researchFieldCategoryIds, ...filters.researchFieldIds]);
   }
 
   const summaries = definition.sections
@@ -274,6 +285,8 @@ export function SearchFilterPanel({
   onSubmitKeyword,
   onToggleJobCategory,
   onToggleJobSubcategory,
+  onToggleResearchFieldCategory,
+  onToggleResearchFieldSubcategory,
   onToggleMultiFilter,
   onSetSingleFilter,
   onSetSpecialFilter,
@@ -393,6 +406,14 @@ export function SearchFilterPanel({
                     ? onToggleMultiFilter(openDefinition.stateKey, id)
                     : onSetSingleFilter(openDefinition.stateKey as SingleFilterStateKey, id)
                 }
+              />
+            ) : openDefinition.kind === "researchField" ? (
+              <JobFilterPanel
+                categories={openDefinition.categories}
+                selectedCategoryIds={filters.researchFieldCategoryIds}
+                selectedJobIds={filters.researchFieldIds}
+                onToggleJobCategory={onToggleResearchFieldCategory}
+                onToggleJobSubcategory={onToggleResearchFieldSubcategory}
               />
             ) : (
               <GroupPanel

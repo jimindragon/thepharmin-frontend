@@ -67,6 +67,8 @@ const chipDefinitions: Array<{
 }> = [
   { kind: "jobCategory", key: "jobCategoryIds", labelMapKey: "jobCategory", multiple: true },
   { kind: "jobSubcategory", key: "jobSubcategoryIds", labelMapKey: "jobSubcategory", multiple: true },
+  { kind: "researchFieldCategory", key: "researchFieldCategoryIds", labelMapKey: "researchFieldCategory", multiple: true },
+  { kind: "researchField", key: "researchFieldIds", labelMapKey: "researchField", multiple: true },
   { kind: "region", key: "regionIds", labelMapKey: "region", multiple: true },
   { kind: "experience", key: "experienceId", labelMapKey: "experience", multiple: false },
   { kind: "education", key: "educationId", labelMapKey: "education", multiple: false },
@@ -97,6 +99,8 @@ export const emptyJobFilters: JobFilters = {
   workModeIds: [],
   companyTypeIds: [],
   institutionTypeIds: [],
+  researchFieldCategoryIds: [],
+  researchFieldIds: [],
   contractPeriodIds: [],
   workTypeIds: [],
   hourlyPayRangeId: null,
@@ -149,6 +153,24 @@ function categoryIdForSubcategory(track: JobTrack, subcategoryId: string) {
   return null;
 }
 
+function researchFieldCategoriesForTrack(track: JobTrack) {
+  return trackFilterConfigs[track].filters.find((definition) => definition.kind === "researchField")?.categories ?? [];
+}
+
+function researchFieldIdsForCategory(track: JobTrack, categoryId: string) {
+  return researchFieldCategoriesForTrack(track).find((category) => category.id === categoryId)?.subcategories.map((item) => item.id) ?? [];
+}
+
+function researchFieldCategoryIdForField(track: JobTrack, fieldId: string) {
+  for (const category of researchFieldCategoriesForTrack(track)) {
+    if (category.subcategories.some((subcategory) => subcategory.id === fieldId)) {
+      return category.id;
+    }
+  }
+
+  return null;
+}
+
 function parseFiltersFromQuery(): JobFilters {
   if (typeof window === "undefined") return emptyJobFilters;
 
@@ -159,6 +181,8 @@ function parseFiltersFromQuery(): JobFilters {
     keyword: params.get("keyword") ?? "",
     jobCategoryIds: csv(params.get("jobCategory")),
     jobSubcategoryIds: csv(params.get("job")),
+    researchFieldCategoryIds: csv(params.get("researchFieldCategory")),
+    researchFieldIds: csv(params.get("researchField")),
     leaderOnly: params.get("leader") === "true",
     headhuntingOnly: params.get("headhunting") === "true",
     quickApplyOnly: params.get("quickApply") === "true",
@@ -275,6 +299,35 @@ export function toggleJobSubcategoryInFilters(filters: JobFilters, id: string): 
   };
 }
 
+/** 연구 분야 1차 분류 토글의 순수 버전. 같은 트랙 안에서 분류를 켜고 끄면 하위 분야 선택도 함께 정리한다. */
+export function toggleResearchFieldCategoryInFilters(filters: JobFilters, id: string): JobFilters {
+  const fieldIds = researchFieldIdsForCategory(filters.track, id);
+  const selected = filters.researchFieldCategoryIds.includes(id);
+
+  return {
+    ...filters,
+    researchFieldCategoryIds: selected
+      ? without(filters.researchFieldCategoryIds, id)
+      : [...filters.researchFieldCategoryIds, id],
+    researchFieldIds: filters.researchFieldIds.filter((fieldId) => !fieldIds.includes(fieldId)),
+  };
+}
+
+/** 연구 분야 2차 분류 토글의 순수 버전. */
+export function toggleResearchFieldInFilters(filters: JobFilters, id: string): JobFilters {
+  const categoryId = researchFieldCategoryIdForField(filters.track, id);
+
+  if (filters.researchFieldIds.includes(id)) {
+    return { ...filters, researchFieldIds: without(filters.researchFieldIds, id) };
+  }
+
+  return {
+    ...filters,
+    researchFieldCategoryIds: categoryId ? without(filters.researchFieldCategoryIds, categoryId) : filters.researchFieldCategoryIds,
+    researchFieldIds: [...filters.researchFieldIds, id],
+  };
+}
+
 /** 칩 하나를 걷어낸 필터를 돌려주는 순수 버전. `keyword` 칩은 호출부에서 `keywordInput` UI 상태도 함께 비워야 한다. */
 export function removeChipFromFilters(filters: JobFilters, chip: AppliedFilterChip): JobFilters {
   if (chip.kind === "keyword") {
@@ -310,6 +363,15 @@ export function removeChipFromFilters(filters: JobFilters, chip: AppliedFilterCh
     };
   }
 
+  if (chip.kind === "researchFieldCategory") {
+    const fieldIds = researchFieldIdsForCategory(filters.track, chip.id);
+    return {
+      ...filters,
+      researchFieldCategoryIds: without(filters.researchFieldCategoryIds, chip.id),
+      researchFieldIds: filters.researchFieldIds.filter((fieldId) => !fieldIds.includes(fieldId)),
+    };
+  }
+
   const definition = chipDefinitions.find((item) => item.kind === chip.kind);
   if (!definition) return filters;
 
@@ -334,6 +396,8 @@ function hasActiveFilters(filters: JobFilters) {
     filters.workModeIds.length > 0 ||
     filters.companyTypeIds.length > 0 ||
     filters.institutionTypeIds.length > 0 ||
+    filters.researchFieldCategoryIds.length > 0 ||
+    filters.researchFieldIds.length > 0 ||
     filters.contractPeriodIds.length > 0 ||
     filters.workTypeIds.length > 0 ||
     filters.hourlyPayRangeId !== null ||
@@ -355,6 +419,8 @@ function toQuery(filters: JobFilters) {
   params.set("track", filters.track);
   if (filters.jobCategoryIds.length) params.set("jobCategory", filters.jobCategoryIds.join(","));
   if (filters.jobSubcategoryIds.length) params.set("job", filters.jobSubcategoryIds.join(","));
+  if (filters.researchFieldCategoryIds.length) params.set("researchFieldCategory", filters.researchFieldCategoryIds.join(","));
+  if (filters.researchFieldIds.length) params.set("researchField", filters.researchFieldIds.join(","));
   if (filters.keyword.trim()) params.set("keyword", filters.keyword.trim());
   if (filters.leaderOnly) params.set("leader", "true");
   if (filters.headhuntingOnly) params.set("headhunting", "true");
@@ -425,6 +491,17 @@ function jobCategoryMatches(job: Job, filters: JobFilters) {
   return filters.jobCategoryIds.some((id) => categoryIds.has(id));
 }
 
+/** 연구 분야(전공분야) 매칭. 연구 트랙 외 공고는 job.researchFieldIds가 없으므로 filters.researchField* 가 비어 있는 한 항상 통과한다. */
+function researchFieldMatches(job: Job, filters: JobFilters) {
+  if (filters.researchFieldCategoryIds.length === 0 && filters.researchFieldIds.length === 0) return true;
+
+  const jobFieldIds = job.researchFieldIds ?? [];
+  if (filters.researchFieldIds.length > 0 && includesAny(jobFieldIds, filters.researchFieldIds)) return true;
+
+  const categoryIds = new Set(jobFieldIds.map((id) => researchFieldCategoryIdForField(filters.track, id)).filter(Boolean));
+  return filters.researchFieldCategoryIds.some((id) => categoryIds.has(id));
+}
+
 interface UseJobFiltersOptions {
   syncUrl?: boolean;
   basePath?: string;
@@ -479,6 +556,16 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     setJobLimitMessage("");
     markManualChange();
     setFilters((current) => toggleJobSubcategoryInFilters(current, id));
+  };
+
+  const toggleResearchFieldCategory = (id: string) => {
+    markManualChange();
+    setFilters((current) => toggleResearchFieldCategoryInFilters(current, id));
+  };
+
+  const toggleResearchField = (id: string) => {
+    markManualChange();
+    setFilters((current) => toggleResearchFieldInFilters(current, id));
   };
 
   const toggleMultiFilter = (key: FilterStateKey, id: string) => {
@@ -615,6 +702,8 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     setTrack,
     toggleJobCategory,
     toggleJobSubcategory,
+    toggleResearchFieldCategory,
+    toggleResearchField,
     toggleMultiFilter,
     setSingleFilter,
     toggleRegion,
@@ -656,6 +745,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
     if (filters.headhuntingOnly && job.postingSource !== "headhunting") return false;
     if (filters.quickApplyOnly && job.applyMethod !== "간편 지원" && job.applyMethod !== "더파마 간편지원") return false;
     if (!jobCategoryMatches(job, filters)) return false;
+    if (!researchFieldMatches(job, filters)) return false;
     if (filters.regionIds.length && !filters.regionIds.includes(job.regionId)) return false;
     if (filters.employmentTypeIds.length && !includesAny(jobEmploymentTypeIds(job), filters.employmentTypeIds)) return false;
     if (filters.workModeIds.length && !includesAny(job.workModeIds, filters.workModeIds)) return false;

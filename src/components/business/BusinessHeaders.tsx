@@ -16,7 +16,7 @@ import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 const businessNavItems = [
   { label: "상품안내", href: "/business#pricing" },
   { label: "대시보드", href: "/business/dashboard" },
-  { label: "기업관리", href: "/business/company/profile" },
+  { label: "기업관리", href: "/business/profile-hub" },
 ];
 
 function lightNavItemClassName(active: boolean) {

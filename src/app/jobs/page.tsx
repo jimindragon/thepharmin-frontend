@@ -105,6 +105,8 @@ export default function JobsPage() {
                 onSubmitKeyword={filterState.submitKeyword}
                 onToggleJobCategory={filterState.toggleJobCategory}
                 onToggleJobSubcategory={filterState.toggleJobSubcategory}
+                onToggleResearchFieldCategory={filterState.toggleResearchFieldCategory}
+                onToggleResearchFieldSubcategory={filterState.toggleResearchField}
                 onToggleMultiFilter={filterState.toggleMultiFilter}
                 onSetSingleFilter={filterState.setSingleFilter}
                 onSetSpecialFilter={filterState.setSpecialFilter}

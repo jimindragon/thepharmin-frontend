@@ -27,7 +27,7 @@ const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy"];
 const validPharmacyTypes: PharmacyType[] = ["local", "clinic-front", "large", "beauty"];
 const validPharmacyFeatureIds: string[] = pharmacyFeatureOptions.map((option) => option.id);
 
-/** 가입 완료 시 저장된 orgTrack — 기업정보 관리 페이지(BusinessOrgProfilePageClient)가 어떤 트랙 폼을 그릴지 프리필하는 데 쓰인다. */
+/** 가입 완료 시 저장된 orgTrack — /business/company/profile(BusinessOrgProfilePageClient)이 어느 트랙 전용 정보관리 페이지(/business/{track}/profile)로 리다이렉트할지 결정하는 데 쓰인다. */
 export function readSignupOrgTrack(): OrgTrack | null {
   if (typeof window === "undefined") return null;
   const value = window.localStorage.getItem(ORG_TRACK_KEY);
