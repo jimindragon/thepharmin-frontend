@@ -6,25 +6,27 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { SectionCard, ToggleChip } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
-import { hospitalJobCategoryOptions, shiftTypeOptions } from "@/config/jobFilters/hospitalFilters";
-import { initialHospitalOrgProfile } from "@/data/businessOrgProfile";
+import { pharmacyJobCategoryOptions, pharmacyWorkTypeOptions } from "@/config/jobFilters/pharmacyFilters";
+import { dispensingEquipmentOptions, initialPharmacyOrgProfile, pharmacySoftwareOptions } from "@/data/businessOrgProfile";
 import type { JobCategoryOption } from "@/types/jobs";
+import { formatWon } from "@/utils/salary";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
 const WEEKDAY_OPTS = ["월", "화", "수", "목", "금", "토", "일"];
-const SALARY_OPTS = ["기관 내규", "3,000만↑", "5,000만↑", "7,000만↑", "9,000만↑"];
+type SalaryKind = "시급" | "일급" | "월급" | "연봉" | "면접 후 결정";
+const SALARY_KIND_OPTS: SalaryKind[] = ["시급", "일급", "월급", "연봉", "면접 후 결정"];
 const WELFARE_OPTS = [
-  "퇴직연금", "연차·휴가", "의료비 지원", "식대 지원", "구내식당", "당직·휴일수당",
-  "교육 지원", "학회·연수 지원", "전문약사 교육 지원", "경조사 지원", "직원 주차", "기숙사·사택",
+  "4대보험", "퇴직금", "연차·휴가", "식대 지원", "교통비 지원", "주차 지원",
+  "숙소 지원", "명절 상여", "경조사 지원", "인센티브", "교육 지원",
 ];
-// 병원은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다(산업의 KW_BY_CAT 같은 분기 로직 없음)
-const HOSPITAL_KEYWORDS = [
-  "조제", "투약", "처방검토", "복약상담", "병동약료", "임상약료", "무균조제", "항암조제",
-  "TPN", "NST", "ASP", "감염약료", "종양약료", "DI", "마약류 관리", "의약품 관리", "임상시험약 관리",
+// 약국은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다
+const PHARMACY_KEYWORDS = [
+  "처방조제", "복약지도", "처방검토", "OTC 상담", "매약 상담", "전산청구", "약국 전산",
+  "건기식 상담", "자동조제기", "산제포장", "유팜", "팜IT3000", "문전약국",
 ];
 const MAX_KW = 8;
 
@@ -282,12 +284,13 @@ const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 export function PharmacyJobPostingForm() {
   // §1 기본 정보
   const [title, setTitle] = useState("");
-  const [activeJobCategory, setActiveJobCategory] = useState(hospitalJobCategoryOptions[0].id);
+  const [activeJobCategory, setActiveJobCategory] = useState(pharmacyJobCategoryOptions[0].id);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+  const [pharmacyWorkTypeIds, setPharmacyWorkTypeIds] = useState<Set<string>>(new Set());
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
   const [educationType, setEducationType] = useState("any");
-  const [isLeadership, setIsLeadership] = useState(false);
+  const [headcount, setHeadcount] = useState("");
 
   // §2 모집 내용
   const [summary, setSummary] = useState("");
@@ -296,12 +299,21 @@ export function PharmacyJobPostingForm() {
   const [preferred, setPreferred] = useState("");
 
   // §3 근무조건
-  const [shiftTypeIds, setShiftTypeIds] = useState<Set<string>>(new Set());
   const [workDays, setWorkDays] = useState<Set<string>>(new Set());
+  const [workHours, setWorkHours] = useState("");
   const [address, setAddress] = useState("");
   const [sameAsInstitutionAddress, setSameAsInstitutionAddress] = useState(false);
-  const [salary, setSalary] = useState("");
+  const [salaryKind, setSalaryKind] = useState<SalaryKind>("시급");
+  const [salaryAmount, setSalaryAmount] = useState("");
+  const [salaryHours, setSalaryHours] = useState("");
+  const [salaryNote, setSalaryNote] = useState("");
   const [selectedBenefits, setSelectedBenefits] = useState<Set<string>>(new Set());
+  const [computerSoftware, setComputerSoftware] = useState("");
+  const [customSoftwareInput, setCustomSoftwareInput] = useState("");
+  const [selectedEquipment, setSelectedEquipment] = useState<Set<string>>(new Set());
+  const [staffPharmacistCount, setStaffPharmacistCount] = useState("");
+  const [staffSupportCount, setStaffSupportCount] = useState("");
+  const [mainPrescribingHospital, setMainPrescribingHospital] = useState("");
   const [workCondDetail, setWorkCondDetail] = useState("");
 
   // §4 검색 노출 설정
@@ -311,9 +323,11 @@ export function PharmacyJobPostingForm() {
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
   // §5 지원방법 및 마감일
-  const [applyMethod, setApplyMethod] = useState<"url" | "quick" | "email">("url");
-  const [applyUrl, setApplyUrl] = useState("");
+  const [applyMethod, setApplyMethod] = useState<"quick" | "phone" | "email">("quick");
+  const [applyPhone, setApplyPhone] = useState("");
+  const [applyManagerName, setApplyManagerName] = useState("");
   const [applyEmail, setApplyEmail] = useState("");
+  const [contactNote, setContactNote] = useState("");
   const [deadline, setDeadline] = useState("");
   const [rollingToggle, setRollingToggle] = useState(false);
 
@@ -330,15 +344,20 @@ export function PharmacyJobPostingForm() {
   function validate(): boolean {
     const next: Record<string, string> = {};
     if (!title.trim()) next.title = "공고 제목을 입력해 주세요.";
-    if (selectedJobs.size === 0) next.selectedJobs = "모집 직무를 하나 이상 선택해 주세요.";
+    if (selectedJobs.size === 0) next.selectedJobs = "모집 직군을 하나 이상 선택해 주세요.";
+    if (pharmacyWorkTypeIds.size === 0) next.pharmacyWorkTypeIds = "근무 형태를 하나 이상 선택해 주세요.";
+    if (!headcount.trim()) next.headcount = "모집인원을 입력해 주세요.";
     if (!summary.trim()) next.summary = "공고 요약을 입력해 주세요.";
     if (!responsibilities.trim()) next.responsibilities = "주요 업무를 입력해 주세요.";
     if (!requirements.trim()) next.requirements = "필수 자격요건을 입력해 주세요.";
-    if (shiftTypeIds.size === 0) next.shiftTypeIds = "근무 형태를 하나 이상 선택해 주세요.";
+    if (!workHours.trim()) next.workHours = "근무 시간을 입력해 주세요.";
     if (!address.trim()) next.address = "근무지를 입력해 주세요.";
-    if (!salary) next.salary = "급여를 선택해 주세요.";
-    if (applyMethod === "url" && !applyUrl.trim()) next.applyUrl = "채용페이지 URL을 입력해 주세요.";
-    if (applyMethod === "email" && !applyEmail.trim()) next.applyEmail = "지원 이메일 주소를 입력해 주세요.";
+    if (salaryKind !== "면접 후 결정" && !salaryAmount.trim()) next.salaryAmount = "급여를 입력해 주세요.";
+    if (!computerSoftware) next.computerSoftware = "전산 프로그램을 선택해 주세요.";
+    if (computerSoftware === "기타" && !customSoftwareInput.trim()) next.computerSoftware = "사용 중인 전산 프로그램을 입력해 주세요.";
+    if (!workCondDetail.trim()) next.workCondDetail = "근무조건 상세를 입력해 주세요.";
+    if (applyMethod === "phone" && !applyPhone.trim()) next.applyPhone = "지원 연락처를 입력해 주세요.";
+    if (applyMethod === "email" && !applyEmail.trim()) next.applyEmail = "지원 이메일을 입력해 주세요.";
     if (!rollingToggle && !deadline) next.deadline = "접수 마감일을 입력해 주세요.";
 
     setErrors(next);
@@ -359,8 +378,8 @@ export function PharmacyJobPostingForm() {
     setSelectedJobs((prev) => toggleSet(prev, id));
   }
 
-  function toggleShiftType(id: string) {
-    setShiftTypeIds((prev) => toggleSet(prev, id));
+  function toggleWorkType(id: string) {
+    setPharmacyWorkTypeIds((prev) => toggleSet(prev, id));
   }
 
   function toggleWorkDay(day: string) {
@@ -371,9 +390,27 @@ export function PharmacyJobPostingForm() {
     setSelectedBenefits((prev) => toggleSet(prev, item));
   }
 
+  function toggleEquipment(item: string) {
+    setSelectedEquipment((prev) => toggleSet(prev, item));
+  }
+
   function toggleSameAsInstitutionAddress(checked: boolean) {
     setSameAsInstitutionAddress(checked);
-    if (checked) setAddress(initialHospitalOrgProfile.address);
+    if (checked) setAddress(initialPharmacyOrgProfile.address);
+  }
+
+  // 확정 급여 1건 기준 시급 환산 — legacy convertToHourly(범위형)를 단일값으로 단순화한 로컬 계산
+  function estimateHourly(): number | null {
+    const amount = parseInt(salaryAmount.replace(/,/g, ""), 10);
+    if (!salaryAmount.trim() || isNaN(amount)) return null;
+    const won = salaryKind === "월급" || salaryKind === "연봉" ? amount * 10000 : amount;
+    if (salaryKind === "시급") return won;
+    const hours = parseInt(salaryHours, 10);
+    if (!salaryHours.trim() || isNaN(hours) || hours <= 0) return null;
+    if (salaryKind === "일급") return Math.round(won / hours);
+    if (salaryKind === "월급") return Math.round(won / (hours * 4.345));
+    if (salaryKind === "연봉") return Math.round(won / (hours * 52));
+    return null;
   }
 
   function toggleKeyword(kw: string) {
@@ -415,13 +452,13 @@ export function PharmacyJobPostingForm() {
           <h1 className="mt-5 flex flex-wrap items-center gap-3 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
             공고 등록
             <span className="h-6 w-px bg-[#dfe5ec]" aria-hidden />
-            <span className="font-medium text-[#8791a0]">병원 약사</span>
+            <span className="font-medium text-[#8791a0]">약국 약사</span>
           </h1>
           <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-normal text-[#68717e]">
             <span>등록 기관</span>
-            <span className="font-semibold text-[#303946]">분당서울대학교병원</span>
+            <span className="font-semibold text-[#303946]">더파마약국</span>
             <span className="text-[#c0c8d2]">·</span>
-            <Link href="/business/hospital/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
+            <Link href="/business/pharmacy/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
               기관 정보 관리
               <ArrowUpRight size={12} aria-hidden />
             </Link>
@@ -436,53 +473,60 @@ export function PharmacyJobPostingForm() {
         <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
-            <label htmlFor="h-title" className={LBL}>공고 제목{REQ}</label>
-            <input id="h-title" value={title} onChange={(e) => setTitle(e.target.value)}
-              className={IN} placeholder="약제부 병원약사 채용" aria-required="true" />
+            <label htmlFor="p-title" className={LBL}>공고 제목{REQ}</label>
+            <input id="p-title" value={title} onChange={(e) => setTitle(e.target.value)}
+              className={IN} placeholder="문전약국 풀타임 약사 모집" aria-required="true" />
             <FieldError message={errors.title} />
           </div>
 
-          {/* 모집 직무 — 2단계 선택기 */}
+          {/* 모집 직군 — 2단계 선택기 */}
           <div className="mb-5" ref={setRef("selectedJobs")}>
             <TwoTierPicker
-              label="모집 직무"
+              label="모집 직군"
               required
-              hint="1차 분류를 고르고 세부 직무를 선택하세요."
-              categories={hospitalJobCategoryOptions}
+              hint="1차 분류를 고르고 세부 직군을 선택하세요."
+              categories={pharmacyJobCategoryOptions}
               activeCategoryId={activeJobCategory}
               onActiveCategoryChange={setActiveJobCategory}
               selected={selectedJobs}
               onToggle={toggleJob}
               error={errors.selectedJobs}
-              categoryAriaLabel="직무 대분류"
-              detailAriaLabel="세부 직무"
+              categoryAriaLabel="직군 대분류"
+              detailAriaLabel="세부 직군"
             />
+          </div>
+
+          {/* 근무 형태 */}
+          <div className="mb-5" ref={setRef("pharmacyWorkTypeIds")}>
+            <ChipGroup label="근무 형태" required options={pharmacyWorkTypeOptions} selected={pharmacyWorkTypeIds}
+              onToggle={toggleWorkType} hint="해당하는 근무 형태를 모두 선택해 주세요." />
+            <FieldError message={errors.pharmacyWorkTypeIds} />
           </div>
 
           {/* 고용형태 + 경력 + 학력 */}
           <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="h-emptype" className={LBL}>고용형태{REQ}</label>
-              <select id="h-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
+              <label htmlFor="p-emptype" className={LBL}>고용형태{REQ}</label>
+              <select id="p-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
                 {employmentTypeOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="h-career" className={LBL}>경력{REQ}</label>
-              <select id="h-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
+              <label htmlFor="p-career" className={LBL}>경력{REQ}</label>
+              <select id="p-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
                 {experienceOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="h-edu" className={LBL}>
+              <label htmlFor="p-edu" className={LBL}>
                 학력{REQ}
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
               </label>
-              <select id="h-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
+              <select id="p-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
                 ))}
@@ -490,27 +534,25 @@ export function PharmacyJobPostingForm() {
             </div>
           </div>
 
-          <div className="mt-4">
-            <ToggleRow
-              title="리더급 공고"
-              description="약제부 관리자, 파트장급 등 리더 포지션 채용일 때 선택해 주세요."
-              checked={isLeadership}
-              onChange={setIsLeadership}
-              ariaLabel="리더급 공고"
-            />
+          {/* 모집인원 */}
+          <div className="mt-4 max-w-xs" ref={setRef("headcount")}>
+            <label htmlFor="p-headcount" className={LBL}>모집인원{REQ}</label>
+            <input id="p-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
+              className={IN} placeholder="예: 1명" aria-required="true" />
+            <FieldError message={errors.headcount} />
           </div>
         </SectionCard>
 
         {/* ── §2 모집 내용 ──────────────────────────────────────────────────── */}
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="h-summary" className={LBL}>
+            <label htmlFor="p-summary" className={LBL}>
               공고 요약{REQ}
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
             </label>
-            <input id="h-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
+            <input id="p-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
-              placeholder="조제 및 의약품 관리를 담당해주실 약사님을 모집합니다."
+              placeholder="조제와 복약상담을 함께해주실 약사님을 모집합니다."
               maxLength={100}
               aria-required="true" />
             <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{summary.length} / 100</p>
@@ -518,64 +560,65 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("responsibilities")}>
-            <label htmlFor="h-duties" className={LBL}>
+            <label htmlFor="p-duties" className={LBL}>
               주요 업무{REQ}
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
             </label>
-            <textarea id="h-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
+            <textarea id="p-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder={"입원·외래 처방 검토 및 조제\n복약상담 및 투약 설명\n의약품 재고·마약류 관리"}
+              placeholder={"처방전 검토 및 조제\n복약상담 및 고객 응대\n의약품 재고 관리 및 발주\nOTC 의약품 상담"}
               aria-required="true" />
             <FieldError message={errors.responsibilities} />
           </div>
 
           <div className="mb-5" ref={setRef("requirements")}>
-            <label htmlFor="h-reqQual" className={LBL}>
+            <label htmlFor="p-reqQual" className={LBL}>
               필수 자격요건{REQ}
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
             </label>
-            <textarea id="h-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
+            <textarea id="p-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="약사 면허 소지자" aria-required="true" />
             <FieldError message={errors.requirements} />
           </div>
 
           <div>
-            <label htmlFor="h-preferred" className={LBL}>
+            <label htmlFor="p-preferred" className={LBL}>
               우대사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
             </label>
-            <textarea id="h-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
+            <textarea id="p-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder={"병원 약제부 근무 경험 보유자\n전문약사 자격 또는 관련 교육 이수자"} />
+              placeholder={"약국 근무 경험 보유자\n전산 프로그램 사용 경험자\n주말 또는 야간 근무 가능자"} />
           </div>
         </SectionCard>
 
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard title="근무조건">
-          <div className="mb-5" ref={setRef("shiftTypeIds")}>
-            <ChipGroup label="근무 형태" required options={shiftTypeOptions} selected={shiftTypeIds}
-              onToggle={toggleShiftType} hint="해당하는 근무 형태를 모두 선택해 주세요." />
-            <FieldError message={errors.shiftTypeIds} />
-          </div>
-
           <div className="mb-5">
             <ChipGroup label="근무 요일" options={WEEKDAY_OPTS} selected={workDays} onToggle={toggleWorkDay} />
           </div>
 
+          <div className="mb-5" ref={setRef("workHours")}>
+            <label htmlFor="p-workhours" className={LBL}>근무 시간{REQ}</label>
+            <input id="p-workhours" value={workHours} onChange={(e) => setWorkHours(e.target.value)}
+              className={IN} placeholder="예: 09:00~18:00 / 14:00~20:00" aria-required="true" />
+            <FieldError message={errors.workHours} />
+          </div>
+
           <div className="mb-5" ref={setRef("address")}>
             <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="h-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+              <label htmlFor="p-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
               <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                 <input type="checkbox" checked={sameAsInstitutionAddress}
                   onChange={(e) => toggleSameAsInstitutionAddress(e.target.checked)}
                   className="h-4 w-4 accent-[#111111]" />
-                기관 주소와 동일
+                약국 주소와 동일
               </label>
             </div>
-            <input id="h-address" value={address} onChange={(e) => setAddress(e.target.value)}
+            <input id="p-address" value={address} onChange={(e) => setAddress(e.target.value)}
               readOnly={sameAsInstitutionAddress}
-              placeholder="예: 서울 강남구 테헤란로 123, 8층"
+              placeholder="예: 서울 강남구 테헤란로 123, 1층"
               className={clsx(IN, sameAsInstitutionAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
               aria-required="true" />
             <FieldError message={errors.address} />
@@ -583,20 +626,134 @@ export function PharmacyJobPostingForm() {
 
           <div className="my-5 border-t border-[#f0f2f5]" />
 
-          <div className="mb-5" ref={setRef("salary")}>
-            <SegControl label="급여" required options={SALARY_OPTS} value={salary} onChange={setSalary} />
-            <FieldError message={errors.salary} />
+          <div className="mb-5">
+            <SegControl label="급여 방식" required options={SALARY_KIND_OPTS} value={salaryKind}
+              onChange={(v) => setSalaryKind(v as SalaryKind)} />
           </div>
+
+          {salaryKind !== "면접 후 결정" && (
+            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+              <div ref={setRef("salaryAmount")}>
+                <label htmlFor="p-salary-amount" className={LBL}>{salaryKind}{REQ}</label>
+                <div className="relative">
+                  <input id="p-salary-amount" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)}
+                    className={`${IN} pr-12`}
+                    placeholder={
+                      salaryKind === "시급" ? "예: 25000"
+                        : salaryKind === "일급" ? "예: 200000"
+                          : salaryKind === "월급" ? "예: 500"
+                            : "예: 6000"
+                    } />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>
+                    {salaryKind === "시급" || salaryKind === "일급" ? "원" : "만원"}
+                  </span>
+                </div>
+                <FieldError message={errors.salaryAmount} />
+              </div>
+
+              {salaryKind !== "시급" && (
+                <div>
+                  <label htmlFor="p-salary-hours" className={LBL}>
+                    {salaryKind === "일급" ? "1일 근무시간" : "주당 근무시간"}
+                    <span className="ml-1 text-[12px] font-normal text-[#7b8491]">시급 환산용, 선택</span>
+                  </label>
+                  <div className="relative">
+                    <input id="p-salary-hours" value={salaryHours} onChange={(e) => setSalaryHours(e.target.value)}
+                      className={`${IN} pr-10`} placeholder={salaryKind === "일급" ? "예: 8" : "예: 40"}
+                      type="number" min="1" max="168" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#7b8491]" aria-hidden>시간</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {salaryKind !== "면접 후 결정" && salaryKind !== "시급" && (
+            <div className="mb-5">
+              <p className={LBL}>환산 시급 <span className="text-[12px] font-normal text-[#7b8491]">자동 계산</span></p>
+              {estimateHourly() != null ? (
+                <div className="flex h-11 items-center border border-[#c5e8e3] bg-[#edf7f5] px-3.5">
+                  <span className="text-[13px] font-semibold text-[#0d7369]">약 {formatWon(estimateHourly()!)} (추정)</span>
+                </div>
+              ) : (
+                <div className="flex h-11 items-center border border-[#dfe4ea] bg-[#f7f8fa] px-3.5">
+                  <span className="text-[13px] text-[#a4adba]">
+                    {salaryKind === "일급" ? "1일 근무시간 입력 시 환산" : "주당 근무시간 입력 시 환산"}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="mb-5">
+            <label htmlFor="p-salary-note" className={LBL}>급여 비고</label>
+            <input id="p-salary-note" value={salaryNote} onChange={(e) => setSalaryNote(e.target.value)}
+              className={IN} placeholder="예: 경력과 근무 요일에 따라 협의 가능합니다." />
+          </div>
+
+          <div className="my-5 border-t border-[#f0f2f5]" />
 
           <div className="mb-5">
             <ChipGroup label="복리후생" options={WELFARE_OPTS} selected={selectedBenefits} onToggle={toggleBenefit} />
           </div>
 
-          <div>
-            <label htmlFor="h-workcond" className={LBL}>근무조건 상세</label>
-            <textarea id="h-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
+          <div className="my-5 border-t border-[#f0f2f5]" />
+
+          <div className="mb-5" ref={setRef("computerSoftware")}>
+            <p className={LBL}>전산 프로그램{REQ}</p>
+            <div className="flex flex-wrap gap-2">
+              {pharmacySoftwareOptions.map((opt) => (
+                <ToggleChip key={opt} label={opt} selected={computerSoftware === opt}
+                  onClick={() => setComputerSoftware(computerSoftware === opt ? "" : opt)} />
+              ))}
+            </div>
+            {computerSoftware === "기타" && (
+              <input value={customSoftwareInput} onChange={(e) => setCustomSoftwareInput(e.target.value)}
+                className={`${IN} mt-2`} placeholder="사용 중인 전산 프로그램을 입력해 주세요." aria-label="기타 전산 프로그램" />
+            )}
+            <FieldError message={errors.computerSoftware} />
+          </div>
+
+          <div className="mb-5">
+            <ChipGroup label="자동조제기·장비" options={dispensingEquipmentOptions} selected={selectedEquipment} onToggle={toggleEquipment} />
+          </div>
+
+          <div className="mb-5">
+            <p className={LBL}>근무자 구성 <span className="text-[#9aa3af] font-normal">(선택)</span></p>
+            <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+              <div>
+                <label htmlFor="p-staff-ph" className="mb-1 block text-[12px] font-medium text-[#6b7280]">약사 수</label>
+                <div className="relative">
+                  <input id="p-staff-ph" value={staffPharmacistCount} onChange={(e) => setStaffPharmacistCount(e.target.value)}
+                    className={`${IN} pr-8`} placeholder="예: 2" type="number" min="0" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#7b8491]" aria-hidden>명</span>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="p-staff-sp" className="mb-1 block text-[12px] font-medium text-[#6b7280]">약무 지원 수</label>
+                <div className="relative">
+                  <input id="p-staff-sp" value={staffSupportCount} onChange={(e) => setStaffSupportCount(e.target.value)}
+                    className={`${IN} pr-8`} placeholder="예: 1" type="number" min="0" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#7b8491]" aria-hidden>명</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="p-mainhospital" className={LBL}>
+              주요 처방 병원 <span className="text-[#9aa3af] font-normal">(선택)</span>
+            </label>
+            <input id="p-mainhospital" value={mainPrescribingHospital} onChange={(e) => setMainPrescribingHospital(e.target.value)}
+              className={IN} placeholder="예: 인근 OO내과, OO정형외과" />
+          </div>
+
+          <div ref={setRef("workCondDetail")}>
+            <label htmlFor="p-workcond" className={LBL}>근무조건 상세{REQ}</label>
+            <textarea id="p-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder="당직 여부, 휴일 수당 등 구체적인 근무 조건을 적어주세요." />
+              placeholder="근무 시간 조정 가능 여부, 휴게시간, 주말 근무 조건, 주요 처방 병원 등 구체적인 근무 조건을 적어주세요." />
+            <FieldError message={errors.workCondDetail} />
           </div>
         </SectionCard>
 
@@ -608,11 +765,11 @@ export function PharmacyJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
             </p>
             <p className={`${HINT} mb-3`}>
-              병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.
+              약국 약사 직무에 자주 쓰이는 키워드를 추천합니다.
             </p>
 
             <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
-              {HOSPITAL_KEYWORDS.map((kw) => {
+              {PHARMACY_KEYWORDS.map((kw) => {
                 const on = selectedKeywords.has(kw);
                 const blocked = selectedKeywords.size >= MAX_KW && !on;
                 return (
@@ -641,7 +798,7 @@ export function PharmacyJobPostingForm() {
                 onChange={(e) => setCustomKwInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
                 maxLength={10}
-                placeholder="예: DUR, 조제실 관리, 약물상담"
+                placeholder="예: 건기식 상담, 산제포장, 야간근무"
                 className={`${IN} flex-1`}
                 aria-label="키워드 직접 입력"
               />
@@ -673,9 +830,9 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div>
-            <p className={LBL} id="h-img-lbl">대표 이미지</p>
+            <p className={LBL} id="p-img-lbl">대표 이미지</p>
             <p className={`${HINT} mb-3`}>공고 상세 상단에 표시할 이미지를 선택합니다.</p>
-            <div role="radiogroup" aria-labelledby="h-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
+            <div role="radiogroup" aria-labelledby="p-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
                   default: "기관 기본 이미지 사용",
@@ -703,14 +860,14 @@ export function PharmacyJobPostingForm() {
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <p id="h-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
+            <p id="p-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
               지원 방식{REQ}
             </p>
-            <div role="radiogroup" aria-labelledby="h-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
+            <div role="radiogroup" aria-labelledby="p-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
               {(
                 [
-                  { value: "url" as const, label: "채용페이지 지원" },
                   { value: "quick" as const, label: "더파마 간편지원", badge: "추천" },
+                  { value: "phone" as const, label: "전화·문자 지원" },
                   { value: "email" as const, label: "이메일 지원" },
                 ]
               ).map(({ value: v, label, badge }) => {
@@ -742,15 +899,15 @@ export function PharmacyJobPostingForm() {
                 <InlineNote>
                   <span className="mb-1 block font-semibold text-[#2f3845]">더파마에서 바로 지원받기</span>
                   <span className="block text-[#6b7280]">
-                    별도 채용페이지나 이메일 이동 없이, 지원자가 더파마 프로필과 이력서로 바로 지원할 수 있습니다. 접수 내역은 기관 센터에서 관리됩니다.
+                    별도 연락처나 이메일 이동 없이, 지원자가 더파마 프로필과 이력서로 바로 지원할 수 있습니다. 접수 내역은 채용관리 화면에서 확인할 수 있습니다.
                   </span>
                 </InlineNote>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
+                <label htmlFor="p-deadline" className={LBL}>
                   {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
                 </label>
-                <input id="h-deadline" type="date" value={deadline}
+                <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
                   className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
@@ -758,22 +915,32 @@ export function PharmacyJobPostingForm() {
                 <FieldError message={errors.deadline} />
               </div>
             </div>
-          ) : applyMethod === "url" ? (
-            <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-              <div ref={setRef("applyUrl")}>
-                <label htmlFor="h-apply-url" className={LBL}>채용페이지 URL{REQ}</label>
-                <input id="h-apply-url" type="url"
-                  value={applyUrl} onChange={(e) => setApplyUrl(e.target.value)}
-                  className={IN}
-                  placeholder="예: https://hospital.or.kr/careers/..."
-                  aria-required="true" />
-                <FieldError message={errors.applyUrl} />
+          ) : applyMethod === "phone" ? (
+            <div className="mb-5">
+              <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+                <div ref={setRef("applyPhone")}>
+                  <label htmlFor="p-apply-phone" className={LBL}>지원 연락처{REQ}</label>
+                  <input id="p-apply-phone" type="tel"
+                    value={applyPhone} onChange={(e) => setApplyPhone(e.target.value)}
+                    className={IN}
+                    placeholder="예: 010-1234-5678"
+                    aria-required="true" />
+                  <p className={HINT}>지원 연락처는 공고 상세에서 바로 노출하지 않고, 지원자가 로그인 후 확인할 수 있도록 처리합니다.</p>
+                  <FieldError message={errors.applyPhone} />
+                </div>
+                <div>
+                  <label htmlFor="p-apply-manager" className={LBL}>
+                    담당자명 <span className="text-[#9aa3af] font-normal">(선택)</span>
+                  </label>
+                  <input id="p-apply-manager" value={applyManagerName} onChange={(e) => setApplyManagerName(e.target.value)}
+                    className={IN} placeholder="예: 홍길동" />
+                </div>
               </div>
-              <div ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
+              <div className="mt-4 max-w-sm" ref={setRef("deadline")}>
+                <label htmlFor="p-deadline" className={LBL}>
                   {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
                 </label>
-                <input id="h-deadline" type="date" value={deadline}
+                <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
                   className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
@@ -784,19 +951,20 @@ export function PharmacyJobPostingForm() {
           ) : (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyEmail")}>
-                <label htmlFor="h-apply-email" className={LBL}>지원 이메일 주소{REQ}</label>
-                <input id="h-apply-email" type="email"
+                <label htmlFor="p-apply-email" className={LBL}>지원 이메일{REQ}</label>
+                <input id="p-apply-email" type="email"
                   value={applyEmail} onChange={(e) => setApplyEmail(e.target.value)}
                   className={IN}
-                  placeholder="예: recruit@hospital.or.kr"
+                  placeholder="예: manager@pharmacy.kr"
                   aria-required="true" />
+                <p className={HINT}>지원 이메일은 공고 상세에서 바로 노출하지 않고, 지원자가 로그인 후 확인할 수 있도록 처리합니다.</p>
                 <FieldError message={errors.applyEmail} />
               </div>
               <div ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
+                <label htmlFor="p-deadline" className={LBL}>
                   {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
                 </label>
-                <input id="h-deadline" type="date" value={deadline}
+                <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
                   className={clsx(IN, rollingToggle && "cursor-not-allowed opacity-45")}
@@ -805,6 +973,15 @@ export function PharmacyJobPostingForm() {
               </div>
             </div>
           )}
+
+          <div className="mb-5">
+            <label htmlFor="p-contact-note" className={LBL}>
+              연락 안내 문구 <span className="text-[#9aa3af] font-normal">(선택)</span>
+            </label>
+            <input id="p-contact-note" value={contactNote} onChange={(e) => setContactNote(e.target.value)}
+              className={IN} placeholder="예: 문자로 간단한 자기소개와 희망 근무시간을 보내주세요." />
+            <p className={HINT}>지원자에게 전달할 연락 안내나 유의사항을 입력해 주세요.</p>
+          </div>
 
           <ToggleRow
             title="조기 마감 가능"

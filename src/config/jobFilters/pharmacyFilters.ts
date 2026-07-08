@@ -25,7 +25,8 @@ export const pharmacyWorkTypeOptions: FilterOption[] = [
   { id: "full_time", label: "풀타임" },
   { id: "part_time", label: "파트타임" },
   { id: "temporary_substitute", label: "단기·대체" },
-  { id: "weekend_night", label: "주말·야간" },
+  { id: "weekend", label: "주말" },
+  { id: "night", label: "야간" },
 ];
 
 export const hourlyPayRangeOptions: FilterOption[] = [

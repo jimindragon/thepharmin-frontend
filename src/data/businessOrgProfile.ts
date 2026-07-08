@@ -14,9 +14,9 @@ export interface OrgVisibilitySettings {
   exposeOnSearch: boolean;
 }
 
-export const pharmacySoftwareOptions = ["유팜", "팜IT3000", "팜트리", "비트", "이지팜", "기타"];
+export const pharmacySoftwareOptions = ["PM+20", "팜IT3000", "유팜", "이팜", "온팜", "기타"];
 
-export const dispensingEquipmentOptions = ["자동조제기(ATC)", "파우치 포장기", "산제 분쇄기", "정제 분할기"];
+export const dispensingEquipmentOptions = ["자동조제기", "산제포장기", "계수기", "반자동정제분할기"];
 
 export interface PharmacyOrgProfile {
   orgTrack: "pharmacy";
