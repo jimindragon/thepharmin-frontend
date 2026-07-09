@@ -1,5 +1,5 @@
-import type { HospitalOperator, HospitalType, PharmacyType } from "@/types/jobs";
-import type { FileStatus } from "@/data/businessCompanyProfile";
+import type { HospitalOperator, HospitalType, LabInstitutionType, PharmacyType, ResearchStaffScale } from "@/types/jobs";
+import { orgProfileDraftKey, type FileStatus, type OrgManager, type OrgVisibilitySettings } from "@/data/businessCompanyProfile";
 
 /** 약국/병원 "기관 특징" 반복 입력 항목([제목 + 내용]). id는 편집 중 안정적인 key용으로만 쓰인다 */
 export interface OrgFeatureItem {
@@ -8,17 +8,12 @@ export interface OrgFeatureItem {
   text: string;
 }
 
-export interface OrgVisibilitySettings {
-  publicCompanyPage: boolean;
-  exposeOnJobs: boolean;
-  exposeOnSearch: boolean;
-}
-
 export const pharmacySoftwareOptions = ["PM+20", "팜IT3000", "유팜", "이팜", "온팜", "기타"];
 
 export const dispensingEquipmentOptions = ["자동조제기", "산제포장기", "계수기", "반자동정제분할기"];
 
 export interface PharmacyOrgProfile {
+  id: string;
   orgTrack: "pharmacy";
   // 인증 정보 (읽기 전용)
   businessNumber: string;
@@ -33,7 +28,9 @@ export interface PharmacyOrgProfile {
   /** 약국 특성, 단일선택(선택 항목). pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용 */
   pharmacyFeatureIds?: string;
   // 약국 정보 — 기본 사항·연락처
+  zipCode: string;
   address: string;
+  detailAddress: string;
   foundedYear: string;
   headPharmacistName: string;
   phone: string;
@@ -41,8 +38,10 @@ export interface PharmacyOrgProfile {
   businessHours: string;
   // 공개 프로필
   logoUrl: string | null;
+  coverImageUrl: string | null;
   shortIntro: string;
   features: OrgFeatureItem[];
+  keywords: string[];
   // 근무·조제 환경
   staffPharmacistCount: string;
   staffSupportCount: string;
@@ -50,11 +49,13 @@ export interface PharmacyOrgProfile {
   mainDepartments: string;
   software: string;
   dispensingEquipment: string[];
+  mainHospitals: string[];
   parkingTransit: string;
   visibilitySettings: OrgVisibilitySettings;
 }
 
 export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
+  id: "",
   orgTrack: "pharmacy",
   // 가입 위저드(PharmacyVerificationStep)에서 받는 값 — 신규 가입자도 이미 가짐
   businessNumber: "123-45-67890",
@@ -68,24 +69,29 @@ export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
   // 조제 특성 미선택(선택 항목) — 기존 clinic_front 하드코딩 값은 옵션 재정비로 제거됨
   pharmacyFeatureIds: undefined,
   // 가입 후 약국정보 관리 페이지에서 채우는 상세값 — 신규 가입 직후엔 비어 있어야 함
+  zipCode: "",
   address: "",
+  detailAddress: "",
   foundedYear: "",
   headPharmacistName: "",
   phone: "",
   email: "",
   businessHours: "",
   logoUrl: null,
+  coverImageUrl: null,
   shortIntro: "",
   features: [],
+  keywords: [],
   staffPharmacistCount: "",
   staffSupportCount: "",
   avgDailyPrescriptions: "",
   mainDepartments: "",
   software: "",
   dispensingEquipment: [],
+  mainHospitals: [],
   parkingTransit: "",
   visibilitySettings: {
-    publicCompanyPage: true,
+    publicPage: true,
     exposeOnJobs: true,
     exposeOnSearch: true,
   },
@@ -108,9 +114,13 @@ export function getMissingRequiredPharmacyFields(profile: PharmacyOrgProfile) {
   return requiredPharmacyProfileFields.filter((field) => field.missing(profile));
 }
 
-export const specialistPharmacistOptions = ["감염", "종양", "정맥영양(TPN)", "항응고"];
+export const specialistPharmacistOptions = [
+  "감염", "내분비", "노인", "소아", "심혈관",
+  "장기이식", "정맥영양", "종양", "중환자",
+];
 
 export interface HospitalOrgProfile {
+  id: string;
   orgTrack: "hospital";
   // 인증 정보 (읽기 전용)
   businessNumber: string;
@@ -126,7 +136,9 @@ export interface HospitalOrgProfile {
   specialtyLabel: string;
   hospitalOperator: HospitalOperator;
   // 병원 정보 — 기본 사항·연락처
+  zipCode: string;
   address: string;
+  detailAddress: string;
   foundedYear: string;
   bedCount: string;
   /** 진료과목(필수, 다중선택). medicalDepartmentOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다 */
@@ -136,17 +148,15 @@ export interface HospitalOrgProfile {
   email: string;
   // 공개 프로필
   logoUrl: string | null;
+  coverImageUrl: string | null;
   shortIntro: string;
   features: OrgFeatureItem[];
+  keywords: string[];
   // 약제부 근무 환경
   pharmacyStaffCount: string;
   dutySystem: string;
-  annualClinicalTrials: string;
-  clinicalTrialCenterOperating: boolean;
   specialistPharmacists: string[];
-  /** 약제부 업무 영역(선택, 다중선택). pharmacyDutyAreaOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다.
-   * specialistPharmacists(전문약사 자격)와는 별개 개념(업무 vs 자격)이라 공존한다. */
-  pharmacyDutyAreas: string[];
+  pharmacyEnvironmentDescription: string;
   visibilitySettings: OrgVisibilitySettings;
 }
 
@@ -167,6 +177,7 @@ export function getMissingRequiredHospitalFields(profile: HospitalOrgProfile) {
 }
 
 export const initialHospitalOrgProfile: HospitalOrgProfile = {
+  id: "",
   orgTrack: "hospital",
   // 가입 위저드(OrgVerificationStep, institutionType==="hospital")에서 받는 값 — 신규 가입자도 이미 가짐
   businessNumber: "124-82-*****",
@@ -181,7 +192,9 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   hospitalType: "hospital",
   specialtyLabel: "",
   hospitalOperator: "private",
+  zipCode: "",
   address: "",
+  detailAddress: "",
   foundedYear: "",
   bedCount: "",
   medicalDepartments: [],
@@ -189,17 +202,171 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   phone: "",
   email: "",
   logoUrl: null,
+  coverImageUrl: null,
   shortIntro: "",
   features: [],
+  keywords: [],
   pharmacyStaffCount: "",
   dutySystem: "",
-  annualClinicalTrials: "",
-  clinicalTrialCenterOperating: false,
   specialistPharmacists: [],
-  pharmacyDutyAreas: [],
+  pharmacyEnvironmentDescription: "",
   visibilitySettings: {
-    publicCompanyPage: true,
+    publicPage: true,
     exposeOnJobs: true,
     exposeOnSearch: true,
   },
 };
+
+/** 병원 §5(담당자 정보) 편집 state 초기값. businessCompanyManager(구 정적 상수)와 동일한 값을 그대로 옮겨
+ * 편집 가능한 OrgManager state로 승격한다 — 문구·이름은 임의로 바꾸지 않는다. */
+export const initialHospitalOrgManager: OrgManager = {
+  managerName: "이길동",
+  department: "마케팅팀",
+  position: "채용 담당자",
+  email: "manager@thepharmanews.net",
+  phone: "010-1234-5678",
+  accountId: "biz-thepharma-news",
+};
+
+/** 약국 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 businessCompanyManager
+ * 값을 그대로 옮긴다 — 문구·이름은 임의로 바꾸지 않는다. */
+export const initialPharmacyOrgManager: OrgManager = {
+  managerName: "이길동",
+  department: "마케팅팀",
+  position: "채용 담당자",
+  email: "manager@thepharmanews.net",
+  phone: "010-1234-5678",
+  accountId: "biz-thepharma-news",
+};
+
+export function saveHospitalOrgProfileDraft(profile: HospitalOrgProfile) {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.setItem(orgProfileDraftKey("hospital"), JSON.stringify(profile));
+}
+
+export function readHospitalOrgProfileDraft(): HospitalOrgProfile | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.sessionStorage.getItem(orgProfileDraftKey("hospital"));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as HospitalOrgProfile;
+  } catch {
+    return null;
+  }
+}
+
+export function savePharmacyOrgProfileDraft(profile: PharmacyOrgProfile) {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.setItem(orgProfileDraftKey("pharmacy"), JSON.stringify(profile));
+}
+
+export function readPharmacyOrgProfileDraft(): PharmacyOrgProfile | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.sessionStorage.getItem(orgProfileDraftKey("pharmacy"));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as PharmacyOrgProfile;
+  } catch {
+    return null;
+  }
+}
+
+export interface ResearchOrgProfile {
+  id: string;
+  orgTrack: "research";
+  // 인증 정보 (읽기 전용) — 병원 패턴
+  businessNumber: string;
+  institutionName: string;
+  representativeName: string;
+  approvedAt: string;
+  institutionCode: string;
+  businessLicenseFile: { name: string; status: FileStatus };
+  // 기관 정보 — 기본 사항·연락처 (병원과 동일 골격, 유형/병상 등 병원 특화 제외)
+  zipCode: string;
+  address: string;
+  detailAddress: string;
+  foundedYear: string;
+  homepageUrl: string;
+  phone: string;
+  email: string;
+  // 공개 프로필
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  shortIntro: string;
+  features: OrgFeatureItem[];
+  keywords: string[];
+  // 연구 환경
+  /** 기관 유형. 빈값 시작(필수 입력). researchInstitutionTypeOptions의 id = LabInstitutionType */
+  institutionType: "" | LabInstitutionType;
+  /** 연구 분야(다중). researchFieldCategoryOptions의 서브 field id를 저장 */
+  researchFieldIds: string[];
+  /** 연구 인력 규모(단일, 선택). 빈값=미선택 */
+  staffScale: ResearchStaffScale;
+  /** 주요 연구 장비·인프라(자유서술) */
+  equipmentInfra: string;
+  /** 주요 연구 성과(자유서술) */
+  achievements: string;
+  visibilitySettings: OrgVisibilitySettings;
+}
+
+export const initialResearchOrgProfile: ResearchOrgProfile = {
+  id: "",
+  orgTrack: "research",
+  // 가입 위저드(OrgVerificationStep, institutionType==="research")에서 받는 값 — 신규 가입자도 이미 가짐
+  businessNumber: "224-82-*****",
+  institutionName: "한국과학기술연구원(KIST)",
+  representativeName: "이길동",
+  approvedAt: "2025.12.30",
+  institutionCode: "41*****5",
+  businessLicenseFile: { name: "사업자등록증명원.pdf", status: "approved" },
+  // 가입 후 연구기관정보 관리 페이지에서 채우는 상세값 — 신규 가입 직후엔 비어 있어야 함
+  zipCode: "",
+  address: "",
+  detailAddress: "",
+  foundedYear: "",
+  homepageUrl: "",
+  phone: "",
+  email: "",
+  logoUrl: null,
+  coverImageUrl: null,
+  shortIntro: "",
+  features: [],
+  keywords: [],
+  institutionType: "",
+  researchFieldIds: [],
+  staffScale: "",
+  equipmentInfra: "",
+  achievements: "",
+  visibilitySettings: {
+    publicPage: true,
+    exposeOnJobs: true,
+    exposeOnSearch: true,
+  },
+};
+
+/** 연구 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 businessCompanyManager
+ * 값을 그대로 옮긴다 — 문구·이름은 임의로 바꾸지 않는다. */
+export const initialResearchOrgManager: OrgManager = {
+  managerName: "이길동",
+  department: "마케팅팀",
+  position: "채용 담당자",
+  email: "manager@thepharmanews.net",
+  phone: "010-1234-5678",
+  accountId: "biz-thepharma-news",
+};
+
+export function saveResearchOrgProfileDraft(profile: ResearchOrgProfile) {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.setItem(orgProfileDraftKey("research"), JSON.stringify(profile));
+}
+
+export function readResearchOrgProfileDraft(): ResearchOrgProfile | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.sessionStorage.getItem(orgProfileDraftKey("research"));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as ResearchOrgProfile;
+  } catch {
+    return null;
+  }
+}

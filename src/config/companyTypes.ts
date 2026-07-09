@@ -25,10 +25,11 @@ export function getHospitalTypeLabel(type: HospitalType): string {
 }
 
 export const hospitalOperatorLabels: Record<HospitalOperator, string> = {
-  private: "민간",
-  public: "공공",
-  military: "군",
-  university: "대학",
+  private: "민간병원",
+  public: "공공병원",
+  university: "대학병원",
+  military: "군 병원",
+  etc: "기타",
 };
 
 export function getHospitalOperatorLabel(operator: HospitalOperator): string {

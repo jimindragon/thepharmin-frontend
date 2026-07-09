@@ -9,11 +9,13 @@ import type { OrgTrack } from "@/data/businessCompanyProfile";
 const DEPARTMENT_PLACEHOLDER: Record<Exclude<OrgTrack, "pharmacy">, string> = {
   industry: "예: 인사팀",
   hospital: "예: 약제팀",
+  research: "예: 연구지원팀",
 };
 
 const POSITION_PLACEHOLDER: Record<Exclude<OrgTrack, "pharmacy">, string> = {
   industry: "예: 채용 담당자",
   hospital: "예: 약제부장",
+  research: "예: 책임연구원",
 };
 
 export interface ManagerInfo {

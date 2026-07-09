@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard, ToggleChip } from "@/components/business/BusinessFormControls";
+import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
 import { pharmacyJobCategoryOptions, pharmacyWorkTypeOptions } from "@/config/jobFilters/pharmacyFilters";
-import { dispensingEquipmentOptions, initialPharmacyOrgProfile, pharmacySoftwareOptions } from "@/data/businessOrgProfile";
+import { initialPharmacyOrgProfile } from "@/data/businessOrgProfile";
 import type { JobCategoryOption } from "@/types/jobs";
 import { formatWon } from "@/utils/salary";
 
@@ -308,9 +308,6 @@ export function PharmacyJobPostingForm() {
   const [salaryHours, setSalaryHours] = useState("");
   const [salaryNote, setSalaryNote] = useState("");
   const [selectedBenefits, setSelectedBenefits] = useState<Set<string>>(new Set());
-  const [computerSoftware, setComputerSoftware] = useState("");
-  const [customSoftwareInput, setCustomSoftwareInput] = useState("");
-  const [selectedEquipment, setSelectedEquipment] = useState<Set<string>>(new Set());
   const [staffPharmacistCount, setStaffPharmacistCount] = useState("");
   const [staffSupportCount, setStaffSupportCount] = useState("");
   const [mainPrescribingHospital, setMainPrescribingHospital] = useState("");
@@ -353,8 +350,6 @@ export function PharmacyJobPostingForm() {
     if (!workHours.trim()) next.workHours = "근무 시간을 입력해 주세요.";
     if (!address.trim()) next.address = "근무지를 입력해 주세요.";
     if (salaryKind !== "면접 후 결정" && !salaryAmount.trim()) next.salaryAmount = "급여를 입력해 주세요.";
-    if (!computerSoftware) next.computerSoftware = "전산 프로그램을 선택해 주세요.";
-    if (computerSoftware === "기타" && !customSoftwareInput.trim()) next.computerSoftware = "사용 중인 전산 프로그램을 입력해 주세요.";
     if (!workCondDetail.trim()) next.workCondDetail = "근무조건 상세를 입력해 주세요.";
     if (applyMethod === "phone" && !applyPhone.trim()) next.applyPhone = "지원 연락처를 입력해 주세요.";
     if (applyMethod === "email" && !applyEmail.trim()) next.applyEmail = "지원 이메일을 입력해 주세요.";
@@ -388,10 +383,6 @@ export function PharmacyJobPostingForm() {
 
   function toggleBenefit(item: string) {
     setSelectedBenefits((prev) => toggleSet(prev, item));
-  }
-
-  function toggleEquipment(item: string) {
-    setSelectedEquipment((prev) => toggleSet(prev, item));
   }
 
   function toggleSameAsInstitutionAddress(checked: boolean) {
@@ -699,25 +690,6 @@ export function PharmacyJobPostingForm() {
 
           <div className="my-5 border-t border-[#f0f2f5]" />
 
-          <div className="mb-5" ref={setRef("computerSoftware")}>
-            <p className={LBL}>전산 프로그램{REQ}</p>
-            <div className="flex flex-wrap gap-2">
-              {pharmacySoftwareOptions.map((opt) => (
-                <ToggleChip key={opt} label={opt} selected={computerSoftware === opt}
-                  onClick={() => setComputerSoftware(computerSoftware === opt ? "" : opt)} />
-              ))}
-            </div>
-            {computerSoftware === "기타" && (
-              <input value={customSoftwareInput} onChange={(e) => setCustomSoftwareInput(e.target.value)}
-                className={`${IN} mt-2`} placeholder="사용 중인 전산 프로그램을 입력해 주세요." aria-label="기타 전산 프로그램" />
-            )}
-            <FieldError message={errors.computerSoftware} />
-          </div>
-
-          <div className="mb-5">
-            <ChipGroup label="자동조제기·장비" options={dispensingEquipmentOptions} selected={selectedEquipment} onToggle={toggleEquipment} />
-          </div>
-
           <div className="mb-5">
             <p className={LBL}>근무자 구성 <span className="text-[#9aa3af] font-normal">(선택)</span></p>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
@@ -752,7 +724,7 @@ export function PharmacyJobPostingForm() {
             <label htmlFor="p-workcond" className={LBL}>근무조건 상세{REQ}</label>
             <textarea id="p-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
-              placeholder="근무 시간 조정 가능 여부, 휴게시간, 주말 근무 조건, 주요 처방 병원 등 구체적인 근무 조건을 적어주세요." />
+              placeholder="예: 주 5일 근무, 오전·오후 교대, 파트타임 가능 여부, 요일별 근무자 구성" />
             <FieldError message={errors.workCondDetail} />
           </div>
         </SectionCard>

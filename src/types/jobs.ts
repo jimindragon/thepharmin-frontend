@@ -382,6 +382,14 @@ export type LabInstitutionType =
   | "national_research_agency"
   | "nonprofit_research_foundation";
 
+export type ResearchStaffScale =
+  | ""
+  | "under_10"
+  | "10_30"
+  | "31_50"
+  | "51_100"
+  | "over_100";
+
 /** 기관 → 연구실 → PI 구조. 값이 없는 필드(홈페이지·채용페이지·소개 등)는 해당 행/버튼을 렌더링하지 않는다. */
 export interface ResearchLab {
   institution: string;
@@ -574,7 +582,7 @@ export type PharmacyType = "local" | "clinic-front" | "large" | "beauty";
 export type HospitalType = "tertiary" | "general" | "long-term" | "psychiatric" | "hospital" | "public-health";
 
 /** Company(병원)의 운영 주체. */
-export type HospitalOperator = "private" | "public" | "military" | "university";
+export type HospitalOperator = "private" | "public" | "military" | "university" | "etc";
 
 export interface Company {
   id: string;

@@ -34,24 +34,6 @@ export const hospitalTypeOptions: FilterOption[] = (Object.keys(hospitalTypeLabe
   description: hospitalTypeDescriptions[id],
 }));
 
-/** 병원 프로필의 "약제부 업무 영역"(선택, 다중선택). 공고 등록/필터엔 노출하지 않는다 — 병원 프로필 입력과 구직자 상세 조회 전용 */
-export const pharmacyDutyAreaOptions: FilterOption[] = [
-  { id: "inpatient_dispensing", label: "입원환자 조제" },
-  { id: "outpatient_dispensing", label: "외래 조제" },
-  { id: "injection_dispensing", label: "주사제 조제" },
-  { id: "sterile_compounding", label: "무균조제" },
-  { id: "chemo_compounding", label: "항암조제" },
-  { id: "clinical_pharmacy", label: "임상약료" },
-  { id: "medication_counseling", label: "복약상담" },
-  { id: "drug_inventory_management", label: "의약품 관리" },
-  { id: "investigational_drug_management", label: "임상시험약 관리" },
-  { id: "narcotics_management", label: "마약류 관리" },
-  { id: "tpn_compounding", label: "TPN 조제" },
-  { id: "nst_participation", label: "NST 참여" },
-  { id: "tdm_participation", label: "TDM 참여" },
-  { id: "infection_control_participation", label: "감염관리 참여" },
-];
-
 /** 병원 프로필의 "진료과목"(필수, 다중선택). 공고 등록/필터엔 노출하지 않는다 — 병원 프로필 입력과 구직자 상세 조회 전용 */
 export const medicalDepartmentOptions: FilterOption[] = [
   { id: "family_medicine", label: "가정의학과" },

@@ -1,6 +1,12 @@
 import { companyExampleImages } from "@/config/companyImages";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
-import { companyTypeOptions, employeeCountOptions, type CompanyProfileMaster } from "@/data/businessCompanyProfile";
+import {
+  companyTypeOptions,
+  employeeCountOptions,
+  type CompanyProfileMaster,
+  type IndustryOrgProfile,
+  type OrgAdmin,
+} from "@/data/businessCompanyProfile";
 import type { HospitalOrgProfile, OrgFeatureItem, PharmacyOrgProfile } from "@/data/businessOrgProfile";
 import { regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
@@ -18,10 +24,6 @@ import type { Company } from "@/types/jobs";
 const PREVIEW_VERIFIED_LABEL = "운영팀 확인 기업";
 const PREVIEW_PREMIUM_LABEL = "프리미엄 기업";
 
-function companyTypeLabel(type: CompanyProfileMaster["companyType"]) {
-  return companyTypeOptions.find((option) => option.id === type)?.label ?? "기타";
-}
-
 function employeeCountLabel(range: CompanyProfileMaster["employeeCount"]) {
   return employeeCountOptions.find((option) => option.id === range)?.label ?? "-";
 }
@@ -30,48 +32,60 @@ function toProfileFeatures(features: OrgFeatureItem[]): CompanyProfileFeature[] 
   return features.filter((item) => item.label.trim() && item.text.trim()).map((item) => ({ label: item.label, text: item.text }));
 }
 
-/** 산업 트랙: companyProfiles.ts에 대응하는 실데이터가 없어(더파마뉴스 mock) 항상 이 변환을 거친다. */
-export function buildIndustryPreviewProfile(master: CompanyProfileMaster): CompanyProfile {
-  const typeLabel = companyTypeLabel(master.companyType);
+function industryTypeLabel(type: IndustryOrgProfile["orgType"]) {
+  return companyTypeOptions.find((option) => option.id === type)?.label ?? "기타";
+}
+
+/** 주소 3필드(zipCode/address/detailAddress) 중 우편번호는 화면 표시용이 아니라 검색 보조값이라 제외하고,
+ * 주소+상세주소만 한 줄로 합친다. 병원·약국처럼 address 단일 필드였던 트랙과 표시 방식을 맞춘다. */
+function combineIndustryAddress(profile: IndustryOrgProfile) {
+  return [profile.address, profile.detailAddress].filter((part) => part.trim()).join(" ");
+}
+
+/** 기관 정보 청사진 STEP 4-a에서 재설계한 IndustryOrgProfile/OrgAdmin 전용 변환기 — 기관정보 관리(BusinessCompanyProfileClient)가
+ * 편집하는 새 타입을 그대로 받는다. 산업 트랙의 유일한 미리보기 변환기다. */
+export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmin): CompanyProfile {
+  const typeLabel = industryTypeLabel(profile.orgType);
+  const address = combineIndustryAddress(profile);
+  const businessFields = profile.businessFields ?? [];
 
   return {
-    id: master.id,
-    name: master.displayName,
-    logoText: master.displayName,
-    logoImage: master.logoUrl && master.logoUrl !== "mock-logo" ? master.logoUrl : undefined,
+    id: profile.id,
+    name: profile.name,
+    logoText: profile.name.slice(0, 2),
+    logoImage: profile.logoUrl ?? undefined,
     verifiedLabel: PREVIEW_VERIFIED_LABEL,
     premiumLabel: PREVIEW_PREMIUM_LABEL,
-    tagline: master.shortIntro,
-    tags: [typeLabel, master.foundedYear ? `설립 ${master.foundedYear}년` : null, employeeCountLabel(master.employeeCount)].filter(
+    tagline: profile.shortIntro,
+    tags: [typeLabel, profile.foundedYear ? `설립 ${profile.foundedYear}년` : null, employeeCountLabel(profile.employeeCount)].filter(
       (value): value is string => Boolean(value),
     ),
-    coverImage: companyExampleImages.hero,
+    coverImage: profile.coverImageUrl ?? companyExampleImages.hero,
     metrics: [
       { label: "기업 형태", value: typeLabel },
-      { label: "사원수", value: employeeCountLabel(master.employeeCount) },
-      { label: "설립", value: master.foundedYear ? `${master.foundedYear}년` : "-" },
-      { label: "주요 사업분야", value: master.mainBusinessAreas.slice(0, 2).join(" · ") || "-" },
+      { label: "사원수", value: employeeCountLabel(profile.employeeCount) },
+      { label: "설립", value: profile.foundedYear ? `${profile.foundedYear}년` : "-" },
+      { label: "주요 사업분야", value: businessFields.slice(0, 2).join(" · ") || "-" },
     ],
-    /** 산업 프로필은 더 이상 mainJobCategories를 입력받지 않는다(채용 직무는 공고에서 관리) — 빈 배열로 채운다. */
+    /** 산업 프로필은 근무 약사 수 같은 별도 요약 통계 필드가 없다 — 사업·제품 분야는 metrics(요약)와
+     * details(전체 목록)에서 이미 노출되므로 여기서는 중복해 넣지 않는다. */
     businessSummary: [],
-    recruitSummary: master.fullIntro,
+    recruitSummary: profile.fullIntro,
     details: [
-      { label: "대표자", value: master.representativeName || null },
-      { label: "설립일", value: master.foundedYear ? `${master.foundedYear}년` : null },
-      { label: "본사 위치", value: master.address || null },
-      { label: "홈페이지", value: master.homepageUrl || null },
+      { label: "대표자", value: admin.representativeName || null },
+      { label: "설립일", value: profile.foundedYear ? `${profile.foundedYear}년` : null },
+      { label: "본사 위치", value: address || null },
+      { label: "홈페이지", value: profile.homepageUrl || null },
       { label: "기업 형태", value: typeLabel },
-      { label: "업종", value: master.industry || null },
+      { label: "사업·제품 분야", value: businessFields.join(" · ") || null },
     ],
-    /** 산업 프로필은 더 이상 keywords를 입력받지 않는다 — CompanyProfile.keywords가 필수 타입이라 빈 배열로 채운다.
-     * CompanyAsidePanel이 산업 트랙에서 SidebarKeywordsCard를 렌더하지 않으므로 실제로 노출되지 않는다. */
-    keywords: [],
+    keywords: profile.keywords,
     news: [],
     sidebar: {
       interestedCount: "-",
       reviewKeywordCount: "-",
-      products: [],
-      address: master.address,
+      products: profile.products,
+      address,
     },
   };
 }
@@ -82,6 +96,7 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
   const id = "business-preview-hospital";
   const typeLabel = getHospitalCombinedTypeLabel(org.hospitalType, org.hospitalOperator, org.specialtyLabel);
   const region = regionFromAddress(org.address);
+  const fullAddress = [org.address, org.detailAddress].filter(Boolean).join(" ");
 
   const company: Company = {
     id,
@@ -95,7 +110,7 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     employeeCount: "-",
     foundedYear: org.foundedYear,
     website: org.homepageUrl,
-    address: org.address,
+    address: fullAddress,
     hospitalType: org.hospitalType,
     hospitalOperator: org.hospitalOperator,
     specialtyLabel: org.specialtyLabel || undefined,
@@ -110,10 +125,10 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     premiumLabel: PREVIEW_PREMIUM_LABEL,
     tagline: org.shortIntro,
     tags: [typeLabel, region, org.bedCount ? `병상 ${org.bedCount}` : null].filter((value): value is string => Boolean(value)),
-    coverImage: companyExampleImages.hero,
+    coverImage: org.coverImageUrl ?? companyExampleImages.hero,
     metrics: [
       { label: "병상 수", value: org.bedCount ? `${org.bedCount}병상` : "-" },
-      { label: "연간 임상시험", value: org.annualClinicalTrials || "-" },
+      { label: "전문약사 보유", value: org.specialistPharmacists.length ? `${org.specialistPharmacists.length}개 분야` : "-" },
       { label: "약제부 인력", value: org.pharmacyStaffCount || "-" },
       { label: "주요 분야", value: typeLabel },
     ],
@@ -122,23 +137,22 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     details: [
       { label: "대표자", value: org.representativeName ? `병원장 ${org.representativeName}` : null },
       { label: "설립일", value: org.foundedYear || null },
-      { label: "본사 위치", value: org.address || null },
+      { label: "본사 위치", value: fullAddress || null },
       { label: "홈페이지", value: org.homepageUrl || null },
     ],
-    /** 병원 프로필은 더 이상 keywords를 입력받지 않는다(진료과목으로 대체) — CompanyProfile.keywords가 필수 타입이라 빈 배열로 채운다.
-     * HospitalAsidePanel이 병원 트랙에서 SidebarKeywordsCard를 렌더하지 않으므로 실제로 노출되지 않는다. */
-    keywords: [],
+    /** STEP 5-c부터 병원 프로필도 기관 키워드를 입력받는다(§3 공개 프로필, 산업과 동일 필드).
+     * HospitalAsidePanel이 병원 트랙에서 SidebarKeywordsCard를 렌더하지 않아 사이드바엔 아직 노출되지 않는다. */
+    keywords: org.keywords,
     news: [],
     features: toProfileFeatures(org.features),
     dutySystem: org.dutySystem || undefined,
     medicalDepartments: org.medicalDepartments.length ? org.medicalDepartments : undefined,
     specialistPharmacists: org.specialistPharmacists.length ? org.specialistPharmacists : undefined,
-    pharmacyDutyAreas: org.pharmacyDutyAreas.length ? org.pharmacyDutyAreas : undefined,
     sidebar: {
       interestedCount: "-",
       reviewKeywordCount: "-",
       products: [],
-      address: org.address,
+      address: fullAddress,
     },
   };
 

@@ -11,6 +11,7 @@ const orgTrackCompleteLabel: Record<OrgTrack, string> = {
   industry: "기업·기관 회원",
   hospital: "병원 회원",
   pharmacy: "약국 회원",
+  research: "연구기관 회원",
 };
 
 /** STEP C — 가입 완료 화면. 목데이터 단계라 실제 계정 생성 대신 배정된 orgTrack을 안내하고 기관정보 입력으로 유도한다. */

@@ -372,7 +372,7 @@ export function IndustryJobPostingForm() {
           </h1>
           <p className="mt-2 flex flex-wrap items-center gap-1.5 text-[13px] font-normal text-[#68717e]">
             <span>등록 기업</span>
-            <span className="font-semibold text-[#303946]">더팜인뉴스(주)</span>
+            <span className="font-semibold text-[#303946]">{initialBusinessCompanyProfile.displayName}</span>
             <span className="text-[#c0c8d2]">·</span>
             <Link href="/business/industry/profile" className="inline-flex items-center gap-0.5 underline underline-offset-2 transition hover:text-[#303946]">
               기업 정보 관리

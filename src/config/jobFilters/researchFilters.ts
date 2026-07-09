@@ -1,4 +1,4 @@
-import type { FilterOption, JobCategoryOption, TrackFilterConfig } from "@/types/jobs";
+import type { FilterOption, JobCategoryOption, ResearchStaffScale, TrackFilterConfig } from "@/types/jobs";
 import { researchFieldCategoryOptions } from "@/config/researchFields";
 import {
   contractPeriodOptions,
@@ -61,6 +61,18 @@ export const researchInstitutionTypeOptions: FilterOption[] = [
 
 export function getResearchInstitutionTypeLabel(id: string): string {
   return researchInstitutionTypeOptions.find((option) => option.id === id)?.label ?? id;
+}
+
+export const researchStaffScaleOptions: { id: Exclude<ResearchStaffScale, "">; label: string }[] = [
+  { id: "under_10", label: "10명 미만" },
+  { id: "10_30", label: "10~30명" },
+  { id: "31_50", label: "31~50명" },
+  { id: "51_100", label: "51~100명" },
+  { id: "over_100", label: "100명 이상" },
+];
+
+export function getResearchStaffScaleLabel(id: ResearchStaffScale): string {
+  return researchStaffScaleOptions.find((option) => option.id === id)?.label ?? "";
 }
 
 export const researchFilterConfig: TrackFilterConfig = {

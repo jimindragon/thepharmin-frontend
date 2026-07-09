@@ -14,16 +14,18 @@ export const signupInstitutionTypeOptions: Array<{ id: SignupInstitutionType; la
   { id: "research", label: "연구기관" },
 ];
 
-/** 병원만 orgTrack "hospital", 나머지(연구기관 포함, v1 확정 사양)는 모두 "industry" 폼을 쓴다. */
+/** 병원은 orgTrack "hospital", 연구기관은 "research", 나머지는 "industry" 폼을 쓴다. */
 export function getOrgTrackForInstitutionType(type: SignupInstitutionType): OrgTrack {
-  return type === "hospital" ? "hospital" : "industry";
+  if (type === "hospital") return "hospital";
+  if (type === "research") return "research";
+  return "industry";
 }
 
 const ORG_TRACK_KEY = "thepharmin_signup_org_track";
 const PHARMACY_TYPE_KEY = "thepharmin_signup_pharmacy_type";
 const PHARMACY_FEATURE_KEY = "thepharmin_signup_pharmacy_feature";
 
-const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy"];
+const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy", "research"];
 const validPharmacyTypes: PharmacyType[] = ["local", "clinic-front", "large", "beauty"];
 const validPharmacyFeatureIds: string[] = pharmacyFeatureOptions.map((option) => option.id);
 

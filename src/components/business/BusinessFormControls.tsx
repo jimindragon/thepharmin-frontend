@@ -3,6 +3,14 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
+/** 기관정보 관리 폼의 텍스트형 필드(한 줄 소개·본문 소개·키워드 등) 공통 좌우 폭 기준.
+ * 산업 트랙(BusinessCompanyProfileClient)에서 처음 도입 — 병원·약국·연구 트랙도 같은 값을 재사용한다. */
+export const PROFILE_TEXT_FIELD_WIDTH = "max-w-[720px]";
+
+/** TextInput의 실제 높이(h-11/44px) — 입력칸과 같은 행에 놓이는 버튼(FormActionButton)이 공유하는 기준값.
+ * 위계는 이 높이를 줄이는 게 아니라 테두리·배경·폰트 크기로만 표현한다. */
+export const CONTROL_HEIGHT = "h-11";
+
 export function Segmented<T extends string>({
   value,
   options,
@@ -70,6 +78,25 @@ export function ToggleChip({
   );
 }
 
+/** 필드 라벨 옆에 붙이는 ⓘ 설명 툴팁. hover/focus 시 설명 노출 — 병원 트랙 등에서 사용 예정 */
+export function InfoTooltip({ text }: { text: string }) {
+  return (
+    <span className="group relative inline-flex">
+      <span
+        tabIndex={0}
+        role="button"
+        aria-label={text}
+        className="inline-flex h-4 w-4 cursor-help select-none items-center justify-center text-[12px] font-normal leading-none text-[#9aa3af] outline-none transition hover:text-[#4f5967] focus-visible:text-[#4f5967]"
+      >
+        ⓘ
+      </span>
+      <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[240px] -translate-x-1/2 border border-[#17202c] bg-[#17202c] px-3 py-2 text-[11.5px] font-normal leading-[1.5] text-white opacity-0 shadow-[0_8px_20px_rgba(17,24,39,0.18)] transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+        {text}
+      </span>
+    </span>
+  );
+}
+
 export function FieldLabel({ children, required = false }: { children: ReactNode; required?: boolean }) {
   return (
     <label className="text-[14px] font-medium text-[#2f3845]">
@@ -83,12 +110,15 @@ export function TextInput({
   value,
   onChange,
   disabled,
+  readOnly,
   placeholder,
   right,
 }: {
   value: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  /** 값은 있지만 직접 타이핑은 막고 싶을 때(예: 우편번호 찾기로만 채워지는 필드). disabled와 동일한 시각 스타일을 쓰되 포커스/선택은 허용한다 */
+  readOnly?: boolean;
   placeholder?: string;
   right?: ReactNode;
 }) {
@@ -97,15 +127,45 @@ export function TextInput({
       <input
         value={value}
         disabled={disabled}
+        readOnly={readOnly}
         placeholder={placeholder}
         onChange={(event) => onChange?.(event.target.value)}
         className={clsx(
           "h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8",
-          disabled && "bg-[#f5f6f7] text-[#7d8796]",
+          (disabled || readOnly) && "bg-[#f5f6f7] text-[#7d8796]",
         )}
       />
       {right}
     </div>
+  );
+}
+
+/** 입력칸과 같은 행에 놓이는 보조 버튼(우편번호 찾기·키워드/제품 추가·비밀번호 변경 등) 전용 컴포넌트.
+ * 높이는 CONTROL_HEIGHT로 고정해 TextInput과 항상 나란히 맞고, 위계는 가는 테두리·배경 없음·작은 폰트로만 낮춘다. */
+export function FormActionButton({
+  onClick,
+  children,
+  disabled,
+  className,
+}: {
+  onClick?: () => void;
+  children: ReactNode;
+  disabled?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        CONTROL_HEIGHT,
+        "inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:text-[#b7bfc9]",
+        className,
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -118,7 +178,7 @@ export function SectionCard({
   children,
 }: {
   id?: string;
-  title: string;
+  title: ReactNode;
   description?: string;
   status?: string;
   action?: ReactNode;

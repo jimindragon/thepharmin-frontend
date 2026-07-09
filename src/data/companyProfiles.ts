@@ -59,8 +59,6 @@ export interface CompanyProfile {
   medicalDepartments?: string[];
   /** 병원 트랙 전용. 미등록 시 "전문약사 보유" 블록 자체를 숨긴다 */
   specialistPharmacists?: string[];
-  /** 병원 트랙 전용. pharmacyDutyAreaOptions(config/jobFilters/hospitalFilters.ts)의 id를 재사용한다. 미등록 시 "약제부 업무 영역" 블록 자체를 숨긴다 */
-  pharmacyDutyAreas?: string[];
   /** 약국 트랙 전용 */
   pharmacySoftware?: string;
   /** 약국 트랙 전용 */
@@ -897,7 +895,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "임상연구 환경", text: "임상시험센터 상시 운영, CRC·연구약사 채용이 주기적으로 발생" },
       { label: "의료정보화", text: "국내 최초 전면 디지털 병원, HIMSS 최고 등급 인증 경험" },
     ],
-    specialistPharmacists: ["감염", "종양", "정맥영양(TPN)"],
+    specialistPharmacists: ["감염", "종양", "정맥영양"],
     news: [
       {
         id: "snubh-news-1",

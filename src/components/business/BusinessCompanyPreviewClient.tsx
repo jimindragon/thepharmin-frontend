@@ -17,9 +17,24 @@ import {
   PharmacySummarySection,
 } from "@/components/company/CompanyDetailSections";
 import { readSignupOrgTrack } from "@/config/businessSignup";
-import { getMissingRequiredCompanyFields, initialBusinessCompanyProfile, type OrgTrack } from "@/data/businessCompanyProfile";
-import { getMissingRequiredHospitalFields, getMissingRequiredPharmacyFields, initialHospitalOrgProfile, initialPharmacyOrgProfile } from "@/data/businessOrgProfile";
-import { buildHospitalPreview, buildIndustryPreviewProfile, buildPharmacyPreview } from "@/data/businessProfilePreview";
+import {
+  getMissingRequiredIndustryOrgFields,
+  initialIndustryOrgAdmin,
+  initialIndustryOrgProfile,
+  readIndustryOrgProfileDraft,
+  type OrgTrack,
+} from "@/data/businessCompanyProfile";
+import {
+  getMissingRequiredHospitalFields,
+  getMissingRequiredPharmacyFields,
+  initialHospitalOrgProfile,
+  initialPharmacyOrgProfile,
+  readHospitalOrgProfileDraft,
+  readPharmacyOrgProfileDraft,
+  type HospitalOrgProfile,
+  type PharmacyOrgProfile,
+} from "@/data/businessOrgProfile";
+import { buildHospitalPreview, buildIndustryPreview, buildPharmacyPreview } from "@/data/businessProfilePreview";
 import { markBusinessMember } from "@/hooks/useBusinessMember";
 
 /** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry.
@@ -48,25 +63,22 @@ function PreviewControlBar({ track, missing }: { track: OrgTrack; missing: Missi
           구직자에게 보이는 화면입니다
           <span className="text-[12px] font-normal text-[#9aa3af]">이 안내 바는 구직자에게는 노출되지 않습니다</span>
         </div>
-        <div className="flex items-center gap-2 max-[640px]:w-full">
+        <div className="flex items-center gap-3 max-[640px]:w-full max-[640px]:flex-col">
           {missing.count > 0 ? (
             <Link
               href={fillHref}
-              className="inline-flex h-10 items-center gap-2 border border-[#cfd8e3] bg-white px-3.5 text-[12.5px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1"
+              className="inline-flex h-10 items-center justify-center gap-1.5 border border-[#17a68c] bg-[#eafaf5] px-3.5 text-[12.5px] font-medium text-[#0d7369] transition hover:bg-[#dbf5ec] max-[640px]:flex-1"
             >
-              <Sparkles size={14} className="shrink-0 text-[#b4791b]" />
-              부족한 정보 채우기
-              <span className="inline-flex h-5 shrink-0 items-center border border-status-error-border bg-status-error-subtle px-1.5 text-[11px] font-medium text-danger">
-                입력하면 좋은 정보 {missing.count}개
-              </span>
+              <Sparkles size={14} className="shrink-0" />
+              부족한 정보 {missing.count}개 채우기
             </Link>
           ) : null}
           <Link
             href={editHref}
-            className="inline-flex h-10 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12.5px] font-medium text-white transition hover:bg-[#2a2a2a] max-[640px]:flex-1"
+            className="inline-flex h-10 items-center justify-center gap-1.5 border border-[#cfd8e3] bg-white px-3.5 text-[12.5px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1"
           >
-            <PenLine size={14} className="shrink-0" />
-            기관 정보 수정하러 가기
+            <PenLine size={14} className="shrink-0 text-[#7b8491]" />
+            기관 정보 수정
           </Link>
         </div>
       </div>
@@ -75,7 +87,14 @@ function PreviewControlBar({ track, missing }: { track: OrgTrack; missing: Missi
 }
 
 export function BusinessCompanyPreviewClient() {
-  const [track, setTrack] = useState<OrgTrack>(initialBusinessCompanyProfile.orgTrack);
+  const [track, setTrack] = useState<OrgTrack>(initialIndustryOrgProfile.orgTrack);
+  // 산업 트랙 편집 화면(BusinessCompanyProfileClient)이 sessionStorage에 남겨둔 draft. 서버 렌더는 항상
+  // initialIndustryOrgProfile로 시작해 SSR과 첫 클라이언트 렌더가 일치하게 하고, draft는 마운트 후에 반영한다.
+  const [industryProfile, setIndustryProfile] = useState(initialIndustryOrgProfile);
+  // 병원 트랙도 동일한 패턴 — SSR은 initialHospitalOrgProfile로 시작하고 draft는 마운트 후 반영한다.
+  const [hospitalProfile, setHospitalProfile] = useState<HospitalOrgProfile>(initialHospitalOrgProfile);
+  // 약국 트랙도 동일한 패턴 — SSR은 initialPharmacyOrgProfile로 시작하고 draft는 마운트 후 반영한다.
+  const [pharmacyProfile, setPharmacyProfile] = useState<PharmacyOrgProfile>(initialPharmacyOrgProfile);
 
   useEffect(() => {
     markBusinessMember();
@@ -84,6 +103,15 @@ export function BusinessCompanyPreviewClient() {
     // ?track= 쿼리 오버라이드는 개발 확인용으로 가입 결과보다 우선한다.
     const override = readTrackOverride();
     if (override) setTrack(override);
+
+    const draft = readIndustryOrgProfileDraft();
+    if (draft) setIndustryProfile(draft);
+
+    const hospitalDraft = readHospitalOrgProfileDraft();
+    if (hospitalDraft) setHospitalProfile(hospitalDraft);
+
+    const pharmacyDraft = readPharmacyOrgProfileDraft();
+    if (pharmacyDraft) setPharmacyProfile(pharmacyDraft);
   }, []);
 
   const trackLabel = track === "hospital" ? "병원" : track === "pharmacy" ? "약국" : "기업";
@@ -92,8 +120,8 @@ export function BusinessCompanyPreviewClient() {
   let missing: MissingInfoState;
 
   if (track === "hospital") {
-    const { profile, company } = buildHospitalPreview(initialHospitalOrgProfile);
-    const missingFields = getMissingRequiredHospitalFields(initialHospitalOrgProfile);
+    const { profile, company } = buildHospitalPreview(hospitalProfile);
+    const missingFields = getMissingRequiredHospitalFields(hospitalProfile);
     missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
     body = (
       <>
@@ -109,8 +137,8 @@ export function BusinessCompanyPreviewClient() {
       </>
     );
   } else if (track === "pharmacy") {
-    const { profile, company } = buildPharmacyPreview(initialPharmacyOrgProfile);
-    const missingFields = getMissingRequiredPharmacyFields(initialPharmacyOrgProfile);
+    const { profile, company } = buildPharmacyPreview(pharmacyProfile);
+    const missingFields = getMissingRequiredPharmacyFields(pharmacyProfile);
     missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
     body = (
       <>
@@ -126,8 +154,9 @@ export function BusinessCompanyPreviewClient() {
       </>
     );
   } else {
-    const profile = buildIndustryPreviewProfile(initialBusinessCompanyProfile);
-    const missingFields = getMissingRequiredCompanyFields(initialBusinessCompanyProfile);
+    // 연구 트랙은 아직 별도 orgTrack이 없어(가입 시 "industry"로 합류, STEP 7에서 분리 예정) 이 분기를 그대로 탄다.
+    const profile = buildIndustryPreview(industryProfile, initialIndustryOrgAdmin);
+    const missingFields = getMissingRequiredIndustryOrgFields(industryProfile, initialIndustryOrgAdmin);
     missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
     body = (
       <>

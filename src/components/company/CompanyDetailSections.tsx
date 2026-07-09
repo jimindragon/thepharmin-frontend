@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { BriefcaseBusiness, ChevronRight, ExternalLink, Heart, MapPin, MessageSquareText, ThumbsUp } from "lucide-react";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
-import { medicalDepartmentOptions, pharmacyDutyAreaOptions } from "@/config/jobFilters/hospitalFilters";
+import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { companies, companyReviews } from "@/data/companies";
 import { type CompanyDirectoryEntry, companyDirectory, getActiveJobCount, getActiveJobs, provinceFromAddress } from "@/data/companyDirectory";
@@ -396,27 +396,7 @@ export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
         </Link>
       </section>
 
-      <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
-        <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#202733]">후기를 더 자세히 보려면</h2>
-        <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">현직자 리뷰와 면접 후기를 더 자세히 확인하려면 후기를 작성하거나 열람권을 사용하세요.</p>
-        <Link href={`/companies/${profile.id}/reviews`} className="mt-3 inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]">
-          후기 페이지 보기
-        </Link>
-        <div className="mt-2 grid gap-2">
-          <Link
-            href={`/companies/${profile.id}/reviews/new`}
-            className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
-          >
-            현직자 리뷰 작성
-          </Link>
-          <Link
-            href={`/companies/${profile.id}/interviews/new`}
-            className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
-          >
-            면접 후기 작성
-          </Link>
-        </div>
-      </section>
+      <InstitutionReviewMoreCard companyId={profile.id} />
     </aside>
   );
 }
@@ -706,25 +686,22 @@ function InstitutionApplyCTACard({ companyId }: { companyId: string }) {
 function InstitutionReviewMoreCard({ companyId }: { companyId: string }) {
   return (
     <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
-      <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#202733]">후기를 더 자세히 보려면</h2>
-      <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">현직자 리뷰와 면접 후기를 더 자세히 확인하려면 후기를 작성하거나 열람권을 사용하세요.</p>
+      <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#202733]">더 많은 후기를 확인해보세요</h2>
+      <p className="mt-2 text-[12px] font-normal leading-[1.65] text-[#667181]">현직자 리뷰와 면접 후기를 한 곳에서 확인할 수 있습니다. 후기를 작성하면 열람 기회가 제공됩니다.</p>
       <Link
         href={`/companies/${companyId}/reviews`}
-        className="mt-3 inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
+        className="mt-4 inline-flex h-10 w-full items-center justify-center bg-[#202733] px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#111111]"
       >
         후기 페이지 보기
       </Link>
-      <div className="mt-2 grid gap-2">
-        <Link
-          href={`/companies/${companyId}/reviews/new`}
-          className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
-        >
-          현직자 리뷰 작성
+      <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-[#8b95a1]">
+        <Link href={`/companies/${companyId}/reviews/new`} className="hover:text-[#4f5a66] hover:underline">
+          리뷰 작성
         </Link>
-        <Link
-          href={`/companies/${companyId}/interviews/new`}
-          className="inline-flex h-10 items-center justify-center border border-[#dfe5ec] px-3 text-[12px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
-        >
+        <span aria-hidden className="text-[#cfd6de]">
+          ·
+        </span>
+        <Link href={`/companies/${companyId}/interviews/new`} className="hover:text-[#4f5a66] hover:underline">
           면접 후기 작성
         </Link>
       </div>
@@ -738,15 +715,11 @@ export function HospitalAsidePanel({ profile, company }: { profile: CompanyProfi
   const medicalDepartmentLabels = (profile.medicalDepartments ?? [])
     .map((id) => medicalDepartmentOptions.find((option) => option.id === id)?.label)
     .filter((label): label is string => Boolean(label));
-  const pharmacyDutyAreaLabels = (profile.pharmacyDutyAreas ?? [])
-    .map((id) => pharmacyDutyAreaOptions.find((option) => option.id === id)?.label)
-    .filter((label): label is string => Boolean(label));
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
       <InstitutionCoreInfoCard profile={profile} />
       <ChipListCard title="진료과목" items={medicalDepartmentLabels} />
       <ChipListCard title="전문약사 보유" items={profile.specialistPharmacists ?? []} note="기관이 등록한 분야만 표시됩니다" />
-      <ChipListCard title="약제부 업무 영역" items={pharmacyDutyAreaLabels} />
       <RelatedInstitutionsCard result={related} />
       <InstitutionLocationCard address={profile.sidebar.address} />
       <InstitutionApplyCTACard companyId={profile.id} />
