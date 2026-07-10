@@ -4,9 +4,11 @@ import { Header } from "@/components/Header";
 import { HospitalJobDetailClient } from "@/components/job-detail/HospitalJobDetailClient";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
 import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
+import { PharmacyJobDetailV2 } from "@/components/job-detail/PharmacyJobDetailV2";
 import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
 import { jobs } from "@/data/jobs";
+import { getPharmacyJobDetail } from "@/data/pharmacyJobDetails";
 import type { Job } from "@/types/jobs";
 
 interface JobDetailPageProps {
@@ -86,6 +88,17 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   if (job.track === "pharmacy") {
+    const pharmacyDetailV2 = getPharmacyJobDetail(slug);
+
+    if (pharmacyDetailV2) {
+      return (
+        <>
+          <Header />
+          <PharmacyJobDetailV2 data={pharmacyDetailV2} />
+        </>
+      );
+    }
+
     return (
       <>
         <Header />

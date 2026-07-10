@@ -17,6 +17,11 @@ import { formatWon } from "@/utils/salary";
 // ── Static data ────────────────────────────────────────────────────────────────
 
 const WEEKDAY_OPTS = ["월", "화", "수", "목", "금", "토", "일"];
+// 근무 시간대 블록: 같은 시간에 근무하는 요일을 묶음 (pharmacyJobDetails.ts의 WorkScheduleBlock과 동형)
+interface WorkScheduleBlock {
+  days: string[];
+  time: string;
+}
 type SalaryKind = "시급" | "일급" | "월급" | "연봉" | "면접 후 결정";
 const SALARY_KIND_OPTS: SalaryKind[] = ["시급", "일급", "월급", "연봉", "면접 후 결정"];
 const WELFARE_OPTS = [
@@ -299,8 +304,9 @@ export function PharmacyJobPostingForm() {
   const [preferred, setPreferred] = useState("");
 
   // §3 근무조건
-  const [workDays, setWorkDays] = useState<Set<string>>(new Set());
-  const [workHours, setWorkHours] = useState("");
+  const [workSchedule, setWorkSchedule] = useState<WorkScheduleBlock[]>([
+    { days: [], time: "" },
+  ]);
   const [address, setAddress] = useState("");
   const [sameAsInstitutionAddress, setSameAsInstitutionAddress] = useState(false);
   const [salaryKind, setSalaryKind] = useState<SalaryKind>("시급");
@@ -347,7 +353,7 @@ export function PharmacyJobPostingForm() {
     if (!summary.trim()) next.summary = "공고 요약을 입력해 주세요.";
     if (!responsibilities.trim()) next.responsibilities = "주요 업무를 입력해 주세요.";
     if (!requirements.trim()) next.requirements = "필수 자격요건을 입력해 주세요.";
-    if (!workHours.trim()) next.workHours = "근무 시간을 입력해 주세요.";
+    if (!workSchedule.some((b) => b.days.length > 0 && b.time.trim())) next.workSchedule = "근무 요일과 시간을 하나 이상 입력해 주세요.";
     if (!address.trim()) next.address = "근무지를 입력해 주세요.";
     if (salaryKind !== "면접 후 결정" && !salaryAmount.trim()) next.salaryAmount = "급여를 입력해 주세요.";
     if (!workCondDetail.trim()) next.workCondDetail = "근무조건 상세를 입력해 주세요.";
@@ -377,8 +383,24 @@ export function PharmacyJobPostingForm() {
     setPharmacyWorkTypeIds((prev) => toggleSet(prev, id));
   }
 
-  function toggleWorkDay(day: string) {
-    setWorkDays((prev) => toggleSet(prev, day));
+  function toggleScheduleDay(blockIndex: number, day: string) {
+    setWorkSchedule((prev) => prev.map((b, i) => {
+      if (i !== blockIndex) return b;
+      const days = b.days.includes(day) ? b.days.filter((d) => d !== day) : [...b.days, day];
+      return { ...b, days };
+    }));
+  }
+
+  function setScheduleTime(blockIndex: number, time: string) {
+    setWorkSchedule((prev) => prev.map((b, i) => (i === blockIndex ? { ...b, time } : b)));
+  }
+
+  function addScheduleBlock() {
+    setWorkSchedule((prev) => [...prev, { days: [], time: "" }]);
+  }
+
+  function removeScheduleBlock(blockIndex: number) {
+    setWorkSchedule((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== blockIndex)));
   }
 
   function toggleBenefit(item: string) {
@@ -586,15 +608,47 @@ export function PharmacyJobPostingForm() {
 
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard title="근무조건">
-          <div className="mb-5">
-            <ChipGroup label="근무 요일" options={WEEKDAY_OPTS} selected={workDays} onToggle={toggleWorkDay} />
-          </div>
-
-          <div className="mb-5" ref={setRef("workHours")}>
-            <label htmlFor="p-workhours" className={LBL}>근무 시간{REQ}</label>
-            <input id="p-workhours" value={workHours} onChange={(e) => setWorkHours(e.target.value)}
-              className={IN} placeholder="예: 09:00~18:00 / 14:00~20:00" aria-required="true" />
-            <FieldError message={errors.workHours} />
+          <div className="mb-5" ref={setRef("workSchedule")}>
+            <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
+              근무 시간대{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">요일마다 근무 시간이 다르면 시간대를 나눠서 추가하세요.</span>
+            </p>
+            <div className="space-y-3">
+              {workSchedule.map((block, idx) => (
+                <div key={idx} className="border border-[#dfe4ea] bg-[#fbfcfd] p-4">
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div role="group" aria-label={`시간대 ${idx + 1} 근무 요일`} className="flex flex-wrap gap-1.5">
+                      {WEEKDAY_OPTS.map((day) => {
+                        const on = block.days.includes(day);
+                        return (
+                          <button key={day} type="button" role="checkbox" aria-checked={on}
+                            onClick={() => toggleScheduleDay(idx, day)}
+                            className={clsx(
+                              "flex h-8 w-8 items-center justify-center rounded-full border text-[12px] font-medium transition-colors",
+                              on ? "border-[#111111] bg-[#111111] text-white" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
+                            )}>
+                            {day}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {workSchedule.length > 1 && (
+                      <button type="button" onClick={() => removeScheduleBlock(idx)} aria-label={`시간대 ${idx + 1} 삭제`}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#dfe4ea] bg-white text-[#7b8491] transition-colors hover:border-[#111111] hover:text-[#111111]">
+                        <X size={14} aria-hidden />
+                      </button>
+                    )}
+                  </div>
+                  <input value={block.time} onChange={(e) => setScheduleTime(idx, e.target.value)}
+                    className={IN} placeholder="예: 09:00–18:00" aria-label={`시간대 ${idx + 1} 근무 시간`} />
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={addScheduleBlock}
+              className="mt-3 h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa]">
+              ＋ 시간대 추가
+            </button>
+            <FieldError message={errors.workSchedule} />
           </div>
 
           <div className="mb-5" ref={setRef("address")}>
