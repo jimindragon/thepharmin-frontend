@@ -164,7 +164,7 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
 
   job: {
     id: "kist-neurochannel-postdoc",
-    title: "중추신경발달·스고가브레인·정신질환 박사후연구원 모집",
+    title: "서울 KIST, 신경생리연구실, 포스닥 구인 (중추신경발달, 오가노이드, 정신질환)",
 
     jobCategory: { main: "연구직", sub: "박사후연구원·포닥" },
     headcount: "1명",
@@ -185,12 +185,12 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
     workMode: "연구실 근무",
     address: "서울 성북구 화랑로14길 5 한국과학기술연구원(KIST)",
     salary: "5,000만↑",
-    contractPeriod: "1년 (성과에 따라 갱신 협의)",
+    contractPeriod: "과제 기간 연동",
     benefitIds: ["학회·세미나 지원", "장비·인프라 지원"],
     workConditionDetail:
       "계약 기간은 연 단위이며, 연구 성과와 과제 상황에 따라 갱신을 협의합니다. 4대 보험이 적용됩니다.",
 
-    keywords: ["neurogenesis", "중추신경발달", "스고가브레인", "이온채널", "뇌오가노이드", "칼슘이미징", "RNAscope"],
+    keywords: ["neurogenesis", "중추신경발달", "이온채널", "뇌오가노이드", "칼슘이미징", "RNAscope"],
     additionalNotes:
       "지원 서류는 이력서와 연구 실적 목록을 포함해 제출해 주세요. 서류 검토 후 개별 면접 일정을 안내드립니다.",
     // detailImages/attachments: 없음
@@ -267,7 +267,7 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
     workMode: "연구실 근무",
     address: "서울 송파구 올림픽로43길 88",
     salary: "5,000만↑",
-    contractPeriod: "1년 (연장 가능)",
+    contractPeriod: "1~2년",
     benefitIds: ["학회·세미나 지원"],
     workConditionDetail: "주간 근무 기준이며, 계약 기간과 처우는 면접 시 협의합니다.",
 

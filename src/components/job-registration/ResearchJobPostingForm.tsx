@@ -7,6 +7,7 @@ import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   contractPeriodOptions,
@@ -331,6 +332,10 @@ export function ResearchJobPostingForm() {
   const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
+  // 전형절차 및 제출서류 (선택 입력)
+  const [hiringProcess, setHiringProcess] = useState<string[]>([]);
+  const [requiredDocuments, setRequiredDocuments] = useState<string[]>([]);
+
   // §6 지원방법 및 마감일
   const [applyMethod, setApplyMethod] = useState<"url" | "quick" | "email">("url");
   const [applyUrl, setApplyUrl] = useState("");
@@ -586,11 +591,12 @@ export function ResearchJobPostingForm() {
 
           <div className="mb-5">
             <label htmlFor="r-lab-name" className={LBL}>
-              연구실·소속 조직
+              소속 연구실·부서
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
             </label>
+            <p className={`${HINT} mb-2`}>실제 근무하게 될 연구실, 진료과, 센터명이 있다면 입력해 주세요.</p>
             <input id="r-lab-name" value={labName} onChange={(e) => setLabName(e.target.value)}
-              placeholder="예: 대장항문외과 연구실" className={IN} />
+              placeholder="예: 대장항문외과 연구팀, 신경과학연구실, ○○연구센터" className={IN} />
           </div>
 
           <div className="mb-5" ref={setRef("labPi")}>
@@ -869,6 +875,16 @@ export function ResearchJobPostingForm() {
               })}
             </div>
           </div>
+        </SectionCard>
+
+        {/* ── 전형절차 및 제출서류 ──────────────────────────────────────────── */}
+        <SectionCard title="전형절차 및 제출서류" description="선택 입력입니다. 입력한 경우에만 공고 상세에 노출됩니다.">
+          <HiringProcessSelector
+            processSteps={hiringProcess}
+            onProcessChange={setHiringProcess}
+            documents={requiredDocuments}
+            onDocumentsChange={setRequiredDocuments}
+          />
         </SectionCard>
 
         {/* ── §6 지원방법 및 마감일 ─────────────────────────────────────────── */}

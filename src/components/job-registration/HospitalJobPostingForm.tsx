@@ -7,6 +7,7 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
 import { hospitalJobCategoryOptions, shiftTypeOptions } from "@/config/jobFilters/hospitalFilters";
@@ -311,6 +312,10 @@ export function HospitalJobPostingForm() {
   const [customKeywords, setCustomKeywords] = useState<string[]>([]);
   const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
+
+  // 전형절차 및 제출서류 (선택 입력)
+  const [hiringProcess, setHiringProcess] = useState<string[]>([]);
+  const [requiredDocuments, setRequiredDocuments] = useState<string[]>([]);
 
   // §5 지원방법 및 마감일
   const [applyMethod, setApplyMethod] = useState<"url" | "quick" | "email">("url");
@@ -727,6 +732,16 @@ export function HospitalJobPostingForm() {
               })}
             </div>
           </div>
+        </SectionCard>
+
+        {/* ── 전형절차 및 제출서류 ──────────────────────────────────────────── */}
+        <SectionCard title="전형절차 및 제출서류" description="선택 입력입니다. 입력한 경우에만 공고 상세에 노출됩니다.">
+          <HiringProcessSelector
+            processSteps={hiringProcess}
+            onProcessChange={setHiringProcess}
+            documents={requiredDocuments}
+            onDocumentsChange={setRequiredDocuments}
+          />
         </SectionCard>
 
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}

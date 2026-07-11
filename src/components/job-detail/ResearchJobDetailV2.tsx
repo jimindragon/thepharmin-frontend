@@ -15,6 +15,7 @@ import {
   FlaskConical,
   GraduationCap,
   Info,
+  Microscope,
   Users,
   Wallet,
 } from "lucide-react";
@@ -81,7 +82,6 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
   const hasLabName = Boolean(org.labName);
   const hasPiName = Boolean(org.piName);
   const hasResearchFields = Boolean(org.researchFields && org.researchFields.length > 0);
-  const hasInfoRowList = hasLabName || hasPiName || hasResearchFields;
   const hasLabIntro = Boolean(org.labIntro);
   const hasEquipmentInfra = Boolean(org.equipmentInfra);
   const hasAchievements = Boolean(org.achievements);
@@ -204,7 +204,7 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                   <div className={clsx((hasWorkMode || hasBenefits || hasWorkConditionDetail) && "border-t border-[#edf1f4] pt-6")}>
                     <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
                     <div className="mt-3 space-y-4">
-                      <p className="text-[15px] font-bold text-[#2f3845]">{job.address}</p>
+                      <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{job.address}</p>
                       <MapPlaceholder address={job.address} orgName={org.institutionName} />
                     </div>
                   </div>
@@ -218,15 +218,23 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                   {hasStaffScale ? (
                     <SummaryStatCell icon={Users} label="연구 인력 규모" value={staffScaleLabel} />
                   ) : null}
+                  {hasResearchFields ? (
+                    <SummaryStatCell icon={Microscope} label="연구 분야" value={researchFieldLabels} />
+                  ) : null}
                 </SummaryStatGrid>
 
-                {hasInfoRowList ? (
+                {hasPiName ? (
                   <div className="mt-6 border-t border-[#f0f2f5] pt-1">
                     <InfoRowList>
-                      {hasLabName ? <InfoRow label="소속 연구실" value={org.labName} /> : null}
-                      {hasPiName ? <InfoRow label="책임자(PI)" value={org.piName} /> : null}
-                      {hasResearchFields ? <InfoRow label="연구 분야" value={researchFieldLabels} /> : null}
+                      <InfoRow label="책임자(PI)" value={org.piName} />
                     </InfoRowList>
+                  </div>
+                ) : null}
+
+                {hasLabName ? (
+                  <div className="mt-6 border-t border-[#f0f2f5] pt-6">
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">소속 연구실</h3>
+                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.labName}</p>
                   </div>
                 ) : null}
 

@@ -220,7 +220,7 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                     </p>
                   </div>
                   <div className="border-t border-[#edf1f4] pt-6">
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무 안내</h3>
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무조건 상세</h3>
                     <div className="mt-3">
                       <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail] }} />
                     </div>
@@ -264,7 +264,7 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
               <IconSectionShell id="location" icon={MapPin} title="위치·교통">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-[15px] font-bold text-[#2f3845]">{org.location.address}</p>
+                    <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.location.address}</p>
                     <p className="mt-1 text-[13px] font-normal text-[#7d8796]">{org.location.detailAddress}</p>
                   </div>
                   <MapPlaceholder address={org.location.address} orgName={org.pharmacyName} />

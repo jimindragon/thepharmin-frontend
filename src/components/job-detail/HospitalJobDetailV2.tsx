@@ -215,7 +215,7 @@ export function HospitalJobDetailV2({ data }: { data: HospitalJobDetail }) {
                   <div className={clsx((hasShiftType || hasBenefits || hasWorkConditionDetail) && "border-t border-[#edf1f4] pt-6")}>
                     <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
                     <div className="mt-3 space-y-4">
-                      <p className="text-[15px] font-bold text-[#2f3845]">{job.address}</p>
+                      <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{job.address}</p>
                       <MapPlaceholder address={job.address} orgName={org.hospitalName} />
                     </div>
                   </div>
