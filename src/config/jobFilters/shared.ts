@@ -61,9 +61,13 @@ export const salaryOptions: SalaryFilterOption[] = [
 ];
 
 export const workModeOptions: FilterOption[] = [
-  { id: "onsite", label: "출근" },
+  { id: "onsite", label: "사무실 근무" },
+  { id: "field", label: "현장 근무" },
+  { id: "lab", label: "연구실 근무" },
+  { id: "field-trip", label: "외근·출장" },
   { id: "hybrid", label: "하이브리드" },
-  { id: "remote", label: "재택" },
+  { id: "remote", label: "재택 근무" },
+  { id: "negotiable", label: "협의" },
 ];
 
 export const companyTypeOptions: FilterOption[] = [

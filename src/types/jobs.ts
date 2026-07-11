@@ -484,6 +484,8 @@ export interface Job {
   /** 병원 트랙 급여 부가 설명. salaryRange만으로 표현하기 어려운 조건을 병기할 때 사용 */
   salaryNote?: string;
   workModeIds: string[];
+  /** 근무방식 비고(자유텍스트). 산업/연구 트랙에서 workModeIds만으로 표현 안 되는 조건(교대 가능 등)을 병기할 때 사용 */
+  workModeNote?: string;
   companyTypeId: string;
   researchFieldIds?: string[];
   contractPeriodIds?: string[];

@@ -1402,6 +1402,47 @@ export const companyProfiles: CompanyProfile[] = [
       address: "경북 경주시 문무대왕면 어일3길 14-5 1층",
     },
   },
+  {
+    id: "dentium",
+    name: "(주)덴티움",
+    logoText: "DENTIUM",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "치과용 의료기기와 의료장비를 개발·제조하는 기업입니다.",
+    tags: ["의료기기(코스피)", "사원수 501명 이상"],
+    coverImage: companyExampleImages.hero,
+    metrics: [
+      { label: "기업 유형", value: "의료기기 회사" },
+      { label: "직원 수", value: "501명 이상" },
+      { label: "사업 분야", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
+    ],
+    businessSummary: [
+      { label: "주요 사업", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
+      { label: "대표 제품", value: "치과용 임플란트 · 의료장비" },
+    ],
+    recruitSummary:
+      "덴티움은 치과용 임플란트를 중심으로 다양한 의료기기와 의료장비를 만들며, 국내외 인증과 인허가 대응 경험을 쌓아 왔습니다.",
+    details: [
+      { label: "대표자", value: null },
+      { label: "설립일", value: null },
+      { label: "본사 위치", value: "경기 용인시 처인구 양지읍 양지로138번길 14" },
+      { label: "홈페이지", value: null },
+      { label: "기업 형태", value: null },
+      { label: "업종", value: "의료기기(코스피)" },
+      { label: "사업 분야", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
+    ],
+    keywords: ["의료기기", "치과용 임플란트", "글로벌 인증", "RA"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [
+        { name: "치과용 임플란트", description: "국내외 치과 시장을 대상으로 임플란트 제품을 개발하고 제조합니다." },
+        { name: "의료장비", description: "국가별 인증과 품질 기준에 맞춰 의료장비를 개발하고 인허가를 진행합니다." },
+      ],
+      address: "경기 용인시 처인구 양지읍 양지로138번길 14",
+    },
+  },
 ];
 
 export function getCompanyProfile(companyId: string) {

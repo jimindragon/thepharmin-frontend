@@ -319,6 +319,7 @@ export function ResearchJobPostingForm() {
 
   // §4 근무조건
   const [workMode, setWorkMode] = useState("");
+  const [workModeNote, setWorkModeNote] = useState("");
   const [salary, setSalary] = useState("");
   const [contractPeriod, setContractPeriod] = useState("");
   const [selectedBenefits, setSelectedBenefits] = useState<Set<string>>(new Set());
@@ -719,6 +720,16 @@ export function ResearchJobPostingForm() {
               ))}
             </select>
             <FieldError message={errors.workMode} />
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="r-workmodenote" className={LBL}>
+              근무방식 비고
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">(선택)</span>
+            </label>
+            <input id="r-workmodenote" value={workModeNote} onChange={(e) => setWorkModeNote(e.target.value)}
+              className={IN}
+              placeholder="예: 교대 가능, 주간 근무, 주 1회 재택 가능, 사이트 방문 있음, 클린룸 근무" />
           </div>
 
           <div className="mb-5" ref={setRef("salary")}>

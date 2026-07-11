@@ -40,6 +40,8 @@ export interface PharmacyOrgProfile {
   logoUrl: string | null;
   coverImageUrl: string | null;
   shortIntro: string;
+  /** 본문 소개(자유 서술) — 산업 트랙(BusinessCompanyProfileClient)의 fullIntro와 동일 목적 */
+  fullIntro: string;
   features: OrgFeatureItem[];
   keywords: string[];
   // 근무·조제 환경
@@ -80,6 +82,7 @@ export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
   logoUrl: null,
   coverImageUrl: null,
   shortIntro: "",
+  fullIntro: "",
   features: [],
   keywords: [],
   staffPharmacistCount: "",

@@ -9,7 +9,6 @@ import { AttachmentUploader, type AttachmentItem } from "@/components/business/A
 import { SectionCard } from "@/components/business/BusinessFormControls";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
-  companyTypeOptions,
   educationOptions,
   employmentTypeOptions,
   experienceOptions,
@@ -227,7 +226,6 @@ export function IndustryJobPostingForm() {
   const [title, setTitle] = useState("");
   const [activeJobCat, setActiveJobCat] = useState<JobCat>("rnd");
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
-  const [industryCat, setIndustryCat] = useState("");
   const [headcount, setHeadcount] = useState("");
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
@@ -236,9 +234,11 @@ export function IndustryJobPostingForm() {
 
   // §2 포지션 소개·업무·자격
   const [summary, setSummary] = useState("");
+  const [positionIntro, setPositionIntro] = useState("");
   const [mainDuties, setMainDuties] = useState("");
   const [requiredQual, setRequiredQual] = useState("");
   const [preferred, setPreferred] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   // §3 근무조건
   const [workMode, setWorkMode] = useState("");
@@ -275,7 +275,6 @@ export function IndustryJobPostingForm() {
     const next: Record<string, string> = {};
     if (!title.trim())           next.title        = "공고 제목을 입력해 주세요.";
     if (selectedJobs.size === 0) next.selectedJobs = "모집 직무를 하나 이상 선택해 주세요.";
-    if (!industryCat)            next.industryCat  = "산업 분류를 선택해 주세요.";
     if (!headcount)              next.headcount    = "모집인원을 선택해 주세요.";
     if (!summary.trim())         next.summary      = "한 줄 요약을 입력해 주세요.";
     if (!mainDuties.trim())      next.mainDuties   = "주요업무를 입력해 주세요.";
@@ -459,19 +458,8 @@ export function IndustryJobPostingForm() {
             <FieldError message={errors.selectedJobs} />
           </div>
 
-          {/* 산업 분류 + 모집인원 */}
+          {/* 모집인원 + 고용형태 */}
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <div ref={setRef("industryCat")}>
-              <label htmlFor="i-indcat" className={LBL}>산업 분류{REQ}</label>
-              <select id="i-indcat" value={industryCat} onChange={(e) => setIndustryCat(e.target.value)}
-                className={SEL} aria-required="true">
-                <option value="" disabled>산업 유형을 선택해 주세요</option>
-                {companyTypeOptions.map((option) => (
-                  <option key={option.id} value={option.id}>{option.label}</option>
-                ))}
-              </select>
-              <FieldError message={errors.industryCat} />
-            </div>
             <div ref={setRef("headcount")}>
               <label htmlFor="i-headcount" className={LBL}>모집인원{REQ}</label>
               <select id="i-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
@@ -484,10 +472,6 @@ export function IndustryJobPostingForm() {
               </select>
               <FieldError message={errors.headcount} />
             </div>
-          </div>
-
-          {/* 고용형태 + 경력 + 학력 */}
-          <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="i-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="i-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
@@ -496,6 +480,10 @@ export function IndustryJobPostingForm() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* 경력 + 학력 */}
+          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="i-career" className={LBL}>경력{REQ}</label>
               <select id="i-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
@@ -532,16 +520,26 @@ export function IndustryJobPostingForm() {
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
             <label htmlFor="i-summary" className={LBL}>
-              공고 요약{REQ}
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
+              한 줄 소개{REQ}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 카드와 상세 상단에 노출되는 짧은 소개 문구입니다.</span>
             </label>
             <input id="i-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
-              placeholder="국내외 허가자료 작성과 규제기관 대응을 담당할 RA 담당자를 찾습니다."
+              placeholder="예: 글로벌 RA 커리어를 시작할 의료기기 인허가 담당자를 찾습니다."
               maxLength={100}
               aria-required="true" />
             <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{summary.length} / 100</p>
             <FieldError message={errors.summary} />
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="i-positionintro" className={LBL}>
+              포지션 소개
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">구직자가 포지션의 맥락을 이해할 수 있도록 줄글로 작성해 주세요.</span>
+            </label>
+            <textarea id="i-positionintro" value={positionIntro} onChange={(e) => setPositionIntro(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder="이 포지션이 어떤 팀, 제품, 과제와 연결되는지, 입사 후 어떤 역할을 맡게 되는지 3~5문장으로 작성해 주세요." />
           </div>
 
           <div className="mb-5" ref={setRef("mainDuties")}>
@@ -576,6 +574,16 @@ export function IndustryJobPostingForm() {
             <textarea id="i-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"관련 인턴 또는 프로젝트 경험\n영어 문서 작성 및 커뮤니케이션 가능자\n약사 등 관련 면허 보유자"} />
+          </div>
+
+          <div className="mt-5">
+            <label htmlFor="i-additionalnotes" className={LBL}>
+              기타 참고사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
+            </label>
+            <textarea id="i-additionalnotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder="지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 포트폴리오 제출 안내, 전형 일정 관련 안내 등" />
           </div>
         </SectionCard>
 

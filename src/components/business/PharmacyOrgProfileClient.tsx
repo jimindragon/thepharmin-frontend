@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Image as ImageIcon, Plus, Trash2, X } from "lucide-react";
+import { AlertCircle, ExternalLink, Image as ImageIcon, Info, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
@@ -15,7 +15,6 @@ import {
   initialPharmacyOrgProfile,
   pharmacySoftwareOptions,
   savePharmacyOrgProfileDraft,
-  type OrgFeatureItem,
   type PharmacyOrgProfile,
 } from "@/data/businessOrgProfile";
 import type { PharmacyType } from "@/types/jobs";
@@ -26,8 +25,6 @@ const FIELD_GROUP_GAP = "space-y-6";
 const FIELD_GRID_2COL = "grid grid-cols-2 gap-4 max-[640px]:grid-cols-1";
 /** 기관 키워드 최대 개수 — 산업/병원(HospitalOrgProfileClient)과 동일 */
 const MAX_KEYWORDS = 8;
-/** 기관 특징 최대 개수 — 병원(HospitalOrgProfileClient)과 동일 */
-const MAX_FEATURES = 6;
 /** 주요 처방 병원 태그 최대 개수 */
 const MAX_HOSPITALS = 10;
 /** 로고·상단 대표 이미지 "이미지 변경/등록" 버튼 전용 — 산업/병원과 동일 스타일 복제 */
@@ -42,8 +39,15 @@ function statusLabel(status: FileStatus) {
   return "변경 요청 필요";
 }
 
-function newFeatureId() {
-  return `feature-${Math.random().toString(36).slice(2, 9)}`;
+/** 필수 필드 에러 메시지 — job-registration 폼(PharmacyJobPostingForm 등)의 FieldError와 동일 스타일 */
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-1.5 flex items-center gap-1 text-[12px] text-danger">
+      <AlertCircle size={12} aria-hidden />
+      {message}
+    </p>
+  );
 }
 
 /** 로고 박스 표시 — 산업/병원과 동일 구현 복제 */
@@ -85,6 +89,7 @@ export function PharmacyOrgProfileClient() {
   const [saved, setSaved] = useState(false);
   const [newKeyword, setNewKeyword] = useState("");
   const [newHospital, setNewHospital] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateProfile = <K extends keyof PharmacyOrgProfile>(key: K, value: PharmacyOrgProfile[K]) => {
     setProfile((current) => ({ ...current, [key]: value }));
@@ -155,25 +160,16 @@ export function PharmacyOrgProfileClient() {
     }));
   };
 
-  const updateFeatureItem = (id: string, key: "label" | "text", value: string) => {
-    setProfile((current) => ({
-      ...current,
-      features: current.features.map((item) => (item.id === id ? { ...item, [key]: value } : item)),
-    }));
-  };
-
-  const addFeatureItem = () => {
-    setProfile((current) => {
-      if (current.features.length >= MAX_FEATURES) return current;
-      return { ...current, features: [...current.features, { id: newFeatureId(), label: "", text: "" } as OrgFeatureItem] };
-    });
-  };
-
-  const removeFeatureItem = (id: string) => {
-    setProfile((current) => ({ ...current, features: current.features.filter((item) => item.id !== id) }));
-  };
+  function validate(): boolean {
+    const next: Record<string, string> = {};
+    if (!profile.pharmacyFeatureIds) next.pharmacyFeatureIds = "약국 특성을 선택해 주세요.";
+    if (!profile.software.trim()) next.software = "전산 프로그램을 입력해 주세요.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   const saveProfile = () => {
+    if (!validate()) return;
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
   };
@@ -256,9 +252,7 @@ export function PharmacyOrgProfileClient() {
               />
             </div>
             <div className="mt-5 space-y-2">
-              <FieldLabel>
-                약국 특성 <span className="font-normal text-[#9aa3af]">(선택, 미선택 가능)</span>
-              </FieldLabel>
+              <FieldLabel required>약국 특성</FieldLabel>
               <div className="flex flex-wrap gap-2">
                 {pharmacyFeatureOptions.map((option) => (
                   <ToggleChip
@@ -269,6 +263,7 @@ export function PharmacyOrgProfileClient() {
                   />
                 ))}
               </div>
+              <FieldError message={errors.pharmacyFeatureIds} />
             </div>
           </div>
 
@@ -290,7 +285,7 @@ export function PharmacyOrgProfileClient() {
               </div>
               <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div className="space-y-2">
-                  <FieldLabel required>개국 연도</FieldLabel>
+                  <FieldLabel>개국 연도</FieldLabel>
                   <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} />
                 </div>
                 <div className="space-y-2">
@@ -324,7 +319,11 @@ export function PharmacyOrgProfileClient() {
                 <ImageMark url={profile.logoUrl} alt={`${profile.pharmacyName} 로고`} fallback={profile.pharmacyName} />
               </div>
               <div className="flex-1 pt-0.5">
-                <FieldLabel required>로고</FieldLabel>
+                <FieldLabel>로고</FieldLabel>
+                <p className="mt-1.5 flex items-center gap-1 text-[12px] font-normal leading-[1.55] text-[#9aa3af]">
+                  <Info size={12} className="shrink-0" aria-hidden />
+                  등록하지 않으실 경우, 첫 두 글자로 로고가 자동생성됩니다.
+                </p>
                 <p className="mt-1.5 text-[12px] font-normal leading-[1.55] text-[#7b8491]">
                   공고 카드와 기관 목록에 표시됩니다.
                   <br />
@@ -379,52 +378,18 @@ export function PharmacyOrgProfileClient() {
             <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="예: 내과·이비인후과 의원 처방을 주로 조제하는 의원층 약국" />
           </div>
 
-          <div className="mt-6">
-            <FieldLabel>약국 특징</FieldLabel>
-            <div className="mt-3 space-y-2.5">
-              {profile.features.length > 0 ? (
-                <div className="grid grid-cols-[1fr_2fr_44px] items-end gap-x-3 gap-y-1.5 max-[560px]:hidden">
-                  <p className="text-[11px] font-medium text-[#8a94a3]">제목</p>
-                  <p className="text-[11px] font-medium text-[#8a94a3]">내용</p>
-                  <div aria-hidden />
-                </div>
-              ) : null}
-              {profile.features.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-[1fr_2fr_44px] items-end gap-x-3 gap-y-1.5 max-[560px]:grid-cols-1">
-                  <input
-                    value={item.label}
-                    onChange={(event) => updateFeatureItem(item.id, "label", event.target.value)}
-                    placeholder="근무 형태"
-                    aria-label={`약국 특징 ${index + 1} 제목`}
-                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
-                  />
-                  <input
-                    value={item.text}
-                    onChange={(event) => updateFeatureItem(item.id, "text", event.target.value)}
-                    placeholder="평일 09:00~19:00 · 토요일 격주 근무"
-                    aria-label={`약국 특징 ${index + 1} 내용`}
-                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-normal outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeFeatureItem(item.id)}
-                    aria-label={`약국 특징 ${index + 1} 삭제`}
-                    className="grid h-11 w-11 place-items-center border border-[#dfe4ea] bg-white text-[#a0a9b7] hover:border-danger/30 hover:text-danger"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
+          <div className="mt-6 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel>본문 소개</FieldLabel>
+              <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.fullIntro.length} / 2000</span>
             </div>
-            {profile.features.length < MAX_FEATURES ? (
-              <div className="mt-3">
-                <FormActionButton onClick={addFeatureItem}>
-                  <Plus size={14} />
-                  항목 추가
-                </FormActionButton>
-              </div>
-            ) : null}
-            <p className="mt-2 text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관 상세 페이지에 표시됩니다. 최대 6개</p>
+            <textarea
+              value={profile.fullIntro}
+              onChange={(event) => updateProfile("fullIntro", event.target.value)}
+              maxLength={2000}
+              placeholder="주요 사업, 성장 방향, 조직 문화와 일하는 방식을 자유롭게 소개해 주세요."
+              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+            />
           </div>
 
           <div className="mt-6 space-y-2">
@@ -494,8 +459,9 @@ export function PharmacyOrgProfileClient() {
               </div>
             </div>
             <div className="space-y-2">
-              <FieldLabel>전산 프로그램</FieldLabel>
+              <FieldLabel required>전산 프로그램</FieldLabel>
               <Segmented value={profile.software} options={pharmacySoftwareOptions.map((label) => ({ id: label, label }))} onChange={(value) => updateProfile("software", value)} />
+              <FieldError message={errors.software} />
             </div>
             <div className="space-y-2">
               <FieldLabel>조제 장비</FieldLabel>

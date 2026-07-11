@@ -2,11 +2,13 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { HospitalJobDetailClient } from "@/components/job-detail/HospitalJobDetailClient";
+import { IndustryJobDetailClient } from "@/components/job-detail/IndustryJobDetailClient";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
 import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
 import { PharmacyJobDetailV2 } from "@/components/job-detail/PharmacyJobDetailV2";
 import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
+import { getIndustryJobDetail } from "@/data/industryJobDetails";
 import { jobs } from "@/data/jobs";
 import { getPharmacyJobDetail } from "@/data/pharmacyJobDetails";
 import type { Job } from "@/types/jobs";
@@ -114,6 +116,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         <ResearchJobDetailClient job={job} similarJobs={getSimilarJobs(job)} otherLabJobsCount={getOtherLabJobsCount(job)} />
       </>
     );
+  }
+
+  if (job.track === "industry") {
+    const industryDetail = getIndustryJobDetail(slug);
+    if (industryDetail) {
+      return (
+        <>
+          <Header />
+          <IndustryJobDetailClient data={industryDetail} />
+        </>
+      );
+    }
   }
 
   const reviews = companyReviews.filter((review) => review.companyId === job.companyId);

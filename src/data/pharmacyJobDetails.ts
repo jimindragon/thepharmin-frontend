@@ -110,6 +110,10 @@ export interface PharmacyJobPosting {
   };
   deadlineLabel: string;
   isRolling: boolean;
+
+  additionalNotes?: string;
+  detailImages?: string[];
+  attachments?: { name: string; url: string }[];
 }
 
 export interface PharmacyOrg {
@@ -129,7 +133,7 @@ export interface PharmacyOrg {
   pharmacyFeatureId: string;
 
   shortIntro: string;
-  features: { title: string; text: string }[];
+  features: string[];
   keywords: string[];
 
   avgDailyPrescriptions: string;
@@ -208,7 +212,7 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
       method: "email",
       email: "recruit@eunhaeng-pharmacy.example",
       phone: "",
-      notice: "근무 중 전화 응대가 어려울 수 있어 이메일 지원을 우선 확인합니다. 지원 시 간단한 경력과 근무 가능 요일을 함께 남겨 주세요.",
+      notice: "이메일 지원을 우선 확인합니다. 경력과 근무 가능 요일을 함께 남겨 주세요.",
     },
     deadlineLabel: "채용 시 마감",
     isRolling: true,
@@ -232,9 +236,9 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
 
     shortIntro: "인근 내과·이비인후과 처방을 중심으로 운영하는 지역 밀착형 조제 약국입니다.",
     features: [
-      { title: "처방 패턴 안정적", text: "인근 의원 처방 비중이 높아 처방 흐름이 비교적 안정적입니다." },
-      { title: "협업 중심 근무", text: "약사와 약무지원 직원이 함께 근무해 조제·검수·응대가 분담됩니다." },
-      { title: "신규 적응 지원", text: "전산 입력, 조제 검수, 복약지도 루틴을 단계적으로 안내합니다." },
+      "인근 의원 처방이 많아 처방 흐름이 비교적 안정적인 편입니다.",
+      "약사와 약무지원 직원이 함께 근무하며 조제, 검수, 응대를 나누어 진행합니다.",
+      "신규 입사 시 전산 입력, 조제 검수, 복약지도 흐름을 차근차근 안내드립니다.",
     ],
     keywords: ["의원층 약국", "안정적 처방", "조제 중심", "교육 루틴", "주차 가능"],
 

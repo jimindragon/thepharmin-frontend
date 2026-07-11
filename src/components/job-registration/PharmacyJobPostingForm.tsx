@@ -30,8 +30,8 @@ const WELFARE_OPTS = [
 ];
 // 약국은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다
 const PHARMACY_KEYWORDS = [
-  "처방조제", "복약지도", "처방검토", "OTC 상담", "매약 상담", "전산청구", "약국 전산",
-  "건기식 상담", "자동조제기", "산제포장", "유팜", "팜IT3000", "문전약국",
+  "처방조제", "복약지도", "처방검토", "OTC 상담", "매약 상담",
+  "건기식 상담", "자동조제기", "산제포장",
 ];
 const MAX_KW = 8;
 
@@ -96,6 +96,7 @@ function ChipGroup({
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
         {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+        {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
       </p>
       <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
@@ -118,7 +119,6 @@ function ChipGroup({
           );
         })}
       </div>
-      {hint && <p className="mt-2 text-[11.5px] text-[#a0a9b7]">{hint}</p>}
     </div>
   );
 }
@@ -302,6 +302,7 @@ export function PharmacyJobPostingForm() {
   const [responsibilities, setResponsibilities] = useState("");
   const [requirements, setRequirements] = useState("");
   const [preferred, setPreferred] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   // §3 근무조건
   const [workSchedule, setWorkSchedule] = useState<WorkScheduleBlock[]>([
@@ -516,8 +517,8 @@ export function PharmacyJobPostingForm() {
             <FieldError message={errors.pharmacyWorkTypeIds} />
           </div>
 
-          {/* 고용형태 + 경력 + 학력 */}
-          <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
+          {/* 고용형태 + 모집인원 */}
+          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="p-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="p-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
@@ -526,6 +527,16 @@ export function PharmacyJobPostingForm() {
                 ))}
               </select>
             </div>
+            <div ref={setRef("headcount")}>
+              <label htmlFor="p-headcount" className={LBL}>모집인원{REQ}</label>
+              <input id="p-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
+                className={IN} placeholder="예: 1명" aria-required="true" />
+              <FieldError message={errors.headcount} />
+            </div>
+          </div>
+
+          {/* 경력 + 학력 */}
+          <div className="mt-4 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="p-career" className={LBL}>경력{REQ}</label>
               <select id="p-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
@@ -545,14 +556,6 @@ export function PharmacyJobPostingForm() {
                 ))}
               </select>
             </div>
-          </div>
-
-          {/* 모집인원 */}
-          <div className="mt-4 max-w-xs" ref={setRef("headcount")}>
-            <label htmlFor="p-headcount" className={LBL}>모집인원{REQ}</label>
-            <input id="p-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
-              className={IN} placeholder="예: 1명" aria-required="true" />
-            <FieldError message={errors.headcount} />
           </div>
         </SectionCard>
 
@@ -603,6 +606,16 @@ export function PharmacyJobPostingForm() {
             <textarea id="p-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"약국 근무 경험 보유자\n전산 프로그램 사용 경험자\n주말 또는 야간 근무 가능자"} />
+          </div>
+
+          <div>
+            <label htmlFor="p-additionalNotes" className={LBL}>
+              기타 참고사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
+            </label>
+            <textarea id="p-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
           </div>
         </SectionCard>
 
@@ -745,7 +758,7 @@ export function PharmacyJobPostingForm() {
           <div className="my-5 border-t border-[#f0f2f5]" />
 
           <div className="mb-5">
-            <p className={LBL}>근무자 구성 <span className="text-[#9aa3af] font-normal">(선택)</span></p>
+            <p className={LBL}>근무자 구성</p>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div>
                 <label htmlFor="p-staff-ph" className="mb-1 block text-[12px] font-medium text-[#6b7280]">약사 수</label>
@@ -768,7 +781,7 @@ export function PharmacyJobPostingForm() {
 
           <div className="mb-5">
             <label htmlFor="p-mainhospital" className={LBL}>
-              주요 처방 병원 <span className="text-[#9aa3af] font-normal">(선택)</span>
+              주요 처방 병원
             </label>
             <input id="p-mainhospital" value={mainPrescribingHospital} onChange={(e) => setMainPrescribingHospital(e.target.value)}
               className={IN} placeholder="예: 인근 OO내과, OO정형외과" />
@@ -956,7 +969,7 @@ export function PharmacyJobPostingForm() {
                 </div>
                 <div>
                   <label htmlFor="p-apply-manager" className={LBL}>
-                    담당자명 <span className="text-[#9aa3af] font-normal">(선택)</span>
+                    담당자명
                   </label>
                   <input id="p-apply-manager" value={applyManagerName} onChange={(e) => setApplyManagerName(e.target.value)}
                     className={IN} placeholder="예: 홍길동" />
@@ -1002,7 +1015,7 @@ export function PharmacyJobPostingForm() {
 
           <div className="mb-5">
             <label htmlFor="p-contact-note" className={LBL}>
-              연락 안내 문구 <span className="text-[#9aa3af] font-normal">(선택)</span>
+              연락 안내 문구
             </label>
             <input id="p-contact-note" value={contactNote} onChange={(e) => setContactNote(e.target.value)}
               className={IN} placeholder="예: 문자로 간단한 자기소개와 희망 근무시간을 보내주세요." />

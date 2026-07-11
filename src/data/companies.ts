@@ -333,7 +333,7 @@ export const companies: Company[] = [
     verified: true,
     description: "덴티움은 임플란트 등 치과용 의료기기를 70여개국에 수출하는 코스피 상장 의료기기 기업입니다.",
     industry: "의료기기(코스피)",
-    employeeCount: "501~1,000명",
+    employeeCount: "501명 이상",
     foundedYear: "-",
     website: "",
     address: "경기 용인시 처인구 양지읍 양지로138번길 14",
