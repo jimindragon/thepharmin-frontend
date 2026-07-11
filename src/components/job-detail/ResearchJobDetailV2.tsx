@@ -3,21 +3,18 @@
 import clsx from "clsx";
 import {
   Award,
-  BadgeCheck,
   Bookmark,
   Briefcase,
   Building2,
   CalendarClock,
-  CalendarDays,
+  CalendarRange,
   ClipboardCheck,
   ClipboardList,
+  BadgeCheck,
   FileText,
+  FlaskConical,
   GraduationCap,
   Info,
-  MapPin,
-  Monitor,
-  Stethoscope,
-  TrendingUp,
   Users,
   Wallet,
 } from "lucide-react";
@@ -25,6 +22,7 @@ import { useState } from "react";
 import {
   ApplyCard,
   type ApplyMethodId,
+  CompanyLogo,
   firstWords,
   FormattedContentView,
   IconSectionShell,
@@ -36,28 +34,21 @@ import {
   SummaryStatGrid,
   useStickySidebarTop,
 } from "@/components/job-detail/shared";
+import { getResearchFieldShortLabel } from "@/config/researchFields";
 import {
   educationLabelMap,
   employmentTypeLabelMap,
   experienceLabelMap,
-  pharmacyFeatureLabelMap,
-  pharmacyTypeLabelMap,
-  pharmacyWorkTypeLabelMap,
-  type PharmacyJobDetail,
-} from "@/data/pharmacyJobDetails";
-
-// ── Static data ────────────────────────────────────────────────────────────────
-
-const PHARMACY_HERO_IMAGES = [
-  "/images/pharmacy/pharmacy_pic_example.jpg",
-  "/images/pharmacy/pharmacy_pic_example_1.jpg",
-  "/images/pharmacy/pharmacy_pic_example_2.jpg",
-  "/images/pharmacy/pharmacy_pic_example_3.jpg",
-];
+  institutionTypeLabelMap,
+  researchBenefitLabelMap,
+  staffScaleLabelMap,
+  type ResearchJobDetail,
+} from "@/data/researchJobDetails";
+import { getResearchJobCoverImage } from "@/utils/researchImage";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
+export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
   const { job, org } = data;
 
   // 검증용 mock 로그인 토글 — 실제 세션 연결은 추후 처리
@@ -66,37 +57,34 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
   const [interested, setInterested] = useState(false);
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
-  const allDays = job.workSchedule.flatMap((block) => block.days);
-  const daysSummary = allDays.join("·");
-  const weekCount = allDays.length;
-  const scheduleLines = job.workSchedule.map((block) => ({
-    days: block.days.join("·"),
-    time: block.time,
-  }));
+  const heroImage = getResearchJobCoverImage(data.slug);
 
-  const workTypeLabels = job.workTypeIds.map((id) => pharmacyWorkTypeLabelMap[id] ?? id);
   const employmentTypeLabel = employmentTypeLabelMap[job.employmentTypeId] ?? job.employmentTypeId;
-  const remainingWorkTypeLabels = workTypeLabels.filter((label) => label !== employmentTypeLabel);
-  const employmentCaption = remainingWorkTypeLabels.length > 0 ? `${remainingWorkTypeLabels.join("·")} 근무` : "";
+  const institutionTypeLabel = institutionTypeLabelMap[org.institutionTypeId] ?? org.institutionTypeId;
+  const staffScaleLabel = org.staffScaleId ? staffScaleLabelMap[org.staffScaleId] ?? org.staffScaleId : undefined;
+  const researchFieldLabels = (org.researchFields ?? [])
+    .map((id) => getResearchFieldShortLabel(id) ?? id)
+    .join(" · ");
 
-  const pharmacistCount = job.staffPharmacistCount ?? org.staffPharmacistCount;
-  const supportCount = job.staffSupportCount ?? org.staffSupportCount;
-
-  const mainPrescribingHospital = job.mainPrescribingHospital.trim()
-    ? job.mainPrescribingHospital
-    : org.mainHospitals.join(", ");
-
-  const heroIdx = [...data.id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % PHARMACY_HERO_IMAGES.length;
-  const heroImage = org.coverImageUrl ?? PHARMACY_HERO_IMAGES[heroIdx];
-
-  const pharmacyFeatureLabel = pharmacyFeatureLabelMap[org.pharmacyFeatureId] ?? org.pharmacyFeatureId;
-  const pharmacyTypeLabel = pharmacyTypeLabelMap[org.pharmacyTypeId] ?? org.pharmacyTypeId;
-
-  const heroMeta = [firstWords(org.location.address, 2), workTypeLabels.join("/"), pharmacyTypeLabel]
+  const heroMeta = [firstWords(org.location.address, 2), job.workMode, institutionTypeLabel]
     .filter(Boolean)
     .join(" · ");
 
-  const hasPreferred = job.preferred.length > 0;
+  const hasPreferred = Boolean(job.preferred && job.preferred.length > 0);
+  const hasContractPeriod = Boolean(job.contractPeriod);
+
+  const hasWorkMode = Boolean(job.workMode);
+  const hasBenefits = Boolean(job.benefitIds && job.benefitIds.length > 0);
+  const hasWorkConditionDetail = Boolean(job.workConditionDetail);
+
+  const hasStaffScale = Boolean(org.staffScaleId);
+  const hasLabName = Boolean(org.labName);
+  const hasPiName = Boolean(org.piName);
+  const hasResearchFields = Boolean(org.researchFields && org.researchFields.length > 0);
+  const hasInfoRowList = hasLabName || hasPiName || hasResearchFields;
+  const hasLabIntro = Boolean(org.labIntro);
+  const hasEquipmentInfra = Boolean(org.equipmentInfra);
+  const hasAchievements = Boolean(org.achievements);
 
   const hasDetailImages = Boolean(job.detailImages && job.detailImages.length > 0);
   const hasAttachments = Boolean(job.attachments && job.attachments.length > 0);
@@ -129,8 +117,8 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                 />
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
                   <JobDetailActionRow
-                    orgName={org.pharmacyName}
-                    showLogo={false}
+                    orgName={org.institutionName}
+                    showLogo
                     saved={saved}
                     onToggleSave={() => setSaved((v) => !v)}
                     interested={interested}
@@ -150,27 +138,11 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
               {/* 공고 상세 */}
               <IconSectionShell id="summary" icon={ClipboardList} title="공고 상세">
                 <SummaryStatGrid>
-                  <SummaryStatCell icon={Wallet} label="급여" value={job.salary.amount} />
-                  <SummaryStatCell
-                    icon={CalendarDays}
-                    label="근무 일정"
-                    value={
-                      <div className="space-y-1">
-                        {scheduleLines.map((line, i) => (
-                          <p key={i} className="text-[15px] font-bold leading-snug text-[#2f3845]">
-                            {line.days} {line.time}
-                          </p>
-                        ))}
-                      </div>
-                    }
-                    caption={`주 ${weekCount}일 근무`}
-                  />
-                  <SummaryStatCell
-                    icon={Briefcase}
-                    label="고용형태"
-                    value={employmentTypeLabel}
-                    caption={employmentCaption || undefined}
-                  />
+                  <SummaryStatCell icon={Wallet} label="급여" value={job.salary} />
+                  {hasContractPeriod ? (
+                    <SummaryStatCell icon={CalendarRange} label="계약 기간" value={job.contractPeriod} />
+                  ) : null}
+                  <SummaryStatCell icon={Briefcase} label="고용형태" value={employmentTypeLabel} />
                   <SummaryStatCell icon={Award} label="경력조건" value={experienceLabelMap[job.experienceId] ?? job.experienceId} />
                   <SummaryStatCell icon={GraduationCap} label="학력조건" value={educationLabelMap[job.educationId] ?? job.educationId} />
                   <SummaryStatCell icon={Users} label="모집인원" value={job.headcount} />
@@ -195,81 +167,89 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                     <div>
                       <h3 className="text-[15px] font-bold text-[#2f3845]">우대사항</h3>
                       <div className="mt-3">
-                        <FormattedContentView content={{ format: "bullet", items: job.preferred }} />
+                        <FormattedContentView content={{ format: "bullet", items: job.preferred as string[] }} />
                       </div>
                     </div>
                   ) : null}
                 </div>
               </IconSectionShell>
 
-              {/* 상세 근무조건 */}
-              <IconSectionShell id="conditions" icon={CalendarClock} title="상세 근무조건">
+              {/* 근무 조건 (근무지역 포함) */}
+              <IconSectionShell id="conditions" icon={CalendarClock} title="근무 조건">
                 <div className="space-y-7">
-                  <div>
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무 일정</h3>
-                    <div className="mt-3">
-                      <FormattedContentView
-                        content={{ format: "bullet", items: scheduleLines.map((line) => `${line.days} ${line.time}`) }}
-                      />
+                  {hasWorkMode ? (
+                    <div>
+                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무 방식</h3>
+                      <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                        {job.workMode}
+                      </p>
                     </div>
-                  </div>
-                  <div>
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">복리후생</h3>
-                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
-                      {job.benefits.join(" · ")}
-                    </p>
-                  </div>
-                  <div className="border-t border-[#edf1f4] pt-6">
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무 안내</h3>
-                    <div className="mt-3">
-                      <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail] }} />
+                  ) : null}
+                  {hasBenefits ? (
+                    <div className={clsx(hasWorkMode && "border-t border-[#edf1f4] pt-6")}>
+                      <h3 className="text-[15px] font-bold text-[#2f3845]">복리후생</h3>
+                      <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                        {job.benefitIds!.map((id) => researchBenefitLabelMap[id] ?? id).join(" · ")}
+                      </p>
                     </div>
-                  </div>
-                </div>
-              </IconSectionShell>
-
-              {/* 약국 근무환경 */}
-              <IconSectionShell id="workenv" icon={Stethoscope} title="약국 근무환경">
-                <SummaryStatGrid>
-                  <SummaryStatCell icon={TrendingUp} label="일 평균 처방" value={org.avgDailyPrescriptions} />
-                  <SummaryStatCell
-                    icon={Users}
-                    label="근무 인원"
-                    value={
-                      <div className="space-y-1">
-                        <p className="text-[15px] font-bold leading-snug text-[#2f3845]">
-                          약사 {pharmacistCount != null ? `${pharmacistCount}명` : "-"}
-                        </p>
-                        <p className="text-[15px] font-bold leading-snug text-[#2f3845]">
-                          지원 {supportCount != null ? `${supportCount}명` : "-"}
-                        </p>
+                  ) : null}
+                  {hasWorkConditionDetail ? (
+                    <div className={clsx((hasWorkMode || hasBenefits) && "border-t border-[#edf1f4] pt-6")}>
+                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무조건 상세</h3>
+                      <div className="mt-3">
+                        <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail as string] }} />
                       </div>
-                    }
-                  />
-                  <SummaryStatCell icon={Monitor} label="전산 프로그램" value={org.software} />
-                </SummaryStatGrid>
-                <div className="mt-6 border-t border-[#f0f2f5] pt-1">
-                  <InfoRowList>
-                    {pharmacyTypeLabel ? <InfoRow label="약국 유형" value={pharmacyTypeLabel} /> : null}
-                    {pharmacyFeatureLabel ? <InfoRow label="약국 특성" value={pharmacyFeatureLabel} /> : null}
-                    <InfoRow label="주요 처방과" value={org.mainDepartments} />
-                    <InfoRow label="주요 처방 병원" value={mainPrescribingHospital} />
-                    <InfoRow label="영업시간" value={org.businessHours} />
-                    <InfoRow label="조제 장비" value={org.dispensingEquipment.join(" · ")} />
-                  </InfoRowList>
+                    </div>
+                  ) : null}
+                  <div className={clsx((hasWorkMode || hasBenefits || hasWorkConditionDetail) && "border-t border-[#edf1f4] pt-6")}>
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
+                    <div className="mt-3 space-y-4">
+                      <p className="text-[15px] font-bold text-[#2f3845]">{job.address}</p>
+                      <MapPlaceholder address={job.address} orgName={org.institutionName} />
+                    </div>
+                  </div>
                 </div>
               </IconSectionShell>
 
-              {/* 위치·교통 */}
-              <IconSectionShell id="location" icon={MapPin} title="위치·교통">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[15px] font-bold text-[#2f3845]">{org.location.address}</p>
-                    <p className="mt-1 text-[13px] font-normal text-[#7d8796]">{org.location.detailAddress}</p>
+              {/* 연구 환경 */}
+              <IconSectionShell id="research-env" icon={FlaskConical} title="연구 환경">
+                <SummaryStatGrid>
+                  <SummaryStatCell icon={Building2} label="기관 유형" value={institutionTypeLabel} />
+                  {hasStaffScale ? (
+                    <SummaryStatCell icon={Users} label="연구 인력 규모" value={staffScaleLabel} />
+                  ) : null}
+                </SummaryStatGrid>
+
+                {hasInfoRowList ? (
+                  <div className="mt-6 border-t border-[#f0f2f5] pt-1">
+                    <InfoRowList>
+                      {hasLabName ? <InfoRow label="소속 연구실" value={org.labName} /> : null}
+                      {hasPiName ? <InfoRow label="책임자(PI)" value={org.piName} /> : null}
+                      {hasResearchFields ? <InfoRow label="연구 분야" value={researchFieldLabels} /> : null}
+                    </InfoRowList>
                   </div>
-                  <MapPlaceholder address={org.location.address} orgName={org.pharmacyName} />
-                  <FormattedContentView content={{ format: "paragraph", items: [org.location.parkingTransit] }} />
-                </div>
+                ) : null}
+
+                {hasLabIntro ? (
+                  <div className="mt-6 border-t border-[#f0f2f5] pt-6">
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">연구실 소개</h3>
+                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.labIntro}</p>
+                  </div>
+                ) : null}
+
+                {hasEquipmentInfra ? (
+                  <div className="mt-6 border-t border-[#f0f2f5] pt-6">
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">연구 장비·인프라</h3>
+                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.equipmentInfra}</p>
+                  </div>
+                ) : null}
+
+                {hasAchievements ? (
+                  <div className="mt-6 border-t border-[#f0f2f5] pt-6">
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">주요 연구 성과</h3>
+                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.achievements}</p>
+                  </div>
+                ) : null}
               </IconSectionShell>
 
               {/* 추가 안내 */}
@@ -315,33 +295,17 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                 </IconSectionShell>
               ) : null}
 
-              {/* 약국 정보 */}
-              <IconSectionShell id="pharmacy" icon={Building2} title="약국 정보">
-                <p className="text-[17px] font-bold text-[#1f2733]">{org.pharmacyName}</p>
-                <p className="mt-2 text-[16px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>
-                {org.fullIntro ? (
-                  <p className="mt-3 text-[14px] font-normal leading-relaxed text-[#3f4855]">{org.fullIntro}</p>
-                ) : null}
-
-                <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
-                  >
-                    기업 정보 더보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    기업 리뷰 보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    면접 후기 보기
-                  </button>
+              {/* 기관 정보 */}
+              <IconSectionShell id="org" icon={Building2} title="기관 정보">
+                <div className="flex items-start gap-4">
+                  <CompanyLogo name={org.institutionName} logoText="" size="lg" />
+                  <div>
+                    <p className="text-[17px] font-bold text-[#1f2733]">{org.institutionName}</p>
+                    <p className="mt-2 text-[16px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>
+                    {org.fullIntro ? (
+                      <p className="mt-3 text-[14px] font-normal leading-relaxed text-[#3f4855]">{org.fullIntro}</p>
+                    ) : null}
+                  </div>
                 </div>
               </IconSectionShell>
             </div>
@@ -363,11 +327,11 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <div className="space-y-2.5">
                   {[
-                    ["급여", job.salary.amount],
-                    ["근무", daysSummary],
+                    ["급여", job.salary],
+                    ["근무", job.workMode],
                     ["지역", firstWords(org.location.address, 2)],
-                    ["특성", pharmacyFeatureLabel],
-                    ["전산", org.software],
+                    ["고용형태", employmentTypeLabel],
+                    ["직무", job.jobCategory.sub],
                   ].map(([label, value]) => (
                     <div key={label} className="flex items-center justify-between gap-3">
                       <span className="text-[13px] font-medium text-[#8993a1]">{label}</span>
@@ -375,19 +339,22 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 border-t border-[#f0f2f5] pt-3">
-                  {job.coreKeywords.slice(0, 6).map((keyword) => (
-                    <span key={keyword} className="text-[12px] font-medium text-[#667181]">
-                      #{keyword}
-                    </span>
-                  ))}
-                </div>
+                {job.keywords && job.keywords.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 border-t border-[#f0f2f5] pt-3">
+                    {job.keywords.slice(0, 6).map((keyword) => (
+                      <span key={keyword} className="text-[12px] font-medium text-[#667181]">
+                        #{keyword}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </section>
             </aside>
           </div>
         </div>
       </main>
 
+      {/* 모바일 하단 바 */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white px-4 py-3 shadow-[0_-8px_20px_rgba(20,32,46,0.08)] md:hidden">
         <div className="mx-auto grid max-w-[560px] grid-cols-[92px_1fr] gap-2">
           <button

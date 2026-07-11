@@ -133,6 +133,7 @@ export interface PharmacyOrg {
   pharmacyFeatureId: string;
 
   shortIntro: string;
+  fullIntro?: string;
   features: string[];
   keywords: string[];
 
@@ -235,6 +236,8 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
     pharmacyFeatureId: "prescription_focused",
 
     shortIntro: "인근 내과·이비인후과 처방을 중심으로 운영하는 지역 밀착형 조제 약국입니다.",
+    fullIntro:
+      "인근 의원 처방이 많아 처방 흐름이 안정적인 편입니다. 약사와 직원이 함께 근무하며 조제, 검수, 응대를 나누어 진행합니다. 신규 약사님께는 전산 입력, 조제 검수, 복약지도 흐름을 차근차근 안내드립니다.",
     features: [
       "인근 의원 처방이 많아 처방 흐름이 비교적 안정적인 편입니다.",
       "약사와 약무지원 직원이 함께 근무하며 조제, 검수, 응대를 나누어 진행합니다.",

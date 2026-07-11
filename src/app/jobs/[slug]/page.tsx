@@ -2,15 +2,19 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { HospitalJobDetailClient } from "@/components/job-detail/HospitalJobDetailClient";
+import { HospitalJobDetailV2 } from "@/components/job-detail/HospitalJobDetailV2";
 import { IndustryJobDetailClient } from "@/components/job-detail/IndustryJobDetailClient";
 import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
 import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
 import { PharmacyJobDetailV2 } from "@/components/job-detail/PharmacyJobDetailV2";
 import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
+import { ResearchJobDetailV2 } from "@/components/job-detail/ResearchJobDetailV2";
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
+import { getHospitalJobDetail } from "@/data/hospitalJobDetails";
 import { getIndustryJobDetail } from "@/data/industryJobDetails";
 import { jobs } from "@/data/jobs";
 import { getPharmacyJobDetail } from "@/data/pharmacyJobDetails";
+import { getResearchJobDetail } from "@/data/researchJobDetails";
 import type { Job } from "@/types/jobs";
 
 interface JobDetailPageProps {
@@ -81,6 +85,17 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const company = companies.find((item) => item.id === job.companyId) ?? null;
 
   if (job.track === "hospital") {
+    const hospitalDetailV2 = getHospitalJobDetail(slug);
+
+    if (hospitalDetailV2) {
+      return (
+        <>
+          <Header />
+          <HospitalJobDetailV2 data={hospitalDetailV2} />
+        </>
+      );
+    }
+
     return (
       <>
         <Header />
@@ -110,6 +125,17 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   if (job.track === "research") {
+    const researchDetailV2 = getResearchJobDetail(slug);
+
+    if (researchDetailV2) {
+      return (
+        <>
+          <Header />
+          <ResearchJobDetailV2 data={researchDetailV2} />
+        </>
+      );
+    }
+
     return (
       <>
         <Header />

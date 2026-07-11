@@ -323,6 +323,20 @@ export function HospitalOrgProfileClient() {
             <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="예: 진료와 임상연구를 함께 운영하는 상급종합병원" />
           </div>
 
+          <div className="mt-6 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel>본문 소개</FieldLabel>
+              <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{(profile.fullIntro ?? "").length} / 2000</span>
+            </div>
+            <textarea
+              value={profile.fullIntro ?? ""}
+              onChange={(event) => updateProfile("fullIntro", event.target.value)}
+              maxLength={2000}
+              placeholder="주요 사업, 성장 방향, 조직 문화와 일하는 방식을 자유롭게 소개해 주세요."
+              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+            />
+          </div>
+
           <div className="mt-6">
             <FieldLabel>기관 특징</FieldLabel>
             <div className="mt-3 space-y-2.5">

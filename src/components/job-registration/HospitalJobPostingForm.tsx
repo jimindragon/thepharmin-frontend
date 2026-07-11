@@ -284,6 +284,7 @@ export function HospitalJobPostingForm() {
   const [title, setTitle] = useState("");
   const [activeJobCategory, setActiveJobCategory] = useState(hospitalJobCategoryOptions[0].id);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+  const [headcount, setHeadcount] = useState("");
   const [employmentType, setEmploymentType] = useState("permanent");
   const [careerType, setCareerType] = useState("any");
   const [educationType, setEducationType] = useState("any");
@@ -294,6 +295,7 @@ export function HospitalJobPostingForm() {
   const [responsibilities, setResponsibilities] = useState("");
   const [requirements, setRequirements] = useState("");
   const [preferred, setPreferred] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   // §3 근무조건
   const [shiftTypeIds, setShiftTypeIds] = useState<Set<string>>(new Set());
@@ -331,6 +333,7 @@ export function HospitalJobPostingForm() {
     const next: Record<string, string> = {};
     if (!title.trim()) next.title = "공고 제목을 입력해 주세요.";
     if (selectedJobs.size === 0) next.selectedJobs = "모집 직무를 하나 이상 선택해 주세요.";
+    if (!headcount) next.headcount = "모집인원을 선택해 주세요.";
     if (!summary.trim()) next.summary = "공고 요약을 입력해 주세요.";
     if (!responsibilities.trim()) next.responsibilities = "주요 업무를 입력해 주세요.";
     if (!requirements.trim()) next.requirements = "필수 자격요건을 입력해 주세요.";
@@ -459,8 +462,20 @@ export function HospitalJobPostingForm() {
             />
           </div>
 
-          {/* 고용형태 + 경력 + 학력 */}
-          <div className="grid grid-cols-3 gap-4 max-[640px]:grid-cols-1">
+          {/* 모집인원 + 고용형태 */}
+          <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+            <div ref={setRef("headcount")}>
+              <label htmlFor="h-headcount" className={LBL}>모집인원{REQ}</label>
+              <select id="h-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
+                className={SEL} aria-required="true">
+                <option value="" disabled>채용 예정 인원을 선택해 주세요</option>
+                <option>1명</option>
+                <option>2명</option>
+                <option>3명</option>
+                <option>0명(채용 시 마감)</option>
+              </select>
+              <FieldError message={errors.headcount} />
+            </div>
             <div>
               <label htmlFor="h-emptype" className={LBL}>고용형태{REQ}</label>
               <select id="h-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
@@ -469,6 +484,10 @@ export function HospitalJobPostingForm() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* 경력 + 학력 */}
+          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
               <label htmlFor="h-career" className={LBL}>경력{REQ}</label>
               <select id="h-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
@@ -548,6 +567,16 @@ export function HospitalJobPostingForm() {
             <textarea id="h-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"병원 약제부 근무 경험 보유자\n전문약사 자격 또는 관련 교육 이수자"} />
+          </div>
+
+          <div>
+            <label htmlFor="h-additionalNotes" className={LBL}>
+              기타 참고사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
+            </label>
+            <textarea id="h-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
+              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
           </div>
         </SectionCard>
 

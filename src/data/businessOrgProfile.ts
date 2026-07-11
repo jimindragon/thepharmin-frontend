@@ -153,6 +153,8 @@ export interface HospitalOrgProfile {
   logoUrl: string | null;
   coverImageUrl: string | null;
   shortIntro: string;
+  /** 본문 소개(자유 서술) — 약국 트랙(PharmacyOrgProfile)의 fullIntro와 동일 목적. 선택 입력 */
+  fullIntro?: string;
   features: OrgFeatureItem[];
   keywords: string[];
   // 약제부 근무 환경

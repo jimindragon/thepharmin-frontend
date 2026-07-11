@@ -29,7 +29,6 @@ import {
   CompanyLogo,
   firstWords,
   FormattedContentView,
-  HeaderTag,
   IconSectionShell,
   JobDetailActionRow,
   MapPlaceholder,
@@ -54,7 +53,6 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
 
   const heroImage = getIndustryJobCoverImage(data.slug);
 
-  const heroTags = job.tags;
   const heroSubline = `${firstWords(job.location.address, 2)} · ${job.employmentType} · ${job.workMode}`;
   const workModeDisplay = job.workMode;
 
@@ -125,11 +123,6 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
                   <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
                     {job.title}
                   </h1>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {heroTags.map((tag) => (
-                      <HeaderTag key={tag}>{tag}</HeaderTag>
-                    ))}
-                  </div>
                   <p className="mt-4 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">
                     {job.oneLineIntro}
                   </p>

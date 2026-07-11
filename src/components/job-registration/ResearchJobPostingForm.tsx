@@ -316,10 +316,10 @@ export function ResearchJobPostingForm() {
   const [responsibilities, setResponsibilities] = useState("");
   const [requirements, setRequirements] = useState("");
   const [preferred, setPreferred] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   // §4 근무조건
   const [workMode, setWorkMode] = useState("");
-  const [workModeNote, setWorkModeNote] = useState("");
   const [salary, setSalary] = useState("");
   const [contractPeriod, setContractPeriod] = useState("");
   const [selectedBenefits, setSelectedBenefits] = useState<Set<string>>(new Set());
@@ -706,6 +706,16 @@ export function ResearchJobPostingForm() {
               placeholder={"오가노이드, 세포배양 또는 동물실험 경험 보유자\nNGS, FACS, IHC 등 연구기술 활용 경험\n영어 논문 작성 또는 학회 발표 경험\nR, Python 등 데이터 분석 경험"}
               className={TA} />
           </div>
+
+          <div>
+            <label htmlFor="r-additionalNotes" className={LBL}>
+              기타 참고사항
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
+            </label>
+            <textarea id="r-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
+              className={TA}
+              placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
+          </div>
         </SectionCard>
 
         {/* ── §4 근무조건 ───────────────────────────────────────────────────── */}
@@ -720,16 +730,6 @@ export function ResearchJobPostingForm() {
               ))}
             </select>
             <FieldError message={errors.workMode} />
-          </div>
-
-          <div className="mb-5">
-            <label htmlFor="r-workmodenote" className={LBL}>
-              근무방식 비고
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">(선택)</span>
-            </label>
-            <input id="r-workmodenote" value={workModeNote} onChange={(e) => setWorkModeNote(e.target.value)}
-              className={IN}
-              placeholder="예: 교대 가능, 주간 근무, 주 1회 재택 가능, 사이트 방문 있음, 클린룸 근무" />
           </div>
 
           <div className="mb-5" ref={setRef("salary")}>
