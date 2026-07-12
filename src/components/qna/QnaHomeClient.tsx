@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
-import { isQnaPost, getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
+import { getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
 import { PopularTagsPanel, QnaAuthorAvatar, QnaNotice, QnaOperationPrinciplePanel, showQnaNotice } from "@/components/qna/QnaShared";
 import { QnaComposer } from "@/components/qna/QnaComposer";
@@ -31,7 +31,7 @@ function withTypeParam(type: QnaType, previewQuery: string) {
 
 function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; previewQuery: string }) {
   return (
-    <div className="flex h-10 shrink-0 overflow-hidden border border-[#dfe4ea] bg-white" role="tablist" aria-label="QNA 유형">
+    <div className="flex h-10 shrink-0 overflow-hidden border border-[#dce2ea] bg-white" role="tablist" aria-label="QNA 유형">
       {qnaTypeTabs.map((tab) => {
         const active = tab.id === activeType;
         return (
@@ -41,10 +41,9 @@ function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; prev
             role="tab"
             aria-selected={active}
             className={clsx(
-              "flex h-full min-w-[100px] items-center justify-center px-4 text-[13px] font-medium transition-colors",
-              active ? "text-white" : "text-[#596373] hover:text-[#111111]",
+              "flex h-full min-w-[100px] items-center justify-center border-r border-[#dce2ea] px-4 text-[13px] font-medium transition-colors last:border-r-0",
+              active ? "bg-[#111111] text-white" : "text-[#596373] hover:bg-[#f4f4f4] hover:text-[#111111]",
             )}
-            style={active ? { backgroundImage: "var(--gradient-cta)" } : undefined}
           >
             {tab.label}
           </Link>
@@ -75,10 +74,10 @@ function SortControl({ value, onChange }: { value: QnaSortOption; onChange: (opt
 }
 
 function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuery: string }) {
-  const clickable = isQnaPost(entry);
-  const excerpt = isQnaPost(entry) ? entry.body[0] : entry.preview;
+  const clickable = true;
+  const excerpt = entry.body[0];
   const commentCount = getEntryCommentCount(entry);
-  const isBest = isQnaPost(entry) && Boolean(entry.isBest);
+  const isBest = Boolean(entry.isBest);
 
   const content = (
     <article className={clsx("border border-[#e5e9ef] bg-white p-5 transition", clickable && "hover:border-[#111111]")}>
@@ -87,11 +86,11 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
       ) : null}
 
       <div className="flex items-center gap-2.5">
-        <QnaAuthorAvatar id={entry.id} initial={entry.nickname.slice(0, 1)} size={38} />
+        <QnaAuthorAvatar id={entry.id} nickname={entry.nickname} size={38} />
         <div className="min-w-0">
           <p className="truncate text-[15px] font-bold text-[#17202c]">{entry.nickname}</p>
           <p className="mt-0.5 truncate text-[13px] font-normal text-[#8b95a1]">
-            {entry.jobRole} · {entry.createdAtLabel}
+            {[entry.jobRole, entry.createdAtLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
       </div>
@@ -145,7 +144,7 @@ function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]
       </h2>
       <ol className="mt-4 space-y-4">
         {entries.map((entry, index) => {
-          const clickable = isQnaPost(entry);
+          const clickable = true;
           const row = (
             <span className="flex items-start gap-3">
               <span className="text-[16px] font-extrabold text-[#c8ced7]">{index + 1}</span>
@@ -189,21 +188,23 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    setCategoryFilter("전체");
+    /** 상세페이지 "인기 태그" 클릭(/qna?type=...&tag=...)으로 들어왔을 때 해당 태그로 바로 필터링 */
+    const tagParam = new URLSearchParams(window.location.search).get("tag");
+    const isValidTag = Boolean(tagParam) && qnaCategoryFilters[activeType].includes(tagParam!);
+    setCategoryFilter(isValidTag ? tagParam! : "전체");
     setSortOption("추천순");
   }, [activeType]);
 
   const filterChips = useMemo(() => ["전체", ...qnaCategoryFilters[activeType]], [activeType]);
 
   const visibleEntries = useMemo(() => {
-    const filtered =
-      categoryFilter === "전체" ? entries : entries.filter((entry) => entry.category === categoryFilter || entry.tags.includes(categoryFilter));
+    const filtered = categoryFilter === "전체" ? entries : entries.filter((entry) => entry.tags.includes(categoryFilter));
 
     return [...filtered].sort((a, b) => {
       if (sortOption === "공감순") return b.likeCount - a.likeCount;
       if (sortOption === "최신순") return a.minutesAgo - b.minutesAgo;
-      const aBest = isQnaPost(a) && a.isBest ? 1 : 0;
-      const bBest = isQnaPost(b) && b.isBest ? 1 : 0;
+      const aBest = a.isBest ? 1 : 0;
+      const bBest = b.isBest ? 1 : 0;
       if (aBest !== bBest) return bBest - aBest;
       return b.likeCount - a.likeCount;
     });
@@ -263,7 +264,11 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
 
           <aside className="space-y-5">
             <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} />
-            <PopularTagsPanel />
+            <PopularTagsPanel
+              activeType={activeType}
+              selectedTag={categoryFilter !== "전체" ? categoryFilter : undefined}
+              onTagClick={(tag) => setCategoryFilter(tag)}
+            />
             <QnaOperationPrinciplePanel />
           </aside>
         </div>

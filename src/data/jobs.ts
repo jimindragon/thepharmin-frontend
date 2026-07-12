@@ -116,17 +116,6 @@ export const jobs: Job[] = [
       { label: "급여", value: "회사 내규에 따름" },
     ],
     workConditions: ["근무형태: 정규직", "근무지: 서울 강남구 테헤란로 123, 8층", "근무시간: 주 5일, 09:00~18:00", "급여: 회사 내규에 따름"],
-    additionalMaterials: {
-      images: [
-        { url: companyExampleImages.workspace, alt: "더팜인제약 업무 공간 예시", title: "업무 환경" },
-        { url: companyExampleImages.culture, alt: "더팜인제약 기업 분위기 예시", title: "회사 분위기" },
-      ],
-      files: [
-        { name: "채용 안내 자료.pdf", url: "/files/ra-specialist-guide.pdf", description: "지원 전 확인할 수 있는 채용 안내 자료" },
-        { name: "복리후생 소개서.pdf", url: "/files/thepharmin-benefits.pdf", description: "더팜인제약 복리후생 요약 자료" },
-      ],
-    },
-    applicationInfo: ["기업 채용 홈페이지에서 지원서를 제출합니다.", "이력서와 경력기술서를 함께 첨부해 주세요."],
     deadlineType: "date",
     locationDetail: {
       address: "서울 강남구 테헤란로 123, 8층",
@@ -139,41 +128,6 @@ export const jobs: Job[] = [
       "더팜인제약은 전문의약품과 바이오 의약품을 개발·제조하는 제약 기업입니다. 규제 대응 역량과 품질 중심 문화를 바탕으로 국내외 허가 전략을 고도화하고 있습니다.",
     companyHighlights: ["전문의약품 중심 포트폴리오", "국내외 인허가 프로젝트 확대", "품질·규제 전문 조직 운영"],
     reviewSummary: "기업 후기는 안정적인 근무 환경과 전문성 있는 RA 조직 문화에 대한 평가가 많습니다.",
-    companyNews: [
-      {
-        id: "news-ra-1",
-        type: "company",
-        label: "기업 뉴스",
-        title: "더팜인제약, 글로벌 인허가 전략 고도화 추진",
-        publishedAt: "2026.06.12",
-        source: "더파마뉴스",
-        summary: "국내외 허가 대응 역량 강화를 위해 RA 조직과 품질 협업 체계를 확대하고 있습니다.",
-        keywords: ["RA", "글로벌 인허가", "품질 협업"],
-        url: "https://www.thepharmanews.com/news/ra-strategy",
-      },
-      {
-        id: "news-ra-2",
-        type: "regulatory",
-        label: "인허가 동향",
-        title: "식약처, 의약품 허가 심사 자료 제출 가이드라인 개정",
-        publishedAt: "2026.06.04",
-        source: "더파마뉴스",
-        summary: "RA 직무와 관련된 최신 규제 변화와 제출 자료 관리 기준을 정리했습니다.",
-        keywords: ["식약처", "CTD", "허가심사"],
-        url: "https://www.thepharmanews.com/news/regulatory-guide",
-      },
-      {
-        id: "news-ra-3",
-        type: "industry",
-        label: "산업 뉴스",
-        title: "국내 제약사, 글로벌 파트너십 확대 흐름",
-        publishedAt: "2026.05.28",
-        source: "더파마뉴스",
-        summary: "제약·바이오 기업의 해외 허가, 파트너십, 사업개발 동향을 확인할 수 있습니다.",
-        keywords: ["제약·바이오", "글로벌", "사업개발"],
-        url: "https://www.thepharmanews.com/news/global-partnership",
-      },
-    ],
     similarJobIds: [102, 106, 108],
     isRecommended: true,
     dateOrder: 26,
@@ -1840,14 +1794,6 @@ export const jobs: Job[] = [
       introduction:
         "서울아산병원 대장항문외과 박은정 PI 연구팀에서 대장암 환자 유래 오가노이드와 PDX(patient-derived xenograft) 모델을 활용한 종양 연구를 수행할 연구원을 채용합니다. 국책과제를 기반으로 진행되는 연구로, 종양의학·유전·유전체의학·바이오·의료융합 분야의 지식과 실험 역량을 함께 키울 수 있는 자리입니다.",
       oneLineIntro: "대장암 오가노이드·PDX 모델 기반 종양 연구를 함께할 연구원을 찾습니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "대장암 환자 유래 오가노이드(organoid) 구축 및 특성 분석",
-          "PDX(patient-derived xenograft) 모델을 활용한 종양 생물학적 특성 연구",
-          "국책과제 기반의 대장암 중개연구(translational research) 수행",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -1873,17 +1819,6 @@ export const jobs: Job[] = [
         labName: "대장항문외과",
         pi: "박은정",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "박사수료",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 6000,
-        max: 7000,
-        note: "연구경력 및 상호 협의에 따라 결정",
-        funding: ["국책과제"],
-      },
-      researchLocationInfo: { scope: "국내", region: "서울" },
-      researchApplyVia: "이메일",
       similarJobIds: [207, 208, 209],
       dateOrder: 27,
       deadlineOrder: 99,
@@ -1928,14 +1863,6 @@ export const jobs: Job[] = [
       introduction:
         "고려대학교 의과대학 성형외과학교실 전재한 교수 연구팀에서 재건성형 및 미세수술 분야를 중심으로 임상과 기초연구를 통합하는 연구를 함께할 연구원을 채용합니다. 림프부종·림프혈관 수술(LVA, VLNT, ILR), 전방사건, 조직재생, 재수술형 수술, 미세수술, 의료 빅데이터 분석을 주제로 동물실험부터 임상연구, 전국 단위 데이터베이스 연구까지 수행합니다.",
       oneLineIntro: "재건성형·미세수술 관련 기초실험과 임상연구를 함께 담당할 연구원을 찾습니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "림프혈관 수술(LVA, VLNT, ILR) 관련 기초 및 중개연구",
-          "전방사건, 조직재생, 재수술형 수술 분야 연구",
-          "미세수술 및 재건성형 관련 임상 빅데이터 분석",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -1970,18 +1897,6 @@ export const jobs: Job[] = [
         pi: "전재한",
         address: "서울 성북구 고려대로 73 고려대학교 의과대학",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 3600,
-        max: 4000,
-        note: "면접 후 경력·역량에 따라 조정",
-        funding: ["국성과제"],
-      },
-      researchLocationInfo: { scope: "국내", region: "서울", address: "서울 성북구 고려대로 73 고려대학교 의과대학" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서(CV)", "경력소개서", "자기소개서", "학력·경력증명서"],
       similarJobIds: [208, 209, 206],
       dateOrder: 21,
       deadlineOrder: 33,
@@ -2026,15 +1941,6 @@ export const jobs: Job[] = [
       introduction:
         "경북대학교병원 인체조직·동물실험/융합연구치료센터에서 단일세포 전사체·멀티오믹스 분석과 바이오 빅데이터 연구를 함께할 석사 연구원을 채용합니다. 경북대학교병원 인체조직·동물실험에서 인체조직 인프라(주요 7대 조직, 희귀기증 특화 조직, 일증성 장지하 및 전신인대 대조군)를 기반으로 오믹스, 공간 및 단일세포 전사체 분석, 기능적 연구를 수행합니다.",
       oneLineIntro: "단일세포 전사체·멀티오믹스 분석과 AI 기반 바이오 빅데이터 연구를 함께할 석사연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "오믹스 및 단일세포 전사체 분석: Single-cell RNA-seq, Multi-omics 데이터 분석 및 시각화",
-          "바이오 빅데이터 파이프라인 활용: AI·컴퓨팅 툴 기반 대용량 바이오 빅데이터 수집·저장·전처리",
-          "분석의 기능 연구: Multi-omics 기반 병변 예측 및 메커니즘 규명 지원",
-          "연구 데이터 관리: 인체조직 동물실험과 연계된 임상정보·오믹스 데이터 매칭·관리",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -2072,18 +1978,6 @@ export const jobs: Job[] = [
         pi: "남시원",
         address: "대구 북구 호국로 807 칠곡경북대병원",
       },
-      researchRecruitType: "석사연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 3600,
-        max: 3700,
-        note: "기관 내규 및 경력에 따라 협의 (인센티브 없음)",
-        funding: ["인체조직 이식 사업 (2026.3~2030.12)"],
-      },
-      researchLocationInfo: { scope: "국내", region: "대구", address: "대구 북구 호국로 807 칠곡경북대병원" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서(연구경력 중심)", "학위증명서", "성적증명서"],
       similarJobIds: [207, 209, 206],
       dateOrder: 22,
       deadlineOrder: 11,
@@ -2129,13 +2023,6 @@ export const jobs: Job[] = [
       introduction:
         "한국과학기술연구원(KIST) 뇌과학연구소 신경생리연구실에서 중추신경발달의 이온채널성도와 신경의 정신질환 관련성을 연구할 박사후연구원을 모집합니다. 스고가브레인 연구 변화 예정이며, 신경질환 치료제 개발(Medicinal Chemistry) 과제에도 참여할 수 있습니다.",
       oneLineIntro: "중추신경발달과 스고가브레인·정신질환 기초연구를 함께 수행할 박사후연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "Neurogenesis / Psychiatric disorder 기초연구 (중추신경발달 이온채널-인터뉴런 반응, 신경질환 관련성)",
-          "Medicinal Chemistry 기반 신경질환 치료제 개발 연구 (과제 참여, 인센티브 제공)",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["마우스 중추신경 행동테스트", "브레인/스고가브레인 조직 면역염색, RNAscope, 칼슘이미징"],
@@ -2160,17 +2047,6 @@ export const jobs: Job[] = [
         pi: "한규철",
         homepage: "http://neurochannel.kr/",
       },
-      researchRecruitType: "PostDoc",
-      researchDegree: "박사수료",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 5400,
-        max: 6400,
-        note: "경력에 따라 협의",
-      },
-      researchLocationInfo: { scope: "국내", region: "서울" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["CV(연구목록 포함)", "자기소개서(영문)"],
       similarJobIds: [207, 208, 206],
       dateOrder: 23,
       deadlineOrder: 2,
@@ -2215,15 +2091,6 @@ export const jobs: Job[] = [
       introduction:
         "강원대학교 춘천캠퍼스 천연물의약합성 연구실은 천연물 유효성분으로부터 유도체를 합성해 콜리파어 효율을 극대화하는 연구를 수행합니다. 학내 벤처기업을 이운하며 기초연구(학교)와 응용연구(기업)를 병행하며, 학교 내 post-doc 또는 기업 연구원으로 지원 가능합니다.",
       oneLineIntro: "천연물 유효성분 합성과 신약 후보물질 개발 연구를 함께할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "천연물화학, 의약화학, 전기합성화학",
-          "바이오 활성물질 개발, 신약 후보물질 개발",
-          "카나비노이드 유도체 기반 면역억제 매개 항암 치료제 개발",
-          "천연물 기반 기능성 확장형 소재 의료 개발",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -2277,18 +2144,6 @@ export const jobs: Job[] = [
         pi: "이구연",
         address: "강원 춘천시 강원대학길 1 생명과학관 B303호",
       },
-      researchRecruitType: "PostDoc",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 4000,
-        max: 7000,
-        note: "경력 및 연구실 내규에 따라 협의",
-        funding: ["국가연구개발과제"],
-      },
-      researchLocationInfo: { scope: "국내", region: "강원", address: "강원 춘천시 강원대학길 1 생명과학관 B303호" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "연구계획서", "학위증명서", "논문·연구실적 목록"],
       similarJobIds: [207, 208, 206],
       dateOrder: 20,
       deadlineOrder: 33,
@@ -2333,15 +2188,6 @@ export const jobs: Job[] = [
       introduction:
         "서울대학교병원 신경내과 교수의 국성과제 개인 연구원으로, 알츠하이머병 및 치매 관련 신경내과 연구 데이터의 수집·관리·분석을 담당할 연구원을 모집합니다. (학위 연구원 모집 아님)",
       oneLineIntro: "알츠하이머·치매 관련 신경내과 연구 데이터의 수집·관리·분석을 담당할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "신경내과 연구용 데이터 수집 및 처리 (초기 교육·인증인계 후 실무 배치)",
-          "통계 분석 (R·SAS로 ANCOVA·GLM, 연속 데이터 쿼리)",
-          "리눅스 환경 데이터 이동·분류",
-          "논문 작성 보조 (포함 전 논문 작성 지원)",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -2374,17 +2220,6 @@ export const jobs: Job[] = [
         pi: "강경미",
         address: "서울 종로구 대학로 101",
       },
-      researchRecruitType: "연구원",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 3360,
-        max: 3840,
-        note: "월 280만~320만원 기준 (세전) / 경력에 따라 협의 / 채용 첫 1개월 90% 지급",
-        funding: ["국성과제 (교수 개별 고용, 4대보험 해당 없음)"],
-      },
-      researchLocationInfo: { scope: "국내", region: "서울", address: "서울 종로구 대학로 101 (4호선 혜화역 500m 이내)" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "졸업증빙", "대학성적 증빙", "자기소개서"],
       similarJobIds: [206, 207, 208],
       dateOrder: 24,
       deadlineOrder: 2,
@@ -2429,13 +2264,6 @@ export const jobs: Job[] = [
       introduction:
         "한국뇌연구원 치매연구그룹에서 미세먼지(PM2.5)·미세플라스틱 등 환경 유해 인자 노출에 따른 중추신경계 병리 기전을 규명하는 전임상 연구를 수행할 박사급 연수연구원을 모집합니다.",
       oneLineIntro: "환경 유해 인자 기반 뇌질환 전임상 연구를 함께 수행할 박사후 연수연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "환경 유해 인자(미세먼지·미세플라스틱) 기반 뇌질환 전임상 연구",
-          "중추신경계 병리 기전 연구",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -2465,17 +2293,6 @@ export const jobs: Job[] = [
         pi: "김도근",
         homepage: "https://www.kbri.re.kr/new/pages/main/",
       },
-      researchRecruitType: "PostDoc",
-      researchDegree: "박사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 4500,
-        max: 4500,
-        note: "경력 및 실적에 따른 협의",
-      },
-      researchLocationInfo: { scope: "국내", region: "대구" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "추천서", "논문/초록목록", "학위증명서", "성적증명서"],
       similarJobIds: [213, 214, 215],
       dateOrder: 48,
       deadlineOrder: 67,
@@ -2532,14 +2349,6 @@ export const jobs: Job[] = [
       introduction:
         "University of North Texas(UNT) 연구실에서 인간 iPSC 및 뇌 오가노이드를 기반으로 신경생물학·기능 분석 연구를 수행할 박사후연구원을 모집합니다. J-1 비자로 미국 현지 파견되며, 세종대학교 단기 파견을 병행할 수 있습니다.",
       oneLineIntro: "인간 iPSC 기반 뇌 오가노이드 연구를 수행할 박사후연구원을 모집합니다. (J-1 비자 파견)",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "인간 iPSC 유지·확장 및 뇌 오가노이드 분화",
-          "신경생물학 및 기능 분석",
-          "CRISPR 기반 유전자 조절 연구",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -2573,24 +2382,6 @@ export const jobs: Job[] = [
         pi: "Moo-Yeal Lee",
         homepage: "https://engineering.unt.edu/bme/research/labs/bioprinting/",
       },
-      researchRecruitType: "PostDoc",
-      researchDegree: "박사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 6000,
-        max: 6800,
-        note: "경력 및 스펙에 따라 조정",
-        overseasSupport: ["비자스폰서"],
-      },
-      researchLocationInfo: {
-        scope: "해외",
-        country: "미국",
-        address: "University of North Texas (UNT), Denton, TX, USA",
-        secondment: "세종대학교 단기 파견 병행 가능",
-      },
-      researchEligibility: ["J-1영어요건", "비자스폰서"],
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서(CV)", "성적증명서", "학위증명서", "졸업논문 요약", "Cover letter", "추천인 2인 연락처"],
       similarJobIds: [212, 214, 215],
       dateOrder: 49,
       deadlineOrder: 67,
@@ -2635,10 +2426,6 @@ export const jobs: Job[] = [
       introduction:
         "포항공과대학교 생명과학과 조윤제 교수 연구실에서 구조생물학 연구를 위해 클로닝, 세포배양, 단백질 분리·정제 등을 담당할 연구계약직 연구원을 모집합니다.",
       oneLineIntro: "구조생물학 연구를 위한 클로닝·단백질 정제 실험을 담당할 연구계약직 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: ["구조생물학 기반 단백질 연구"],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["클로닝, cell culture", "단백질 분리·정제", "연구 참여 및 보조 업무"],
@@ -2662,21 +2449,6 @@ export const jobs: Job[] = [
         pi: "조윤제",
         address: "경북 포항시 남구 지곡로 47 포항공과대학교 바이오오픈이노베이션(BOIC) 3202호",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 2600,
-        max: 3000,
-        note: "협의 후 결정 / 최초 임용일로부터 3개월 수습 기간 운영 가능",
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "경북",
-        address: "경북 포항시 남구 지곡로 47 포항공과대학교 BOIC 조윤제 교수 연구실",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["입사지원서", "자기소개서", "졸업증명서", "성적증명서", "경력증명서(해당자)", "자격증 사본(해당자)"],
       similarJobIds: [213, 215, 216],
       dateOrder: 50,
       deadlineOrder: 54,
@@ -2721,14 +2493,6 @@ export const jobs: Job[] = [
       introduction:
         "동국대학교 약학대학 약물학/약동학 실험실에서 저분자·천연물 성분·펩타이드·miRNA 등의 체내동태-약효 평가 및 기전 연구를 수행할 연구원을 모집합니다. 난치성 만성 질환의 정량적 치료효과 및 기전 규명을 통해 예측 가능한 단일·병용 요법 개발을 목표로 합니다.",
       oneLineIntro: "PK-PD 모델링과 생체시료 분석 기반 DMPK 연구를 함께할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "PKPD 모델링 기반 병용요법 모델 구축",
-          "저분자·천연물·펩타이드·miRNA의 DMPK 평가",
-          "난치성 질환 발병/치료 기전 및 약물 DMPK 상관성 평가",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["in vitro/in vivo PK-PD 실험", "data analysis (network pharmacology, PD modeling)", "LC-MS/MS 및 TOF 분석을 통한 생체시료 분석 및 PD 마커 발굴"],
@@ -2752,21 +2516,6 @@ export const jobs: Job[] = [
         pi: "최영희",
         address: "경기 고양시 일산동구 식사동 동국대학교 약학대학 635호",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 2600,
-        max: 3600,
-        note: "경력 및 근무조건에 따라 연봉 조절 / 경력에 따라 2-3개월 인턴 기간 있을 수 있음",
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "경기",
-        address: "경기 고양시 일산동구 식사동 동국대학교 약학대학 635호",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
       similarJobIds: [214, 216, 217],
       dateOrder: 51,
       deadlineOrder: 29,
@@ -2811,16 +2560,6 @@ export const jobs: Job[] = [
       introduction:
         "부산대학교 구강점막면역 연구실에서 점막(구강·피부·장 등) 조직의 미생물-숙주 세포 상호작용을 연구할 연구원을 모집합니다. 미생물 불균형이 조직 염증과 질병으로 이어지는 기전을 분자생물학적으로 규명하고, 새로운 치료·진단 전략 개발을 목표로 합니다.",
       oneLineIntro: "점막 조직에서 미생물-숙주 상호작용을 규명할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "숙주-미생물 상호작용 기전 규명",
-          "염증 반응 조절 메커니즘 연구",
-          "병원체의 인체 침투 및 병인 기전 연구",
-          "난치성 질환 병인 기전 규명 및 조기 진단·치료제 개발",
-          "인체 미생물총과 전신질환 연관성 연구",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["세포·분자생물학, 면역학, 미생물학 기반 기초 연구", "질환 실험 동물모델 개발 및 구축"],
@@ -2845,20 +2584,6 @@ export const jobs: Job[] = [
         homepage: "https://lomi.pusan.ac.kr/sites/lomi/index.do",
         address: "경남 양산시 물금읍 부산대학로 49 치의학관 613호",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 2600,
-        max: 3000,
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "경남",
-        address: "경남 양산시 물금읍 부산대학로 49 치의학관 613호",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
       similarJobIds: [215, 217, 218],
       dateOrder: 52,
       deadlineOrder: 26,
@@ -2903,14 +2628,6 @@ export const jobs: Job[] = [
       introduction:
         "건양대학교의료원 산하 명곡안연구소에서 망막재생 및 망막오가노이드 기반 안질환 치료기술을 연구할 연구원을 모집합니다. 내인성 줄기세포를 이용한 망막재생, iPS Cells 유래 망막오가노이드 제조 및 이식용 시트 개발, 첨단 융복합치료제의 비임상 유효성·안전성 평가 연구를 수행합니다.",
       oneLineIntro: "망막재생·망막오가노이드 기반 안질환 치료기술 연구를 함께할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "내인성 줄기세포를 이용한 망막재생 유도기술 개발",
-          "iPS Cells 유래 망막오가노이드 제조기술 및 이식용 시트 개발",
-          "망막질환 첨단융복합치료제의 비임상 유효성·안전성 평가",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["줄기세포연구: 환자 유래 iPS Cells 제작·배양, 망막오가노이드 제작", "전임상연구: 마우스·랫을 이용한 세포/조직 이식 효능 분석"],
@@ -2929,21 +2646,6 @@ export const jobs: Job[] = [
         pi: "류정묵",
         address: "대전 서구 관저동로 158 L보건학관 명곡안연구소",
       },
-      researchRecruitType: "연구원",
-      researchDegree: "석사",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 3400,
-        max: 4400,
-        note: "석사급 기준(4대보험·퇴직금 포함), 경력에 따라 산정 및 협상 가능",
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "대전",
-        address: "대전 서구 관저동로 158 L보건학관 명곡안연구소",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "학위증명서(또는 졸업예정증명서)", "성적증명서"],
       similarJobIds: [216, 218, 219],
       dateOrder: 53,
       deadlineOrder: 29,
@@ -2988,15 +2690,6 @@ export const jobs: Job[] = [
       introduction:
         "한림대학교 의과대학 미생물학교실 김원근 교수 연구실에서 호흡기 및 인수공통 바이러스에 대한 감시·진단·치료제·대응책 개발 연구를 지원할 랩매니저를 모집합니다. 실험실 운영과 과제·연구실 행정을 담당하며, 경력 단절 여성 과학자도 지원 가능합니다.",
       oneLineIntro: "호흡기·인수공통 바이러스 연구실의 운영과 연구행정을 담당할 랩매니저를 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: [
-          "광범위 항바이러스 치료제 개발 (Coronavirus, Paramyxovirus, Flavivirus, Hantavirus)",
-          "NGS 기반 바이러스 유전체 염기서열 확보·분석",
-          "Metagenomic sequencing 기반 Virome 연구 및 신종 바이러스 발견",
-          "바이러스-숙주 상호작용 연구",
-        ],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: [
@@ -3021,19 +2714,6 @@ export const jobs: Job[] = [
         homepage: "https://www.hallym.ac.kr/hallym_univ/sub01/cP7/sCP1/tab1",
         address: "강원특별자치도 춘천시 한림대학길 1 의학관 3512호",
       },
-      researchRecruitType: "연구원",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 2600,
-        max: 3600,
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "강원",
-        address: "강원특별자치도 춘천시 한림대학길 1 의학관 3512호",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서(CV)", "자기소개서"],
       similarJobIds: [217, 219, 212],
       dateOrder: 54,
       deadlineOrder: 29,
@@ -3078,10 +2758,6 @@ export const jobs: Job[] = [
       introduction:
         "인제대학교 심혈관 및 대사질환 핵심연구지원센터에서 연구장비 운영·관리와 전임상 실험을 담당할 전담운영인력(연구원)을 모집합니다. 소동물 MRI·CT, Echocardiography 등 첨단 영상장비와 분자·세포 분석장비를 활용한 연구지원 업무를 수행합니다.",
       oneLineIntro: "심혈관·대사질환 연구지원 인프라의 연구장비 운영과 전임상 실험을 담당할 연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: ["심혈관질환·대사질환 전임상 연구지원", "첨단 연구장비 기반 기능평가·분석"],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["연구장비 운영 및 관리", "전임상 및 실험 수행"],
@@ -3102,19 +2778,6 @@ export const jobs: Job[] = [
         homepage: "https://www.coredream.kr/",
         address: "부산 부산진구 진사로83번길 81 미래의생명센터 1층",
       },
-      researchRecruitType: "연구원",
-      researchSalaryInfo: {
-        kind: "연봉",
-        min: 2600,
-        max: 3000,
-      },
-      researchLocationInfo: {
-        scope: "국내",
-        region: "부산",
-        address: "부산 부산진구 진사로83번길 81 미래의생명센터 1층",
-      },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
       similarJobIds: [212, 213, 214],
       dateOrder: 55,
       deadlineOrder: 13,
@@ -3159,10 +2822,6 @@ export const jobs: Job[] = [
       introduction:
         "한국과학기술연구원(KIST) 중추신경 연구그룹에서 오가노이드 기반 신경생리 연구에 참여할 학생연구원(인턴)을 모집합니다. 세포·오가노이드 배양 실험 보조와 데이터 정리 업무를 수행하며 연구실 세미나에도 참여합니다.",
       oneLineIntro: "오가노이드 기반 신경생리 연구에 참여할 학생연구원을 모집합니다.",
-      researchTopicContent: {
-        format: "bullet",
-        items: ["중추신경 발달 및 신경질환 기전 연구 보조", "오가노이드 기반 실험 참여"],
-      },
       responsibilitiesContent: {
         format: "bullet",
         items: ["세포·오가노이드 배양 실험 보조", "실험 데이터 정리 및 기초 분석", "연구실 세미나 참여"],
@@ -3185,14 +2844,6 @@ export const jobs: Job[] = [
         pi: "한규철",
         homepage: "http://neurochannel.kr/",
       },
-      researchRecruitType: "인턴연구원",
-      researchSalaryInfo: {
-        kind: "협의",
-        note: "기관 내규에 따른 활동비 지급",
-      },
-      researchLocationInfo: { scope: "국내", region: "서울" },
-      researchApplyVia: "이메일",
-      researchDocuments: ["이력서", "재학증명서"],
       similarJobIds: [209, 206, 208],
       dateOrder: 56,
       deadlineOrder: 18,
@@ -3263,31 +2914,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 32000, max: 37000, status: "exact" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "근무 옵션 A", days: "화·목", time: "09:00~19:00" },
-        {
-          label: "근무 옵션 A",
-          days: "토요일",
-          time: "09:00~14:00",
-          note: "근무 종료 시간 조정 가능, 화·목 중 하루만 근무하는 방식도 협의 가능",
-        },
-        { label: "근무 옵션 B", days: "매주 토·일", time: "09:00~13:30", note: "월 1회 휴무" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        atc: "JVM",
-      },
-      commute: {
-        bus: ["남부터미널 직행버스 이용 시 약 40분", "양지 정류장에서 도보 약 5분", "시내버스 정류장 인접"],
-        car: "양지IC 인근으로 자차 이용이 편리함",
-        parking: "가능",
-      },
-      applyInfo: {
-        channels: ["간편지원", "전화"],
-        note: "근무 중에는 통화가 어려울 수 있으므로 희망 근무시간과 간단한 자기소개를 문자로 남겨주세요.",
-        phone: "010-****-1234",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
       similarJobIds: [308, 309, 310],
       dateOrder: 1,
       deadlineOrder: 99,
@@ -3335,8 +2961,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "가림시천변의 전문의 약국에서 함께 근무할 풀타임 약사를 모집합니다. 시간 조절 가능, 정규 약사 환영.",
       introduction: "가림시천변에 위치한 100평 규모 문전약국으로, 약사 6명과 직원 15명이 근무합니다. 두 곳에서 풀타임 근무약사를 이담합니다.",
-      details:
-        "저희 가림약국·현대약국은 100평 정도의 규모로 약사 6분과 직원 15명이 근무하는 문전약국입니다. (두 곳에서 약사님을 이담하고자 합니다.)\n가림시천변에 위치하고 있습니다.\n\n근무는 주로 복약지도와 조제·검수 등을 번갈아 가면서 하시게 됩니다.\n점심은 자체 비용으로 제공합니다. 공휴일·일요일은 휴무입니다.\n\n조건이 되신다면(만 15세~34세) 중소기업 취업자 소득세 감면 혜택이 적용되어 실수령액이 더 높아집니다. (5년간 적용)\n양육이 필요하신 경우 제공 가능합니다.\n\n급여는 면접 후 협의합니다. 정규 약사님은 환영합니다.",
       coreKeywords: ["복약지도", "조제·검수", "문전약국", "풀타임", "주 38시간"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3349,20 +2973,6 @@ export const jobs: Job[] = [
       preferredQualifications: ["오래 근무 가능하신 분", "정규 약사 환영"],
       benefits: ["시간 조절 가능", "점심 식사 제공(자체 비용)", "중소기업 취업자 소득세 감면 혜택(해당 시)", "4대 보험"],
       salaryDetail: { kind: "면접후결정", hourlyComputed: null },
-      workShifts: [
-        { label: "평일", days: "월~금", time: "09:00~17:20", note: "주 38시간" },
-        { label: "토 오전", days: "토", time: "09:00~12:30", note: "제 1팀 근무 · 토 오전근무 한 다음주 금요일 오후 반차 제공" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        software: ["기타"],
-        staff: { pharmacist: 6, support: 15 },
-      },
-      applyInfo: {
-        channels: ["간편지원", "이메일", "전화"],
-        documents: ["이력서", "자기소개서"],
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
       similarJobIds: [309, 310, 307],
       dateOrder: 2,
       deadlineOrder: 99,
@@ -3410,8 +3020,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "화곡역 인근 약국에서 3개월 이상 근무할 출산대체 약사를 모집합니다. 8시부터 근무 가능한 분.",
       introduction: "화곡역 인근 약국으로, 출산으로 인해 3개월 이상 자리를 비우게 되어 대직 약사를 구합니다. 8시부터 근무 가능한 분을 모집합니다.",
-      details:
-        "화곡역 인근 약국입니다. 출산으로 인해 3개월 이상 자리를 비우게 되어 대직 약사님을 구합니다. 8시부터 가능한 분 모집합니다.\n\n오전 일하시는 실장님과 조제 보조 직원이 있어 큰 어려움 없이 적응하실 수 있을 것입니다.\n복약지도 능숙하신 분, 일반약 응대 가능하신 분을 모집합니다.\n\n식대를 지원해 드립니다. 다만 주차는 어렵습니다.\n사회면허 등록 가능하신 분을 구합니다.\n\n졸업년도·경력사항 포함하여 간단하게 문자 연락 주시면 답장드리겠습니다. 약국 이전 경력 있으신 분 환영합니다.",
       coreKeywords: ["복약지도", "일반약 응대", "처방조제", "JVM", "단기대체", "출산대체"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3431,27 +3039,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 36248, max: 39126, status: "estimated" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "평일", days: "월~금", time: "12:30~20:30", note: "1~2시 점심시간 · 시간 조정 협의 시 가능" },
-        { label: "토 오전", days: "토", time: "09:30~16:30" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        software: ["이화"],
-        atc: "JVM",
-        otherDevices: ["계수기"],
-        staff: { pharmacist: 1, support: 2 },
-      },
-      commute: { parking: "불가" },
-      applyInfo: {
-        channels: ["간편지원"],
-        note: "졸업년도·경력사항 포함하여 간단히 문자로 남겨주시면 답장드리겠습니다.",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무시간 조정이 가능한가요?", answer: "평일 점심시간 등 일부 시간은 협의 가능합니다." },
-        { question: "입사 예정 시기는 언제인가요?", answer: "8시부터 근무 가능한 분을 모집합니다." },
-      ],
       similarJobIds: [308, 310, 307],
       dateOrder: 3,
       deadlineOrder: 99,
@@ -3500,8 +3087,6 @@ export const jobs: Job[] = [
       oneLineIntro: "완주군 중심지 메디컬빌딩 문전약국에서 풀타임 약사를 모집합니다. 약사 전용 숙소 제공, 단기 근무도 협의 가능.",
       introduction:
         "완주군 중심지 메디컬빌딩 문전약국으로 내과·산부인과·외과·이비인후청각과·비뇨기과 등 여러 클리닉의 처방을 받습니다. 다양한 진료과 처방을 경험할 수 있습니다.",
-      details:
-        "전주 완주군 1호광장 인근에 위치한 현강약국에서 함께 근무하실 약사님을 모집합니다.\n완주군 중심지 메디컬빌딩 문전약국으로 내과, 산부인과, 외과, 이비인후청각과, 비뇨기과 등 여러 클리닉의 처방을 받고 있습니다. 다양한 진료과 처방을 경험할 수 있어 약학 지식과 실무 경험을 쌓는 데 도움이 됩니다.\n\nJVM 자동조제기 3대를 비치하고 있습니다.\n2026년 7월부터 근무 가능하신 약사님을 구하며, 약국 사정에 따라 단기 근무 가능하신 분도 지원 가능합니다.\n\n[급여] 정원약사 기준 초봉 연봉 7,500만원이며, 경력 약사는 경력·근무 연수·근무 가능 기간에 따라 협의 가능합니다. 퇴직금은 1년 차부터 퇴직연금으로 적립됩니다.\n\n[복지] 약사 전용 숙소(1인 1실)를 제공합니다. 약국 같은 건물에 위치해 도보 출퇴근이 가능하며 신규 숙소로 청결하고 조용합니다. 근무시간 중 식사를 제공하고 연차 15일을 제공합니다.",
       coreKeywords: ["복약지도", "조제·검수", "문전약국", "풀타임", "숙소제공", "JVM 3대"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3519,34 +3104,6 @@ export const jobs: Job[] = [
       ],
       benefits: ["약사 전용 숙소 제공(1인 1실)", "근무시간 중 식사 제공", "연차 15일", "1년 차부터 퇴직연금 적립"],
       salaryDetail: { kind: "면접후결정", note: "정원약사 기준 초봉 연봉 7,500만원 · 경력자는 협의" },
-      workShifts: [
-        { label: "평일", days: "월~금", time: "09:00~18:00" },
-        { label: "토 오전", days: "토", time: "09:00~13:00", note: "제 1팀 휴무" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        software: ["팜IT 3000"],
-        atc: "JVM(3대)",
-        otherDevices: ["자동의약품발주기", "진공자동포장기", "계수기"],
-      },
-      applyInfo: {
-        channels: ["이메일", "전화"],
-        blocked: "간편지원 불가(이메일·전화만 가능합니다).",
-        note: "이력서 및 자기소개서를 이메일로 제출해 주시고, 면접은 화상면접 우선으로 진행합니다.",
-        phone: "0507-****-****",
-        documents: ["이력서", "자기소개서"],
-        steps: ["서류전형", "1차 면접(화상 우선)", "최종 합격"],
-      },
-      hrTips: [
-        {
-          question: "근무환경은 어떻게 되나요?",
-          answer:
-            "완주군 중심지 메디컬빌딩 문전약국으로 여러 진료과 처방을 다룹니다. JVM 자동조제기 3대, 자동의약품발주기·진공자동포장기·계수기를 갖추고 있습니다.",
-        },
-        { question: "근무시간 조정이 가능한가요?", answer: "세부 근무 일정은 면접 시 상담드리며, 단기 근무도 협의 가능합니다." },
-        { question: "면접은 어떻게 진행되나요?", answer: "서류 접수 후 약국장 면접으로 진행되며, 화상 면접을 우선 진행합니다." },
-        { question: "입사 예정 시기는 언제인가요?", answer: "2026년 7월부터 근무 가능하신 분을 모집합니다." },
-      ],
       similarJobIds: [308, 309, 307],
       dateOrder: 4,
       deadlineOrder: 99,
@@ -3594,8 +3151,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "이비인후과 메인 문전약국에서 매주 수요일 하루 근무할 파트타임 약사를 모십니다. 중·석식 제공.",
       introduction: "이비인후과 메인 약국입니다. 원장이 365일 운영하다 보니 하루 쉬기 위해 구인하며, 수요일이 가장 한가합니다. 이팜 프로그램과 JVM ATC 1대를 사용하며, 동시간대 조제·전산 직원 2명과 함께 근무합니다.",
-      details:
-        "이비인후과 메인 약국입니다. 원장이 365일 운영하다 보니 하루 쉬기 위해 구인하며, 수요일이 가장 한가합니다.\n이팜 프로그램과 JVM ATC 1대를 사용하며, 동시간대 조제·전산 직원 2명과 함께 근무합니다. 가루약 조제가 1~2건 있어 가능하면 좋습니다.\n근무는 08:30~20:30이며 병원이 18:00경 마감한 뒤로는 매약 위주입니다. 중식은 배달 도시락, 석식도 필요 시 제공합니다.\n약국 오픈 초기라 약국 경력 1년 이상을 선호하며, 7월 24일부터 근무 가능한 분을 찾습니다.",
       coreKeywords: ["조제 검수", "복약지도", "일반약 판매", "이팜", "JVM ATC", "이비인후과", "파트타임"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3614,32 +3169,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 41667, max: 41667, status: "estimated" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "수요일", days: "매주 수요일", time: "08:30~20:30", note: "18:00 이후 병원 마감, 매약 위주" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "불필요",
-        software: ["이팜"],
-        atc: "JVM(1대)",
-        otherDevices: ["산제자동포장기"],
-        staff: { pharmacist: 1, support: 2 },
-        mainDept: ["이비인후과"],
-      },
-      commute: {
-        car: "영동중앙신협 1층 인근",
-        parking: "가능",
-      },
-      applyInfo: {
-        channels: ["간편지원", "문자"],
-        note: "근무 중 통화가 어렵습니다. 이름·경력 등 약력과 함께 문자로 이력을 보내주세요.",
-        managerName: "김*진",
-        managerPhone: "010-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무환경은 어떤가요?", answer: "이비인후과 메인 약국으로 조제·전산 직원 2명과 함께 근무합니다. 이팜 프로그램과 JVM ATC 1대, 가루약 조제 1~2건이 있습니다." },
-        { question: "입사 예정 시기는 언제인가요?", answer: "7월 24일부터 근무 가능한 분을 모십니다." },
-      ],
       similarJobIds: [307, 309, 308],
       dateOrder: 5,
       deadlineOrder: 99,
@@ -3687,8 +3216,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "소아과·내과·부인과 처방 약국에서 주 5일 근무할 풀타임 약사를 모십니다. 근무시간 조정 가능.",
       introduction: "상당구 방서동 빛이나약국입니다. 소아과·내과·부인과 처방을 다루는 의원층 약국으로, 도와주는 직원과 동료 약사가 있어 적응이 수월합니다.",
-      details:
-        "상당구 방서동 빛이나약국입니다. 8월 19일부터 평일 월·수·금 오후, 매주 토요일·격주 일요일로 주 5일 근무하실 약사님을 구합니다.\n주말 근무 시 건물 내 식당에서 식사를 제공합니다. 영업시간이 길어(평일 08~23시) 다른 약사와 근무시간 조정, 근무일수 증감, 투잡 시 출근시간 조정이 어느 정도 가능합니다.\n연차·월차·경조사비·여름휴가비·명절보너스를 제공합니다. 풀타임 약사를 우선합니다.",
       coreKeywords: ["약국 업무 전반", "소아과", "내과", "부인과", "풀타임", "JVM"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3706,26 +3233,6 @@ export const jobs: Job[] = [
         hourlyComputed: null,
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "평일", days: "월·수·금", time: "17:00~21:00" },
-        { label: "토요일", days: "매주 토", time: "09:00~18:00" },
-        { label: "일요일", days: "격주 일", time: "09:00~18:00", note: "주 5일 · 8월 19일부터" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        atc: "JVM",
-        mainDept: ["소아과", "내과", "부인과"],
-      },
-      applyInfo: {
-        channels: ["간편지원", "전화"],
-        note: "자유양식 지원서로 접수합니다.",
-        managerPhone: "0507-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무시간 조정이 가능한가요?", answer: "영업시간이 길어 다른 약사와 근무시간 조정, 근무일수 증감, 투잡 시 출근시간 조정이 어느 정도 가능합니다." },
-        { question: "입사 예정 시기는 언제인가요?", answer: "8월 19일부터 근무 가능한 분을 모십니다." },
-      ],
       similarJobIds: [310, 308, 307],
       dateOrder: 6,
       deadlineOrder: 99,
@@ -3773,8 +3280,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "마산역 앞 매약 중심 약국에서 주말 파트타임 약사를 모십니다. 매약·케이스 스터디, 개국까지 배울 수 있습니다.",
       introduction: "마산 대표 매약 중심 약국으로, 다양한 학회약을 취급하며 전문 상담과 케이스 스터디를 배울 수 있습니다.",
-      details:
-        "마산육일약국에서 주말 파트타임 약사를 모십니다. 마산을 대표하는 매약 약국으로 전문 지식과 상담을 배울 수 있습니다.\n[근무] 격주 토·일(매주 가능) 12:00~22:00 / 시급 4.5만원(세후).\n[환경] 마산역 앞, 식사 시간 보장, 최근 리모델링, 간식 제공, 주차 지원. 약사 2명·직원 3명이 젊고 밝은 분위기로 근무.\n[강점] 매약 기술·케이스 스터디, 원하면 약국 경영·개국까지. 숙련 직원이 있어 경력 없어도 가능.",
       coreKeywords: ["매약 상담", "케이스 스터디", "주말 파트타임", "유팜", "마산역 앞"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3796,29 +3301,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 45000, max: 45000, status: "exact" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "주말", days: "격주 토·일(매주도 가능)", time: "12:00~22:00" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "불필요",
-        software: ["유팜"],
-        staff: { pharmacist: 2, support: 3 },
-      },
-      commute: {
-        car: "마산역 앞",
-        parking: "지원",
-      },
-      applyInfo: {
-        channels: ["전화"],
-        note: "간단한 자기소개와 이력을 약국장에게 문자로 남겨주시면 연락드립니다.",
-        managerName: "임*수",
-        managerPhone: "0507-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무환경은 어떤가요?", answer: "마산역 앞에 위치해 출퇴근이 편리하며, 최근 리모델링 환경에서 약사 2명·직원 3명이 근무합니다. 식사 시간 보장·간식·주차 지원이 됩니다." },
-        { question: "지원 자격은 어떻게 되나요?", answer: "매약 중심 약국으로 경력이 없어도 지원 가능하며, 매약 기술과 케이스 스터디, 약국 경영까지 배울 수 있습니다." },
-      ],
       similarJobIds: [307, 309, 310],
       dateOrder: 7,
       deadlineOrder: 99,
@@ -3866,8 +3348,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "신당역 인근 약국에서 매주 토요일 오후 근무할 파트타임 약사를 모십니다. 오후 5시까지 타 약사 동시 근무.",
       introduction: "신당역 인근 약국으로 토요일 오후 근무 약사를 모십니다. 오후 5시까지 타 약사 동시 근무, 마감까지 보조 직원 상주.",
-      details:
-        "신당역 인근 약국에서 토요일 오후 약사를 모십니다.\n· 근무: 매주 토요일 13:00~22:00\n· 업무: 소량 검수·투약(13~14시 위주) + 일반의약품 판매\n· 환경: 오후 5시까지 타 약사 동시 근무, 마감까지 보조 직원 상주\n· 급여: 시급 32,000~35,000원 / 8월 1일부터",
       coreKeywords: ["소량 검수·투약", "일반의약품 판매", "토요일 파트타임", "팜IT 3000", "신당역"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3886,28 +3366,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 32000, max: 35000, status: "exact" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "토요일", days: "매주 토", time: "13:00~22:00", note: "검수·투약 13~14시 위주, 이후 일반약 판매" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "불필요",
-        software: ["팜IT 3000"],
-        staff: { pharmacist: 3, support: 4 },
-      },
-      commute: {
-        subway: ["2호선 신당역 3번 출구 50m"],
-      },
-      applyInfo: {
-        channels: ["간편지원"],
-        documents: ["이력서"],
-        note: "문자로 간단한 이력과 자기소개를 보내주세요.",
-        managerPhone: "010-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무환경은 어떤가요?", answer: "오후 5시까지 타 약사가 동시 근무하고 마감까지 보조 직원이 상주합니다. 검수·투약은 13~14시에 집중되고 이후 일반의약품 판매 위주입니다." },
-        { question: "입사 예정 시기는 언제인가요?", answer: "8월 1일부터 근무 가능한 분을 모십니다." },
-      ],
       similarJobIds: [307, 309, 311],
       dateOrder: 8,
       deadlineOrder: 99,
@@ -3933,7 +3391,7 @@ export const jobs: Job[] = [
       salary: "일급 400,000원",
       deadlineLabel: "2026.07.13",
       deadlineDate: "2026.07.13",
-      closingStatus: "date",
+      closingStatus: "dDay",
       applyMethod: "간편 지원",
       jobSubcategoryIds: ["staff_pharmacist"],
       experienceMin: 1,
@@ -3955,8 +3413,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "내과 문전약국에서 7월 13일 하루 근무할 단기 약사를 모십니다. 식대 포함 일급 40만원.",
       introduction: "내과 문전약국으로 7월 13일 하루 근무할 단기 약사를 모십니다. 대부분 ATC 조제이며 조제·전산 각 1명이 근무합니다.",
-      details:
-        "7월 13일(월) 문무약국 단기 약사를 구합니다. 근무 08:30~18:00, 별도 점심시간 없음(병원 13~14시 점심).\n주처방 내과 50~90건, 업무는 복약지도 및 단순 매약. 대부분 ATC 조제, 조제실 1명·전산 1명, 프로그램은 유팜.\n일급 40만원(식대 포함).",
       coreKeywords: ["복약지도", "단순 매약", "ATC 조제", "유팜", "JVM", "내과", "단기대체"],
       responsibilitiesContent: {
         format: "bullet",
@@ -3975,25 +3431,6 @@ export const jobs: Job[] = [
         hourlyComputed: { min: 42105, max: 42105, status: "estimated" },
         showHourlyOnDetail: true,
       },
-      workShifts: [
-        { label: "근무일", days: "7월 13일(월)", time: "08:30~18:00", note: "병원 점심 13~14시, 약국 별도 점심시간 없음" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "불필요",
-        software: ["유팜"],
-        atc: "JVM",
-        mainDept: ["내과"],
-      },
-      applyInfo: {
-        channels: ["간편지원"],
-        note: "간략한 경력과 함께 문자로 문의해 주세요.",
-        managerName: "박*량",
-        managerPhone: "010-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무환경은 어떤가요?", answer: "주처방은 내과로 50~90건이며 대부분 ATC 조제입니다. 조제실 1명·전산 1명이 함께 근무하고 프로그램은 유팜입니다." },
-      ],
       similarJobIds: [309, 307, 311],
       dateOrder: 9,
       deadlineOrder: 1,
@@ -4041,8 +3478,6 @@ export const jobs: Job[] = [
       coverImageMode: "none",
       oneLineIntro: "천안 불당동 약국에서 월·화·목·금·토 근무할 풀타임 약사를 모십니다. 요일·시간 조정 가능.",
       introduction: "천안 불당동 약국으로 함께 근무할 풀타임 약사를 모십니다. 요일·시간을 약간 조정할 수 있습니다.",
-      details:
-        "천안 불당동 약국에서 같이 일할 약사님을 모십니다.\n· 월·화·목·금 09:00~19:00 (수요일 휴무)\n· 월 3회 토요일 09:00~14:00\n요일·시간은 약간 조정 가능합니다. 전화가 어려우니 문자로 간단한 이력을 보내주시면 연락드립니다.",
       coreKeywords: ["조제 및 의약품 판매", "풀타임", "심평원 등록", "유팜 오토팩"],
       responsibilitiesContent: {
         format: "bullet",
@@ -4058,25 +3493,6 @@ export const jobs: Job[] = [
         hourlyComputed: null,
         showHourlyOnDetail: false,
       },
-      workShifts: [
-        { label: "평일", days: "월·화·목·금", time: "09:00~19:00", note: "수요일 휴무" },
-        { label: "토요일", days: "월 3회 토", time: "09:00~14:00", note: "요일·시간 약간 조정 가능" },
-      ],
-      pharmacyEnv: {
-        simpyeong: "필요",
-        atc: "유팜 오토팩",
-        staff: { pharmacist: 1, support: 1 },
-      },
-      applyInfo: {
-        channels: ["간편지원", "전화"],
-        note: "전화가 어려우니 자유양식으로 간단한 이력을 문자로 보내주세요.",
-        managerName: "김*연",
-        managerPhone: "010-****-****",
-        steps: ["서류전형", "1차 면접", "최종 합격"],
-      },
-      hrTips: [
-        { question: "근무시간 조정이 가능한가요?", answer: "근무 요일과 시간을 약간 조정할 수 있습니다." },
-      ],
       similarJobIds: [310, 308, 312],
       dateOrder: 10,
       deadlineOrder: 99,
@@ -4109,12 +3525,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "이메일 지원",
       applicationEmail: "recruit@hanbit-hospital.example",
-      applicationInfo: [
-        "이력서 (자유양식 .hwp 또는 .pdf)",
-        "자기소개서 (지원 부문 명기)",
-        "약사 면허증 사본",
-        "경력증명서 (해당자)",
-      ],
       applicationGuide: "이메일 제목에 '지원부문_성명'을 기재해 주세요. (예: 입원조제파트_홍길동)",
       jobSubcategoryIds: ["hospital_pharmacist", "clinical_pharmacist"],
       experienceMin: 1,
@@ -4136,22 +3546,6 @@ export const jobs: Job[] = [
       oneLineIntro: "2026년 하반기 약제부 확장을 앞두고 입원조제파트와 ASP팀 임상약사를 동시모집합니다.",
       introduction:
         "한빛종합병원 약제부는 이번 인력 확충을 통해 입원 환자 조제 서비스 질 향상과 임상약사 역할 확대를 동시에 추진합니다. 주간 근무 중심이며, ASP팀은 중증 환자 약물 상담·처방 검토·다직종 협업에 집중하는 역할입니다.",
-      hospitalDepartments: [
-        {
-          name: "입원조제파트",
-          headcount: "1명",
-          schedule: "주간 (09:00~18:00)",
-          duties: "입원환자 처방 조제·검수 및 투약 관리",
-          requirements: "약사 면허 / 경력 1년 이상 / 전산 조제 경험 우대",
-        },
-        {
-          name: "ASP팀 임상약사",
-          headcount: "1명",
-          schedule: "주간 (비직 주 2~3회 포함)",
-          duties: "중증 환자 약물 상담·모니터링, 처방 검토, 다직종 협업",
-          requirements: "약사 면허 / 경력 3년 이상 / 전문약사(심장·항응고 등) 자격 우대",
-        },
-      ],
       responsibilities: [
         "(공통) 약사 면허 기반 처방 검토 및 의약품 관리",
         "(입원조제) 입원환자 처방 조제·감사, 마약·항암제 관리 보조",
@@ -4215,13 +3609,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "기업 홈페이지 지원",
       applicationUrl: "https://recruit.nsmc.example",
-      applicationInfo: [
-        "이력서 및 자기소개서 (지정 양식 다운로드)",
-        "최종학력 성적증명서",
-        "약사 면허증 사본",
-        "경력증명서",
-        "전문약사 자격증 사본 (해당자)",
-      ],
       jobSubcategoryIds: ["clinical_pharmacist"],
       experienceMin: 3,
       experienceMax: null,
@@ -4306,11 +3693,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "이메일 지원",
       applicationEmail: "pharmrecruit@hmcseoul.example",
-      applicationInfo: [
-        "이력서 (자유양식)",
-        "자기소개서 (A4 1매 이내)",
-        "약사 면허증 사본",
-      ],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 1,
       experienceMax: 5,
@@ -4394,10 +3776,6 @@ export const jobs: Job[] = [
       deadlineDate: "채용 시 마감",
       closingStatus: "always",
       applyMethod: "간편 지원",
-      applicationInfo: [
-        "이력서 (자유양식)",
-        "약사 면허증 사본",
-      ],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 0,
       experienceMax: null,
@@ -4473,12 +3851,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "기업 홈페이지 지원",
       applicationUrl: "https://recruit.nch.example",
-      applicationInfo: [
-        "블라인드 이력서 (지정 양식 다운로드 후 작성)",
-        "자기소개서 (자유양식 A4 1매 이내)",
-        "경력증명서",
-        "약사 면허증 사본",
-      ],
       applicationGuide:
         "블라인드 채용으로 진행되며, 지원서에 출신학교·가족관계·외모 관련 사항을 기재하지 마세요. 지정 양식은 채용 홈페이지에서 다운로드하세요.",
       jobSubcategoryIds: ["pharmacy_department_management"],
@@ -4566,7 +3938,6 @@ export const jobs: Job[] = [
       deadlineDate: "채용 시 마감",
       closingStatus: "always",
       applyMethod: "간편 지원",
-      applicationInfo: ["이력서", "자기소개서"],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 3,
       experienceMax: null,
@@ -4629,7 +4000,6 @@ export const jobs: Job[] = [
       deadlineDate: "2026년 7월 6일 마감",
       closingStatus: "dDay",
       applyMethod: "간편 지원",
-      applicationInfo: ["이력서", "약사 면허증 사본"],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 0,
       experienceMax: null,
@@ -4691,7 +4061,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "기업 홈페이지 지원",
       applicationUrl: "https://recruit.nfh.example",
-      applicationInfo: ["지원서 (지정 양식, 채용 공고문 참고)"],
       jobSubcategoryIds: ["hospital_pharmacy_administration"],
       experienceMin: 0,
       experienceMax: null,
@@ -4751,11 +4120,6 @@ export const jobs: Job[] = [
       deadlineDate: "채용 시 마감",
       closingStatus: "always",
       applyMethod: "간편 지원",
-      applicationInfo: [
-        "입사지원서 (자사양식)",
-        "졸업증명서 1부 (서류전형 합격자에 한함)",
-        "약사 면허증 사본 1부 (서류전형 합격자에 한함)",
-      ],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 0,
       experienceMax: null,
@@ -4820,7 +4184,6 @@ export const jobs: Job[] = [
       closingStatus: "dDay",
       applyMethod: "기업 홈페이지 지원",
       applicationUrl: "https://recruit.afsdh.example",
-      applicationInfo: ["지원서 (지정 양식 작성 후 우편 접수, 상세는 채용 공고문 참고)"],
       jobSubcategoryIds: ["pharmacy_department_management"],
       experienceMin: 0,
       experienceMax: null,
@@ -4883,7 +4246,6 @@ export const jobs: Job[] = [
       deadlineDate: "채용 시 마감",
       closingStatus: "always",
       applyMethod: "간편 지원",
-      applicationInfo: ["입사지원서 (자사양식 이력서 + 자기소개서)", "약사 면허증 사본"],
       jobSubcategoryIds: ["hospital_pharmacist"],
       experienceMin: 0,
       experienceMax: null,
@@ -4904,22 +4266,6 @@ export const jobs: Job[] = [
       oneLineIntro: "육아휴직 대체 계약직 약사와 일요당직 약사를 동시 모집합니다.",
       introduction:
         "오산한국병원은 4주기 인증을 받은 경기 오산시 소재 종합병원입니다. 육아휴직 대체 계약직 약사와 일요당직 약사를 부문별로 모집합니다. 현재 정규약사 3명이 근무 중이며 토·일에는 파트약사가 별도 근무하고 있습니다. 오산IC 인근으로 대중교통 접근이 용이합니다.",
-      hospitalDepartments: [
-        {
-          name: "계약직 약사 (육아휴직 대체)",
-          headcount: "1명",
-          schedule: "월~금 08:30~17:30, 토 08:30~12:30 (3주 1회)",
-          duties: "입원·외래 처방 조제 및 검수",
-          requirements: "약사 면허 / 경력 무관",
-        },
-        {
-          name: "일요당직 약사",
-          headcount: "1명",
-          schedule: "일요일 08:30~17:30",
-          duties: "입원환자 조제·검수, 마약류 불출",
-          requirements: "약사 면허",
-        },
-      ],
       responsibilities: ["(공통) 원내 입원·외래 처방 조제 및 검수", "(일요당직) 입원환자 조제, 마약류 불출"],
       requirements: ["약사 면허 소지자", "경력 무관"],
       hiringProcess: ["서류전형", "1차 면접", "최종합격"],

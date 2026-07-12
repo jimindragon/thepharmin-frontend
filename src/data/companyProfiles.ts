@@ -134,7 +134,7 @@ export const companyProfiles: CompanyProfile[] = [
       // 기관 유형은 companies.ts industry="전문의약품 제조업" → 제약사(폼 옵션) 매핑
       { label: "기관 유형", value: "제약사" },
       { label: "설립 연도", value: "2012년" },
-      { label: "사업 분야", value: "의약품 개발 및 제조, 바이오의약품 연구개발" },
+      { label: "사업 분야", value: "의약품 개발·제조 · 바이오의약품 연구개발" },
       // 직원 수는 companies.ts employeeCount="320명" → 101~500명(폼 4구간) 매핑
       { label: "직원 수", value: "101~500명" },
     ],
@@ -332,7 +332,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "본사 위치", value: "인천 연수구 송도바이오대로 300 (송도동, 삼성바이오로직스)" },
       { label: "홈페이지", value: "www.samsungbiologics.com" },
       // 기관 유형은 industryJobDetails.ts org.orgType과 동일 값으로 맞춘다(폼 기준 정합성)
-      { label: "기관 유형", value: "CDMO" },
+      { label: "기관 유형", value: "CRO·CDMO" },
       { label: "설립 연도", value: "2011년" },
       { label: "사업 분야", value: "바이오의약품 위탁개발생산(CDMO/CMO/CDO)" },
       // 직원 수는 industryJobDetails.ts org.employeeCount(폼 세그먼트 단위)와 동일하게 맞춘다 — tags의 "사원수 5,455명"은 별도 표기라 유지
@@ -814,7 +814,7 @@ export const companyProfiles: CompanyProfile[] = [
     verifiedLabel: "운영팀 확인 기업",
     premiumLabel: "프리미엄 기업",
     tagline: "국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO",
-    tags: ["CRO/CDMO", "설립 2011년", "사원수 101~500명"],
+    tags: ["CRO·CDMO", "설립 2011년", "사원수 101~500명"],
     coverImage: companyExampleImages.hero,
     // 재무 슬롯: 기존 metrics의 매출액/영업이익만 그대로 이관 — R&D 투자비율 항목 자체가 없어 rndRatio는 비워둔다.
     // 글로벌 과제 비중은 새 스펙에 없어 폐기, "진행 과제"는 재무가 아닌 운영 지표라 metrics에 남긴다(STEP 2.5)
@@ -836,8 +836,8 @@ export const companyProfiles: CompanyProfile[] = [
       // 기관 유형은 companies.ts industry="임상시험 수탁기관(CRO)" → CRO·CDMO(폼 옵션) 매핑
       { label: "기관 유형", value: "CRO·CDMO" },
       { label: "설립 연도", value: "2011년" },
-      // 사업 분야는 companies.ts description("국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO")에서 그대로 도출 — 다른 4곳과 달리 슬로건이 곧 사업 범위를 서술하고 있어 채움
-      { label: "사업 분야", value: "국내 임상부터 글로벌 다국가 임상까지의 임상시험 수탁(CRO)" },
+      // 사업 분야: chip 라벨형으로 교정됨 — companies.ts description을 그대로 문장형으로 옮기던 값을 정본 chip 표기로 대체
+      { label: "사업 분야", value: "임상시험 수탁(CRO) · 다국가 임상" },
       // 직원 수는 companies.ts employeeCount가 이미 "101~500명"으로 폼과 동일 구간 표기라 그대로 사용
       { label: "직원 수", value: "101~500명" },
     ],
@@ -1458,7 +1458,7 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "본사 위치", value: "경기 용인시 처인구 양지읍 양지로138번길 14" },
       { label: "홈페이지", value: null },
       // 기관 유형·직원 수는 기존 metrics 항목(=industryJobDetails.ts org.orgType/employeeCount)과 동일 값을 details로 옮겼다
-      { label: "기관 유형", value: "의료기기 회사" },
+      { label: "기관 유형", value: "의료기기" },
       { label: "설립 연도", value: null },
       { label: "사업 분야", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
       { label: "직원 수", value: "501명 이상" },

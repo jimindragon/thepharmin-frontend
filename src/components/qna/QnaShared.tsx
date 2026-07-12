@@ -1,7 +1,8 @@
 import clsx from "clsx";
+import Link from "next/link";
 import type { ReactNode } from "react";
-import { qnaOperationPrinciple, qnaPopularTags } from "@/data/qna";
-import type { QnaAuthorType } from "@/types/qna";
+import { getPopularQnaTags, qnaOperationPrinciple } from "@/data/qna";
+import type { QnaAuthorType, QnaType } from "@/types/qna";
 
 /** 글쓰기/댓글/공감/스크랩/공유/신고 — 백엔드가 없는 동작은 이 토스트로 통일해서 알린다 */
 export function showQnaNotice(setNotice: (message: string) => void, message: string) {
@@ -48,16 +49,27 @@ const authorAvatarTones = [
   "bg-[#b3bec9] text-[#202734]",
 ];
 
-/** QNA 카드 상단 작성자 블록 전용 원형 아바타 — 닉네임 이니셜 + id 해시 기반 회색 톤 로테이션 */
-export function QnaAuthorAvatar({ id, initial, size = 38 }: { id: string; initial: string; size?: number }) {
-  const tone = authorAvatarTones[hashToIndex(id, authorAvatarTones.length)];
+/** "익명"/"작성자"는 익명 계열이라 서로 구분되면 안 되므로 단색 하나로 고정한다 */
+const anonymousAvatarTone = "bg-[#e8ebef] text-[#596373]";
+
+function isAnonymousNickname(nickname: string): boolean {
+  return nickname === "익명" || nickname === "작성자";
+}
+
+/**
+ * QNA 카드 상단 작성자 블록 전용 원형 아바타 — 닉네임 이니셜을 그대로 쓴다.
+ * "익명"/"작성자"(익명 계열)는 서로 식별되면 안 되므로 항상 같은 단색이고,
+ * 실명(기업·헤드헌터·비익명 사용자)만 id 해시 기반 회색 톤 로테이션을 받는다.
+ */
+export function QnaAuthorAvatar({ id, nickname, size = 38 }: { id: string; nickname: string; size?: number }) {
+  const tone = isAnonymousNickname(nickname) ? anonymousAvatarTone : authorAvatarTones[hashToIndex(id, authorAvatarTones.length)];
   return (
     <span
       className={clsx("grid shrink-0 place-items-center rounded-full text-[14px] font-bold", tone)}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
-      {initial}
+      {nickname.slice(0, 1)}
     </span>
   );
 }
@@ -70,20 +82,19 @@ export function QnaAuthorLabelBadge({ children }: { children: ReactNode }) {
   );
 }
 
-export function QnaTagChip({ children, muted = false }: { children: ReactNode; muted?: boolean }) {
-  return (
-    <span
-      className={clsx(
-        "inline-flex h-6 items-center whitespace-nowrap border px-2 text-[12px] font-medium",
-        muted ? "border-[#e5e9ef] text-[#8a94a3]" : "border-[#cfd8e3] bg-[#f7f8fa] text-[#596373]",
-      )}
-    >
-      #{children}
-    </span>
-  );
+interface PopularTagsPanelProps {
+  activeType: QnaType;
+  /** 상단 필터와 공유하는 현재 선택값 — 일치하는 태그를 강조 표시 */
+  selectedTag?: string;
+  /** 목록 페이지: 클릭 시 로컬 필터 상태를 변경 */
+  onTagClick?: (tag: string) => void;
+  /** 상세 페이지: 클릭 시 /qna로 이동(로컬 필터 상태가 없어 콜백 대신 링크 사용) */
+  tagHref?: (tag: string) => string;
 }
 
-export function PopularTagsPanel() {
+export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref }: PopularTagsPanelProps) {
+  const tags = getPopularQnaTags(activeType);
+
   return (
     <section className="border border-[#e5e9ef] bg-white p-5">
       <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
@@ -91,11 +102,22 @@ export function PopularTagsPanel() {
         인기 태그
       </h2>
       <div className="mt-4 flex flex-wrap gap-2">
-        {qnaPopularTags.map((tag) => (
-          <span key={tag} className="inline-flex h-6 items-center whitespace-nowrap bg-[#f4f6f8] px-2 text-[12px] font-medium text-[#596373]">
-            #{tag}
-          </span>
-        ))}
+        {tags.map((tag) => {
+          const active = selectedTag === tag;
+          const className = clsx(
+            "inline-flex h-6 items-center whitespace-nowrap bg-[#f4f6f8] px-2 text-[12px] font-medium transition-colors",
+            active ? "font-bold text-[#111111]" : "text-[#596373] hover:text-[#111111]",
+          );
+          return tagHref ? (
+            <Link key={tag} href={tagHref(tag)} className={className}>
+              #{tag}
+            </Link>
+          ) : (
+            <button key={tag} type="button" onClick={() => onTagClick?.(tag)} className={className}>
+              #{tag}
+            </button>
+          );
+        })}
       </div>
     </section>
   );

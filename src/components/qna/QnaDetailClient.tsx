@@ -1,28 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Bookmark, Flag, Heart, Share2 } from "lucide-react";
+import { ArrowLeft, Bookmark, Flag, Share2, ThumbsUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { myPageUser } from "@/config/myPageMenu";
-import { getEntryCommentCount, getRelatedQnaEntries, isQnaPost } from "@/data/qna";
-import type { QnaComment, QnaPost, QnaReply } from "@/types/qna";
+import { getEntryCommentCount, getRelatedQnaEntries } from "@/data/qna";
+import type { QnaPost, QnaReply } from "@/types/qna";
 import {
   PopularTagsPanel,
+  QnaAuthorAvatar,
   QnaAuthorLabelBadge,
   QnaAvatar,
   QnaNotice,
   QnaOperationPrinciplePanel,
-  QnaTagChip,
   showQnaNotice,
 } from "@/components/qna/QnaShared";
 
 type CommentSortOption = "인기순" | "최신순";
-
-function displayAuthorName(authorType: QnaComment["authorType"], authorName: string): string {
-  if (authorType === "anonymous") return authorName.replace(/^익명\s*·\s*/, "");
-  return authorName;
-}
 
 function ReactionRow({
   likeCount,
@@ -43,15 +38,15 @@ function ReactionRow({
         <button
           type="button"
           onClick={onLike}
-          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111]"
+          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
         >
-          <Heart size={15} aria-hidden="true" />
+          <ThumbsUp size={15} aria-hidden="true" />
           공감 {likeCount}
         </button>
         <button
           type="button"
           onClick={onScrap}
-          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111]"
+          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
         >
           <Bookmark size={15} aria-hidden="true" />
           스크랩
@@ -59,7 +54,7 @@ function ReactionRow({
         <button
           type="button"
           onClick={onShare}
-          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111]"
+          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
         >
           <Share2 size={15} aria-hidden="true" />
           공유
@@ -90,10 +85,10 @@ function CommentSortControl({ value, onChange }: { value: CommentSortOption; onC
 }
 
 function CommentRow({
-  authorType,
-  authorName,
+  id,
+  nickname,
+  jobRole,
   authorLabel,
-  avatarInitial,
   isPostAuthor,
   createdAtLabel,
   likeCount,
@@ -101,10 +96,10 @@ function CommentRow({
   onReact,
   onReply,
 }: {
-  authorType: QnaComment["authorType"];
-  authorName: string;
+  id: string;
+  nickname: string;
+  jobRole: string;
   authorLabel?: string;
-  avatarInitial: string;
   isPostAuthor?: boolean;
   createdAtLabel: string;
   likeCount: number;
@@ -114,16 +109,19 @@ function CommentRow({
 }) {
   return (
     <div className="flex gap-3">
-      <QnaAvatar authorType={authorType} initial={avatarInitial} size={32} />
+      <QnaAuthorAvatar id={id} nickname={nickname} size={32} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-[13px] font-bold text-[#171d26]">{displayAuthorName(authorType, authorName)}</span>
+          {isPostAuthor ? (
+            <QnaAuthorLabelBadge>{nickname}</QnaAuthorLabelBadge>
+          ) : (
+            <span className="text-[13px] font-bold text-[#171d26]">{nickname}</span>
+          )}
           {authorLabel ? <QnaAuthorLabelBadge>{authorLabel}</QnaAuthorLabelBadge> : null}
-          {isPostAuthor && !authorLabel ? <QnaAuthorLabelBadge>작성자</QnaAuthorLabelBadge> : null}
         </div>
+        <p className="mt-0.5 text-[13px] font-normal text-[#8b95a1]">{[jobRole, createdAtLabel].filter(Boolean).join(" · ")}</p>
         <p className="mt-1.5 text-[14px] font-normal leading-[1.65] text-[#3d4653]">{body}</p>
         <div className="mt-1.5 flex items-center gap-3 text-[12px] font-medium text-[#a0a9b7]">
-          <span>{createdAtLabel}</span>
           <button type="button" onClick={onReact} className="hover:text-[#596373]">
             공감 {likeCount}
           </button>
@@ -195,6 +193,14 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
   const notify = (message: string) => showQnaNotice(setNotice, message);
 
+  /** 상세페이지엔 리스트의 로컬 필터 상태가 없어, 인기 태그 클릭은 해당 태그로 리스트를 여는 링크로 처리한다 */
+  const popularTagHref = (tag: string) => {
+    const params = new URLSearchParams(previewQuery.replace(/^\?/, ""));
+    params.set("type", post.qnaType);
+    params.set("tag", tag);
+    return `/qna?${params.toString()}`;
+  };
+
   return (
     <main className="bg-[#f7f8fa] pb-20">
       <div className="app-shell pt-8">
@@ -206,22 +212,20 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
         <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1024px]:grid-cols-1">
           <div className="min-w-0 space-y-5">
             <article className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
-              <div className="flex flex-wrap items-center gap-1.5">
-                {post.tags.map((tag) => (
-                  <QnaTagChip key={tag}>{tag}</QnaTagChip>
-                ))}
-              </div>
-              <h1 className="mt-3 text-[26px] font-bold leading-[1.35] tracking-[-0.02em] text-[#171d26] max-[640px]:text-[21px]">{post.title}</h1>
+              {post.isBest ? (
+                <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span>
+              ) : null}
+              <h1 className="text-[22px] font-bold leading-[1.35] tracking-[-0.02em] text-[#171d26] max-[640px]:text-[20px]">{post.title}</h1>
 
               <div className="mt-4 flex items-center gap-3 border-b border-[#edf1f5] pb-5">
-                <QnaAvatar authorType={post.authorType} initial={post.avatarInitial} size={40} />
+                <QnaAuthorAvatar id={post.id} nickname={post.nickname} size={40} />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-[14px] font-bold text-[#171d26]">{displayAuthorName(post.authorType, post.authorName)}</span>
+                    <span className="truncate text-[15px] font-bold text-[#17202c]">{post.nickname}</span>
                     {post.authorLabel ? <QnaAuthorLabelBadge>{post.authorLabel}</QnaAuthorLabelBadge> : null}
                   </div>
-                  <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
-                    {post.createdAtLabel} · 조회 {post.viewCount.toLocaleString("ko-KR")}
+                  <p className="mt-0.5 truncate text-[13px] font-normal text-[#8b95a1]">
+                    {[post.jobRole, post.createdAtLabel].filter(Boolean).join(" · ")} · 조회 {post.viewCount.toLocaleString("ko-KR")}
                   </p>
                 </div>
               </div>
@@ -234,11 +238,11 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 ))}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center gap-1.5">
+              <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal text-[#8b95a1]">
                 {post.tags.map((tag) => (
-                  <QnaTagChip key={`bottom-${tag}`} muted>
-                    {tag}
-                  </QnaTagChip>
+                  <span key={tag} className="whitespace-nowrap">
+                    #{tag}
+                  </span>
                 ))}
               </div>
 
@@ -266,10 +270,10 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                   {sortedComments.map((comment) => (
                     <div key={comment.id} className="py-5">
                       <CommentRow
-                        authorType={comment.authorType}
-                        authorName={comment.authorName}
+                        id={comment.id}
+                        nickname={comment.nickname}
+                        jobRole={comment.jobRole}
                         authorLabel={comment.authorLabel}
-                        avatarInitial={comment.avatarInitial}
                         isPostAuthor={comment.isPostAuthor}
                         createdAtLabel={comment.createdAtLabel}
                         likeCount={comment.likeCount}
@@ -282,10 +286,10 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                           {comment.replies.map((reply: QnaReply) => (
                             <CommentRow
                               key={reply.id}
-                              authorType={reply.authorType}
-                              authorName={reply.authorName}
+                              id={reply.id}
+                              nickname={reply.nickname}
+                              jobRole={reply.jobRole}
                               authorLabel={reply.authorLabel}
-                              avatarInitial={reply.avatarInitial}
                               isPostAuthor={reply.isPostAuthor}
                               createdAtLabel={reply.createdAtLabel}
                               likeCount={reply.likeCount}
@@ -310,13 +314,15 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <h2 className="text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
                 <div className="mt-3 divide-y divide-[#edf1f5]">
                   {relatedEntries.map((entry) => {
-                    const clickable = isQnaPost(entry);
+                    const clickable = true;
                     const itemContent = (
                       <>
-                        <QnaTagChip muted>{entry.tags[0]}</QnaTagChip>
-                        <p className="mt-1.5 line-clamp-2 text-[13px] font-medium leading-[1.5] text-[#303946]">{entry.title}</p>
-                        <p className="mt-1 text-[11px] font-normal text-[#a0a9b7]">
-                          댓글 {getEntryCommentCount(entry)} · 공감 {entry.likeCount}
+                        <p className="line-clamp-2 text-[13px] font-medium leading-[1.5] text-[#303946]">{entry.title}</p>
+                        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[11px] font-normal text-[#a0a9b7]">
+                          <span>#{entry.tags[0]}</span>
+                          <span>
+                            댓글 {getEntryCommentCount(entry)} · 공감 {entry.likeCount}
+                          </span>
                         </p>
                       </>
                     );
@@ -333,7 +339,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 </div>
               </section>
             ) : null}
-            <PopularTagsPanel />
+            <PopularTagsPanel activeType={post.qnaType} tagHref={popularTagHref} />
             <QnaOperationPrinciplePanel />
           </aside>
         </div>

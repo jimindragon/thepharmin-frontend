@@ -1,4 +1,5 @@
-import type { QnaListEntry, QnaPost, QnaPreviewCard, QnaType } from "@/types/qna";
+import { qnaTagPool } from "@/config/qnaTags";
+import type { QnaListEntry, QnaPost, QnaType } from "@/types/qna";
 
 /**
  * THE PHARMA Recruit 채용 QNA 시드 데이터.
@@ -7,25 +8,19 @@ import type { QnaListEntry, QnaPost, QnaPreviewCard, QnaType } from "@/types/qna
  * 데이터로만 사용한다. 제목·본문·댓글 문구는 예시 텍스트를 그대로 옮긴 것이다.
  */
 
-export const qnaPopularTags = ["취업·이직", "면접·전형", "연봉·복지", "근무환경", "개국", "연구개발", "임상", "RA"];
-
 export const qnaOperationPrinciple = {
   title: "QNA 운영 원칙",
   description: "익명 회원은 식별되지 않으며, 기업·헤드헌터는 공개된 산업 토론에만 참여할 수 있습니다.",
 };
 
-/** 목록 상단 카테고리 필터 칩 — 해당 유형 데이터에 실제로 존재하는 category/태그만 사용 */
-export const qnaCategoryFilters: Record<QnaType, string[]> = {
-  pharmacist: ["약국", "병원", "개국", "양수양도", "실무"],
-  industry: ["채용", "경력직", "취업·이직", "연봉·복지", "면접·전형"],
-};
+/** 목록 상단 카테고리 필터 칩 — qnaTags.ts의 태그 풀을 그대로 참조한다(더 이상 별도 category 값이 아니다) */
+export const qnaCategoryFilters: Record<QnaType, string[]> = qnaTagPool;
 
 export const qnaPosts: QnaPost[] = [
   {
     id: "industry-job-001",
     qnaType: "industry",
-    category: "산업",
-    tags: ["채용", "경력직"],
+    tags: ["취업·이직", "인허가·임상"],
     title: "[한미약품] 2026 상반기 R&D·임상 부문 경력직 공개 채용 안내",
     body: [
       "안녕하세요, 한미약품 채용팀입니다.",
@@ -38,7 +33,7 @@ export const qnaPosts: QnaPost[] = [
     authorLabel: "기업 공식 계정",
     avatarInitial: "한",
     nickname: "한미약품 채용팀",
-    jobRole: "기업 공식 계정",
+    jobRole: "",
     companyName: "한미약품",
     createdAtLabel: "3시간 전",
     minutesAgo: 180,
@@ -50,6 +45,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명1",
+        jobRole: "RA",
         createdAtLabel: "2시간 전",
         likeCount: 5,
         body: "RA 매니저 포지션 경력 요건이 정확히 어떻게 되나요? 공고에 명시된 것보다 더 구체적으로 알 수 있을까요?",
@@ -60,6 +57,8 @@ export const qnaPosts: QnaPost[] = [
             authorName: "한미약품 채용팀",
             authorLabel: "기업 공식 계정",
             avatarInitial: "한",
+            nickname: "한미약품 채용팀",
+            jobRole: "",
             createdAtLabel: "1시간 전",
             likeCount: 7,
             body: "문의 감사합니다. RA 매니저는 의약품 인허가 경력 5년 이상, 글로벌 등록 경험 보유자를 우대합니다. 세부 요건은 공고를 참고 부탁드립니다.",
@@ -72,8 +71,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "industry-career-001",
     qnaType: "industry",
-    category: "산업",
-    tags: ["취업·이직", "MedicalAffairs"],
+    tags: ["커리어", "인허가·임상"],
     title: "RA에서 Medical Affairs로 직무 전환, 현실적인 조언 구합니다",
     body: [
       "5년차 RA로 일하고 있습니다. 인허가 업무를 하면서 점점 제품 전략과 의학적 커뮤니케이션 쪽에 관심이 생겨 Medical Affairs로의 전환을 고민하고 있어요.",
@@ -83,7 +81,7 @@ export const qnaPosts: QnaPost[] = [
     authorType: "anonymous",
     authorName: "익명 · 산업",
     avatarInitial: "산",
-    nickname: "익명1",
+    nickname: "익명",
     jobRole: "RA",
     createdAtLabel: "6시간 전",
     minutesAgo: 360,
@@ -95,6 +93,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명1",
+        jobRole: "MSL",
         createdAtLabel: "5시간 전",
         likeCount: 14,
         body: "저도 RA 6년 하다가 MSL로 전환했어요. 결론부터 말하면 MSL을 거쳐 MA 본사로 가는 루트가 현실적입니다. RA 백그라운드는 안전성·규제 커뮤니케이션에서 확실히 강점이 돼요.",
@@ -103,8 +103,9 @@ export const qnaPosts: QnaPost[] = [
             id: "industry-career-001-c1-r1",
             authorType: "anonymous",
             authorName: "익명 · 산업",
-            authorLabel: "작성자",
             avatarInitial: "산",
+            nickname: "작성자",
+            jobRole: "RA",
             isPostAuthor: true,
             createdAtLabel: "4시간 전",
             likeCount: 3,
@@ -117,6 +118,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명2",
+        jobRole: "마케팅",
         createdAtLabel: "4시간 전",
         likeCount: 9,
         body: "치료 영역(TA)을 하나 정해서 그 질환의 임상 가이드라인과 핵심 논문을 정리해두세요. 면접에서 그 깊이를 봅니다.",
@@ -128,6 +131,8 @@ export const qnaPosts: QnaPost[] = [
         authorName: "한미약품 채용팀",
         authorLabel: "기업 공식 계정",
         avatarInitial: "한",
+        nickname: "한미약품 채용팀",
+        jobRole: "",
         createdAtLabel: "3시간 전",
         likeCount: 6,
         body: "현재 당사 Medical Affairs 팀에서 MSL 및 MA 매니저 포지션을 상시 채용 중입니다. RA 경력자도 지원 가능하니 채용공고를 참고해 주세요.",
@@ -139,8 +144,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "industry-salary-001",
     qnaType: "industry",
-    category: "산업",
-    tags: ["연봉·복지", "이직"],
+    tags: ["연봉·처우", "커리어"],
     title: "바이오텍 vs 대형 제약사, 처우 차이 솔직하게 비교해봤어요",
     body: [
       "양쪽 다 경험해본 입장에서 처우 차이를 최대한 솔직하게 정리해봤습니다.",
@@ -150,7 +154,7 @@ export const qnaPosts: QnaPost[] = [
     authorType: "anonymous",
     authorName: "익명 · 산업",
     avatarInitial: "산",
-    nickname: "익명2",
+    nickname: "익명",
     jobRole: "마케팅",
     createdAtLabel: "9시간 전",
     minutesAgo: 540,
@@ -162,6 +166,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명1",
+        jobRole: "품질",
         createdAtLabel: "8시간 전",
         likeCount: 22,
         body: "스톡옵션은 정말 복불복이죠. 행사가랑 베스팅 조건 꼼꼼히 봐야 합니다.",
@@ -172,6 +178,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명2",
+        jobRole: "생산",
         createdAtLabel: "6시간 전",
         likeCount: 9,
         body: "정리 깔끔하네요. 저는 안정성을 택해서 제약사에 남았습니다.",
@@ -183,6 +191,8 @@ export const qnaPosts: QnaPost[] = [
         authorName: "헤드헌터 김선우",
         authorLabel: "헤드헌터 공식 계정",
         avatarInitial: "헤",
+        nickname: "헤드헌터 김선우",
+        jobRole: "",
         createdAtLabel: "7시간 전",
         likeCount: 7,
         body: "서치펌 컨설턴트 관점에서도 동의합니다. 다만 최근 시리즈 B 이후 바이오텍은 처우가 안정적인 곳이 많아져서, 일괄적으로 리스크가 크다고 보긴 어렵습니다.",
@@ -194,8 +204,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "industry-interview-001",
     qnaType: "industry",
-    category: "산업",
-    tags: ["면접·전형", "CDMO"],
+    tags: ["면접", "생산"],
     title: "CDMO 공정개발 직무 면접 후기 (1차 실무 → 2차 임원)",
     body: [
       "최근 삼성바이오로직스 공정개발(Downstream) 포지션 전형을 마쳐서 기억이 생생할 때 공유합니다.",
@@ -206,7 +215,7 @@ export const qnaPosts: QnaPost[] = [
     authorType: "anonymous",
     authorName: "익명 · 산업",
     avatarInitial: "산",
-    nickname: "익명3",
+    nickname: "익명",
     jobRole: "생산",
     companyName: "삼성바이오로직스",
     createdAtLabel: "어제",
@@ -219,6 +228,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명1",
+        jobRole: "생산",
         createdAtLabel: "20시간 전",
         likeCount: 7,
         body: "Downstream 직무 준비 중인데 큰 도움이 됩니다. 혹시 영어 인터뷰 비중도 있었나요?",
@@ -227,8 +238,9 @@ export const qnaPosts: QnaPost[] = [
             id: "industry-interview-001-c1-r1",
             authorType: "anonymous",
             authorName: "익명 · 산업",
-            authorLabel: "작성자",
             avatarInitial: "산",
+            nickname: "작성자",
+            jobRole: "생산",
             isPostAuthor: true,
             createdAtLabel: "19시간 전",
             likeCount: 4,
@@ -241,6 +253,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 산업",
         avatarInitial: "산",
+        nickname: "익명2",
+        jobRole: "품질",
         createdAtLabel: "18시간 전",
         likeCount: 5,
         body: "결과 통보 1주일이면 빠른 편이네요. 후기 감사합니다.",
@@ -252,8 +266,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "pharmacist-opening-001",
     qnaType: "pharmacist",
-    category: "약국",
-    tags: ["개국", "양수양도"],
+    tags: ["개국", "약국 운영"],
     title: "문전 약국 양도 검토 중인데, 권리금 산정 어떻게 보세요?",
     body: [
       "문전 약국 양도를 검토 중입니다. 처방전 응대 비율과 월 일매를 기준으로 권리금을 제시받았는데, 적정선인지 판단이 서질 않네요.",
@@ -263,7 +276,7 @@ export const qnaPosts: QnaPost[] = [
     authorType: "anonymous",
     authorName: "익명 · 약사",
     avatarInitial: "약",
-    nickname: "익명1",
+    nickname: "익명",
     jobRole: "근무약사",
     createdAtLabel: "2시간 전",
     minutesAgo: 120,
@@ -276,6 +289,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 약사",
         avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "개국약사",
         createdAtLabel: "1시간 전",
         likeCount: 18,
         body: "문전은 결국 처방 병원 리스크가 핵심이에요. 병원 임대차 잔여기간이랑 이전 계획부터 확인하세요. 권리금은 보통 연 순이익을 기준으로 봅니다.",
@@ -284,8 +299,9 @@ export const qnaPosts: QnaPost[] = [
             id: "pharmacist-opening-001-c1-r1",
             authorType: "anonymous",
             authorName: "익명 · 약사",
-            authorLabel: "작성자",
             avatarInitial: "약",
+            nickname: "작성자",
+            jobRole: "근무약사",
             isPostAuthor: true,
             createdAtLabel: "42분 전",
             likeCount: 2,
@@ -298,6 +314,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 약사",
         avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "개국약사",
         createdAtLabel: "38분 전",
         likeCount: 11,
         body: "최근에 비슷한 입지 양수했는데, 일매보다 처방 안정성을 훨씬 깐깐하게 봤습니다. 단골 비중도 같이 보세요.",
@@ -309,8 +327,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "pharmacist-practice-001",
     qnaType: "pharmacist",
-    category: "약국",
-    tags: ["실무", "복약지도"],
+    tags: ["약국 실무", "복약지도"],
     title: "조제 더블체크 루틴, 이렇게 바꾸니 실수가 줄었어요",
     body: [
       "조제 실수를 줄이려고 더블체크 절차를 손봤는데 확실히 효과가 있어서 공유합니다.",
@@ -320,7 +337,7 @@ export const qnaPosts: QnaPost[] = [
     authorType: "anonymous",
     authorName: "익명 · 약사",
     avatarInitial: "약",
-    nickname: "익명5",
+    nickname: "익명",
     jobRole: "근무약사",
     createdAtLabel: "7시간 전",
     minutesAgo: 420,
@@ -332,6 +349,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 약사",
         avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "근무약사",
         createdAtLabel: "6시간 전",
         likeCount: 11,
         body: "고용량·유사 약품명 따로 관리하는 거 정말 중요하죠. 저희는 색깔 라벨로 구분합니다.",
@@ -342,6 +361,8 @@ export const qnaPosts: QnaPost[] = [
         authorType: "anonymous",
         authorName: "익명 · 약사",
         avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "근무약사",
         createdAtLabel: "5시간 전",
         likeCount: 6,
         body: "바쁠 때일수록 루틴이 지켜지는지가 관건이더라고요. 좋은 공유 감사합니다.",
@@ -350,82 +371,192 @@ export const qnaPosts: QnaPost[] = [
     ],
     relatedPostIds: ["pharmacist-opening-001", "pharmacist-career-001", "pharmacist-salary-001"],
   },
-];
-
-/**
- * 목록 카드 전용 보조 게시글 — 상세 본문이 없어 클릭해도 상세페이지로 연결하지 않는다.
- * (예시 데이터 원문이 "목록 카드에서만 사용" 한다고 명시한 항목)
- */
-export const qnaPreviewCards: QnaPreviewCard[] = [
   {
     id: "pharmacist-career-001",
     qnaType: "pharmacist",
-    category: "병원",
-    tags: ["취업·이직"],
+    tags: ["취업·이직", "병원약사"],
     title: "병원약사에서 제약 메디컬로 이직, 면허 메리트 있을까요?",
-    preview:
+    body: [
       "병원약사 경력을 바탕으로 제약사 메디컬 직무 이직을 고민하고 있습니다. 약사 면허와 병원 실무 경험이 실제 채용 과정에서 어느 정도 강점이 되는지 궁금합니다.",
+      "특히 MSL이나 RA처럼 임상·인허가 지식을 요구하는 직무가 병원 실무 경험을 어떻게 평가하는지, 그리고 이직 시 연봉이나 직급은 어느 정도로 협상하는 게 합리적인지도 함께 여쭤보고 싶습니다.",
+    ],
     authorType: "anonymous",
     authorName: "익명 · 병원약사",
     avatarInitial: "약",
-    nickname: "익명2",
+    nickname: "익명",
     jobRole: "병원약사",
     createdAtLabel: "3시간 전",
     minutesAgo: 180,
+    viewCount: 2018,
     likeCount: 51,
-    commentCount: 23,
+    comments: [
+      {
+        id: "pharmacist-career-001-c1",
+        authorType: "anonymous",
+        authorName: "익명 · 산업약사",
+        avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "산업약사",
+        createdAtLabel: "2시간 전",
+        likeCount: 9,
+        body: "저도 병원약사 하다가 제약사 메디컬팀으로 이직했어요. 약사 면허 자체보다는 병원에서 쌓은 임상 커뮤니케이션 경험을 더 높게 평가받았습니다.",
+        replies: [
+          {
+            id: "pharmacist-career-001-c1-r1",
+            authorType: "anonymous",
+            authorName: "익명 · 병원약사",
+            avatarInitial: "약",
+            nickname: "작성자",
+            jobRole: "병원약사",
+            isPostAuthor: true,
+            createdAtLabel: "1시간 전",
+            likeCount: 3,
+            body: "실무 경험이 더 중요하다는 말씀 감사합니다. 목표 부서부터 좁혀볼게요.",
+          },
+        ],
+      },
+      {
+        id: "pharmacist-career-001-c2",
+        authorType: "anonymous",
+        authorName: "익명 · 산업약사",
+        avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "산업약사",
+        createdAtLabel: "1시간 전",
+        likeCount: 5,
+        body: "메디컬 부서마다 요구하는 자격이 좀 달라요. MSL은 임상 경험을, RA는 인허가 지식을 더 보는 편이니 목표 부서를 먼저 정하시는 게 좋을 것 같아요.",
+        replies: [],
+      },
+    ],
+    relatedPostIds: ["pharmacist-opening-001", "pharmacist-salary-001", "pharmacist-hospital-001"],
   },
   {
     id: "pharmacist-salary-001",
     qnaType: "pharmacist",
-    category: "약국",
-    tags: ["연봉·복지"],
+    tags: ["연봉", "취업·이직"],
     title: "근무약사 처우 협상, 다들 어디까지 받으세요?",
-    preview: "이직 제안을 받았는데 연봉과 인센티브 기준을 어떻게 협상해야 할지 고민입니다. 근무 형태와 경력에 따른 실제 협상 경험을 듣고 싶습니다.",
+    body: [
+      "이직 제안을 받았는데 연봉과 인센티브 기준을 어떻게 협상해야 할지 고민입니다. 근무 형태와 경력에 따른 실제 협상 경험을 듣고 싶습니다.",
+      "특히 정규직 전환 조건이나 인센티브 지급 기준을 계약서에 어떻게 명시해야 나중에 분쟁이 없을지, 실제로 협상해보신 분들의 구체적인 사례가 궁금합니다.",
+    ],
     authorType: "anonymous",
     authorName: "익명 · 약사",
     avatarInitial: "약",
-    nickname: "익명3",
+    nickname: "익명",
     jobRole: "근무약사",
     createdAtLabel: "5시간 전",
     minutesAgo: 300,
+    viewCount: 1622,
     likeCount: 44,
-    commentCount: 26,
+    comments: [
+      {
+        id: "pharmacist-salary-001-c1",
+        authorType: "anonymous",
+        authorName: "익명 · 약사",
+        avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "근무약사",
+        createdAtLabel: "4시간 전",
+        likeCount: 8,
+        body: "연차랑 근무 형태에 따라 편차가 커요. 저는 3년차에 주 5일 근무로 이직하면서 기본급 외에 인센티브 비율을 명확히 문서화해달라고 요청했습니다.",
+        replies: [
+          {
+            id: "pharmacist-salary-001-c1-r1",
+            authorType: "anonymous",
+            authorName: "익명 · 약사",
+            avatarInitial: "약",
+            nickname: "작성자",
+            jobRole: "근무약사",
+            isPostAuthor: true,
+            createdAtLabel: "3시간 전",
+            likeCount: 2,
+            body: "인센티브 비율 문서화는 미처 생각 못 했네요. 협상 때 꼭 넣어보겠습니다.",
+          },
+        ],
+      },
+      {
+        id: "pharmacist-salary-001-c2",
+        authorType: "anonymous",
+        authorName: "익명 · 약사",
+        avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "근무약사",
+        createdAtLabel: "3시간 전",
+        likeCount: 6,
+        body: "연봉만 보지 말고 4대 보험 처리나 점심시간 보장 여부도 꼭 확인하세요. 실수령액 차이가 생각보다 큽니다.",
+        replies: [],
+      },
+    ],
+    relatedPostIds: ["pharmacist-opening-001", "pharmacist-career-001", "pharmacist-practice-001"],
   },
   {
     id: "pharmacist-hospital-001",
     qnaType: "pharmacist",
-    category: "병원",
-    tags: ["실무", "취업·이직"],
+    tags: ["병원약사", "취업·이직"],
     title: "대학병원 약제부 항암주사 조제 파트, 실제 업무 강도는?",
-    preview: "대학병원 약제부 항암주사 조제 파트 지원을 고민 중입니다. 교대 형태와 업무 강도, 적응 과정에 대한 실제 경험이 궁금합니다.",
+    body: [
+      "대학병원 약제부 항암주사 조제 파트 지원을 고민 중입니다. 교대 형태와 업무 강도, 적응 과정에 대한 실제 경험이 궁금합니다.",
+      "무균 조제 교육이나 자격 요건이 따로 있는지, 그리고 신규 인력이 실무에 적응하기까지 보통 얼마나 걸리는지도 함께 알고 싶습니다.",
+    ],
     authorType: "anonymous",
     authorName: "익명 · 병원약사",
     avatarInitial: "약",
-    nickname: "익명4",
+    nickname: "익명",
     jobRole: "병원약사",
     createdAtLabel: "4시간 전",
     minutesAgo: 240,
+    viewCount: 1745,
     likeCount: 41,
-    commentCount: 28,
+    comments: [
+      {
+        id: "pharmacist-hospital-001-c1",
+        authorType: "anonymous",
+        authorName: "익명 · 병원약사",
+        avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "병원약사",
+        createdAtLabel: "3시간 전",
+        likeCount: 7,
+        body: "항암주사 조제 파트는 무균조제 인증 교육부터 받으시고 시작하실 거예요. 처음 3개월은 속도보다 정확도 위주로 트레이닝하는 편입니다.",
+        replies: [
+          {
+            id: "pharmacist-hospital-001-c1-r1",
+            authorType: "anonymous",
+            authorName: "익명 · 병원약사",
+            avatarInitial: "약",
+            nickname: "작성자",
+            jobRole: "병원약사",
+            isPostAuthor: true,
+            createdAtLabel: "2시간 전",
+            likeCount: 2,
+            body: "무균조제 인증 교육부터 준비해야겠네요. 답변 감사합니다.",
+          },
+        ],
+      },
+      {
+        id: "pharmacist-hospital-001-c2",
+        authorType: "anonymous",
+        authorName: "익명 · 병원약사",
+        avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "병원약사",
+        createdAtLabel: "2시간 전",
+        likeCount: 4,
+        body: "병원마다 다르지만 저희는 2교대로 돌아가고, 항암 조제일에는 인원을 더 배치해서 부담을 나눠요.",
+        replies: [],
+      },
+    ],
+    relatedPostIds: ["pharmacist-career-001", "pharmacist-practice-001", "pharmacist-opening-001"],
   },
 ];
-
-export function isQnaPost(entry: QnaListEntry): entry is QnaPost {
-  return "comments" in entry;
-}
 
 export function getQnaPosts(type: QnaType): QnaPost[] {
   return qnaPosts.filter((post) => post.qnaType === type);
 }
 
-export function getQnaPreviewCards(type: QnaType): QnaPreviewCard[] {
-  return qnaPreviewCards.filter((card) => card.qnaType === type);
-}
-
-/** 목록에 보여줄 전체 항목(상세 있는 글 + 카드 전용 글) */
+/** 목록에 보여줄 전체 항목 — QnaPreviewCard 폐기로 getQnaPosts와 동일하다 */
 export function getQnaListEntries(type: QnaType): QnaListEntry[] {
-  return [...getQnaPosts(type), ...getQnaPreviewCards(type)];
+  return getQnaPosts(type);
 }
 
 export function getQnaPostById(id: string): QnaPost | undefined {
@@ -438,7 +569,7 @@ export function getCommentCount(post: QnaPost): number {
 }
 
 export function getEntryCommentCount(entry: QnaListEntry): number {
-  return isQnaPost(entry) ? getCommentCount(entry) : entry.commentCount;
+  return getCommentCount(entry);
 }
 
 export function getEntryLikeCount(entry: QnaListEntry): number {
@@ -454,10 +585,23 @@ export function getPopularQnaEntries(type: QnaType, limit = 5): QnaListEntry[] {
   return [...getQnaListEntries(type)].sort((a, b) => b.likeCount - a.likeCount).slice(0, limit);
 }
 
-/** 관련 글 id를 같은 유형의 실제 항목(상세 글 또는 카드 전용 글)으로 변환 */
+/** 관련 글 id를 같은 유형의 실제 글로 변환 */
 export function getRelatedQnaEntries(post: QnaPost): QnaListEntry[] {
-  const pool: QnaListEntry[] = [...qnaPosts, ...qnaPreviewCards];
   return post.relatedPostIds
-    .map((id) => pool.find((entry) => entry.id === id))
-    .filter((entry): entry is QnaListEntry => Boolean(entry));
+    .map((id) => qnaPosts.find((entry) => entry.id === id))
+    .filter((entry): entry is QnaPost => Boolean(entry));
+}
+
+/** 해당 탭 글들의 tags 빈도를 집계해 상위 limit개를 반환 — 사이드바 "인기 태그" 패널이 사용 */
+export function getPopularQnaTags(type: QnaType, limit = 8): string[] {
+  const counts = new Map<string, number>();
+  for (const post of getQnaPosts(type)) {
+    for (const tag of post.tags) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tag]) => tag);
 }

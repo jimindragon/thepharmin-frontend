@@ -40,40 +40,6 @@ export interface FormattedContent {
   items: string[];
 }
 
-export type DetailBlockType = "text" | "image" | "gallery" | "table" | "process" | "benefit" | "divider" | "file";
-
-export interface JobDetailBlock {
-  type: DetailBlockType;
-  title?: string;
-  content?: string;
-  url?: string;
-  fileName?: string;
-  alt?: string;
-  images?: Array<{ url: string; alt: string }>;
-  rows?: Array<{ label: string; value: string }>;
-  items?: string[];
-}
-
-export interface JobAdditionalMaterials {
-  images?: Array<{ url: string; alt: string; title?: string }>;
-  files?: Array<{ name: string; url: string; description?: string }>;
-}
-
-export type CompanyNewsType = "company" | "industry" | "regulatory" | "clinical" | "investment";
-
-export interface CompanyNewsArticle {
-  id: string;
-  type: CompanyNewsType;
-  label: string;
-  title: string;
-  publishedAt: string;
-  source: "더파마뉴스";
-  summary: string;
-  keywords: string[];
-  url: string;
-  contentType?: "article" | "press_release" | "sponsored" | "company_provided";
-}
-
 export interface WorkConditionItem {
   label: string;
   value: string;
@@ -303,74 +269,6 @@ export interface JobWorkShift {
   note?: string;
 }
 
-/** 근무지 교통편. 항목이 없으면 해당 행을 렌더링하지 않는다. */
-export interface JobCommute {
-  subway?: string[];
-  bus?: string[];
-  car?: string;
-  parking?: "가능" | "불가" | "지원";
-}
-
-/** 약국 근무 환경(전산/기기/인력 구성). 값이 없는 필드는 숨긴다. */
-export interface PharmacyEnv {
-  simpyeong?: "필요" | "불필요";
-  atc?: string;
-  otherDevices?: string[];
-  software?: string[];
-  staff?: { pharmacist?: number; support?: number };
-  mainDept?: string[];
-  mainHospital?: string;
-}
-
-export interface HospitalDepartment {
-  name: string;
-  headcount: string;
-  schedule: string;
-  duties: string;
-  requirements: string;
-}
-
-export interface PharmacyRecruitRow {
-  part: string;
-  duty: string;
-  qualification: string;
-}
-
-export interface JobHrTip {
-  question: string;
-  answer: string;
-}
-
-export type JobApplyChannel = "간편지원" | "전화" | "문자" | "이메일";
-
-/** 지원 채널·전형절차 상세. 기존 applyMethod(단일 라벨)와 별개로 채널이 여러 개인 공고에서 사용한다. */
-export interface JobApplyInfo {
-  channels: JobApplyChannel[];
-  /** 채널 제한 안내. 예: "간편지원 불가, 이메일·전화만 가능" */
-  blocked?: string;
-  /** 연락 안내 문구. 예: "문자로 간단한 자기소개를 보내주세요" */
-  note?: string;
-  phone?: string;
-  email?: string;
-  /** 담당자 정보 (모두 선택). 상세에서 마스킹 처리 후 노출 */
-  managerName?: string;
-  managerPhone?: string;
-  managerEmail?: string;
-  documents?: string[];
-  steps: string[];
-}
-
-export type ResearchRecruitType =
-  | "PostDoc"
-  | "연구교수"
-  | "전임연구원"
-  | "연구원"
-  | "석사연구원"
-  | "연구조교"
-  | "인턴연구원";
-
-export type ResearchDegree = "박사" | "박사수료" | "박사예정" | "석사" | "석사수료" | "석사예정";
-
 /**
  * Lab.institutionType 전용 분류. 트랙 라우팅에 쓰이는 OrganizationType과는 별개로, 연구실 상세 페이지 표시용 분류다.
  * `researchInstitutionTypeOptions`(`config/jobFilters/researchFilters.ts`)의 id와 1:1로 대응 — 필터 정본이므로 이 유니온도 함께 바뀌어야 한다.
@@ -416,20 +314,6 @@ export interface ResearchSalaryInfo {
   funding?: string[];
   overseasSupport?: OverseasSupportType[];
 }
-
-/** 연구직 근무지. scope에 따라 노출 필드가 달라진다(국내: 시·도/주소/건물, 해외: 국가/영문주소/비자). */
-export interface ResearchLocationInfo {
-  scope: "국내" | "해외";
-  region?: string;
-  country?: string;
-  address?: string;
-  detail?: string;
-  secondment?: string;
-}
-
-export type ResearchEligibility = "내국인만" | "외국인가능" | "J-1영어요건" | "BrainPool" | "비자스폰서";
-
-export type ResearchApplyVia = "이메일" | "기관홈페이지" | "플랫폼";
 
 /** "테마별 채용관" 후보군을 가리키는 메타데이터 태그. 저장만 하고, 테마별 채용관 자체는 아직 없다(THEME_LABELS 참고). */
 export type ThemeId = "T1" | "T2" | "T3" | "T4" | "T5" | "T6" | "T7" | "T8" | "T9";
@@ -516,9 +400,6 @@ export interface Job {
   workConditionItems?: WorkConditionItem[];
   workConditions?: string[];
   hiringProcess?: string[];
-  detailBlocks?: JobDetailBlock[];
-  additionalMaterials?: JobAdditionalMaterials;
-  applicationInfo?: string[];
   overview?: Array<{ label: string; value: string }>;
   coverImage?: string;
   deadlineType?: "date" | "untilHired";
@@ -526,7 +407,6 @@ export interface Job {
   companyDescription?: string;
   companyHighlights?: string[];
   reviewSummary?: string;
-  companyNews?: CompanyNewsArticle[];
   similarJobIds?: number[];
   isRecommended?: boolean;
   isClosed?: boolean;
@@ -535,36 +415,9 @@ export interface Job {
 
   /** 약국 등 salary 문자열만으로 표현하기 어려운 공고에서 사용하는 정규화된 급여 상세 */
   salaryDetail?: SalaryDetail;
-  /** 근무 옵션이 여러 개인 공고(약국 파트타임 등)에서 사용 */
-  workShifts?: JobWorkShift[];
-  /** 본문 근무지 교통편. locationDetail(지하철 중심)과 별개로, 지하철이 없는 공고에서 사용 */
-  commute?: JobCommute;
-  pharmacyEnv?: PharmacyEnv;
-  /** 모집부문 및 자격요건 표. 복수 모집부문을 지원한다 */
-  recruitTable?: PharmacyRecruitRow[];
-  /** 상세 모집 내용(포지션 소개와 별개의 본문). 줄바꿈(\n)으로 단락을 구분한다. */
-  details?: string;
-  /** 상세 모집 내용 구조화 버전(FormattedContent). details와 별개로 항목형/번호형 본문이 필요한 경우 사용 */
-  recruitDetails?: FormattedContent;
-  hrTips?: JobHrTip[];
-  /** 지원 채널이 여러 개이거나 차단 안내가 필요한 공고에서 사용 */
-  applyInfo?: JobApplyInfo;
-
-  /** 병원약사 공고 복수 모집부문 비교 테이블. 값이 있을 때만 병원 상세 페이지에서 사용한다 */
-  hospitalDepartments?: HospitalDepartment[];
 
   /** 연구 공고(기관→연구실→PI) 전용 구조. 값이 있을 때만 연구 상세 페이지에서 사용한다 */
   researchLab?: ResearchLab;
-  researchRecruitType?: ResearchRecruitType;
-  researchDegree?: ResearchDegree;
-  researchSalaryInfo?: ResearchSalaryInfo;
-  researchLocationInfo?: ResearchLocationInfo;
-  researchEligibility?: ResearchEligibility[];
-  researchApplyVia?: ResearchApplyVia;
-  /** 연구 주제(연구 배경·기법·프로젝트 설명) 본문. 항목형/번호형/문단형을 모두 지원한다 */
-  researchTopicContent?: FormattedContent;
-  /** 제출서류 목록. 값이 없으면 제출서류 안내 자체를 숨긴다 */
-  researchDocuments?: string[];
 
   /** 테마별 채용관 후보 태그(T1~T9). 메타데이터로만 저장하며, 현재는 어디에도 렌더링하지 않는다 */
   themes?: ThemeId[];
