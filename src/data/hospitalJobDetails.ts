@@ -325,9 +325,166 @@ export const armedForcesSeoulDistrictHospitalJobDetail: HospitalJobDetail = {
   },
 };
 
+// ---- 국립소방병원 정본 ----
+
+export const nationalFireHospitalJobDetail: HospitalJobDetail = {
+  id: "national-fire-hospital-413",
+  slug: "national-firefighters-hospital-pharmacy-staff",
+  companyId: "national-fire-hospital",
+
+  job: {
+    id: "national-fire-hospital-413",
+    companyId: "national-fire-hospital",
+    title: "약무직 신규직원 채용",
+
+    jobCategory: { main: "관리·행정", sub: "약무행정" },
+    headcount: "7명",
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "any",
+
+    summary: "국립소방병원 약제부에서 함께 근무할 약사를 공개 채용합니다.",
+    responsibilities: [
+      "입원·외래 조제 업무",
+      "주사제 조제 및 병동 불출 관리",
+      "의약품 안전사용 관리 업무 지원",
+    ],
+    requirements: ["약사 면허 보유", "병원 약제부 근무 가능자"],
+    preferred: ["병원 약무 경력자", "공공기관 근무 경험자"],
+
+    shiftTypeIds: ["day_shift"],
+    workDays: ["월", "화", "수", "목", "금"],
+    address: "충북 음성군 맹동면 용두4길 19 국립소방병원",
+    salary: "연봉 7,100~8,600만원",
+    workConditionDetail:
+      "주간 근무 중심으로 운영되며, 신설 병원 특성상 주거지원이 예정되어 있습니다.",
+
+    keywords: ["공공기관", "신입가능", "주거지원", "약무직", "종합병원"],
+    // additionalNotes/detailImages: 없음
+    attachments: [
+      { name: "국립소방병원 약무직 신규직원 채용공고문.pdf", url: "#" },
+      { name: "응시원서 및 자기소개서 양식.hwp", url: "#" },
+    ],
+    hiringProcess: ["서류전형", "1차 면접", "최종합격"],
+    requiredDocuments: ["지원서 (지정 양식, 채용 공고문 참고)"],
+
+    apply: {
+      method: "homepage",
+      email: "",
+      phone: "",
+      notice: "채용 공고문을 확인한 후 병원 홈페이지 채용 페이지에서 접수해 주세요.",
+    },
+    deadlineLabel: "2026년 7월 31일 마감",
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "national-fire-hospital",
+    hospitalName: "국립소방병원",
+    logoUrl: companyLogos["국립소방병원"],
+
+    hospitalTypeId: "general",
+    hospitalOperatorId: "public",
+    foundedYear: "2025",
+    homepageUrl: "https://www.nfh.example",
+
+    shortIntro: "소방·재난 대응을 아우르는 공공 종합병원입니다.",
+    fullIntro: "새롭게 문을 연 공공 종합병원에서 약제 업무 체계를 함께 만들어갈 약사를 찾습니다.",
+    keywords: ["공공병원", "종합병원", "소방 특화", "신설"],
+
+    bedCount: "302병상",
+    medicalDepartments: ["internal_medicine", "surgery", "psychiatry", "rehabilitation_medicine"],
+    dutySystem: "약제팀 교대 근무 기반, 공공병원 표준 근무 체계 운영",
+    pharmacyEnvironmentDescription:
+      "약제팀은 입원·외래 조제와 복약지도, 의약품 관리를 담당하며, 신설 병원 특성상 업무 체계를 함께 구축해갈 수 있습니다.",
+
+    location: {
+      address: "충북 음성군 맹동면 용두4길 19 국립소방병원",
+      detailAddress: "",
+    },
+  },
+};
+
+// ---- 성애병원 정본 ----
+
+export const sungaeHospitalJobDetail: HospitalJobDetail = {
+  id: "sungae-hospital-414",
+  slug: "sungae-hospital-morning-parttime-pharmacist",
+  companyId: "sungae-hospital",
+
+  job: {
+    id: "sungae-hospital-414",
+    companyId: "sungae-hospital",
+    title: "오전 파트약사 모집",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "인원 미정",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "professional",
+
+    summary: "평일 오전 시간대에 근무할 파트타임 약사를 모십니다.",
+    responsibilities: ["외래 처방 조제 및 감사", "오전 시간대 복약 상담"],
+    requirements: ["약사 면허 보유", "평일 오전 정기 근무 가능자"],
+    preferred: ["병원 약제부 근무 경험자"],
+
+    shiftTypeIds: ["day_shift"],
+    workDays: ["월", "화", "수", "목", "금"],
+    address: "서울 영등포구 여의대방로53길 22 성애병원",
+    salary: "연봉 3,180~3,230만원",
+    workConditionDetail: "평일 오전(08:30~12:30) 근무이며, 오후 시간 활용이 가능합니다.",
+
+    keywords: ["오전근무", "파트타임", "종합병원", "워라밸", "육아병행"],
+    // detailImages/attachments/additionalNotes: 3종 모두 없음
+    hiringProcess: ["서류전형", "1차 면접", "2차 면접", "최종합격"],
+    requiredDocuments: [
+      "입사지원서 (자사양식)",
+      "졸업증명서 1부 (서류전형 합격자에 한함)",
+      "약사 면허증 사본 1부 (서류전형 합격자에 한함)",
+    ],
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요.",
+    },
+    deadlineLabel: "채용 시 마감",
+    isRolling: true,
+  },
+
+  org: {
+    companyId: "sungae-hospital",
+    hospitalName: "성애병원",
+    logoUrl: companyLogos["성애병원"],
+
+    hospitalTypeId: "general",
+    hospitalOperatorId: "private",
+    foundedYear: "1982",
+    homepageUrl: "https://www.sungae-hospital.example",
+
+    shortIntro: "다양한 진료과를 갖춘 지역 종합병원입니다.",
+    fullIntro: "여러 진료과 처방을 다루는 종합병원에서 폭넓은 약제 경험을 쌓을 약사를 찾습니다.",
+    keywords: ["종합병원", "응급의료", "지역 거점"],
+
+    medicalDepartments: ["internal_medicine", "surgery", "emergency_medicine"],
+    dutySystem: "약제팀 교대 근무 및 당직 체계, 응급 조제 대응 운영",
+    specialistPharmacists: ["종양", "중환자", "감염"],
+    pharmacyEnvironmentDescription:
+      "약제팀은 입원·외래 조제와 다진료과 복약 관리를 담당하며, 응급 조제 대응 체계를 갖추고 있습니다.",
+
+    location: {
+      address: "서울 영등포구 여의대방로53길 22 성애병원",
+      detailAddress: "",
+    },
+  },
+};
+
 export const hospitalJobDetails: HospitalJobDetail[] = [
   osanHospitalJobDetail,
   armedForcesSeoulDistrictHospitalJobDetail,
+  nationalFireHospitalJobDetail,
+  sungaeHospitalJobDetail,
 ];
 
 export function getHospitalJobDetail(slug: string): HospitalJobDetail | undefined {

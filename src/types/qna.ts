@@ -30,6 +30,10 @@ export interface QnaPost {
   authorName: string;
   authorLabel?: string;
   avatarInitial: string;
+  /** 작성자 블록에 노출하는 닉네임 — 익명 글은 "익명1"~"익명N", 기업/헤드헌터 계정은 authorName과 동일 */
+  nickname: string;
+  /** 작성자 블록 두 번째 줄에 쓰는 직무 표기 — 기업/헤드헌터 계정은 authorLabel과 동일 */
+  jobRole: string;
   companyName?: string;
   createdAtLabel: string;
   /** 정렬(최신순)에만 쓰는 내부 값 — 화면에는 항상 createdAtLabel을 그대로 노출 */
@@ -52,6 +56,8 @@ export interface QnaPreviewCard {
   authorType: QnaAuthorType;
   authorName: string;
   avatarInitial: string;
+  nickname: string;
+  jobRole: string;
   createdAtLabel: string;
   minutesAgo: number;
   likeCount: number;

@@ -32,6 +32,36 @@ export function QnaAvatar({ authorType, initial, size = 36 }: { authorType: QnaA
   );
 }
 
+/** id 문자열을 0~mod-1 범위로 결정론적으로 매핑(djb2) — Math.random 대신 매 렌더링 동일한 값을 내도록 */
+function hashToIndex(id: string, mod: number): number {
+  let hash = 5381;
+  for (let i = 0; i < id.length; i += 1) {
+    hash = ((hash << 5) + hash + id.charCodeAt(i)) >>> 0;
+  }
+  return hash % mod;
+}
+
+const authorAvatarTones = [
+  "bg-[#eef1f5] text-[#596373]",
+  "bg-[#dde3ea] text-[#45505f]",
+  "bg-[#c9d1db] text-[#333d4b]",
+  "bg-[#b3bec9] text-[#202734]",
+];
+
+/** QNA 카드 상단 작성자 블록 전용 원형 아바타 — 닉네임 이니셜 + id 해시 기반 회색 톤 로테이션 */
+export function QnaAuthorAvatar({ id, initial, size = 38 }: { id: string; initial: string; size?: number }) {
+  const tone = authorAvatarTones[hashToIndex(id, authorAvatarTones.length)];
+  return (
+    <span
+      className={clsx("grid shrink-0 place-items-center rounded-full text-[14px] font-bold", tone)}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      {initial}
+    </span>
+  );
+}
+
 export function QnaAuthorLabelBadge({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex h-[20px] items-center border border-[#cfd8e3] bg-[#f7f8fa] px-1.5 text-[11px] font-medium text-[#596373]">
@@ -62,7 +92,9 @@ export function PopularTagsPanel() {
       </h2>
       <div className="mt-4 flex flex-wrap gap-2">
         {qnaPopularTags.map((tag) => (
-          <QnaTagChip key={tag}>{tag}</QnaTagChip>
+          <span key={tag} className="inline-flex h-6 items-center whitespace-nowrap bg-[#f4f6f8] px-2 text-[12px] font-medium text-[#596373]">
+            #{tag}
+          </span>
         ))}
       </div>
     </section>
@@ -73,7 +105,7 @@ export function QnaOperationPrinciplePanel() {
   return (
     <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
       <h2 className="text-[15px] font-bold tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
-      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">{qnaOperationPrinciple.description}</p>
+      <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-[#b9c0ca]">{qnaOperationPrinciple.description}</p>
     </section>
   );
 }

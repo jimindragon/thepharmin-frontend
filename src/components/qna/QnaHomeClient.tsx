@@ -2,11 +2,12 @@
 
 import clsx from "clsx";
 import Link from "next/link";
+import { ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { isQnaPost, getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
-import { PopularTagsPanel, QnaAvatar, QnaNotice, QnaOperationPrinciplePanel, QnaTagChip, showQnaNotice } from "@/components/qna/QnaShared";
+import { PopularTagsPanel, QnaAuthorAvatar, QnaNotice, QnaOperationPrinciplePanel, showQnaNotice } from "@/components/qna/QnaShared";
 import { QnaComposer } from "@/components/qna/QnaComposer";
 
 type QnaSortOption = "추천순" | "최신순" | "공감순";
@@ -81,20 +82,36 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
 
   const content = (
     <article className={clsx("border border-[#e5e9ef] bg-white p-5 transition", clickable && "hover:border-[#111111]")}>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {isBest ? <span className="inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span> : null}
-        {entry.tags.map((tag) => (
-          <QnaTagChip key={tag}>{tag}</QnaTagChip>
-        ))}
+      {isBest ? (
+        <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span>
+      ) : null}
+
+      <div className="flex items-center gap-2.5">
+        <QnaAuthorAvatar id={entry.id} initial={entry.nickname.slice(0, 1)} size={38} />
+        <div className="min-w-0">
+          <p className="truncate text-[15px] font-bold text-[#17202c]">{entry.nickname}</p>
+          <p className="mt-0.5 truncate text-[13px] font-normal text-[#8b95a1]">
+            {entry.jobRole} · {entry.createdAtLabel}
+          </p>
+        </div>
       </div>
-      <h3 className="mt-2.5 text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-[#171d26]">{entry.title}</h3>
-      <p className="mt-1.5 line-clamp-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">{excerpt}</p>
-      <div className="mt-3 flex items-center justify-between gap-3 border-t border-[#edf1f5] pt-3 text-[12px] font-normal text-[#8a94a3]">
-        <span className="flex min-w-0 items-center gap-1.5 truncate">
-          <QnaAvatar authorType={entry.authorType} initial={entry.avatarInitial} size={18} />
-          {entry.authorName} · 댓글 {commentCount} · 공감 {entry.likeCount}
+
+      <h3 className="mt-3 text-[16px] font-bold leading-[1.4] tracking-[-0.01em] text-[#171d26]">{entry.title}</h3>
+      <p className="mt-1.5 line-clamp-2 text-[14px] font-normal leading-[1.6] text-[#596373]">{excerpt}</p>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-[#edf1f5] pt-3">
+        <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal text-[#8b95a1]">
+          {entry.tags.map((tag) => (
+            <span key={tag} className="whitespace-nowrap">
+              #{tag}
+            </span>
+          ))}
+          <span className="whitespace-nowrap">댓글 {commentCount}</span>
         </span>
-        <span className="shrink-0">{entry.createdAtLabel}</span>
+        <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-medium text-[#8a94a3]">
+          <ThumbsUp size={14} aria-hidden="true" />
+          {entry.likeCount}
+        </span>
       </div>
     </article>
   );
@@ -126,14 +143,14 @@ function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         실시간 인기 글
       </h2>
-      <ol className="mt-4 space-y-3.5">
+      <ol className="mt-4 space-y-4">
         {entries.map((entry, index) => {
           const clickable = isQnaPost(entry);
           const row = (
             <span className="flex items-start gap-3">
-              <span className="text-[15px] font-bold text-[#a0a9b7]">{index + 1}</span>
+              <span className="text-[16px] font-extrabold text-[#c8ced7]">{index + 1}</span>
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-medium text-[#303946]">{entry.title}</span>
+                <span className="block truncate text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
                 <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
                   #{entry.tags[0]} · 댓글 {getEntryCommentCount(entry)}
                 </span>
@@ -217,10 +234,8 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
               type="button"
               onClick={() => setCategoryFilter(chip)}
               className={clsx(
-                "h-[36px] shrink-0 whitespace-nowrap border px-4 text-[13px] font-medium transition-colors",
-                categoryFilter === chip
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
+                "h-[36px] shrink-0 whitespace-nowrap px-4 text-[13px] font-medium transition-colors",
+                categoryFilter === chip ? "bg-[#111111] text-white" : "bg-transparent text-[#8a94a3] hover:text-[#111111]",
               )}
             >
               {chip === "전체" ? chip : `#${chip}`}

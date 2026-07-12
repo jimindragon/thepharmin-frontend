@@ -258,8 +258,270 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
   },
 };
 
+// ---- 현대약국 정본 ----
+
+export const hyundaiPharmacyJobDetail: PharmacyJobDetail = {
+  id: "hyundai-pharmacy-308",
+  slug: "hyundai-pharmacy-fulltime-pharmacist",
+  companyId: "hyundai-pharmacy",
+
+  job: {
+    title: "풀타임 근무약사님을 모십니다",
+    jobCategoryLabel: "약국 > 근무약사",
+    workTypeIds: ["full_time"],
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "처방 조제와 복약지도를 안정적으로 담당할 상근 약사를 모십니다.",
+    responsibilities: [
+      "처방 조제 및 감사",
+      "복약지도",
+      "의약품 재고·발주 관리 보조",
+    ],
+    requirements: ["약사 면허 보유", "조제 실무 가능자"],
+    preferred: ["약국 근무 경력 1년 이상"],
+    workConditionDetail:
+      "평일은 09:00~17:20(주 38시간), 토요일은 격주 오전 09:00~12:30 근무입니다. 약사·직원이 함께 근무하며 조제와 복약지도를 나누어 진행합니다.",
+
+    workSchedule: [
+      { days: ["월", "화", "수", "목", "금"], time: "09:00–17:20" },
+      { days: ["토"], time: "09:00–12:30" },
+    ],
+
+    salary: { kind: "면접후결정", amount: "면접 후 결정", note: "" },
+    benefits: ["시간 조절 가능", "점심 식사 제공(자체 비용)", "중소기업 취업자 소득세 감면 혜택(해당 시)", "4대 보험"],
+
+    coreKeywords: ["상근", "풀타임", "문전약국", "처방조제", "복약지도"],
+
+    staffPharmacistCount: 6,
+    staffSupportCount: 15,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요. 경력과 근무 가능 요일을 함께 남겨 주세요.",
+    },
+    deadlineLabel: "채용시 마감",
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "현대약국",
+    logoText: "현대",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "경기 가림시 서천면 방독길 51 (방독리) 현대약국",
+      detailAddress: "",
+      parkingTransit: "건물 인근 도로변 주차 및 대중교통 이용이 가능합니다.",
+    },
+    businessHours: "평일 09:00~19:00 · 토 09:00~15:00 · 일요일·공휴일 휴무",
+
+    pharmacyTypeId: "clinic-front",
+    pharmacyFeatureId: "mixed",
+
+    shortIntro: "약사 6명이 함께하는 100평 규모 대형 문전약국",
+    fullIntro: "체계적으로 분업화된 대형 문전약국에서 조제 실무를 깊이 있게 쌓고 싶은 분께 적합합니다.",
+    features: [
+      "인근 의원 처방이 많아 처방 흐름이 안정적인 편입니다.",
+      "약사와 직원이 함께 근무하며 조제, 검수, 응대를 나누어 진행합니다.",
+      "대량 처방을 처리하는 분업 체계를 갖추고 있습니다.",
+    ],
+    keywords: ["문전약국", "대형약국", "처방조제", "팀 근무"],
+
+    avgDailyPrescriptions: "400건 내외",
+    mainDepartments: "내과·정형외과·이비인후과 등 인근 병의원 처방",
+    software: "유팜",
+    dispensingEquipment: ["전자동 정제 분류기(ATC)", "산제 자동 분포기", "조제 로봇 보조 시스템"],
+    mainHospitals: ["인근 내과의원", "인근 정형외과의원", "인근 이비인후과의원"],
+
+    staffPharmacistCount: 6,
+    staffSupportCount: 15,
+  },
+};
+
+// ---- 화곡 기쁨약국 정본 ----
+
+export const hwagokGibeumPharmacyJobDetail: PharmacyJobDetail = {
+  id: "hwagok-gibeum-pharmacy-309",
+  slug: "hwagok-gibeum-pharmacy-short-term-pharmacist",
+  companyId: "hwagok-gibeum-pharmacy",
+
+  job: {
+    title: "출산대체 약사님 모십니다",
+    jobCategoryLabel: "약국 > 단기·대체약사",
+    workTypeIds: ["temporary_substitute"],
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "출산휴가 기간 동안 근무할 대체 약사님을 찾습니다.",
+    responsibilities: ["처방 조제 및 감사", "복약지도"],
+    requirements: ["약사 면허 보유", "대체 근무 기간 전일 근무 가능자"],
+    preferred: ["단기·대체 근무 경험자"],
+    workConditionDetail:
+      "평일은 12:30~20:30(점심시간 1~2시), 토요일은 09:30~16:30 근무입니다. 출산휴가 대체 기간 동안 전일 근무가 필요합니다.",
+
+    workSchedule: [
+      { days: ["월", "화", "수", "목", "금"], time: "12:30–20:30" },
+      { days: ["토"], time: "09:30–16:30" },
+    ],
+
+    salary: { kind: "월급", amount: "월 630만~680만원", note: "경력에 따라 협의" },
+    benefits: ["식대 지원", "4대 보험"],
+
+    coreKeywords: ["단기대체", "출산대체", "처방조제", "복약지도"],
+
+    staffPharmacistCount: 1,
+    staffSupportCount: 2,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요. 졸업년도와 경력사항을 함께 남겨 주세요.",
+    },
+    deadlineLabel: "채용시 마감",
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "화곡 기쁨약국",
+    logoText: "기쁨",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "서울 강서구 화곡로 지하 168 (화곡동, 화곡역 5호선) 1층 약국",
+      detailAddress: "",
+      parkingTransit: "화곡역 인근으로 대중교통 접근이 편리하며, 별도 주차 공간은 마련되어 있지 않습니다.",
+    },
+    businessHours: "평일 09:00~20:00 · 토 09:00~16:00 · 일요일·공휴일 휴무",
+
+    pharmacyTypeId: "local",
+    pharmacyFeatureId: "otc_focused",
+
+    shortIntro: "화곡역 인근, 처방과 일반약을 함께 다루는 동네 약국",
+    fullIntro: "역세권 약국에서 처방조제와 일반약 상담을 균형 있게 경험하고 싶은 분께 적합합니다.",
+    features: [
+      "역세권에 위치해 유동인구 처방과 일반의약품 상담이 함께 이뤄집니다.",
+      "약사 2인 중심으로 근무하며 접수와 조제 업무를 나누어 진행합니다.",
+    ],
+    keywords: ["일반약국", "처방조제", "역세권"],
+
+    avgDailyPrescriptions: "150건 내외",
+    mainDepartments: "인근 의원 처방 및 일반의약품 상담",
+    software: "PM+20",
+    dispensingEquipment: ["자동 정제 분류기", "키오스크 접수 시스템"],
+    mainHospitals: ["인근 내과의원"],
+
+    staffPharmacistCount: 2,
+    staffSupportCount: null,
+  },
+};
+
+// ---- 불당센트럴약국 정본 ----
+
+export const buldangCentralPharmacyJobDetail: PharmacyJobDetail = {
+  id: "buldang-central-pharmacy-316",
+  slug: "buldang-central-pharmacy-fulltime",
+  companyId: "buldang-central-pharmacy",
+
+  job: {
+    title: "천안 불당동 약사님 구합니다 (요일·시간 조정 가능)",
+    jobCategoryLabel: "약국 > 근무약사",
+    workTypeIds: ["full_time"],
+    employmentTypeId: "permanent",
+    experienceId: "1-3",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "처방 조제 중심의 상근 약사 포지션입니다.",
+    responsibilities: [
+      "처방 조제 및 감사",
+      "복약지도",
+      "조제 파트 간 업무 분담 협의",
+    ],
+    requirements: ["약사 면허 보유", "조제 실무 경력 1년 이상"],
+    preferred: ["문전약국 근무 경험자"],
+    workConditionDetail:
+      "월·화·목·금 09:00~19:00(수요일 휴무), 월 3회 토요일 09:00~14:00 근무이며, 요일·시간은 약간 조정 가능합니다.",
+
+    workSchedule: [
+      { days: ["월", "화", "목", "금"], time: "09:00–19:00" },
+      { days: ["토"], time: "09:00–14:00" },
+    ],
+
+    salary: { kind: "면접후결정", amount: "면접 후 결정", note: "경력에 따라 협의" },
+    benefits: ["4대 보험"],
+
+    coreKeywords: ["상근", "문전약국", "처방조제", "복약지도"],
+
+    staffPharmacistCount: 1,
+    staffSupportCount: 1,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요. 간단한 이력을 문자로 남겨 주시면 연락드립니다.",
+    },
+    deadlineLabel: "채용시 마감",
+    isRolling: true,
+
+    additionalNotes:
+      "근무 시작일은 합격 후 협의 가능합니다. 면접 시 실제 조제 동선과 근무 환경을 함께 안내드립니다.",
+    // detailImages/attachments: 없음
+  },
+
+  org: {
+    pharmacyName: "불당센트럴약국",
+    logoText: "센트럴",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "충남 천안시 서북구 번영로 100 센트럴프라자 1층",
+      detailAddress: "",
+      parkingTransit: "센트럴프라자 건물 인근에서 주차 및 대중교통 이용이 가능합니다.",
+    },
+    businessHours: "평일 08:40~18:40 · 토 08:40~14:00 · 일요일·공휴일 휴무",
+
+    pharmacyTypeId: "local",
+    pharmacyFeatureId: "otc_focused",
+
+    shortIntro: "불당동 주민 곁의 동네 일반약국",
+    fullIntro: "소규모 약국에서 처방조제부터 일반약 상담까지 두루 경험하고 싶은 분께 적합합니다.",
+    features: [
+      "소규모 팀으로 처방조제와 일반의약품 상담을 함께 진행합니다.",
+      "동네 단골 손님 응대가 많은 편입니다.",
+    ],
+    keywords: ["일반약국", "처방조제", "소규모"],
+
+    avgDailyPrescriptions: "70건 내외",
+    mainDepartments: "인근 의원 처방 및 일반의약품 상담",
+    software: "PM+20",
+    dispensingEquipment: ["자동 정제 분류기"],
+    mainHospitals: ["인근 내과의원"],
+
+    staffPharmacistCount: 1,
+    staffSupportCount: 1,
+  },
+};
+
 export const pharmacyJobDetails: PharmacyJobDetail[] = [
   eunhaengPharmacyJobDetail,
+  hyundaiPharmacyJobDetail,
+  hwagokGibeumPharmacyJobDetail,
+  buldangCentralPharmacyJobDetail,
 ];
 
 export function getPharmacyJobDetail(slug: string): PharmacyJobDetail | undefined {

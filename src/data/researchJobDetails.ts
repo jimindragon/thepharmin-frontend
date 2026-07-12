@@ -242,6 +242,83 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
   },
 };
 
+// ---- 한국과학기술연구원(KIST) 2호 정본 (중추신경 연구그룹 학생연구원) ----
+
+export const kistNeurophysiologyInternJobDetail: ResearchJobDetail = {
+  id: "kist-neurophysiology-intern",
+  slug: "kist-neurophysiology-intern",
+  companyId: "kist",
+
+  job: {
+    id: "kist-neurophysiology-intern",
+    title: "KIST 중추신경 연구그룹 학생연구원(인턴) 모집",
+
+    jobCategory: { main: "연구직", sub: "테크니션·연구보조" },
+    headcount: "1명",
+    employmentTypeId: "intern",
+    experienceId: "any",
+    educationId: "bachelor",
+
+    summary: "오가노이드 기반 신경생리 연구에 참여할 학생연구원을 모집합니다.",
+    responsibilities: [
+      "세포·오가노이드 배양 실험 보조",
+      "실험 데이터 정리 및 기초 분석",
+      "연구실 세미나 참여",
+    ],
+    requirements: ["생명과학·약학 등 관련 전공 학부 3학년 이상 또는 석사과정", "주 3일 이상 출근 가능자"],
+    preferred: ["세포배양 실험 경험자"],
+
+    workMode: "연구실 근무",
+    address: "서울 성북구 화랑로14길 5 한국과학기술연구원(KIST)",
+    salary: "기관 내규에 따른 활동비 지급",
+    workConditionDetail: "주 3일 이상 출근 가능자를 대상으로 하며, 학기 중에도 유연하게 근무 일정을 조율합니다.",
+
+    keywords: ["중추신경발달", "뇌오가노이드", "칼슘이미징", "학생연구원"],
+    // additionalNotes/detailImages/attachments: 3종 모두 없음
+    hiringProcess: ["서류 전형", "1차 면접", "최종합격"],
+    requiredDocuments: ["이력서", "재학증명서"],
+
+    apply: {
+      method: "email",
+      email: "neurochannel-recruit@kist.re.kr",
+      phone: "",
+      notice: "이력서와 재학증명서를 이메일로 제출해 주세요.",
+    },
+    deadlineLabel: "2026년 7월 30일 마감",
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "한국과학기술연구원(KIST)",
+    logoText: "KIST",
+    logoColor: "#1e3a5f",
+
+    institutionTypeId: "government_research_institute",
+    foundedYear: "1966",
+    homepageUrl: "https://www.kist.re.kr",
+
+    shortIntro: "기초·응용 융합 연구를 수행하는 정부출연연구기관입니다.",
+    fullIntro:
+      "한국과학기술연구원(KIST)은 다양한 분야의 기초·응용 연구를 수행하는 정부출연연구기관입니다. 연구 그룹별로 독립적인 연구 주제를 운영하며, 공동 장비와 연구 지원 체계를 갖추고 있습니다.",
+    keywords: ["정부출연연구기관", "뇌과학연구소", "융합연구"],
+
+    researchFields: ["neuroscience", "disease-model"],
+    staffScaleId: "51_100",
+
+    labName: "중추신경 연구그룹",
+    // piName: 없음 — 행 숨김 검증 케이스 (kist-neurochannel-postdoc과 동일 처리)
+    labIntro: "중추신경 발달과 신경질환 기전을 연구하는 그룹입니다. 전기생리학과 분자신경과학 기법을 함께 활용합니다.",
+
+    equipmentInfra: "연구 그룹 단위의 실험 공간과 공동 기기실을 운영하며, 실험 장비와 분석 인프라를 공동으로 활용할 수 있습니다.",
+    achievements: "국내외 학술지 논문 발표와 국가 연구 과제 수행을 지속하고 있습니다.",
+
+    location: {
+      address: "서울 성북구 화랑로14길 5",
+      detailAddress: "한국과학기술연구원(KIST)",
+    },
+  },
+};
+
 // ---- 서울아산병원 대장항문외과 정본 ----
 
 export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
@@ -324,6 +401,7 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
 export const researchJobDetails: ResearchJobDetail[] = [
   kistNeurochannelPostdocJobDetail,
   amcColorectalSurgeryResearcherJobDetail,
+  kistNeurophysiologyInternJobDetail,
 ];
 
 export function getResearchJobDetail(slug: string): ResearchJobDetail | undefined {

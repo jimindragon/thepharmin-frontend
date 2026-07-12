@@ -55,7 +55,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
   };
 
   const handleSubmit = () => {
-    onNotify("글쓰기 기능은 추후 연결될 예정입니다.");
+    onNotify("질문하기 기능은 추후 연결될 예정입니다.");
     handleCancel();
   };
 
@@ -87,7 +87,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
             <span className="truncate">커리어·이직·전형 경험을 나눠보세요</span>
           </button>
           <Button type="button" variant="gradient" size="sm" onClick={handleExpand} className="shrink-0">
-            글쓰기
+            질문하기
           </Button>
         </div>
       </div>
@@ -147,7 +147,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
           취소
         </button>
         <Button type="button" variant="gradient" size="sm" onClick={handleSubmit} disabled={!draft.trim()} className="disabled:cursor-not-allowed disabled:opacity-45">
-          글쓰기
+          질문하기
         </Button>
       </div>
     </div>
