@@ -1,8 +1,8 @@
 "use client";
 
-import clsx from "clsx";
-import { Bookmark, CheckCircle2, Clock3, Filter, Lock, MailCheck, Settings2, X } from "lucide-react";
+import { Bookmark, Clock3, Info, Lightbulb, Lock, LucideIcon, Settings2, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { optionLabelMaps } from "@/config/jobFilters/index";
 import { sharedRoutes } from "@/config/routes";
@@ -55,21 +55,57 @@ function PreferenceLoginGateModal({ onClose, onLogin }: { onClose: () => void; o
   );
 }
 
-function summarizePreference(preference: UserJobPreference) {
-  const jobLabels = preference.jobSubcategoryIds
-    .map((id) => optionLabelMaps.jobSubcategory.get(id))
-    .filter(Boolean) as string[];
-  const firstJob = jobLabels[0] ?? "관심 직무";
-  const jobSummary = jobLabels.length > 1 ? `${firstJob} 외 ${jobLabels.length - 1}개` : firstJob;
-  const details = [
-    preference.experienceId ? optionLabelMaps.experience.get(preference.experienceId) : null,
-    ...preference.regionIds.map((id) => optionLabelMaps.region.get(id)),
-  ].filter(Boolean);
+/** 저장된 관심조건의 각 필드를 칩으로 나열하기 위한 라벨 목록. 순서는 직무 > 지역 > 근무 조건 > 그 외. */
+function buildPreferenceChips(preference: UserJobPreference): string[] {
+  const groups: Array<[string[], string]> = [
+    [preference.jobSubcategoryIds, "jobSubcategory"],
+    [preference.regionIds, "region"],
+    [preference.experienceId ? [preference.experienceId] : [], "experience"],
+    [preference.educationId ? [preference.educationId] : [], "education"],
+    [preference.employmentTypeIds, "employmentType"],
+    [preference.workTypeIds, "workType"],
+    [preference.workModeIds, "workMode"],
+    [preference.scheduleIds, "schedule"],
+    [preference.hospitalTypeIds, "hospitalType"],
+    [preference.shiftTypeIds, "shiftType"],
+    [preference.contractPeriodIds, "contractPeriod"],
+    [preference.salaryId ? [preference.salaryId] : [], "salary"],
+    [preference.hourlyPayRangeId ? [preference.hourlyPayRangeId] : [], "hourlyPay"],
+    [preference.companyTypeIds, "companyType"],
+    [preference.institutionTypeIds, "institutionType"],
+    [preference.pharmacyFeatureIds, "pharmacyFeature"],
+  ];
 
-  return {
-    jobSummary,
-    detailSummary: details.join(" · "),
-  };
+  return groups.flatMap(([ids, mapKey]) =>
+    ids.map((id) => optionLabelMaps[mapKey]?.get(id)).filter((label): label is string => Boolean(label)),
+  );
+}
+
+function TipRow({
+  icon: Icon,
+  title,
+  badge,
+  description,
+  onClick,
+}: {
+  icon: LucideIcon;
+  title: string;
+  badge?: number;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} className="flex w-full items-start gap-3 py-4 text-left transition hover:bg-gray-50">
+      <Icon size={18} strokeWidth={2} className="mt-0.5 shrink-0 text-gray-700" />
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5">
+          <span className="text-[14px] font-semibold text-[#171b20]">{title}</span>
+          {badge != null ? <span className="text-[12px] font-medium text-gray-400">{badge}</span> : null}
+        </span>
+        <span className="mt-1 block text-[13px] leading-[1.5] text-gray-500">{description}</span>
+      </span>
+    </button>
+  );
 }
 
 export function SidebarQuickLinks({
@@ -82,6 +118,7 @@ export function SidebarQuickLinks({
   onApplyPreference,
   onClearPreferenceFilters,
 }: SidebarQuickLinksProps) {
+  const router = useRouter();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [loginGateOpen, setLoginGateOpen] = useState(false);
   const { isLoggedIn, login } = usePersonalLoginState();
@@ -89,12 +126,20 @@ export function SidebarQuickLinks({
   /** 산업·약국처럼 이미 저장된 예시 관심조건이 있는 분야는 그 값을, 없는 분야(연구·병원)는 null을 쓴다. */
   const trackSeed = mockUserPreferences[track] ?? null;
   const savedPreference = preference ?? trackSeed;
-  const preferenceSummary = useMemo(() => (savedPreference ? summarizePreference(savedPreference) : null), [savedPreference]);
+  const preferenceChips = useMemo(() => (savedPreference ? buildPreferenceChips(savedPreference) : []), [savedPreference]);
+  const hasPreference = isLoggedIn && Boolean(savedPreference);
 
-  const firstButtonLabel = preferenceApplied ? "관심조건 적용중" : "관심조건 적용하기";
-  const FirstIcon = preferenceApplied ? CheckCircle2 : Filter;
+  const goToPreferences = () => {
+    onQuickLinkClick("preference");
+    setPopoverOpen(false);
+    if (!isLoggedIn) {
+      setLoginGateOpen(true);
+      return;
+    }
+    router.push(preferencesHref);
+  };
 
-  const handleFirstClick = () => {
+  const handlePrimaryClick = () => {
     if (!isLoggedIn) {
       setLoginGateOpen(true);
       return;
@@ -109,7 +154,6 @@ export function SidebarQuickLinks({
 
     if (savedPreference) {
       onApplyPreference(savedPreference);
-      setPopoverOpen(false);
     }
   };
 
@@ -119,129 +163,106 @@ export function SidebarQuickLinks({
   };
 
   return (
-    <aside className="sticky top-5">
-      <div className="surface p-5">
-        <div className="flex flex-col gap-2.5">
-          <div className="relative">
-            {isLoggedIn && !preferenceApplied && !savedPreference ? (
-              <Link
-                href={preferencesHref}
-                onClick={() => onQuickLinkClick("preference")}
-                className="flex h-[46px] w-full items-center justify-center gap-2.5 border border-[#bdbdbd] text-[14px] font-semibold text-brand transition-all hover:bg-[#f3f3f3]"
-              >
-                <Filter size={19} strokeWidth={2.1} />
-                {firstButtonLabel}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={handleFirstClick}
-                className={clsx(
-                  "flex h-[46px] w-full items-center justify-center gap-2.5 border text-[14px] font-semibold transition-all",
-                  preferenceApplied
-                    ? "border-brand bg-[var(--color-brand-soft)] text-brand"
-                    : "border-[#bdbdbd] text-brand hover:bg-[#f3f3f3]",
-                  activeQuickLink === "preference" && "ring-2 ring-[rgba(17,17,17,0.12)]",
-                )}
-              >
-                <FirstIcon size={19} strokeWidth={2.1} />
-                {firstButtonLabel}
-              </button>
-            )}
-
-            {popoverOpen ? (
-              <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 rounded-[var(--radius)] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]">
-                <Link
-                  href={preferencesHref}
-                  className="flex h-[36px] w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
-                >
-                  <Settings2 size={15} />
-                  관심 조건 수정
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleClearPreference}
-                  className="flex h-[36px] w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
-                >
-                  <Filter size={15} />
-                  관심 조건 해제
-                </button>
-              </div>
-            ) : null}
+    <aside className="flex flex-col gap-4">
+      <div className="border border-gray-200 bg-white p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal size={17} strokeWidth={2} className="text-gray-700" />
+            <h3 className="text-[15px] font-semibold text-[#171b20]">내 관심조건</h3>
           </div>
-
-          <button
-            type="button"
-            onClick={() => onQuickLinkClick("saved")}
-            className={clsx(
-              "flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-semibold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
-              activeQuickLink === "saved" && "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]",
-            )}
-          >
-            <Bookmark size={19} strokeWidth={2} />
-            저장한 공고 {savedCount}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onQuickLinkClick("recent")}
-            className={clsx(
-              "flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-semibold text-[#596373] transition-all hover:border-brand hover:bg-[#f5f5f5] hover:text-brand",
-              activeQuickLink === "recent" && "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]",
-            )}
-          >
-            <Clock3 size={19} strokeWidth={2} />
-            최근 본 공고
-          </button>
+          <Info size={15} className="text-gray-400" />
         </div>
 
-        <div className="mt-5 rounded-[var(--radius)] border border-[#eef2f6] bg-[#f8fafb] px-5 py-5">
-          {!isLoggedIn ? (
+        <div className="mt-4 border-t border-gray-200 pt-4">
+          {hasPreference ? (
             <>
-              <p className="text-[14px] font-semibold leading-[1.55] text-[#3d4653]">
-                관심 조건을 설정해두면
-                <br />
-                원하는 공고만 빠르게 볼 수 있어요.
-              </p>
-              <button
-                type="button"
-                onClick={() => setLoginGateOpen(true)}
-                className="mt-4 h-[36px] bg-brand px-4 text-[13px] font-medium text-white hover:bg-[var(--color-brand-dark)]"
-              >
-                관심조건 적용하기
-              </button>
-              <p className="mt-4 text-[12px] font-normal text-[#8a94a3]">새 공고 이메일 알림도 받을 수 있어요.</p>
-            </>
-          ) : !savedPreference ? (
-            <>
-              <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
-              <p className="mt-2 text-[15px] font-semibold text-[#3d4653]">설정된 조건 없음</p>
+              <div className="flex flex-wrap gap-1.5">
+                {preferenceChips.map((label, index) => (
+                  <span key={`${label}-${index}`} className="bg-gray-100 px-2.5 py-1 text-[13px] leading-[1.4] text-[#3d4653]">
+                    {label}
+                  </span>
+                ))}
+              </div>
+
+              <div className="relative mt-4">
+                <button
+                  type="button"
+                  onClick={handlePrimaryClick}
+                  className="h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
+                  style={{ backgroundImage: "var(--gradient-cta)" }}
+                >
+                  관심조건으로 보기
+                </button>
+
+                {popoverOpen ? (
+                  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 border border-gray-200 bg-white p-1">
+                    <button
+                      type="button"
+                      onClick={handleClearPreference}
+                      className="flex h-9 w-full items-center px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-gray-50"
+                    >
+                      관심조건 해제
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
               <Link
                 href={preferencesHref}
                 onClick={() => onQuickLinkClick("preference")}
-                className="mt-4 inline-flex h-[36px] items-center bg-brand px-4 text-[13px] font-medium text-white hover:bg-[var(--color-brand-dark)]"
+                className="mt-2 flex h-11 w-full items-center justify-center border border-gray-300 text-[14px] font-semibold text-[#171b20] hover:bg-gray-50"
               >
-                관심조건 적용하기
+                관심조건 수정
               </Link>
-              <p className="mt-4 text-[12px] font-normal text-[#8a94a3]">새 공고 이메일 알림도 받을 수 있어요.</p>
+
+              <p className="mt-4 text-[13px] text-gray-500">관심조건에 맞는 공고만 빠르게 확인할 수 있어요.</p>
             </>
           ) : (
             <>
-              <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
-              <p className="mt-2 text-[17px] font-semibold text-[#252b36]">{preferenceSummary?.jobSummary}</p>
-              <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">{preferenceSummary?.detailSummary}</p>
-              <Link
-                href={preferencesHref}
-                className="mt-4 inline-flex h-[34px] items-center border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-brand hover:text-brand"
+              <p className="text-[13px] leading-[1.6] text-gray-500">
+                관심조건을 설정해두면 원하는 공고만
+                <br />
+                빠르게 확인할 수 있어요.
+              </p>
+              <button
+                type="button"
+                onClick={goToPreferences}
+                className="mt-4 h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
+                style={{ backgroundImage: "var(--gradient-cta)" }}
               >
-                관심 조건 수정
-              </Link>
-              <div className="mt-5 flex items-center gap-2 rounded-[var(--radius)] bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
-                <MailCheck size={17} className="text-brand" />
-                {savedPreference.emailAlertEnabled ? "이메일 알림 사용 중" : "새 공고 알림 받기"}
-              </div>
+                관심조건 설정하기
+              </button>
             </>
           )}
+        </div>
+      </div>
+
+      <div className="border border-gray-200 bg-white p-5">
+        <div className="flex items-center gap-2">
+          <Lightbulb size={17} strokeWidth={2} className="text-gray-700" />
+          <h3 className="text-[15px] font-semibold text-[#171b20]">공고 활용 팁</h3>
+        </div>
+
+        <div className="mt-4 divide-y divide-gray-200 border-t border-gray-200">
+          <TipRow
+            icon={Bookmark}
+            title="저장한 공고"
+            badge={savedCount}
+            description="관심 있는 공고를 저장하고 나중에 다시 확인할 수 있어요."
+            onClick={() => onQuickLinkClick("saved")}
+          />
+          <TipRow
+            icon={Clock3}
+            title="최근 본 공고"
+            description="최근 확인한 공고를 빠르게 다시 볼 수 있어요."
+            onClick={() => onQuickLinkClick("recent")}
+          />
+          <TipRow
+            icon={Settings2}
+            title="관심조건 설정"
+            description="원하는 조건을 저장하면 맞춤 공고를 빠르게 볼 수 있어요."
+            onClick={goToPreferences}
+          />
         </div>
       </div>
 

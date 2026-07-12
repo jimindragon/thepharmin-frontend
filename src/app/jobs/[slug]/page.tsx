@@ -1,54 +1,19 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
-import { HospitalJobDetailClient } from "@/components/job-detail/HospitalJobDetailClient";
 import { HospitalJobDetailV2 } from "@/components/job-detail/HospitalJobDetailV2";
 import { IndustryJobDetailClient } from "@/components/job-detail/IndustryJobDetailClient";
-import { JobDetailClient } from "@/components/job-detail/JobDetailClient";
-import { PharmacyJobDetailClient } from "@/components/job-detail/PharmacyJobDetailClient";
 import { PharmacyJobDetailV2 } from "@/components/job-detail/PharmacyJobDetailV2";
-import { ResearchJobDetailClient } from "@/components/job-detail/ResearchJobDetailClient";
 import { ResearchJobDetailV2 } from "@/components/job-detail/ResearchJobDetailV2";
-import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
 import { getHospitalJobDetail } from "@/data/hospitalJobDetails";
 import { getIndustryJobDetail } from "@/data/industryJobDetails";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { jobs } from "@/data/jobs";
 import { getPharmacyJobDetail } from "@/data/pharmacyJobDetails";
 import { getResearchJobDetail } from "@/data/researchJobDetails";
-import type { Job } from "@/types/jobs";
 
 interface JobDetailPageProps {
   params: Promise<{ slug: string }>;
-}
-
-function getSimilarJobs(job: Job) {
-  const byConfiguredIds = (job.similarJobIds ?? [])
-    .map((id) => jobs.find((item) => item.id === id))
-    .filter((item): item is Job => Boolean(item));
-
-  const byContext = jobs.filter((item) => {
-    if (item.id === job.id || byConfiguredIds.some((configured) => configured.id === item.id)) {
-      return false;
-    }
-
-    const sameCategory = item.jobSubcategoryIds.some((id) => job.jobSubcategoryIds.includes(id));
-    const sameRegion = item.regionId === job.regionId;
-    const sharedKeyword = (item.coreKeywords ?? []).some((tag) => (job.coreKeywords ?? []).includes(tag));
-
-    return sameCategory || sameRegion || sharedKeyword;
-  });
-
-  return [...byConfiguredIds, ...byContext].slice(0, 4);
-}
-
-/** Company 엔티티가 없는 연구 공고는 기관·연구실 정보의 "현재 등록된 다른 공고 수"를 같은 기관 이름으로 직접 집계한다. */
-function getOtherLabJobsCount(job: Job) {
-  if (!job.researchLab) {
-    return 0;
-  }
-
-  return jobs.filter((item) => item.id !== job.id && item.researchLab?.institution === job.researchLab?.institution).length;
 }
 
 function MissingJob() {
@@ -79,100 +44,61 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const { slug } = await params;
   const job = jobs.find((item) => item.slug === slug);
 
-  if (!job) {
+  if (!job || !hasJobDetail(slug)) {
     return <MissingJob />;
   }
-
-  if (!hasJobDetail(slug)) {
-    return <MissingJob />;
-  }
-
-  const company = companies.find((item) => item.id === job.companyId) ?? null;
 
   if (job.track === "hospital") {
     const hospitalDetailV2 = getHospitalJobDetail(slug);
-
-    if (hospitalDetailV2) {
-      return (
-        <>
-          <Header />
-          <HospitalJobDetailV2 data={hospitalDetailV2} />
-        </>
-      );
+    if (!hospitalDetailV2) {
+      return <MissingJob />;
     }
 
     return (
       <>
         <Header />
-        <HospitalJobDetailClient job={job} company={company} similarJobs={getSimilarJobs(job)} />
+        <HospitalJobDetailV2 data={hospitalDetailV2} />
       </>
     );
   }
 
   if (job.track === "pharmacy") {
     const pharmacyDetailV2 = getPharmacyJobDetail(slug);
-
-    if (pharmacyDetailV2) {
-      return (
-        <>
-          <Header />
-          <PharmacyJobDetailV2 data={pharmacyDetailV2} />
-        </>
-      );
+    if (!pharmacyDetailV2) {
+      return <MissingJob />;
     }
 
     return (
       <>
         <Header />
-        <PharmacyJobDetailClient job={job} company={company} similarJobs={getSimilarJobs(job)} />
+        <PharmacyJobDetailV2 data={pharmacyDetailV2} />
       </>
     );
   }
 
   if (job.track === "research") {
     const researchDetailV2 = getResearchJobDetail(slug);
-
-    if (researchDetailV2) {
-      return (
-        <>
-          <Header />
-          <ResearchJobDetailV2 data={researchDetailV2} />
-        </>
-      );
+    if (!researchDetailV2) {
+      return <MissingJob />;
     }
 
     return (
       <>
         <Header />
-        <ResearchJobDetailClient job={job} similarJobs={getSimilarJobs(job)} otherLabJobsCount={getOtherLabJobsCount(job)} />
+        <ResearchJobDetailV2 data={researchDetailV2} />
       </>
     );
   }
 
-  if (job.track === "industry") {
-    const industryDetail = getIndustryJobDetail(slug);
-    if (industryDetail) {
-      return (
-        <>
-          <Header />
-          <IndustryJobDetailClient data={industryDetail} />
-        </>
-      );
-    }
+  const industryDetail = getIndustryJobDetail(slug);
+  if (!industryDetail) {
+    return <MissingJob />;
   }
-
-  const reviews = companyReviews.filter((review) => review.companyId === job.companyId);
 
   return (
     <>
       <Header />
-      <JobDetailClient
-        job={job}
-        company={company}
-        similarJobs={getSimilarJobs(job)}
-        reviews={reviews}
-        reviewAccess={reviewAccessMock}
-      />
+      <IndustryJobDetailClient data={industryDetail} />
     </>
   );
 }
