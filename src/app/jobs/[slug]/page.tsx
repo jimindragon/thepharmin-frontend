@@ -12,6 +12,7 @@ import { ResearchJobDetailV2 } from "@/components/job-detail/ResearchJobDetailV2
 import { companies, companyReviews, reviewAccessMock } from "@/data/companies";
 import { getHospitalJobDetail } from "@/data/hospitalJobDetails";
 import { getIndustryJobDetail } from "@/data/industryJobDetails";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 import { jobs } from "@/data/jobs";
 import { getPharmacyJobDetail } from "@/data/pharmacyJobDetails";
 import { getResearchJobDetail } from "@/data/researchJobDetails";
@@ -79,6 +80,10 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const job = jobs.find((item) => item.slug === slug);
 
   if (!job) {
+    return <MissingJob />;
+  }
+
+  if (!hasJobDetail(slug)) {
     return <MissingJob />;
   }
 

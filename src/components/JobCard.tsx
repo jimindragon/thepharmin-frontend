@@ -9,6 +9,7 @@ import type { Job } from "@/types/jobs";
 import { formatHospitalSalary } from "@/utils/salary";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { getCompanyDetailHref } from "@/components/job-detail/shared";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 
 interface JobCardProps {
   job: Job;
@@ -38,7 +39,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
 
   return (
     <article className="surface group relative border-[#dedede] shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc]">
-      {job.slug ? (
+      {job.slug && hasJobDetail(job.slug) ? (
         <Link
           href={`/jobs/${job.slug}`}
           className="absolute inset-0 z-10 cursor-pointer rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"

@@ -12,6 +12,7 @@ import { getResearchJobCoverImage } from "@/utils/researchImage";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 import type { Company, FormattedContent, Job } from "@/types/jobs";
 
 /**
@@ -513,7 +514,7 @@ export function SimilarJobs({
               </article>
             );
 
-            return similarJob.slug ? (
+            return similarJob.slug && hasJobDetail(similarJob.slug) ? (
               <Link key={similarJob.id} href={`/jobs/${similarJob.slug}`} className="block rounded-[var(--radius)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.2)]">
                 {card}
               </Link>

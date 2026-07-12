@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { typeScale } from "@/components/ui/Typography";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import type { RecommendedJob } from "@/types/jobs";
 
@@ -244,7 +245,7 @@ const onSpaceKey = (e: React.KeyboardEvent<HTMLAnchorElement>) => {
 };
 
 function cardLink(id: number, slug: string | undefined, children: React.ReactNode) {
-  return slug ? (
+  return slug && hasJobDetail(slug) ? (
     <Link key={id} href={`/jobs/${slug}`} className={LINK_CLASS} onKeyDown={onSpaceKey}>
       {children}
     </Link>

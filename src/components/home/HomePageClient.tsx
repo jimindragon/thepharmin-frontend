@@ -13,6 +13,7 @@ import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
 import { FEATURED_COMPANY_IDS, getActiveJobCount } from "@/data/companyDirectory";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 import { jobs } from "@/data/jobs";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
@@ -151,7 +152,7 @@ function HomeRecommendationCard({
   return (
     <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc]">
       <Link
-        href={job.slug ? `/jobs/${job.slug}` : "/jobs"}
+        href={job.slug && hasJobDetail(job.slug) ? `/jobs/${job.slug}` : "/jobs"}
         className="absolute inset-0 z-10"
         aria-label={`${job.title} 상세 보기`}
       >
