@@ -77,7 +77,7 @@ const trackFilterTabs: { id: TrackFilter; label: string }[] = [
 const feedFilterTabs: { id: FeedFilter; label: string }[] = [
   { id: "all", label: "전체" },
   { id: "interview", label: "면접 후기" },
-  { id: "company", label: "현직자 리뷰" },
+  { id: "company", label: "기업 리뷰" },
 ];
 
 const sortOptions: SortOption[] = ["리뷰순", "관심순", "채용중순"];
@@ -288,7 +288,7 @@ function FeedFilterTabs({ active, onChange }: { active: FeedFilter; onChange: (f
 
 function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem; onRequestWriteInterviewReview: () => void }) {
   const href = item.type === "interview" ? `/companies/${item.companyId}/interviews` : `/companies/${item.companyId}/reviews`;
-  const kindLabel = item.type === "interview" ? "면접 후기" : "현직자 리뷰";
+  const kindLabel = item.type === "interview" ? "면접 후기" : "기업 리뷰";
 
   return (
     <div className="group relative grid grid-cols-[150px_1px_1fr_auto] items-center gap-4 py-6 max-[560px]:grid-cols-1 max-[560px]:gap-2">
@@ -399,7 +399,7 @@ function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry
               <span className="min-w-0">
                 <span className="block truncate text-[13px] font-medium text-[#303946]">{entry.name}</span>
                 <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
-                  현직자 리뷰 {entry.companyReviewCount} · 면접후기 {entry.interviewReviewCount}
+                  기업 리뷰 {entry.companyReviewCount} · 면접후기 {entry.interviewReviewCount}
                 </span>
               </span>
             </Link>
@@ -605,7 +605,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
   };
 
   const handleRequestWriteCompanyReview = () => {
-    setCompanyReviewNotice("현직자 리뷰 작성 화면은 추후 연결될 예정입니다.");
+    setCompanyReviewNotice("기업 리뷰 작성 화면은 추후 연결될 예정입니다.");
     window.setTimeout(() => setCompanyReviewNotice(""), 2400);
   };
 

@@ -114,6 +114,8 @@ export interface PharmacyJobPosting {
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
+  hiringProcess?: string[];
+  requiredDocuments?: string[];
 }
 
 export interface PharmacyOrg {

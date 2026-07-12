@@ -17,6 +17,7 @@ import {
   Heart,
   Info,
   Layers,
+  ListChecks,
   Newspaper,
   Users,
   Wallet,
@@ -26,9 +27,11 @@ import {
   ActionIconButton,
   ApplyCard,
   type ApplyMethodId,
+  CompanyCtaButtons,
   CompanyLogo,
   firstWords,
   FormattedContentView,
+  HiringProcessSteps,
   IconSectionShell,
   JobDetailActionRow,
   MapPlaceholder,
@@ -76,6 +79,10 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
   const hasAttachments = Boolean(job.attachments && job.attachments.length > 0);
   const hasAdditionalNotes = Boolean(job.additionalNotes);
   const hasAdditionalInfoSection = hasDetailImages || hasAttachments || hasAdditionalNotes;
+
+  const hasHiringProcess = Boolean(job.hiringProcess && job.hiringProcess.length > 0);
+  const hasRequiredDocuments = Boolean(job.requiredDocuments && job.requiredDocuments.length > 0);
+  const hasHiringProcessSection = hasHiringProcess || hasRequiredDocuments;
 
   const hasOrgDescription = Boolean(org.description);
   const hasKeywords = Boolean(org.keywords && org.keywords.length > 0);
@@ -233,6 +240,30 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
                 </IconSectionShell>
               ) : null}
 
+              {/* 전형절차 및 제출서류 */}
+              {hasHiringProcessSection ? (
+                <IconSectionShell id="hiring-process" icon={ListChecks} title="전형절차 및 제출서류">
+                  <div className="space-y-7">
+                    {hasHiringProcess ? (
+                      <div>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">전형절차</h3>
+                        <div className="mt-3">
+                          <HiringProcessSteps steps={job.hiringProcess} />
+                        </div>
+                      </div>
+                    ) : null}
+                    {hasRequiredDocuments ? (
+                      <div className={clsx(hasHiringProcess && "border-t border-[#edf1f4] pt-6")}>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">제출서류</h3>
+                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                          {job.requiredDocuments!.join(" · ")}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </IconSectionShell>
+              ) : null}
+
               {/* 추가 안내 */}
               {hasAdditionalInfoSection ? (
                 <IconSectionShell id="additional-info" icon={Info} title="추가 안내">
@@ -327,38 +358,19 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
                 {hasProducts ? (
                   <div className="mt-9">
                     <h3 className="text-[15px] font-bold text-[#2f3845]">대표 제품·서비스</h3>
-                    <div className="mt-3 space-y-3">
+                    <div className="mt-3 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
                       {businessContext!.products!.map((product) => (
-                        <div key={product.name} className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-5 py-4">
-                          <p className="text-[15px] font-bold text-[#2f3845]">{product.name}</p>
-                          <p className="mt-1.5 text-[14px] font-normal leading-relaxed text-[#3f4855]">{product.description}</p>
+                        <div key={product.name} className="border-l-2 border-[#d8e0e8] pl-3.5">
+                          <p className="text-[15px] font-bold text-[#17202c]">{product.name}</p>
+                          <p className="mt-1 text-[14px] font-normal leading-relaxed text-[#8b95a1]">{product.description}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : null}
 
-                {/* C. CTA 버튼 3개 — 섹션 맨 아래, 이번 단계에서는 링크 연결 없음 */}
-                <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
-                  >
-                    기업 정보 더보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    기업 리뷰 보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    면접 후기 보기
-                  </button>
-                </div>
+                {/* C. CTA 버튼 3개 — 기업 인사이트로 연결. companyId가 없는(미승격) 기업은 렌더하지 않는다 */}
+                {data.companyId ? <CompanyCtaButtons companyId={data.companyId} /> : null}
               </IconSectionShell>
 
               {/* 관련 뉴스 */}

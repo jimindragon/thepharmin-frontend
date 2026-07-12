@@ -4,11 +4,11 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { useState } from "react";
-import { companies } from "@/data/companies";
 import { companyLogos } from "@/config/companyImages";
 import type { Job } from "@/types/jobs";
 import { formatHospitalSalary } from "@/utils/salary";
 import { getCompanyInitial } from "@/utils/companyInitial";
+import { getCompanyDetailHref } from "@/components/job-detail/shared";
 
 interface JobCardProps {
   job: Job;
@@ -31,7 +31,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
     job.closingStatus === "today" ? "오늘 마감" : always ? "상시채용" : job.deadlineLabel.replace("마감 ", "");
   const applyLabel = job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원";
   const easyApply = job.applyMethod === "간편 지원";
-  const hasCompanyProfile = Boolean(job.companyId && companies.some((item) => item.id === job.companyId));
+  const companyDetailHref = getCompanyDetailHref(job.companyId);
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
   const [logoFailed, setLogoFailed] = useState(false);
   const showLogoImage = Boolean(logoUrl) && !logoFailed;
@@ -77,9 +77,9 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
         <div className="flex min-w-0 flex-1 px-[22px] py-4">
           {/* 정보 메인 */}
           <div className="min-w-0 flex-1">
-            {hasCompanyProfile ? (
+            {companyDetailHref ? (
               <Link
-                href={`/companies/${job.companyId}`}
+                href={companyDetailHref}
                 onClick={(event) => event.stopPropagation()}
                 className="relative z-20 block max-w-full truncate text-[13px] font-medium text-[#5b6472] hover:text-brand"
               >

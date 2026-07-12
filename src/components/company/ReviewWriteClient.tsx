@@ -19,6 +19,14 @@ interface ReviewWriteClientProps {
 type InterviewDifficulty = (typeof interviewDifficultyOptions)[number];
 type InterviewFormat = (typeof interviewFormatOptions)[number];
 
+/** 트랙별 직무 입력 placeholder — 폼이 받는 track prop(getCompanyTrack 경로)을 그대로 키로 쓴다 */
+const JOB_ROLE_PLACEHOLDERS: Record<JobTrack, string> = {
+  industry: "예: RA, 임상 PM",
+  hospital: "예: 병원약사, 약제부",
+  pharmacy: "예: 근무약사",
+  research: "예: 연구원, 박사후연구원",
+};
+
 const TEXTAREA_CLASS =
   "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[13px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 
@@ -38,7 +46,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const [interviewFormat, setInterviewFormat] = useState<InterviewFormat | "">("");
   const [showToast, setShowToast] = useState(false);
 
-  const titleLabel = isInterview ? "면접 후기 작성" : "현직자 리뷰 작성";
+  const titleLabel = isInterview ? "면접 후기 작성" : "기업 리뷰 작성";
   const contentGuide = isInterview ? "200~350자 권장" : "100~150자 권장";
   const listHref = isInterview ? `/companies/${companyId}/interviews` : `/companies/${companyId}/reviews`;
   const applyYearOptions = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - index);
@@ -65,20 +73,24 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
         <span className="border-l border-[#dfe5ec] pl-3 text-[20px] font-medium text-[#8791a0]">{companyName}</span>
       </h1>
 
-      <SectionCard title="기본 정보" description="작성자 정보를 입력해주세요.">
-        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
+      <SectionCard title="기본 정보" description="작성자 정보는 익명으로 처리됩니다.">
+        <div
+          className={
+            isInterview
+              ? "grid gap-y-[18px]"
+              : "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1"
+          }
+        >
           <div>
             <FieldLabel>직무</FieldLabel>
             <div className="mt-1.5">
-              <TextInput value={jobRole} onChange={setJobRole} placeholder="예: RA, 병원약사" />
+              <TextInput value={jobRole} onChange={setJobRole} placeholder={JOB_ROLE_PLACEHOLDERS[track]} />
             </div>
           </div>
-          <div>
-            <FieldLabel>작성자 상태</FieldLabel>
-            <div className="mt-1.5">
-              {isInterview ? (
-                <p className="flex h-11 items-center text-[13px] font-medium text-[#4f5967]">면접자</p>
-              ) : (
+          {isInterview ? null : (
+            <div>
+              <FieldLabel>작성자 상태</FieldLabel>
+              <div className="mt-1.5">
                 <Segmented
                   value={authorStatus}
                   options={[
@@ -87,15 +99,15 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
                   ]}
                   onChange={setAuthorStatus}
                 />
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         {isInterview ? (
-          <div className="mt-5 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
-            <div>
-              <FieldLabel>면접 시기</FieldLabel>
-              <div className="relative mt-1.5">
+          <div className="mt-5">
+            <FieldLabel>면접 시기</FieldLabel>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+              <div className="relative w-[160px] max-[640px]:w-full">
                 <select
                   value={applyYear}
                   onChange={(event) => setApplyYear(event.target.value ? Number(event.target.value) : "")}
@@ -110,19 +122,14 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
               </div>
-            </div>
-            <div>
-              <FieldLabel>반기</FieldLabel>
-              <div className="mt-1.5">
-                <Segmented<"상반기" | "하반기" | "">
-                  value={applyHalf}
-                  options={[
-                    { id: "상반기", label: "상반기" },
-                    { id: "하반기", label: "하반기" },
-                  ]}
-                  onChange={(value) => setApplyHalf((prev) => (prev === value ? "" : value))}
-                />
-              </div>
+              <Segmented<"상반기" | "하반기" | "">
+                value={applyHalf}
+                options={[
+                  { id: "상반기", label: "상반기" },
+                  { id: "하반기", label: "하반기" },
+                ]}
+                onChange={(value) => setApplyHalf((prev) => (prev === value ? "" : value))}
+              />
             </div>
           </div>
         ) : null}

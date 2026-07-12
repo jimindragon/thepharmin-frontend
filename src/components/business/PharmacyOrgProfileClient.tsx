@@ -458,6 +458,34 @@ export function PharmacyOrgProfileClient() {
                 <TextInput value={profile.mainDepartments} onChange={(value) => updateProfile("mainDepartments", value)} placeholder="예: 내과 · 이비인후과 · 정형외과" />
               </div>
             </div>
+            <div className={FIELD_GRID_2COL}>
+              <div className="space-y-2">
+                <FieldLabel>약사 인원</FieldLabel>
+                <TextInput
+                  value={profile.staffPharmacistCount}
+                  onChange={(value) => updateProfile("staffPharmacistCount", value)}
+                  placeholder="예: 3"
+                  right={
+                    <span className="grid h-11 w-10 shrink-0 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-medium text-[#7b8491]">
+                      명
+                    </span>
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <FieldLabel>조제·전산 지원 인력</FieldLabel>
+                <TextInput
+                  value={profile.staffSupportCount}
+                  onChange={(value) => updateProfile("staffSupportCount", value)}
+                  placeholder="예: 2"
+                  right={
+                    <span className="grid h-11 w-10 shrink-0 place-items-center border-y border-r border-[#d8e0e8] bg-white text-[12px] font-medium text-[#7b8491]">
+                      명
+                    </span>
+                  }
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <FieldLabel required>전산 프로그램</FieldLabel>
               <Segmented value={profile.software} options={pharmacySoftwareOptions.map((label) => ({ id: label, label }))} onChange={(value) => updateProfile("software", value)} />

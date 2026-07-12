@@ -5,7 +5,7 @@ import { companyDirectory } from "@/data/companyDirectory";
 
 export const metadata: Metadata = {
   title: "기업 인사이트 | THE PHARMA Recruit.",
-  description: "산업·연구·병원·약국의 기업·기관 정보와 현직자 리뷰, 면접 후기를 확인하세요.",
+  description: "산업·연구·병원·약국의 기업·기관 정보와 기업 리뷰, 면접 후기를 확인하세요.",
 };
 
 export default function CompaniesPage() {

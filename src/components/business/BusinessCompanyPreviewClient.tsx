@@ -126,13 +126,13 @@ export function BusinessCompanyPreviewClient() {
     body = (
       <>
         <CompanyHero profile={profile} />
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-          <div className="grid gap-5">
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+          <div className="grid gap-9">
             <HospitalSummarySection profile={profile} company={company} />
             <CompanyReviewsPreviewSection profile={profile} type="interview" />
             <CompanyReviewsPreviewSection profile={profile} type="company" />
           </div>
-          <HospitalAsidePanel profile={profile} company={company} />
+          <HospitalAsidePanel profile={profile} />
         </div>
       </>
     );
@@ -143,13 +143,13 @@ export function BusinessCompanyPreviewClient() {
     body = (
       <>
         <CompanyHero profile={profile} />
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-          <div className="grid gap-5">
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+          <div className="grid gap-9">
             <PharmacySummarySection profile={profile} company={company} />
             <CompanyReviewsPreviewSection profile={profile} type="interview" />
             <CompanyReviewsPreviewSection profile={profile} type="company" />
           </div>
-          <PharmacyAsidePanel profile={profile} company={company} />
+          <PharmacyAsidePanel profile={profile} />
         </div>
       </>
     );
@@ -161,8 +161,8 @@ export function BusinessCompanyPreviewClient() {
     body = (
       <>
         <CompanyHero profile={profile} />
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-          <div className="grid gap-5">
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+          <div className="grid gap-9">
             <CompanyOverview profile={profile} />
             <CompanyDetailOverview profile={profile} />
             <CompanyReviewsPreviewSection profile={profile} type="interview" />

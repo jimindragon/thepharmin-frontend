@@ -13,10 +13,10 @@ interface CompanyReviewWriteCardProps {
 
 const writeCopy: Record<CompanyReviewWriteCardType, { label: string; path: string; withItems: string; empty: string }> = {
   company: {
-    label: "현직자 리뷰 작성",
+    label: "기업 리뷰 작성",
     path: "reviews",
     withItems: "이 회사에서 일한 경험이 있다면 리뷰를 남겨보세요.",
-    empty: "아직 등록된 현직자 리뷰가 없어요 · 첫 리뷰를 남겨보세요",
+    empty: "아직 등록된 기업 리뷰가 없어요 · 첫 리뷰를 남겨보세요",
   },
   interview: {
     label: "면접 후기 작성",

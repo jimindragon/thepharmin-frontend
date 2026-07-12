@@ -25,9 +25,5 @@ export default async function CompanyNewsPage({ params }: CompanyNewsPageProps) 
     );
   }
 
-  return (
-    <div className="mt-6">
-      <CompanyNewsSection profile={profile} />
-    </div>
-  );
+  return <CompanyNewsSection profile={profile} />;
 }

@@ -640,9 +640,7 @@ export function HospitalJobPostingForm() {
             <p className={LBL}>
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
-            </p>
-            <p className={`${HINT} mb-3`}>
-              병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.</span>
             </p>
 
             <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
@@ -667,8 +665,10 @@ export function HospitalJobPostingForm() {
 
             <div className="my-4 border-t border-[#f0f2f5]" />
 
-            <p className={LBL}>기타 키워드 직접 추가</p>
-            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요.</p>
+            <p className={LBL}>
+              기타 키워드 직접 추가
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
+            </p>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -707,8 +707,10 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div>
-            <p className={LBL} id="h-img-lbl">대표 이미지</p>
-            <p className={`${HINT} mb-3`}>공고 상세 상단에 표시할 이미지를 선택합니다.</p>
+            <p className={LBL} id="h-img-lbl">
+              대표 이미지
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+            </p>
             <div role="radiogroup" aria-labelledby="h-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -735,7 +737,7 @@ export function HospitalJobPostingForm() {
         </SectionCard>
 
         {/* ── 전형절차 및 제출서류 ──────────────────────────────────────────── */}
-        <SectionCard title="전형절차 및 제출서류" description="선택 입력입니다. 입력한 경우에만 공고 상세에 노출됩니다.">
+        <SectionCard title="전형절차 및 제출서류">
           <HiringProcessSelector
             processSteps={hiringProcess}
             onProcessChange={setHiringProcess}

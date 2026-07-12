@@ -14,7 +14,7 @@ import {
   FileText,
   GraduationCap,
   Info,
-  MapPin,
+  ListChecks,
   Monitor,
   Stethoscope,
   TrendingUp,
@@ -25,8 +25,10 @@ import { useState } from "react";
 import {
   ApplyCard,
   type ApplyMethodId,
+  CompanyCtaButtons,
   firstWords,
   FormattedContentView,
+  HiringProcessSteps,
   IconSectionShell,
   InfoRow,
   InfoRowList,
@@ -102,6 +104,10 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
   const hasAttachments = Boolean(job.attachments && job.attachments.length > 0);
   const hasAdditionalNotes = Boolean(job.additionalNotes);
   const hasAdditionalInfoSection = hasDetailImages || hasAttachments || hasAdditionalNotes;
+
+  const hasHiringProcess = Boolean(job.hiringProcess && job.hiringProcess.length > 0);
+  const hasRequiredDocuments = Boolean(job.requiredDocuments && job.requiredDocuments.length > 0);
+  const hasHiringProcessSection = hasHiringProcess || hasRequiredDocuments;
 
   return (
     <>
@@ -202,8 +208,8 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                 </div>
               </IconSectionShell>
 
-              {/* 상세 근무조건 */}
-              <IconSectionShell id="conditions" icon={CalendarClock} title="상세 근무조건">
+              {/* 근무 조건 (근무지역 포함) */}
+              <IconSectionShell id="conditions" icon={CalendarClock} title="근무 조건">
                 <div className="space-y-7">
                   <div>
                     <h3 className="text-[15px] font-bold text-[#2f3845]">근무 일정</h3>
@@ -223,6 +229,17 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                     <h3 className="text-[15px] font-bold text-[#2f3845]">근무조건 상세</h3>
                     <div className="mt-3">
                       <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail] }} />
+                    </div>
+                  </div>
+                  <div className="border-t border-[#edf1f4] pt-6">
+                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
+                    <div className="mt-3 space-y-4">
+                      <div>
+                        <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.location.address}</p>
+                        <p className="mt-1 text-[13px] font-normal text-[#7d8796]">{org.location.detailAddress}</p>
+                      </div>
+                      <MapPlaceholder address={org.location.address} orgName={org.pharmacyName} />
+                      <FormattedContentView content={{ format: "paragraph", items: [org.location.parkingTransit] }} />
                     </div>
                   </div>
                 </div>
@@ -260,17 +277,29 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                 </div>
               </IconSectionShell>
 
-              {/* 위치·교통 */}
-              <IconSectionShell id="location" icon={MapPin} title="위치·교통">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{org.location.address}</p>
-                    <p className="mt-1 text-[13px] font-normal text-[#7d8796]">{org.location.detailAddress}</p>
+              {/* 전형절차 및 제출서류 */}
+              {hasHiringProcessSection ? (
+                <IconSectionShell id="hiring-process" icon={ListChecks} title="전형절차 및 제출서류">
+                  <div className="space-y-7">
+                    {hasHiringProcess ? (
+                      <div>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">전형절차</h3>
+                        <div className="mt-3">
+                          <HiringProcessSteps steps={job.hiringProcess} />
+                        </div>
+                      </div>
+                    ) : null}
+                    {hasRequiredDocuments ? (
+                      <div className={clsx(hasHiringProcess && "border-t border-[#edf1f4] pt-6")}>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">제출서류</h3>
+                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                          {job.requiredDocuments!.join(" · ")}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
-                  <MapPlaceholder address={org.location.address} orgName={org.pharmacyName} />
-                  <FormattedContentView content={{ format: "paragraph", items: [org.location.parkingTransit] }} />
-                </div>
-              </IconSectionShell>
+                </IconSectionShell>
+              ) : null}
 
               {/* 추가 안내 */}
               {hasAdditionalInfoSection ? (
@@ -323,26 +352,7 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
                   <p className="mt-3 text-[14px] font-normal leading-relaxed text-[#3f4855]">{org.fullIntro}</p>
                 ) : null}
 
-                <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
-                  >
-                    기업 정보 더보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    기업 리뷰 보기
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-                  >
-                    면접 후기 보기
-                  </button>
-                </div>
+                <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" />
               </IconSectionShell>
             </div>
 

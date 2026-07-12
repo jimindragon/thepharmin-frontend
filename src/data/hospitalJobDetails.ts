@@ -106,6 +106,8 @@ export interface HospitalJobPosting {
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
+  hiringProcess?: string[];
+  requiredDocuments?: string[];
 
   /** 지원 정보: method 단일 id(applyMethodLabelMap). 로그인 잠금은 렌더 단계. */
   apply: {
@@ -178,7 +180,7 @@ export const osanHospitalJobDetail: HospitalJobDetail = {
     experienceId: "any",
     educationId: "any",
 
-    summary: "일요일 당직 근무를 담당할 약사님을 모십니다.",
+    summary: "휴직 대체 및 일요일 당직 근무를 담당할 약사님을 모십니다.",
     responsibilities: [
       "외래·입원 처방 조제 및 감사",
       "병동 투약 관리 및 인수인계",
@@ -279,6 +281,8 @@ export const armedForcesSeoulDistrictHospitalJobDetail: HospitalJobDetail = {
     keywords: ["군무원", "약제과장", "공공기관", "관리약사"],
     additionalNotes: "군 병원 특성상 채용 시 신원조회 절차가 진행됩니다.",
     // detailImages/attachments: 없음
+    hiringProcess: ["서류 전형", "실무 면접", "신원조회", "최종합격"],
+    requiredDocuments: ["이력서", "면허증 사본"],
 
     apply: {
       method: "email",

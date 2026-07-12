@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Share2, ShieldCheck } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import { companies } from "@/data/companies";
 import { getCompanyTrack, regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
 
-/** 병원·약국 트랙 hero 뱃지: 기관 유형 콤보 라벨(강조) + 지역 + 사원수. 값이 없는 뱃지는 만들지 않는다.
- * "-"는 이 코드베이스에서 미입력을 뜻하는 기존 관례(예: companies.ts employeeCount)라 빈 값과 동일하게 취급한다 */
-function institutionHeroBadges(profile: CompanyProfile): { text: string; emphasize: boolean }[] | null {
+/** 병원·약국 트랙 hero 뱃지: 기관 유형 콤보 라벨 + 지역, 최대 2개(STEP 3a-2 — 직원 수는 본문 B 카드와 중복돼 제거).
+ * 값이 없는 뱃지는 만들지 않는다. "-"는 이 코드베이스에서 미입력을 뜻하는 기존 관례라 빈 값과 동일하게 취급한다 */
+function institutionHeroBadges(profile: CompanyProfile): string[] | null {
   const company = companies.find((item) => item.id === profile.id);
   if (!company) return null;
 
@@ -19,13 +19,15 @@ function institutionHeroBadges(profile: CompanyProfile): { text: string; emphasi
       ? getHospitalCombinedTypeLabel(company.hospitalType, company.hospitalOperator, company.specialtyLabel)
       : track === "pharmacy" && company.pharmacyType
         ? getPharmacyTypeLabel(company.pharmacyType)
-        : null;
+        : // 연구 트랙은 별도 타입 필드가 없다 — companies.ts의 industry가 이미 기관 유형 라벨(예: "정부출연연구기관") 그 자체다
+          track === "research"
+          ? company.industry
+          : null;
   if (!typeLabel) return null;
 
-  const badges = [{ text: typeLabel, emphasize: true }];
+  const badges = [typeLabel];
   const region = regionFromAddress(company.address);
-  if (region) badges.push({ text: region, emphasize: false });
-  if (company.employeeCount && company.employeeCount !== "-") badges.push({ text: company.employeeCount, emphasize: false });
+  if (region) badges.push(region);
   return badges;
 }
 
@@ -51,40 +53,26 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
       <img src={profile.coverImage} alt={`${profile.name} 기업 이미지`} className="absolute inset-0 h-full w-full object-cover opacity-42" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,14,0.92)_0%,rgba(3,10,14,0.75)_48%,rgba(3,10,14,0.38)_100%)]" />
       <div className="relative z-10 px-8 py-8 max-[720px]:px-5 max-[720px]:py-6">
-        <span className="inline-flex h-7 items-center bg-[#111111]/80 px-3 text-[11px] font-medium text-[#e5d27b] ring-1 ring-white/12">{profile.premiumLabel}</span>
-        <div className="mt-7 flex items-end justify-between gap-6 max-[820px]:items-start max-[820px]:flex-col">
+        {/* premiumLabel 배지는 STEP 3a-2에서 제거 — Hero는 "식별"(로고·기관명·한줄소개·액션) 역할로 한정한다 */}
+        <div className="flex items-end justify-between gap-6 max-[820px]:items-start max-[820px]:flex-col">
           <div className="flex min-w-0 items-center gap-6 max-[640px]:items-start max-[640px]:gap-4">
             <div className="grid h-[118px] w-[118px] shrink-0 place-items-center border border-white/24 bg-white text-center text-[16px] font-medium leading-tight text-[#17212c] shadow-[0_18px_42px_rgba(0,0,0,0.22)] max-[640px]:h-[92px] max-[640px]:w-[92px] max-[640px]:text-[13px]">
               {profile.logoImage ? <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" /> : profile.logoText}
             </div>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
-                <span className="inline-flex h-7 items-center gap-1 border border-[#b8dfdb]/60 bg-white/10 px-2.5 text-[11px] font-medium text-[#dff7f4]">
-                  <ShieldCheck size={13} />
-                  {profile.verifiedLabel}
-                </span>
-              </div>
+              {/* verified 배지는 STEP 3a에서 전면 제거 — 배지 부여 기준이 없고 공고 등록 자체가 사업자 인증을 전제해 변별력이 없다 */}
+              <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
               <p className="mt-3 text-[15px] font-normal text-white/86 max-[640px]:text-[13px]">{profile.tagline}</p>
+              {/* 배지는 무채색 절제 스타일 통일(STEP 3a-2) — 반투명 흰 보더 + 흰 텍스트, 강조용 채움색 없음 */}
               <div className="mt-4 flex flex-wrap gap-2">
-                {institutionBadges
-                  ? institutionBadges.map((badge) => (
-                      <span
-                        key={badge.text}
-                        className={
-                          badge.emphasize
-                            ? "inline-flex h-8 items-center bg-white px-3 text-[12px] font-bold text-[#17212c]"
-                            : "inline-flex h-8 items-center bg-white/10 px-3 text-[12px] font-medium text-white/88 ring-1 ring-white/14"
-                        }
-                      >
-                        {badge.text}
-                      </span>
-                    ))
-                  : profile.tags.map((tag) => (
-                      <span key={tag} className="inline-flex h-8 items-center bg-white/10 px-3 text-[12px] font-medium text-white/88 ring-1 ring-white/14">
-                        {tag}
-                      </span>
-                    ))}
+                {(institutionBadges ?? profile.tags).map((badge) => (
+                  <span
+                    key={badge}
+                    className="inline-flex h-8 items-center border border-white/30 px-3 text-[12px] font-medium text-white"
+                  >
+                    {badge}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

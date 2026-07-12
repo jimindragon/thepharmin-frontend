@@ -43,8 +43,10 @@ export function AttachmentUploader({
 
   return (
     <div>
-      <p className="block mb-1.5 text-[14px] font-medium text-[#2f3845]">{label}</p>
-      {description && <p className="mt-1 mb-3 text-[11.5px] text-[#a0a9b7]">{description}</p>}
+      <p className="block mb-1.5 text-[14px] font-medium text-[#2f3845]">
+        {label}
+        {description && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{description}</span>}
+      </p>
 
       <input
         ref={inputRef}

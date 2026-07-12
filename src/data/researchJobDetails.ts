@@ -1,9 +1,10 @@
 // ============================================================
 // 연구 공고 상세 정본 (job/org 이원 구조)
 // job = 공고 등록 폼(ResearchJobPostingForm) 입력값 / org = 연구 기관 정보 관리 폼(ResearchOrgProfileClient) 입력값
-// hospitalJobDetails.ts와 동일한 패턴을 모델로 하되, 연구 트랙은 Company 엔티티가 없으므로
-// companyId를 항상 null로 고정하고 기관 정보(org)를 이 파일 안에 인라인으로 보유한다
-// (industryJobDetails.ts의 IndustryJobDetail.companyId: string | null nullable 패턴 참조).
+// hospitalJobDetails.ts와 동일한 패턴을 모델로 한다. 연구 트랙도 STEP 4에서 Company 승격이 완료되어
+// companyId로 companies.ts/companyProfiles.ts 엔티티(예: "kist", "seoul-asan-hospital")와 연결되지만,
+// 기관 정보(org)는 여전히 이 파일 안에 인라인으로 보유한다 — org는 공고 폼이 실제로 입력하는 값(job/org 이원 구조)이고
+// Company/CompanyProfile은 그 값을 재사용해 만든 별도의 인사이트 엔티티라, org 자체를 없애지 않는다.
 // 로고 이미지 파일이 없어 logoUrl 대신 jobs.ts의 해당 공고가 가진 logoText/logoColor(이니셜 배지)를
 // org로 그대로 옮겨 담는다.
 // 폼(공고 등록 + 기관 정보)에 입력 UI가 없는 필드(researchDegree, researchEligibility,
@@ -99,6 +100,8 @@ export interface ResearchJobPosting {
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
+  hiringProcess?: string[];
+  requiredDocuments?: string[];
 
   /** 지원 정보: method 단일 id(applyMethodLabelMap). 로그인 잠금은 렌더 단계. */
   apply: {
@@ -149,8 +152,8 @@ export interface ResearchOrg {
 export interface ResearchJobDetail {
   id: string;
   slug: string;
-  /** 연구 트랙은 Company 엔티티가 없으므로 항상 null로 고정한다. org 정보는 이 정본 안에 인라인으로 보유한다. */
-  companyId: null;
+  /** companies.ts Company 엔티티 id (STEP 4에서 Company 승격 완료). 아직 승격되지 않은 기관은 null. */
+  companyId: string | null;
   job: ResearchJobPosting;
   org: ResearchOrg;
 }
@@ -160,11 +163,11 @@ export interface ResearchJobDetail {
 export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
   id: "kist-neurochannel-postdoc",
   slug: "kist-neurochannel-postdoc",
-  companyId: null,
+  companyId: "kist",
 
   job: {
     id: "kist-neurochannel-postdoc",
-    title: "서울 KIST, 신경생리연구실, 포스닥 구인 (중추신경발달, 오가노이드, 정신질환)",
+    title: "KIST 신경생리연구실 연구원 모집 (중추신경발달·오가노이드)",
 
     jobCategory: { main: "연구직", sub: "박사후연구원·포닥" },
     headcount: "1명",
@@ -191,9 +194,10 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
       "계약 기간은 연 단위이며, 연구 성과와 과제 상황에 따라 갱신을 협의합니다. 4대 보험이 적용됩니다.",
 
     keywords: ["neurogenesis", "중추신경발달", "이온채널", "뇌오가노이드", "칼슘이미징", "RNAscope"],
-    additionalNotes:
-      "지원 서류는 이력서와 연구 실적 목록을 포함해 제출해 주세요. 서류 검토 후 개별 면접 일정을 안내드립니다.",
+    additionalNotes: "입사 후 연구실 안전교육과 기관 공통 교육이 진행됩니다.",
     // detailImages/attachments: 없음
+    hiringProcess: ["서류 전형", "1차 면접", "최종합격"],
+    requiredDocuments: ["이력서", "연구 실적 목록"],
 
     apply: {
       method: "email",
@@ -243,7 +247,7 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
 export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
   id: "amc-colorectal-surgery-researcher",
   slug: "amc-colorectal-surgery-researcher",
-  companyId: null,
+  companyId: "seoul-asan-hospital",
 
   job: {
     id: "amc-colorectal-surgery-researcher",

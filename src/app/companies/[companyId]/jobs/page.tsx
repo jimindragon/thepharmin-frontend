@@ -25,9 +25,5 @@ export default async function CompanyJobsPage({ params }: CompanyJobsPageProps) 
     );
   }
 
-  return (
-    <div className="mt-6">
-      <CompanyJobsPreview profile={profile} />
-    </div>
-  );
+  return <CompanyJobsPreview profile={profile} />;
 }

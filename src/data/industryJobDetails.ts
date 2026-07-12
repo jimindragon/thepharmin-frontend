@@ -32,6 +32,8 @@ export interface IndustryJobBlock {
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
+  hiringProcess?: string[];
+  requiredDocuments?: string[];
 }
 
 export interface IndustryOrgBlock {
@@ -219,15 +221,11 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
     },
     businessContext: {
       businessFields: ["바이오의약품", "CDMO", "생산공정"],
+      // companyProfiles.ts(samsung-biologics)의 sidebar.products와 동일 값 — 공고 상세와 인사이트가 같은 제품 목록을 보여주도록 동기화(STEP 정합성 파일럿)
       products: [
-        {
-          name: "바이오의약품 CDMO",
-          description: "글로벌 제약·바이오 기업의 바이오의약품 생산을 위탁받아 수행합니다.",
-        },
-        {
-          name: "생산 공정 운영",
-          description: "바이오의약품 생산 공정과 현장 운영 체계를 바탕으로 품질 기준에 맞는 생산을 진행합니다.",
-        },
+        { name: "CDMO", description: "항체의약품 위탁개발생산" },
+        { name: "CDO 플랫폼", description: "S-Cellerate · S-DUAL 등" },
+        { name: "ADC", description: "항체약물접합체 생산" },
       ],
     },
   },

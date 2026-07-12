@@ -15,6 +15,7 @@ import {
   FlaskConical,
   GraduationCap,
   Info,
+  ListChecks,
   Microscope,
   Users,
   Wallet,
@@ -23,9 +24,11 @@ import { useState } from "react";
 import {
   ApplyCard,
   type ApplyMethodId,
+  CompanyCtaButtons,
   CompanyLogo,
   firstWords,
   FormattedContentView,
+  HiringProcessSteps,
   IconSectionShell,
   InfoRow,
   InfoRowList,
@@ -90,6 +93,10 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
   const hasAttachments = Boolean(job.attachments && job.attachments.length > 0);
   const hasAdditionalNotes = Boolean(job.additionalNotes);
   const hasAdditionalInfoSection = hasDetailImages || hasAttachments || hasAdditionalNotes;
+
+  const hasHiringProcess = Boolean(job.hiringProcess && job.hiringProcess.length > 0);
+  const hasRequiredDocuments = Boolean(job.requiredDocuments && job.requiredDocuments.length > 0);
+  const hasHiringProcessSection = hasHiringProcess || hasRequiredDocuments;
 
   return (
     <>
@@ -260,6 +267,30 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                 ) : null}
               </IconSectionShell>
 
+              {/* 전형절차 및 제출서류 */}
+              {hasHiringProcessSection ? (
+                <IconSectionShell id="hiring-process" icon={ListChecks} title="전형절차 및 제출서류">
+                  <div className="space-y-7">
+                    {hasHiringProcess ? (
+                      <div>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">전형절차</h3>
+                        <div className="mt-3">
+                          <HiringProcessSteps steps={job.hiringProcess} />
+                        </div>
+                      </div>
+                    ) : null}
+                    {hasRequiredDocuments ? (
+                      <div className={clsx(hasHiringProcess && "border-t border-[#edf1f4] pt-6")}>
+                        <h3 className="text-[15px] font-bold text-[#2f3845]">제출서류</h3>
+                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                          {job.requiredDocuments!.join(" · ")}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </IconSectionShell>
+              ) : null}
+
               {/* 추가 안내 */}
               {hasAdditionalInfoSection ? (
                 <IconSectionShell id="additional-info" icon={Info} title="추가 안내">
@@ -315,6 +346,9 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                     ) : null}
                   </div>
                 </div>
+
+                {/* CTA 버튼 3개 — 기업 인사이트로 연결. companyId가 없는(미승격) 기관은 렌더하지 않는다 */}
+                {data.companyId ? <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" /> : null}
               </IconSectionShell>
             </div>
 

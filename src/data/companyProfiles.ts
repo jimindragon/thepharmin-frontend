@@ -45,9 +45,16 @@ export interface CompanyProfile {
   tagline: string;
   tags: string[];
   coverImage: string;
-  metrics: CompanyMetric[];
+  /** DART 연동 전까지는 mock이거나 아예 비어 있을 수 있다 — 없으면 "한눈에 보는 기업" 재무 지표 그리드를 숨긴다 */
+  metrics?: CompanyMetric[];
   businessSummary: CompanyDetailField[];
   recruitSummary: string;
+  /** 폼의 본문 소개(fullIntro) 대응. recruitSummary와의 관계는 트랙별 개요 재설계(STEP 2)에서 정리한다 */
+  fullIntro?: string;
+  /** 기업 정보 폼의 대표 전화 대응 */
+  phone?: string;
+  /** 기업 정보 폼의 대표 이메일 대응 */
+  email?: string;
   details: CompanyDetailField[];
   keywords: string[];
   news: CompanyProfileNews[];
@@ -59,6 +66,9 @@ export interface CompanyProfile {
   medicalDepartments?: string[];
   /** 병원 트랙 전용. 미등록 시 "전문약사 보유" 블록 자체를 숨긴다 */
   specialistPharmacists?: string[];
+  /** 병원 트랙 전용. 폼의 HospitalOrgProfile.pharmacyEnvironmentDescription 대응. "약제부 근무환경" 블록 하단 서술문 —
+   * 값이 없으면 렌더하지 않는다(STEP 3a는 렌더만 추가, 데이터 이관은 STEP 3b) */
+  pharmacyEnvironmentDescription?: string;
   /** 약국 트랙 전용 */
   pharmacySoftware?: string;
   /** 약국 트랙 전용 */
@@ -67,6 +77,24 @@ export interface CompanyProfile {
   dispensingEquipment?: string[];
   /** 약국 트랙 전용, 단일선택. pharmacyFeatureOptions(config/jobFilters/pharmacyFilters.ts)의 id를 재사용한다 */
   pharmacyFeatures?: string;
+  /** 연구 트랙 전용. researchInstitutionTypeOptions(config/jobFilters/researchFilters.ts)의 id를 재사용한다 */
+  institutionTypeId?: string;
+  /** 연구 트랙 전용. researchStaffScaleOptions(config/jobFilters/researchFilters.ts)의 id를 재사용한다("연구 인력 규모") */
+  staffScaleId?: string;
+  /** 연구 트랙 전용. researchFieldCategoryOptions(config/researchFields.ts) 소분류 id 목록. 미등록 시 "연구 분야" 행 자체를 숨긴다 */
+  researchFields?: string[];
+  /** 연구 트랙 전용. 연구 장비·인프라 서술문. 미등록 시 "연구 환경" 블록 내 해당 행을 숨긴다 */
+  equipmentInfra?: string;
+  /** 연구 트랙 전용. 주요 연구 성과 서술문. 미등록 시 해당 행을 숨긴다 */
+  achievements?: string;
+  /** 산업 트랙 전용 재무 슬롯. DART 연동 전까지는 비어 있을 수 있고, 세 값이 모두 없으면 "재무 정보" 블록 자체를 숨긴다.
+   * 기존 metrics 배열의 매출액/영업이익/R&D 투자비율 항목과는 별개다 — 병원·약국 트랙은 여전히 metrics를 그대로 쓴다 */
+  revenue?: string;
+  operatingProfit?: string;
+  rndRatio?: string;
+  /** revenue/operatingProfit/rndRatio 공통 기준 연도. 세 값이 실제로 항상 같은 회계연도를 가리켜(동일 공시 기준)
+   * 필드별 연도 대신 단일 값으로 둔다. 카드 라벨에 "매출액 (2023)" 형태로 흡수해 표시한다 */
+  financialYear?: string;
   sidebar: {
     interestedCount: string;
     reviewKeywordCount: string;
@@ -85,12 +113,11 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "인류의 건강한 삶을 위해 혁신을 연구합니다.",
     tags: ["제약/바이오", "코스닥 123456", "설립 2012년", "사원수 1,250명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "2,850억 원", caption: "2023년" },
-      { label: "영업이익", value: "480억 원", caption: "2023년" },
-      { label: "R&D 투자비율", value: "18.6%", caption: "2023년" },
-      { label: "해외 매출 비중", value: "42%", caption: "2023년" },
-    ],
+    // 재무 슬롯: 기존 metrics(매출액/영업이익/R&D 투자비율)를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "2,850억 원",
+    operatingProfit: "480억 원",
+    rndRatio: "18.6%",
+    financialYear: "2023",
     businessSummary: [
       { label: "주요 사업", value: "전문의약품 · 일반의약품 · 바이오의약품" },
       { label: "주요 제품", value: "파마정 · 바이오신 · 헬스인" },
@@ -99,15 +126,17 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "항암, 면역, 대사질환 영역에서 차별화된 파이프라인을 보유하고 있으며, R&D 중심의 지속적인 혁신으로 글로벌 시장에서 경쟁력을 강화하고 있습니다.",
+    fullIntro:
+      "항암, 면역, 대사질환 영역에서 차별화된 파이프라인을 보유하고 있으며, R&D 중심의 지속적인 혁신으로 글로벌 시장에서 경쟁력을 강화하고 있습니다.",
     details: [
-      { label: "대표자", value: "김파마" },
-      { label: "설립일", value: "2012년 06월 18일" },
       { label: "본사 위치", value: "서울특별시 강남구 테헤란로 123" },
       { label: "홈페이지", value: "www.thepharma.co.kr" },
-      { label: "기업 형태", value: "중견기업" },
-      { label: "업종", value: "의약품 제조업" },
+      // 기관 유형은 companies.ts industry="전문의약품 제조업" → 제약사(폼 옵션) 매핑
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "2012년" },
       { label: "사업 분야", value: "의약품 개발 및 제조, 바이오의약품 연구개발" },
-      { label: "계열사", value: "더파마헬스케어, 더파마바이오" },
+      // 직원 수는 companies.ts employeeCount="320명" → 101~500명(폼 4구간) 매핑
+      { label: "직원 수", value: "101~500명" },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "도전과 혁신", "환자 중심", "전문성 존중"],
     news: [
@@ -177,12 +206,11 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "좋은 상품을 만들어 국가와 동포에게 도움을 주는 기업",
     tags: ["제약/바이오", "코스피 000100", "설립 1926년", "사원수 2,123명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "2조 1,056억 원", caption: "2025년" },
-      { label: "영업이익", value: "1,101억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "11.1%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "15%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "2조 1,056억 원",
+    operatingProfit: "1,101억 원",
+    rndRatio: "11.1%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "의약품·생활용품·동물약품 제조 (신약 파이프라인 33개)" },
       { label: "주요 제품", value: "렉라자 · 삐콤씨 · 안티푸라민" },
@@ -191,24 +219,22 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "비소세포폐암 표적항암제 렉라자를 중심으로 글로벌 허가를 잇달아 획득하며 항암·면역 분야 R&D와 해외 인허가 역량을 빠르게 확장하고 있습니다.",
+    fullIntro:
+      "비소세포폐암 표적항암제 렉라자를 중심으로 글로벌 허가를 잇달아 획득하며 항암·면역 분야 R&D와 해외 인허가 역량을 빠르게 확장하고 있습니다.",
     details: [
-      { label: "대표자", value: "조욱제" },
-      { label: "설립일", value: "1926년 06월 20일" },
       { label: "본사 위치", value: "서울 동작구 노량진로 74 (유한양행빌딩)" },
       { label: "홈페이지", value: "www.yuhan.co.kr" },
-      { label: "기업 형태", value: "중견기업" },
-      { label: "업종", value: "완제 의약품 제조업" },
+      // 기관 유형은 companies.ts industry="완제 의약품 제조업" → 제약사(폼 옵션) 매핑
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1926년" },
       { label: "사업 분야", value: "의약품·생활용품·동물약품 제조" },
+      // 직원 수는 companies.ts employeeCount="2,123명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
       { label: "자본금", value: "813억 9천만 원 (2025.12.31)" },
       { label: "평균 근속", value: "12년" },
       { label: "대졸 초임", value: "5,045만 원" },
       { label: "평균 연봉", value: "9,744만 원" },
       { label: "남녀 성비", value: "남성 71.9% / 여성 28.1%" },
-      {
-        label: "계열사",
-        value:
-          "(주)유한코스메틱, (주)프로젠, 퍼멘텍(주), (주)유한메디카, (주)유한화학, (주)유한클로락스, (주)와이즈메디, 에스비바이오팜(주), (주)에이투젠, (주)이뮨온시아, (주)유한건강생활, 애드파마(주), (주)유코스토리",
-      },
     ],
     keywords: ["신약개발", "글로벌 진출", "R&D 중심", "사회적 책임", "항암·면역", "버들표 신뢰"],
     news: [
@@ -289,12 +315,7 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "글로벌 No.1 바이오의약품 CDMO 기업",
     tags: ["바이오/CDMO", "코스피 207940", "설립 2011년", "사원수 5,455명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "4조 5,569억 원", caption: "2025년" },
-      { label: "영업이익", value: "2조 680억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "6%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "80%", caption: "2025년" },
-    ],
+    // 재무 슬롯(revenue/operatingProfit/rndRatio)은 의도적으로 비워둔다 — 실제 공시값이 있는 상장사라 임의 수치를 넣지 않는다(STEP 2 정합성 정비)
     businessSummary: [
       { label: "주요 사업", value: "바이오의약품 위탁개발생산(CDMO/CMO/CDO)" },
       { label: "주요 제품", value: "항체의약품 CDMO · CDO 플랫폼 · ADC" },
@@ -303,14 +324,19 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "글로벌 제약사의 항체의약품 위탁개발생산을 중심으로 송도 바이오캠퍼스 생산 능력을 지속 확장하고 있으며, ADC 등 신규 모달리티로 사업 영역을 넓히고 있습니다.",
+    /** industryJobDetails.ts의 samsungbio-bioprocess org.description과 동일 — 기업 정보 폼의 본문 소개 대응 */
+    fullIntro:
+      "삼성바이오로직스는 글로벌 제약·바이오 기업의 바이오의약품 생산을 맡는 CDMO로, 생산 공정과 품질·안전 기준에 맞춘 현장 운영 체계를 갖추고 있습니다.",
     details: [
       { label: "대표자", value: "존림(John Rim)" },
-      { label: "설립일", value: "2011년 04월 22일" },
       { label: "본사 위치", value: "인천 연수구 송도바이오대로 300 (송도동, 삼성바이오로직스)" },
       { label: "홈페이지", value: "www.samsungbiologics.com" },
-      { label: "기업 형태", value: "대기업" },
-      { label: "업종", value: "생물학적 제제 제조업" },
+      // 기관 유형은 industryJobDetails.ts org.orgType과 동일 값으로 맞춘다(폼 기준 정합성)
+      { label: "기관 유형", value: "CDMO" },
+      { label: "설립 연도", value: "2011년" },
       { label: "사업 분야", value: "바이오의약품 위탁개발생산(CDMO/CMO/CDO)" },
+      // 직원 수는 industryJobDetails.ts org.employeeCount(폼 세그먼트 단위)와 동일하게 맞춘다 — tags의 "사원수 5,455명"은 별도 표기라 유지
+      { label: "직원 수", value: "501명 이상" },
       { label: "자본금", value: "1,157억 2천만 원 (2025.12.31)" },
       // TODO: 평균 근속 실데이터 확보 시 반영 — 공개된 수치 없음
       { label: "평균 근속", value: null },
@@ -319,10 +345,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "평균 연봉", value: null },
       // TODO: 남녀 성비 실데이터 확보 시 반영 — 공개된 수치 없음
       { label: "남녀 성비", value: null },
-      {
-        label: "계열사",
-        value: "삼성전자(주), 삼성물산(주), 삼성SDI(주), 삼성전기(주), 삼성중공업(주), 세메스(주), 스테코(주), 삼성벤처투자(주) 등",
-      },
     ],
     keywords: ["CDMO", "글로벌 위탁생산", "송도 바이오캠퍼스", "ESG", "항체의약품", "ADC"],
     news: [
@@ -403,12 +425,11 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "삶의 질 향상을 추구하는 글로벌 바이오의약품 전문기업",
     tags: ["바이오/에스테틱", "코스닥 145020", "설립 2001년", "사원수 629명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "2,928억 원", caption: "2025년" },
-      { label: "영업이익", value: "1,068억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "10%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "50%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "2,928억 원",
+    operatingProfit: "1,068억 원",
+    rndRatio: "10%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "보툴리눔 톡신·HA필러·바이오 화장품 제조 및 도소매" },
       { label: "주요 제품", value: "보툴렉스(Letybo) · 더채움 · 바이리즌 · 웰라쥬" },
@@ -417,14 +438,17 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "보툴리눔 톡신 보툴렉스(수출명 Letybo)와 HA필러 더채움을 중심으로 25개국 이상에 수출하며, 더마 코스메틱까지 영역을 넓힌 글로벌 에스테틱 전문기업입니다.",
+    fullIntro:
+      "보툴리눔 톡신 보툴렉스(수출명 Letybo)와 HA필러 더채움을 중심으로 25개국 이상에 수출하며, 더마 코스메틱까지 영역을 넓힌 글로벌 에스테틱 전문기업입니다.",
     details: [
-      { label: "대표자", value: "장두현" },
-      { label: "설립일", value: "2001년 11월 22일" },
       { label: "본사 위치", value: "강원 춘천시 동내면 거두단지1길 23 (거두리, 휴젤)" },
       { label: "홈페이지", value: "www.hugel-inc.com" },
-      { label: "기업 형태", value: "중소기업" },
-      { label: "업종", value: "제약·보건·바이오(생물학적 제제)" },
+      // 기관 유형은 companies.ts industry="제약·보건·바이오(생물학적 제제)" + description의 "바이오의약품 전문기업" → 바이오텍(폼 옵션) 매핑
+      { label: "기관 유형", value: "바이오텍" },
+      { label: "설립 연도", value: "2001년" },
       { label: "사업 분야", value: "보툴리눔 톡신·HA필러·바이오 화장품 제조 및 도소매" },
+      // 직원 수는 companies.ts employeeCount="629명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
       // TODO: 자본금 실데이터 확보 시 반영 — 공개된 수치 없음
       { label: "자본금", value: null },
       // TODO: 평균 근속 실데이터 확보 시 반영 — 공개된 수치 없음
@@ -434,7 +458,6 @@ export const companyProfiles: CompanyProfile[] = [
       { label: "평균 연봉", value: null },
       // TODO: 남녀 성비 실데이터 확보 시 반영 — 공개된 수치 없음
       { label: "남녀 성비", value: null },
-      { label: "계열사", value: "(주)GS, 지에스칼텍스(주), 자이에스앤디(주), 지에스이피에스(주), 지에스파워(주), 인천종합에너지(주) 등" },
     ],
     keywords: ["보툴리눔 톡신", "HA필러", "글로벌 수출", "에스테틱", "R&D", "더마 코스메틱"],
     news: [
@@ -515,12 +538,11 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "바이오시밀러를 넘어 신약으로, 글로벌 바이오 기업",
     tags: ["제약/바이오", "설립 1991년", "사원수 2,300명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "3조 5,573억 원", caption: "2025년" },
-      { label: "영업이익", value: "6,048억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "18.2%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "88%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "3조 5,573억 원",
+    operatingProfit: "6,048억 원",
+    rndRatio: "18.2%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "항체 바이오시밀러·신약 개발 및 생산" },
       { label: "주요 제품", value: "램시마 · 트룩시마 · 짐펜트라" },
@@ -528,13 +550,17 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "램시마SC와 짐펜트라의 글로벌 확대를 중심으로 바이오시밀러 포트폴리오를 넓히며, 항체 신약과 ADC 분야로 파이프라인을 확장하고 있습니다.",
+    fullIntro:
+      "램시마SC와 짐펜트라의 글로벌 확대를 중심으로 바이오시밀러 포트폴리오를 넓히며, 항체 신약과 ADC 분야로 파이프라인을 확장하고 있습니다.",
+    // 사업 분야: companies.ts description("바이오시밀러를 넘어 신약으로")이 슬로건 성격이라 무리하게 도출하지 않고 비워둔다(보고 대상)
     details: [
-      { label: "대표자", value: "서정진" },
-      { label: "설립일", value: "1991년 02월" },
       { label: "본사 위치", value: "인천 연수구 아카데미로 23" },
       { label: "홈페이지", value: "www.celltrion.com" },
-      { label: "기업 형태", value: "대기업" },
-      { label: "업종", value: "생물학적 제제 제조업" },
+      // 기관 유형은 companies.ts industry="생물학적 제제 제조업" + description의 "바이오 기업" → 바이오텍(폼 옵션) 매핑
+      { label: "기관 유형", value: "바이오텍" },
+      { label: "설립 연도", value: "1991년" },
+      // 직원 수는 companies.ts employeeCount="2,300명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
     ],
     keywords: ["바이오시밀러", "글로벌 진출", "항체의약품", "생산 강자", "신약 도전"],
     news: [
@@ -582,12 +608,11 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "R&D로 성장하는 신약개발 중심 제약기업",
     tags: ["제약/바이오", "설립 1973년", "사원수 2,400명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "1조 5,842억 원", caption: "2025년" },
-      { label: "영업이익", value: "2,315억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "13.8%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "12%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "1조 5,842억 원",
+    operatingProfit: "2,315억 원",
+    rndRatio: "13.8%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "개량신약·전문의약품 및 신약 파이프라인 개발" },
       { label: "주요 제품", value: "아모잘탄 · 로수젯 · 팔팔" },
@@ -595,13 +620,17 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary:
       "대사질환·항암 중심의 신약 파이프라인과 개량신약 포트폴리오를 함께 운영하며, 국내 R&D 투자 상위권을 유지하고 있는 연구 중심 제약사입니다.",
+    fullIntro:
+      "대사질환·항암 중심의 신약 파이프라인과 개량신약 포트폴리오를 함께 운영하며, 국내 R&D 투자 상위권을 유지하고 있는 연구 중심 제약사입니다.",
+    // 사업 분야: companies.ts description("R&D로 성장하는 신약개발 중심 제약기업")이 슬로건 성격이라 무리하게 도출하지 않고 비워둔다(보고 대상)
     details: [
-      { label: "대표자", value: "박재현" },
-      { label: "설립일", value: "1973년 06월" },
       { label: "본사 위치", value: "서울 송파구 위례성대로 14" },
       { label: "홈페이지", value: "www.hanmi.co.kr" },
-      { label: "기업 형태", value: "대기업" },
-      { label: "업종", value: "완제 의약품 제조업" },
+      // 기관 유형은 companies.ts industry="완제 의약품 제조업" → 제약사(폼 옵션) 매핑
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1973년" },
+      // 직원 수는 companies.ts employeeCount="2,400명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
     ],
     keywords: ["신약개발", "R&D 중심", "개량신약", "대사질환", "오픈이노베이션"],
     news: [
@@ -649,25 +678,28 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "신약과 개량신약을 아우르는 국내 대표 제약기업",
     tags: ["제약/바이오", "설립 1941년", "사원수 2,200명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "1조 6,694억 원", caption: "2025년" },
-      { label: "영업이익", value: "1,528억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "12.1%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "8%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "1조 6,694억 원",
+    operatingProfit: "1,528억 원",
+    rndRatio: "12.1%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "전문의약품·개량신약 개발 및 제조" },
       { label: "주요 제품", value: "종근당글리아티린 · 이모튼 · 딜라트렌" },
     ],
     recruitSummary:
       "전문의약품 중심의 안정적인 매출 기반 위에서 합성신약과 바이오 분야 파이프라인을 확대하고 있으며, CMC·품질 직무 채용이 꾸준한 기업입니다.",
+    fullIntro:
+      "전문의약품 중심의 안정적인 매출 기반 위에서 합성신약과 바이오 분야 파이프라인을 확대하고 있으며, CMC·품질 직무 채용이 꾸준한 기업입니다.",
+    // 사업 분야: companies.ts description("신약과 개량신약을 아우르는 국내 대표 제약기업")이 슬로건 성격이라 무리하게 도출하지 않고 비워둔다(보고 대상)
     details: [
-      { label: "대표자", value: "김영주" },
-      { label: "설립일", value: "1941년 05월" },
       { label: "본사 위치", value: "서울 서대문구 충정로 8" },
       { label: "홈페이지", value: "www.ckdpharm.com" },
-      { label: "기업 형태", value: "대기업" },
-      { label: "업종", value: "완제 의약품 제조업" },
+      // 기관 유형은 companies.ts industry="완제 의약품 제조업" → 제약사(폼 옵션) 매핑
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1941년" },
+      // 직원 수는 companies.ts employeeCount="2,200명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
     ],
     keywords: ["전문의약품", "CMC·품질", "꾸준한 채용", "안정성", "신약 파이프라인"],
     news: [
@@ -715,25 +747,28 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "백신과 혈액제제로 공중보건을 지켜온 바이오 전문기업",
     tags: ["제약/바이오", "설립 1967년", "사원수 2,100명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "1조 7,208억 원", caption: "2025년" },
-      { label: "영업이익", value: "682억 원", caption: "2025년" },
-      { label: "R&D 투자비율", value: "11.4%", caption: "2025년" },
-      { label: "해외 매출 비중", value: "22%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics를 그대로 이관, 해외 매출 비중은 새 스펙에 없어 폐기(STEP 2.5)
+    revenue: "1조 7,208억 원",
+    operatingProfit: "682억 원",
+    rndRatio: "11.4%",
+    financialYear: "2025",
     businessSummary: [
       { label: "주요 사업", value: "혈액제제·백신 개발 및 제조" },
       { label: "주요 제품", value: "알리글로 · 지씨플루 · 헌터라제" },
     ],
     recruitSummary:
       "혈액제제 알리글로의 미국 시장 안착을 계기로 글로벌 매출 비중을 늘리고 있으며, 백신·희귀질환 치료제 중심의 특화 포트폴리오를 운영합니다.",
+    fullIntro:
+      "혈액제제 알리글로의 미국 시장 안착을 계기로 글로벌 매출 비중을 늘리고 있으며, 백신·희귀질환 치료제 중심의 특화 포트폴리오를 운영합니다.",
+    // 사업 분야: companies.ts description("백신과 혈액제제로 공중보건을 지켜온 바이오 전문기업")이 슬로건 성격이라 무리하게 도출하지 않고 비워둔다(보고 대상)
     details: [
-      { label: "대표자", value: "허은철" },
-      { label: "설립일", value: "1967년 10월" },
       { label: "본사 위치", value: "경기 용인시 기흥구 이현로30번길 107" },
       { label: "홈페이지", value: "www.gccorp.com" },
-      { label: "기업 형태", value: "대기업" },
-      { label: "업종", value: "생물학적 제제 제조업" },
+      // 기관 유형은 companies.ts industry="생물학적 제제 제조업" + description의 "바이오 전문기업" → 바이오텍(폼 옵션) 매핑
+      { label: "기관 유형", value: "바이오텍" },
+      { label: "설립 연도", value: "1967년" },
+      // 직원 수는 companies.ts employeeCount="2,100명" → 501명 이상(폼 4구간) 매핑
+      { label: "직원 수", value: "501명 이상" },
     ],
     keywords: ["혈액제제", "백신", "글로벌 진출", "희귀질환", "콜드체인"],
     news: [
@@ -781,25 +816,30 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO",
     tags: ["CRO/CDMO", "설립 2011년", "사원수 101~500명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "매출액", value: "892억 원", caption: "2025년" },
-      { label: "영업이익", value: "96억 원", caption: "2025년" },
-      { label: "진행 과제", value: "연간 140건+" },
-      { label: "글로벌 과제 비중", value: "35%", caption: "2025년" },
-    ],
+    // 재무 슬롯: 기존 metrics의 매출액/영업이익만 그대로 이관 — R&D 투자비율 항목 자체가 없어 rndRatio는 비워둔다.
+    // 글로벌 과제 비중은 새 스펙에 없어 폐기, "진행 과제"는 재무가 아닌 운영 지표라 metrics에 남긴다(STEP 2.5)
+    revenue: "892억 원",
+    operatingProfit: "96억 원",
+    financialYear: "2025",
+    metrics: [{ label: "진행 과제", value: "연간 140건+" }],
     businessSummary: [
       { label: "주요 사업", value: "임상 1~4상 운영·모니터링·DM·통계 수탁" },
       { label: "주요 고객", value: "국내 제약사·바이오벤처·글로벌 스폰서" },
     ],
     recruitSummary:
       "국내 제약사와 바이오벤처의 임상을 폭넓게 수탁하며, 다국가 임상 비중을 늘려가는 성장기 CRO입니다. CRA·DM·통계 직군의 채용이 꾸준합니다.",
+    fullIntro:
+      "국내 제약사와 바이오벤처의 임상을 폭넓게 수탁하며, 다국가 임상 비중을 늘려가는 성장기 CRO입니다. CRA·DM·통계 직군의 채용이 꾸준합니다.",
     details: [
-      { label: "대표자", value: "이정민" },
-      { label: "설립일", value: "2011년 03월" },
       { label: "본사 위치", value: "서울 구로구 디지털로 300" },
       { label: "홈페이지", value: "www.medicoacro.co.kr" },
-      { label: "기업 형태", value: "중견기업" },
-      { label: "업종", value: "임상시험 수탁기관" },
+      // 기관 유형은 companies.ts industry="임상시험 수탁기관(CRO)" → CRO·CDMO(폼 옵션) 매핑
+      { label: "기관 유형", value: "CRO·CDMO" },
+      { label: "설립 연도", value: "2011년" },
+      // 사업 분야는 companies.ts description("국내 임상부터 글로벌 다국가 임상까지, 풀서비스 CRO")에서 그대로 도출 — 다른 4곳과 달리 슬로건이 곧 사업 범위를 서술하고 있어 채움
+      { label: "사업 분야", value: "국내 임상부터 글로벌 다국가 임상까지의 임상시험 수탁(CRO)" },
+      // 직원 수는 companies.ts employeeCount가 이미 "101~500명"으로 폼과 동일 구간 표기라 그대로 사용
+      { label: "직원 수", value: "101~500명" },
     ],
     keywords: ["풀서비스 CRO", "CRA 채용", "다국가 임상", "성장기", "커리어 시작"],
     news: [
@@ -843,22 +883,19 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "진료와 임상연구를 함께 운영하는 상급종합병원",
     tags: ["병원", "설립 2003년", "사원수 501명 이상"],
     coverImage: companyExampleImages.hero,
+    fullIntro:
+      "임상시험센터와 의료정보화 역량을 갖춘 연구 중심 병원으로, 병원약사·CRC 등 보건의료 직군과 임상연구 직군의 채용이 꾸준히 발생합니다.",
     metrics: [
       { label: "병상 수", value: "1,335병상" },
-      { label: "연간 임상시험", value: "600건+" },
       { label: "약제부 인력", value: "110명+" },
-      { label: "주요 분야", value: "진료·임상연구·의료정보화" },
     ],
     businessSummary: [{ label: "특징", value: "국내 최초 전면 디지털 병원 (HIMSS 최고 등급 경험)" }],
     recruitSummary:
       "임상시험센터와 의료정보화 역량을 갖춘 연구 중심 병원으로, 병원약사·CRC 등 보건의료 직군과 임상연구 직군의 채용이 꾸준히 발생합니다.",
     details: [
-      { label: "대표자", value: "병원장 송정한" },
-      { label: "설립일", value: "2003년 05월" },
+      { label: "설립 연도", value: "2003년" },
       { label: "본사 위치", value: "경기 성남시 분당구 구미로173번길 82" },
       { label: "홈페이지", value: "www.snubh.org" },
-      { label: "기업 형태", value: "공공·대학병원" },
-      { label: "업종", value: "상급종합병원" },
     ],
     keywords: ["상급종합병원", "병원약사", "임상시험센터", "스마트병원", "교육 체계"],
     dutySystem: "야간 당직 월 2~3회",
@@ -937,12 +974,8 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "소방·재난 대응을 아우르는 공공 종합병원",
     tags: ["병원", "설립 2025년", "사원수 101~500명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "병상 수", value: "302병상" },
-      { label: "운영 형태", value: "서울대학교병원 위탁 운영" },
-      { label: "설립", value: "2025년" },
-      { label: "유형", value: "공공 종합병원" },
-    ],
+    fullIntro: "새롭게 문을 연 공공 종합병원에서 약제 업무 체계를 함께 만들어갈 약사를 찾습니다.",
+    metrics: [{ label: "병상 수", value: "302병상" }],
     businessSummary: [
       { label: "유형", value: "충북 음성 소재 공공 종합병원" },
       { label: "규모", value: "302병상 규모, 2025년 정식 개원한 신설 병원" },
@@ -950,12 +983,8 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary: "새롭게 문을 연 공공 종합병원에서 약제 업무 체계를 함께 만들어갈 약사를 찾습니다.",
     details: [
-      { label: "대표자", value: null },
-      { label: "설립일", value: "2025년" },
+      { label: "설립 연도", value: "2025년" },
       { label: "본사 위치", value: "충북 음성군 맹동면 용두4길 19 국립소방병원" },
-      { label: "홈페이지", value: null },
-      { label: "기업 형태", value: "공공병원" },
-      { label: "업종", value: "공공·종합병원" },
     ],
     keywords: ["공공병원", "종합병원", "소방 특화", "신설"],
     dutySystem: "약제팀 교대 근무 기반, 공공병원 표준 근무 체계 운영",
@@ -986,12 +1015,7 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "노인성·만성질환 중심의 재활 요양병원",
     tags: ["병원", "설립 2009년", "사원수 101~500명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "유형", value: "요양병원" },
-      { label: "설립", value: "2009년" },
-      { label: "진료 특성", value: "노인성·만성질환 입원, 재활 치료 병행" },
-      { label: "운영 형태", value: "민간 요양병원" },
-    ],
+    fullIntro: "요양병원에서 만성질환 복약 관리와 입원 조제를 담당할 약사를 찾습니다.",
     businessSummary: [
       { label: "유형", value: "경기 수원 팔달구 소재 요양병원" },
       { label: "규모", value: "노인성·만성질환 입원 환자 중심 운영" },
@@ -999,12 +1023,8 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary: "요양병원에서 만성질환 복약 관리와 입원 조제를 담당할 약사를 찾습니다.",
     details: [
-      { label: "대표자", value: null },
-      { label: "설립일", value: "2009년" },
+      { label: "설립 연도", value: "2009년" },
       { label: "본사 위치", value: "경기 수원시 팔달구 매산로 88 미래요양병원" },
-      { label: "홈페이지", value: null },
-      { label: "기업 형태", value: "민간병원" },
-      { label: "업종", value: "요양병원" },
     ],
     keywords: ["요양병원", "재활", "만성질환", "입원"],
     dutySystem: "약제팀 주간 근무 중심, 입원 환자 조제 대응 체계 운영",
@@ -1034,12 +1054,8 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "척추·관절 중심의 정형외과 전문병원",
     tags: ["병원", "설립 2002년", "사원수 101~500명"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "병상 수", value: "139병상" },
-      { label: "전문 분야", value: "척추·관절" },
-      { label: "설립", value: "2002년" },
-      { label: "유형", value: "정형외과 전문병원" },
-    ],
+    fullIntro: "정형외과 전문병원에서 수술 전후 복약 관리와 조제를 담당할 약사를 찾습니다.",
+    metrics: [{ label: "병상 수", value: "139병상" }],
     businessSummary: [
       { label: "유형", value: "서울 강남 소재 정형외과 전문병원" },
       { label: "규모", value: "139병상 규모의 전문병원" },
@@ -1047,12 +1063,8 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary: "정형외과 전문병원에서 수술 전후 복약 관리와 조제를 담당할 약사를 찾습니다.",
     details: [
-      { label: "대표자", value: null },
-      { label: "설립일", value: "2002년" },
+      { label: "설립 연도", value: "2002년" },
       { label: "본사 위치", value: "서울 강남구 영동대로 726 제일정형외과병원" },
-      { label: "홈페이지", value: null },
-      { label: "기업 형태", value: "민간병원" },
-      { label: "업종", value: "정형외과 전문병원" },
     ],
     keywords: ["전문병원", "정형외과", "척추·관절"],
     dutySystem: "약제팀 교대 근무, 수술 일정에 맞춘 조제 대응 체계",
@@ -1082,12 +1094,7 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "다양한 진료과를 갖춘 지역 종합병원",
     tags: ["병원", "설립 1982년", "사원수 501명 이상"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "유형", value: "종합병원" },
-      { label: "설립", value: "1982년" },
-      { label: "운영 주체", value: "의료법인 성애의료재단" },
-      { label: "진료 특성", value: "응급·검진·인공신장·간호간병통합" },
-    ],
+    fullIntro: "여러 진료과 처방을 다루는 종합병원에서 폭넓은 약제 경험을 쌓을 약사를 찾습니다.",
     businessSummary: [
       { label: "유형", value: "서울 영등포 소재 종합병원" },
       { label: "규모", value: "다양한 진료과를 운영하는 종합병원" },
@@ -1095,12 +1102,8 @@ export const companyProfiles: CompanyProfile[] = [
     ],
     recruitSummary: "여러 진료과 처방을 다루는 종합병원에서 폭넓은 약제 경험을 쌓을 약사를 찾습니다.",
     details: [
-      { label: "대표자", value: null },
-      { label: "설립일", value: "1982년" },
+      { label: "설립 연도", value: "1982년" },
       { label: "본사 위치", value: "서울 영등포구 여의대방로53길 22 성애병원" },
-      { label: "홈페이지", value: null },
-      { label: "기업 형태", value: "민간병원" },
-      { label: "업종", value: "종합병원" },
     ],
     keywords: ["종합병원", "응급의료", "지역 거점"],
     dutySystem: "약제팀 교대 근무 및 당직 체계, 응급 조제 대응 운영",
@@ -1122,6 +1125,86 @@ export const companyProfiles: CompanyProfile[] = [
       address: "서울 영등포구 여의대방로53길 22 성애병원",
     },
   },
+  // ---- 오산한국병원 (STEP 3b 신설) — hospitalJobDetails.ts osanHospitalJobDetail.org 값을 정본으로 재사용 ----
+  {
+    id: "osan-hankook-hospital",
+    name: "오산한국병원",
+    logoText: "오산한국병원",
+    logoImage: companyLogos["오산한국병원"],
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "경기 오산 지역의 진료를 담당하는 종합병원입니다.",
+    tags: ["병원", "설립 1989년", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "오산한국병원은 지역 주민의 외래·입원 진료를 담당하는 종합병원입니다. 약제부는 조제와 복약상담, 병동 투약 관리를 함께 수행하며, 근무 일정과 인수인계 체계를 안정적으로 운영하고 있습니다.",
+    metrics: [
+      { label: "병상 수", value: "320병상 내외" },
+      { label: "약제부 인력", value: "8명 내외" },
+    ],
+    businessSummary: [],
+    recruitSummary:
+      "오산한국병원은 지역 주민의 외래·입원 진료를 담당하는 종합병원입니다. 약제부는 조제와 복약상담, 병동 투약 관리를 함께 수행하며, 근무 일정과 인수인계 체계를 안정적으로 운영하고 있습니다.",
+    details: [
+      { label: "설립 연도", value: "1989년" },
+      { label: "본사 위치", value: "경기 오산시 밀머리로1번길 16 오산한국병원 신관 1층 약제과" },
+      { label: "홈페이지", value: "www.osan-hankook-hospital.example" },
+    ],
+    keywords: ["종합병원", "경기남부", "당직근무", "안정적 처방"],
+    dutySystem:
+      "평일은 정규 근무 체계로 운영되며, 일요일에는 당직 약사가 단독으로 근무합니다. 당직 일정은 월 단위로 사전 조율합니다.",
+    medicalDepartments: ["internal_medicine", "surgery", "orthopedics", "emergency_medicine", "radiology"],
+    specialistPharmacists: ["감염", "중환자"],
+    pharmacyEnvironmentDescription:
+      "약사와 지원 인력이 함께 근무하며, 당직 시 인수인계 문서를 기준으로 업무를 진행합니다. 처방 검토와 조제 감사는 이중 확인 절차를 유지하고 있습니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "경기 오산시 밀머리로1번길 16 오산한국병원 신관 1층 약제과",
+    },
+  },
+  // ---- 국군서울지구병원 (STEP 3b 신설) — hospitalJobDetails.ts armedForcesSeoulDistrictHospitalJobDetail.org 값을 정본으로 재사용 ----
+  {
+    id: "armed-forces-seoul-district-hospital",
+    name: "국군서울지구병원",
+    logoText: "국군서울지구병원",
+    logoImage: companyLogos["국군서울지구병원"],
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "군 장병과 군무원의 진료를 담당하는 군 병원입니다.",
+    tags: ["병원", "설립 1971년", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "국군서울지구병원은 수도권 군 장병과 군무원의 외래·입원 진료를 담당하는 군 병원입니다. 약제부는 조제·투약 관리와 의약품 수급 관리를 수행하며, 규정에 따른 안정적인 근무 환경을 갖추고 있습니다.",
+    metrics: [
+      { label: "병상 수", value: "150병상 내외" },
+      { label: "약제부 인력", value: "12명 내외" },
+    ],
+    businessSummary: [],
+    recruitSummary:
+      "국군서울지구병원은 수도권 군 장병과 군무원의 외래·입원 진료를 담당하는 군 병원입니다. 약제부는 조제·투약 관리와 의약품 수급 관리를 수행하며, 규정에 따른 안정적인 근무 환경을 갖추고 있습니다.",
+    details: [
+      { label: "설립 연도", value: "1971년" },
+      { label: "본사 위치", value: "서울 종로구 삼청로10길 13 국군서울지구병원" },
+      { label: "홈페이지", value: "www.afsdh-hospital.example" },
+    ],
+    keywords: ["군병원", "공공기관", "약제행정", "정규직"],
+    dutySystem:
+      "약제부는 주간 근무 체계로 운영되며, 별도 당직 근무는 없습니다. 처방 접수와 조제, 검수 업무가 규정에 따라 분담됩니다.",
+    medicalDepartments: ["internal_medicine", "surgery", "orthopedics", "psychiatry", "rehabilitation_medicine"],
+    specialistPharmacists: ["감염", "정맥영양", "중환자"],
+    pharmacyEnvironmentDescription:
+      "약제부는 조제, 검수, 약무 행정으로 업무가 구분되어 있으며, 규정과 지침에 따라 표준화된 절차로 운영됩니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 종로구 삼청로10길 13 국군서울지구병원",
+    },
+  },
   {
     id: "eunhaeng-pharmacy",
     name: "은행약국",
@@ -1132,36 +1215,41 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "내과·이비인후과 의원 처방을 주로 조제하는 의원층 약국",
     tags: ["약국", "설립 2026.02.11"],
     coverImage: companyExampleImages.hero,
+    /** pharmacyJobDetails.ts eunhaengPharmacyJobDetail.org.fullIntro와 동일(V2 정본, STEP 3b) */
+    fullIntro:
+      "인근 의원 처방이 많아 처방 흐름이 안정적인 편입니다. 약사와 직원이 함께 근무하며 조제, 검수, 응대를 나누어 진행합니다. 신규 약사님께는 전산 입력, 조제 검수, 복약지도 흐름을 차근차근 안내드립니다.",
     metrics: [
-      { label: "일평균 처방", value: "180건 내외" },
+      // 값은 pharmacyJobDetails.ts org.avgDailyPrescriptions(V2 정본)로 교체
+      { label: "일평균 처방", value: "170건 내외" },
       { label: "주요 처방과", value: "내과·이비인후과·정형외과" },
-      { label: "근무 형태", value: "주 5일 협의 / 토요일 격주" },
-      { label: "문전 여부", value: "의원층 (엘리베이터 공유)" },
     ],
     businessSummary: [
       { label: "근무 약사", value: "3명" },
       { label: "직원", value: "2명" },
+      // 아래 2건은 pharmacyJobDetails.ts org.mainHospitals/location.parkingTransit을 그대로 이관(V2 정본)
+      { label: "주요 처방 병원", value: "양지내과의원 · 양지이비인후과의원 · 인근 정형외과 의원" },
+      {
+        label: "주차·교통",
+        value: "건물 지하주차장 2시간 무료 지원. 양지IC에서 차량 5분 거리이며, 양지사거리 정류장에서 도보 3분 내 접근 가능합니다.",
+      },
     ],
     recruitSummary:
       "같은 건물 의원 처방 중심이라 처방 패턴이 안정적이고, 신규 약사 교육과 복약지도 루틴이 정리되어 있는 의원층 약국입니다.",
     details: [
-      // 원고의 "대표자: 대표약사 (목데이터: 김은행)" 대신 기존 companies.ts의 마스킹된 실제 값을 사용 (사용자 확인)
-      { label: "대표자", value: "정*래" },
-      { label: "설립일", value: "2026.02.11" },
       { label: "본사 위치", value: "경기 용인시 처인구 양지읍 양지로138번길 14 2층" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "의원(층)약국" },
     ],
     keywords: ["의원층 약국", "안정적 처방", "근무 협의 가능", "교육 루틴"],
     pharmacySoftware: "유팜",
-    businessHours: "평일 09:00~19:00 · 토요일 격주",
-    dispensingEquipment: ["자동조제기(ATC)", "파우치 포장기"],
+    // pharmacyJobDetails.ts org.businessHours(V2 정본)로 교체
+    businessHours: "평일 09:00–19:00, 토요일 09:00–14:00, 일요일·공휴일 휴무",
+    // pharmacyJobDetails.ts org.dispensingEquipment(V2 정본)로 교체
+    dispensingEquipment: ["자동조제기", "산제포장기"],
     features: [
       { label: "근무 형태", text: "주 5일 협의 가능, 마감 시간 준수 문화" },
       { label: "교육 루틴", text: "신규 약사 대상 조제 검토·복약지도 루틴 교육, 재고·마약류 관리 체계 정리됨" },
     ],
-    // 조제 특성 미선택(선택 항목) — 기존 clinic-floor 유형 자동매핑 값은 옵션 재정비로 제거됨
-    pharmacyFeatures: undefined,
+    // 약국 특성은 pharmacyJobDetails.ts org.pharmacyFeatureId("prescription_focused")와 일치시켰다(V2 정본)
+    pharmacyFeatures: "prescription_focused",
     news: [],
     sidebar: {
       // 원고에 사이드바 수치(관심기업/응답률/평균응답)가 없어 이 회사의 다른 필드(사원수 등)와 동일하게
@@ -1181,25 +1269,14 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "불당동 주민 곁의 동네 일반약국",
     tags: ["일반약국", "설립 2026.01.01"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "약국 유형", value: "일반약국" },
-      { label: "설립", value: "2026.01.01" },
-      { label: "대표자", value: "김*연" },
-      { label: "지역", value: "충남 천안시" },
-    ],
+    fullIntro: "소규모 약국에서 처방조제부터 일반약 상담까지 두루 경험하고 싶은 분께 적합합니다.",
     businessSummary: [
-      { label: "입지", value: "천안 불당동 센트럴프라자 1층, 주거·상업 복합 입지" },
-      { label: "규모", value: "약사 1명·직원 1명이 함께 운영하는 소규모 약국" },
-      { label: "운영 형태", value: "처방조제와 일반의약품 응대를 함께 운영" },
+      // businessSummary의 기존 "규모" 서술("약사 1명·직원 1명이 함께 운영")에 명시된 인원수를 그대로 이관
+      { label: "근무 약사", value: "1명" },
+      { label: "직원", value: "1명" },
     ],
     recruitSummary: "소규모 약국에서 처방조제부터 일반약 상담까지 두루 경험하고 싶은 분께 적합합니다.",
-    details: [
-      { label: "대표자", value: "김*연" },
-      { label: "설립일", value: "2026.01.01" },
-      { label: "본사 위치", value: "충남 천안시 서북구 번영로 100 센트럴프라자 1층" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "일반약국" },
-    ],
+    details: [{ label: "본사 위치", value: "충남 천안시 서북구 번영로 100 센트럴프라자 1층" }],
     keywords: ["일반약국", "처방조제", "소규모"],
     pharmacySoftware: "PM+20",
     businessHours: "평일 08:40~18:40 · 토 08:40~14:00 · 일요일·공휴일 휴무",
@@ -1227,25 +1304,14 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "약사 6명이 함께하는 100평 규모 대형 문전약국",
     tags: ["병의원 문전약국", "설립 2002.02.01"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "약국 유형", value: "병의원 문전약국" },
-      { label: "설립", value: "2002.02.01" },
-      { label: "대표자", value: "정*호" },
-      { label: "지역", value: "경기 가림시" },
-    ],
+    fullIntro: "체계적으로 분업화된 대형 문전약국에서 조제 실무를 깊이 있게 쌓고 싶은 분께 적합합니다.",
     businessSummary: [
-      { label: "입지", value: "병의원 인접 문전 입지, 100평 규모의 넓은 조제·상담 공간" },
-      { label: "규모", value: "약사 6명·직원 15명이 근무하는 대형 약국" },
-      { label: "운영 형태", value: "병의원 처방 중심의 대량 조제 운영" },
+      // businessSummary의 기존 "규모" 서술("약사 6명·직원 15명이 근무")에 명시된 인원수를 그대로 이관
+      { label: "근무 약사", value: "6명" },
+      { label: "직원", value: "15명" },
     ],
     recruitSummary: "체계적으로 분업화된 대형 문전약국에서 조제 실무를 깊이 있게 쌓고 싶은 분께 적합합니다.",
-    details: [
-      { label: "대표자", value: "정*호" },
-      { label: "설립일", value: "2002.02.01" },
-      { label: "본사 위치", value: "경기 가림시 서천면 방독길 51 (방독리) 현대약국" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "병의원 문전약국" },
-    ],
+    details: [{ label: "본사 위치", value: "경기 가림시 서천면 방독길 51 (방독리) 현대약국" }],
     keywords: ["문전약국", "대형약국", "처방조제", "팀 근무"],
     pharmacySoftware: "유팜",
     businessHours: "평일 09:00~19:00 · 토 09:00~15:00 · 일요일·공휴일 휴무",
@@ -1273,25 +1339,13 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "화곡역 인근, 처방과 일반약을 함께 다루는 동네 약국",
     tags: ["일반약국", "설립 2021.02.02"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "약국 유형", value: "일반약국" },
-      { label: "설립", value: "2021.02.02" },
-      { label: "대표자", value: "김*인" },
-      { label: "지역", value: "서울 강서구" },
-    ],
+    fullIntro: "역세권 약국에서 처방조제와 일반약 상담을 균형 있게 경험하고 싶은 분께 적합합니다.",
     businessSummary: [
-      { label: "입지", value: "강서구 화곡역 인근 역세권, 유동 인구가 많은 입지" },
-      { label: "규모", value: "약사 2명이 근무하는 중소 규모 약국" },
-      { label: "운영 형태", value: "처방조제와 일반의약품 응대를 함께 운영, 키오스크 접수 도입" },
+      // businessSummary의 기존 "규모" 서술("약사 2명이 근무")에 명시된 인원수를 그대로 이관 — 직원 수는 서술에 없어 비움
+      { label: "근무 약사", value: "2명" },
     ],
     recruitSummary: "역세권 약국에서 처방조제와 일반약 상담을 균형 있게 경험하고 싶은 분께 적합합니다.",
-    details: [
-      { label: "대표자", value: "김*인" },
-      { label: "설립일", value: "2021.02.02" },
-      { label: "본사 위치", value: "서울 강서구 화곡로 지하 168 (화곡동, 화곡역 5호선) 1층 약국" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "일반약국" },
-    ],
+    details: [{ label: "본사 위치", value: "서울 강서구 화곡로 지하 168 (화곡동, 화곡역 5호선) 1층 약국" }],
     keywords: ["일반약국", "처방조제", "역세권"],
     pharmacySoftware: "PM+20",
     businessHours: "평일 09:00~20:00 · 토 09:00~16:00 · 일요일·공휴일 휴무",
@@ -1319,25 +1373,14 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "여러 진료과 처방을 아우르는 메디컬빌딩 문전약국",
     tags: ["병의원 문전약국", "설립 2015.06.01"],
     coverImage: companyExampleImages.hero,
+    fullIntro: "여러 진료과 처방을 다루며 폭넓은 조제 경험을 쌓고 싶은 분께 적합합니다.",
     metrics: [
-      { label: "약국 유형", value: "병의원 문전약국" },
-      { label: "설립", value: "2015.06.01" },
-      { label: "대표자", value: "이*현" },
-      { label: "지역", value: "전주 완주군" },
+      // businessSummary의 기존 "처방 특성" 서술("내과·산부인과·외과 등 다양한 진료과 처방 응대")에서 진료과 목록만 이관
+      { label: "주요 처방과", value: "내과·산부인과·외과 등" },
     ],
-    businessSummary: [
-      { label: "입지", value: "완주군 중심지 메디컬빌딩 내 문전 입지" },
-      { label: "규모", value: "여러 진료과 처방을 소화하는 중형 문전약국" },
-      { label: "처방 특성", value: "내과·산부인과·외과 등 다양한 진료과 처방 응대" },
-    ],
+    businessSummary: [],
     recruitSummary: "여러 진료과 처방을 다루며 폭넓은 조제 경험을 쌓고 싶은 분께 적합합니다.",
-    details: [
-      { label: "대표자", value: "이*현" },
-      { label: "설립일", value: "2015.06.01" },
-      { label: "본사 위치", value: "전주 완주군 덕문로 5 현강약국" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "병의원 문전약국" },
-    ],
+    details: [{ label: "본사 위치", value: "전주 완주군 덕문로 5 현강약국" }],
     keywords: ["문전약국", "다과 처방", "처방조제"],
     pharmacySoftware: "PM+20",
     businessHours: "평일 09:00~19:00 · 토 09:00~14:00 · 일요일·공휴일 휴무",
@@ -1365,25 +1408,14 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "내과 처방 중심의 ATC 조제 문전약국",
     tags: ["일반약국", "설립 2024.12.13"],
     coverImage: companyExampleImages.hero,
+    fullIntro: "내과 처방과 ATC 조제 실무를 집중적으로 경험하고 싶은 분께 적합합니다.",
     metrics: [
-      { label: "약국 유형", value: "일반약국" },
-      { label: "설립", value: "2024.12.13" },
-      { label: "대표자", value: "박*량" },
-      { label: "지역", value: "경북 경주시" },
+      // businessSummary의 기존 "처방 특성" 서술("내과 처방 중심")에서 진료과만 이관
+      { label: "주요 처방과", value: "내과" },
     ],
-    businessSummary: [
-      { label: "입지", value: "경주 문무대왕면 내과 인접 문전 입지" },
-      { label: "규모", value: "약사 1명이 운영하는 소규모 문전약국" },
-      { label: "처방 특성", value: "내과 처방 중심, ATC 자동조제 운영" },
-    ],
+    businessSummary: [],
     recruitSummary: "내과 처방과 ATC 조제 실무를 집중적으로 경험하고 싶은 분께 적합합니다.",
-    details: [
-      { label: "대표자", value: "박*량" },
-      { label: "설립일", value: "2024.12.13" },
-      { label: "본사 위치", value: "경북 경주시 문무대왕면 어일3길 14-5 1층" },
-      { label: "기업 형태", value: "개인약국" },
-      { label: "업종", value: "일반약국" },
-    ],
+    details: [{ label: "본사 위치", value: "경북 경주시 문무대왕면 어일3길 14-5 1층" }],
     keywords: ["문전약국", "내과 처방", "ATC 조제"],
     pharmacySoftware: "팜IT3000",
     businessHours: "평일 08:30~18:30 · 토요일 오전 · 일요일·공휴일 휴무",
@@ -1411,25 +1443,25 @@ export const companyProfiles: CompanyProfile[] = [
     tagline: "치과용 의료기기와 의료장비를 개발·제조하는 기업입니다.",
     tags: ["의료기기(코스피)", "사원수 501명 이상"],
     coverImage: companyExampleImages.hero,
-    metrics: [
-      { label: "기업 유형", value: "의료기기 회사" },
-      { label: "직원 수", value: "501명 이상" },
-      { label: "사업 분야", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
-    ],
+    // 재무 슬롯(revenue/operatingProfit/rndRatio)은 확보된 데이터가 없어 비워둔다(STEP 2 정합성 정비)
     businessSummary: [
       { label: "주요 사업", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
       { label: "대표 제품", value: "치과용 임플란트 · 의료장비" },
     ],
     recruitSummary:
       "덴티움은 치과용 임플란트를 중심으로 다양한 의료기기와 의료장비를 만들며, 국내외 인증과 인허가 대응 경험을 쌓아 왔습니다.",
+    /** industryJobDetails.ts의 dentium-device-ra org.description과 동일 — 기업 정보 폼의 본문 소개 대응 */
+    fullIntro:
+      "덴티움은 치과용 임플란트를 중심으로 다양한 의료기기와 의료장비를 만들며, 국내외 인증과 인허가 대응 경험을 쌓아 왔습니다.",
     details: [
       { label: "대표자", value: null },
-      { label: "설립일", value: null },
       { label: "본사 위치", value: "경기 용인시 처인구 양지읍 양지로138번길 14" },
       { label: "홈페이지", value: null },
-      { label: "기업 형태", value: null },
-      { label: "업종", value: "의료기기(코스피)" },
+      // 기관 유형·직원 수는 기존 metrics 항목(=industryJobDetails.ts org.orgType/employeeCount)과 동일 값을 details로 옮겼다
+      { label: "기관 유형", value: "의료기기 회사" },
+      { label: "설립 연도", value: null },
       { label: "사업 분야", value: "치과용 의료기기 · 의료장비 · 글로벌 인증" },
+      { label: "직원 수", value: "501명 이상" },
     ],
     keywords: ["의료기기", "치과용 임플란트", "글로벌 인증", "RA"],
     news: [],
@@ -1441,6 +1473,75 @@ export const companyProfiles: CompanyProfile[] = [
         { name: "의료장비", description: "국가별 인증과 품질 기준에 맞춰 의료장비를 개발하고 인허가를 진행합니다." },
       ],
       address: "경기 용인시 처인구 양지읍 양지로138번길 14",
+    },
+  },
+  // 아래 2건은 연구 트랙 Company 승격(STEP 4) — 값은 researchJobDetails.ts의 org를 전량 재사용한다.
+  // labName/labIntro는 넣지 않는다: 연구실은 공고 단위 정보이고 이 프로필은 기관 단위 정보다.
+  {
+    id: "kist",
+    name: "한국과학기술연구원(KIST)",
+    logoText: "KIST",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "기초·응용 융합 연구를 수행하는 정부출연연구기관입니다.",
+    tags: ["연구기관", "설립 1966년"],
+    coverImage: companyExampleImages.research,
+    fullIntro:
+      "한국과학기술연구원(KIST)은 다양한 분야의 기초·응용 연구를 수행하는 정부출연연구기관입니다. 연구 그룹별로 독립적인 연구 주제를 운영하며, 공동 장비와 연구 지원 체계를 갖추고 있습니다.",
+    businessSummary: [],
+    recruitSummary: "기초·응용 융합 연구를 수행하는 정부출연연구기관입니다.",
+    // phone/email: 창작하지 않고 비운다
+    details: [
+      { label: "설립 연도", value: "1966년" },
+      { label: "본사 위치", value: "서울 성북구 화랑로14길 5" },
+      { label: "홈페이지", value: "www.kist.re.kr" },
+    ],
+    keywords: ["정부출연연구기관", "뇌과학연구소", "융합연구"],
+    institutionTypeId: "government_research_institute",
+    staffScaleId: "51_100",
+    researchFields: ["neuroscience", "disease-model"],
+    equipmentInfra:
+      "연구 그룹 단위의 실험 공간과 공동 기기실을 운영하며, 실험 장비와 분석 인프라를 공동으로 활용할 수 있습니다.",
+    achievements: "국내외 학술지 논문 발표와 국가 연구 과제 수행을 지속하고 있습니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 성북구 화랑로14길 5",
+    },
+  },
+  {
+    id: "seoul-asan-hospital",
+    name: "서울아산병원",
+    logoText: "서울아산병원",
+    verifiedLabel: "운영팀 확인 기업",
+    premiumLabel: "프리미엄 기업",
+    tagline: "임상과 연계한 의학 연구를 수행하는 병원 연구소입니다.",
+    tags: ["연구기관", "설립 1989년"],
+    coverImage: companyExampleImages.research,
+    fullIntro:
+      "서울아산병원 대장항문외과 연구실은 임상 데이터와 연계한 의학 연구를 수행합니다. 임상의와 연구원이 협업하는 구조로, 연구 주제에 따라 실험 연구와 데이터 분석을 함께 진행합니다.",
+    businessSummary: [],
+    recruitSummary: "임상과 연계한 의학 연구를 수행하는 병원 연구소입니다.",
+    // phone/email: 창작하지 않고 비운다
+    details: [
+      { label: "설립 연도", value: "1989년" },
+      { label: "본사 위치", value: "서울 송파구 올림픽로43길 88" },
+      { label: "홈페이지", value: "www.amc.seoul.kr" },
+    ],
+    keywords: ["상급종합병원", "대장항문외과", "임상연계연구"],
+    institutionTypeId: "hospital_research_institute",
+    staffScaleId: "under_10",
+    researchFields: ["cancer-biology", "organoid", "translational-research"],
+    equipmentInfra: "병원 내 연구 공간에서 근무하며, 원내 공동 연구 장비와 임상 연구 지원 부서를 활용할 수 있습니다.",
+    // achievements: 없음 — researchJobDetails.ts org에도 값이 없어 행 숨김 검증 케이스
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 송파구 올림픽로43길 88",
     },
   },
 ];

@@ -64,6 +64,8 @@ const trackById: Record<string, JobTrack> = {
   "sungae-hospital": "hospital",
   "armed-forces-seoul-district-hospital": "hospital",
   "osan-hankook-hospital": "hospital",
+  kist: "research",
+  "seoul-asan-hospital": "research",
 };
 
 /**

@@ -11,7 +11,7 @@ interface CompanyReviewsPageProps {
 }
 
 export const metadata: Metadata = {
-  title: "현직자 리뷰 | THE PHARMA Recruit.",
+  title: "기업 리뷰 | THE PHARMA Recruit.",
 };
 
 /** 기업 리뷰(회사 후기)는 이 앱 어디에도 열람 게이팅이 없다 — 1A와 동일한 기준으로 항상 원문을 내려준다.
@@ -39,7 +39,7 @@ export default async function CompanyReviewsPage({ params, searchParams }: Compa
     }));
 
   const body = (
-    <div className="mt-3 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+    <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
       <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
       {items.map((item) => (
         <CompanyReviewCard key={item.id} review={item} />

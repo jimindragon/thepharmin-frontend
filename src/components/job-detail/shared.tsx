@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, Heart, Lock, MapPin, Share2, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
+import { Bookmark, ChevronRight, Heart, Lock, MapPin, Share2, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { getPharmacyCoverImage } from "@/utils/pharmacyImage";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
@@ -333,6 +333,40 @@ export function HiringProcess({ steps }: { steps?: string[] }) {
         ))}
       </div>
       <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">채용 절차와 일정은 기업 사정에 따라 변경될 수 있습니다.</p>
+    </div>
+  );
+}
+
+/**
+ * V2 상세 "전형절차 및 제출서류"용 타임라인형 스텝. 박스 없이 배지+단계명만 두어 가볍게 렌더한다.
+ * 데스크톱은 고정 리듬(연결선 64px 고정폭)으로 왼쪽 정렬해 콘텐츠 크기만큼만 앉히고, 640px 이하에서는
+ * 한 줄 배치가 어색해지므로 2열 그리드로 전환하고 연결선은 숨긴다(각 스텝 내부 마크업은 그대로 재사용
+ * 되도록 매 스텝을 `contents` 래퍼로 감싸 flex/grid 컨테이너에 직접 자식으로 편입시키는 방식).
+ * 진행 상태 개념이 없는 정적 안내이므로 전 단계 동일 톤이다.
+ */
+export function HiringProcessSteps({ steps }: { steps?: string[] }) {
+  if (!steps?.length) {
+    return null;
+  }
+
+  return (
+    <div className="mt-1.5 -mb-1.5 flex items-start max-[640px]:grid max-[640px]:grid-cols-2 max-[640px]:gap-x-4 max-[640px]:gap-y-6">
+      {steps.map((step, index) => (
+        <div key={step} className="contents">
+          <div className="flex min-w-[88px] shrink-0 flex-col items-center">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#eef0f3] text-[15px] font-semibold text-[#4f5967]">
+              {index + 1}
+            </span>
+            <p className="mt-2.5 whitespace-nowrap text-[14px] font-medium text-[#374151]">{step}</p>
+          </div>
+          {index < steps.length - 1 ? (
+            <div className="flex h-9 shrink-0 items-center px-3.5 max-[640px]:hidden">
+              <span className="h-px w-16 bg-[#d8e0e8]" aria-hidden />
+              <ChevronRight size={16} className="-ml-0.5 shrink-0 text-[#c3cad3]" aria-hidden />
+            </div>
+          ) : null}
+        </div>
+      ))}
     </div>
   );
 }
@@ -754,6 +788,36 @@ export function JobDetailActionRow({
           <Share2 size={17} />
         </ActionIconButton>
       </div>
+    </div>
+  );
+}
+
+/** 공고 상세(산업·약국·병원·연구 V2 공통) "기관 정보" 섹션 하단 CTA 3버튼 — 기업 인사이트
+ * (/companies/{companyId}, /reviews, /interviews)로 연결한다. companyId가 없는 경우(예: 산업·연구의
+ * 미승격 기관) 호출부에서 아예 렌더하지 않으므로 이 컴포넌트는 항상 유효한 companyId를 받는다고 가정한다.
+ * `detailLabel`은 첫 버튼 문구만 바꾼다 — 병원·약국·연구는 "기관 정보 더보기"(기관 단위 명칭에 더 맞음), 산업은
+ * 기본값 "기업 정보 더보기"를 그대로 쓴다. 나머지 두 버튼("기업 리뷰 보기"/"면접 후기 보기")은 4트랙 공통이다. */
+export function CompanyCtaButtons({ companyId, detailLabel = "기업 정보 더보기" }: { companyId: string; detailLabel?: string }) {
+  return (
+    <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
+      <Link
+        href={`/companies/${companyId}`}
+        className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
+      >
+        {detailLabel}
+      </Link>
+      <Link
+        href={`/companies/${companyId}/reviews`}
+        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
+      >
+        기업 리뷰 보기
+      </Link>
+      <Link
+        href={`/companies/${companyId}/interviews`}
+        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
+      >
+        면접 후기 보기
+      </Link>
     </div>
   );
 }

@@ -20,7 +20,7 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
   };
 
   return (
-    <div className="mt-6 grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+    <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
       <CompanyReviewWriteCard companyId={companyId} reviewType="interview" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
       {items.map((item) => (
         <CompanyReviewCard

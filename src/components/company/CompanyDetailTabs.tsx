@@ -15,14 +15,17 @@ export function CompanyDetailTabs({ companyId, profile }: { companyId: string; p
   const interviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "interview").length;
   const companyReviewCount = companyReviews.filter((review) => review.companyId === companyId && review.type === "company").length;
   const track = getCompanyTrack(companyId);
-  // 병원·약국 트랙은 뉴스 탭을 숨긴다(N3 상세 개편) — profile.news 데이터 자체는 삭제하지 않고 그대로 둔다
-  const showNewsTab = track !== "hospital" && track !== "pharmacy";
+  // 뉴스 탭은 산업 트랙 전용이다(N3 상세 개편) — profile.news 데이터 자체는 다른 트랙도 삭제하지 않고 그대로 둔다.
+  // 병원(snubh 등)은 실제로 news를 채워둔 프로필이 있어도 탭을 숨기므로, 트랙별 개수 유무가 아니라 트랙 자체가
+  // 기준이다. 이전엔 "병원·약국이 아니면 노출"(블록리스트)이라 연구 트랙(STEP 4에서 신설)이 걸러지지 않고 샜다 —
+  // 명시적 허용리스트로 바꿔 향후 새 트랙이 추가돼도 기본은 숨김이 되게 한다.
+  const showNewsTab = track === "industry";
 
   const tabs = [
     { href: `/companies/${companyId}`, label: "기업 개요" },
     { href: `/companies/${companyId}/jobs`, label: `채용공고 ${getActiveJobCount(companyId)}` },
     { href: `/companies/${companyId}/interviews`, label: `면접 후기 ${interviewCount}` },
-    { href: `/companies/${companyId}/reviews`, label: `현직자 리뷰 ${companyReviewCount}` },
+    { href: `/companies/${companyId}/reviews`, label: `기업 리뷰 ${companyReviewCount}` },
     ...(showNewsTab ? [{ href: `/companies/${companyId}/news`, label: `뉴스 ${profile.news.length}` }] : []),
   ];
 

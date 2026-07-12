@@ -773,11 +773,11 @@ export function ResearchJobPostingForm() {
             <p className={LBL}>
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
-            </p>
-            <p className={`${HINT} mb-3`}>
-              {selectedFields.size > 0
-                ? "선택한 연구 분야에 맞춰 자주 쓰이는 키워드를 추천합니다."
-                : "연구 분야를 먼저 선택하면 관련 키워드를 추천해 드립니다."}
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">
+                {selectedFields.size > 0
+                  ? "선택한 연구 분야에 맞춰 자주 쓰이는 키워드를 추천합니다."
+                  : "연구 분야를 먼저 선택하면 관련 키워드를 추천해 드립니다."}
+              </span>
             </p>
 
             {/* Recommended pool — changes with §1 연구 분야 selection */}
@@ -808,8 +808,10 @@ export function ResearchJobPostingForm() {
             <div className="my-4 border-t border-[#f0f2f5]" />
 
             {/* Custom keyword input */}
-            <p className={LBL}>기타 키워드 직접 추가</p>
-            <p className={`${HINT} mb-2`}>추천 목록에 없는 키워드는 직접 입력하세요.</p>
+            <p className={LBL}>
+              기타 키워드 직접 추가
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
+            </p>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -850,8 +852,10 @@ export function ResearchJobPostingForm() {
 
           {/* 대표 이미지 */}
           <div>
-            <p className={LBL} id="r-img-lbl">대표 이미지</p>
-            <p className={`${HINT} mb-3`}>공고 상세 상단에 표시할 이미지를 선택합니다.</p>
+            <p className={LBL} id="r-img-lbl">
+              대표 이미지
+              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+            </p>
             <div role="radiogroup" aria-labelledby="r-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -878,7 +882,7 @@ export function ResearchJobPostingForm() {
         </SectionCard>
 
         {/* ── 전형절차 및 제출서류 ──────────────────────────────────────────── */}
-        <SectionCard title="전형절차 및 제출서류" description="선택 입력입니다. 입력한 경우에만 공고 상세에 노출됩니다.">
+        <SectionCard title="전형절차 및 제출서류">
           <HiringProcessSelector
             processSteps={hiringProcess}
             onProcessChange={setHiringProcess}

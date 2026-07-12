@@ -2,14 +2,18 @@ import { companies } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
 import {
+  CompanyActiveJobsPreviewSection,
   CompanyAsidePanel,
   CompanyDetailOverview,
+  CompanyNewsPreviewSection,
   CompanyOverview,
   CompanyReviewsPreviewSection,
   HospitalAsidePanel,
   HospitalSummarySection,
   PharmacyAsidePanel,
   PharmacySummarySection,
+  ResearchAsidePanel,
+  ResearchSummarySection,
 } from "@/components/company/CompanyDetailSections";
 
 interface CompanyOverviewClientProps {
@@ -24,37 +28,55 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
 
   if (track === "hospital" && company) {
     return (
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-        <div className="grid gap-5">
+      <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+        <div className="grid gap-9">
           <HospitalSummarySection profile={profile} company={company} />
+          <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
           <CompanyReviewsPreviewSection profile={profile} type="company" />
         </div>
-        <HospitalAsidePanel profile={profile} company={company} />
+        <HospitalAsidePanel profile={profile} />
       </div>
     );
   }
 
   if (track === "pharmacy" && company) {
     return (
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-        <div className="grid gap-5">
+      <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+        <div className="grid gap-9">
           <PharmacySummarySection profile={profile} company={company} />
+          <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
           <CompanyReviewsPreviewSection profile={profile} type="company" />
         </div>
-        <PharmacyAsidePanel profile={profile} company={company} />
+        <PharmacyAsidePanel profile={profile} />
+      </div>
+    );
+  }
+
+  if (track === "research" && company) {
+    return (
+      <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+        <div className="grid gap-9">
+          <ResearchSummarySection profile={profile} />
+          <CompanyActiveJobsPreviewSection profile={profile} />
+          <CompanyReviewsPreviewSection profile={profile} type="interview" />
+          <CompanyReviewsPreviewSection profile={profile} type="company" />
+        </div>
+        <ResearchAsidePanel profile={profile} />
       </div>
     );
   }
 
   return (
-    <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] items-start gap-6 max-[1120px]:grid-cols-1">
-      <div className="grid gap-5">
+    <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+      <div className="grid gap-9">
         <CompanyOverview profile={profile} />
         <CompanyDetailOverview profile={profile} />
+        <CompanyActiveJobsPreviewSection profile={profile} />
         <CompanyReviewsPreviewSection profile={profile} type="interview" />
         <CompanyReviewsPreviewSection profile={profile} type="company" />
+        <CompanyNewsPreviewSection profile={profile} />
       </div>
       <CompanyAsidePanel profile={profile} />
     </div>

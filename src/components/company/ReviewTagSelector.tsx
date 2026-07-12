@@ -22,8 +22,7 @@ export function ReviewTagSelector({ track, reviewType, selected, onToggle, max =
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between">
-        <p className="text-[12px] font-medium text-[#8a95a5]">해당하는 태그를 선택해주세요</p>
+      <div className="flex justify-end">
         <p className="text-[12px] font-medium text-[#596373]">
           선택 {selected.length} / {max}
         </p>
