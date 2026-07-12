@@ -1,13 +1,10 @@
 "use client";
 
 import {
-  Bookmark,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Clock3,
-  Filter,
   Lock,
   MailCheck,
   Pin,
@@ -15,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { hospitalTypeOptions } from "@/config/jobFilters/hospitalFilters";
 import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters";
@@ -22,8 +20,12 @@ import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageHeader } from "@/components/PageHeader";
+import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
+import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
+import { mockUserPreferences } from "@/data/mockUserPreferences";
+import { buildPreferenceChips } from "@/utils/preferenceChips";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
 type CalendarTab = "all" | "saved" | "applied";
@@ -634,6 +636,7 @@ function MoreJobsModal({
 }
 
 export function RecruitmentCalendarClient() {
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [activeTab, setActiveTab] = useState<CalendarTab>("all");
   const [visibleMonth, setVisibleMonth] = useState(new Date(DEFAULT_YEAR, DEFAULT_MONTH, 1));
@@ -641,7 +644,7 @@ export function RecruitmentCalendarClient() {
   const [calendarFilters, setCalendarFilters] = useState<CalendarFilterState>(initialCalendarFilters);
   const [eventView, setEventView] = useState<CalendarEventView>("all");
   const [openFilterId, setOpenFilterId] = useState<CalendarFilterId | null>(null);
-  const [activeQuickLink, setActiveQuickLink] = useState("preference");
+  const [interestConditionApplied, setInterestConditionApplied] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [moreJobs, setMoreJobs] = useState<{ dateLabel: string; jobs: CalendarJob[] } | null>(null);
 
@@ -692,6 +695,12 @@ export function RecruitmentCalendarClient() {
 
   const days = useMemo(() => buildMonthDays(visibleMonth.getFullYear(), visibleMonth.getMonth()), [visibleMonth]);
   const appliedJobs = useMemo(() => availableCalendarJobs.filter((job) => job.isApplied).slice(0, 3), [availableCalendarJobs]);
+
+  /** 트랙별 저장 파이프라인이 아직 없어 전 트랙의 mock 관심조건을 합쳐 칩으로 보여준다 — 데이터 정비는 별도 범위. */
+  const interestConditionChips = useMemo(() => {
+    const chips = Object.values(mockUserPreferences).flatMap((preference) => (preference ? buildPreferenceChips(preference) : []));
+    return Array.from(new Set(chips));
+  }, []);
 
   const requireLogin = () => {
     if (isLoggedIn) return false;
@@ -809,7 +818,6 @@ export function RecruitmentCalendarClient() {
 
   const applyInterestCondition = () => {
     if (requireLogin()) return;
-    setActiveQuickLink("preference");
     setActiveTab("all");
     setTrackFilter("industry");
     setCalendarFilters({
@@ -818,16 +826,26 @@ export function RecruitmentCalendarClient() {
       experienceId: "3-5",
     });
     setOpenFilterId(null);
+    setInterestConditionApplied(true);
+  };
+
+  const clearInterestCondition = () => {
+    setTrackFilter("all");
+    setCalendarFilters(initialCalendarFilters);
+    setOpenFilterId(null);
+    setInterestConditionApplied(false);
   };
 
   const showSavedJobs = () => {
     if (requireLogin()) return;
-    setActiveQuickLink("saved");
     setActiveTab("saved");
   };
 
-  const showRecentJobs = () => {
-    setActiveQuickLink("recent");
+  const showRecentJobs = () => {};
+
+  const goToPreferences = () => {
+    if (requireLogin()) return;
+    router.push(sharedRoutes.myPagePreferences);
   };
 
   const openFilterDefinition = activeFilterDefinitions.find((definition) => definition.id === openFilterId) ?? null;
@@ -1094,60 +1112,36 @@ export function RecruitmentCalendarClient() {
             </section>
 
             <aside className="sticky top-5 grid content-start gap-5">
-              <section className="surface p-5">
-                <div className="flex flex-col gap-2.5">
-                  <button
-                    type="button"
-                    onClick={applyInterestCondition}
-                    className={`flex h-[46px] w-full items-center justify-center gap-2.5 border text-[14px] font-normal transition-all ${
-                      activeQuickLink === "preference"
-                        ? "border-[#bdbdbd] bg-[#f3f3f3] text-[#111111] ring-2 ring-[rgba(17,17,17,0.12)]"
-                        : "border-[#bdbdbd] text-[#111111] hover:bg-[#f3f3f3]"
-                    }`}
-                  >
-                    <Filter size={19} strokeWidth={2.1} />
-                    내 관심 조건 적용
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={showSavedJobs}
-                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-normal text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
-                      activeQuickLink === "saved" ? "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]" : ""
-                    }`}
-                  >
-                    <Bookmark size={19} strokeWidth={2} />
-                    저장한 공고 {tabCounts.saved}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={showRecentJobs}
-                    className={`flex h-[46px] items-center justify-center gap-2.5 border border-[#dfe4ec] text-[14px] font-normal text-[#596373] transition-all hover:border-[#111111] hover:bg-[#f5f5f5] hover:text-[#111111] ${
-                      activeQuickLink === "recent" ? "bg-[#f3f3f3] ring-2 ring-[rgba(17,17,17,0.12)]" : ""
-                    }`}
-                  >
-                    <Clock3 size={19} strokeWidth={2} />
-                    최근 본 공고
-                  </button>
-                </div>
-
-                <div className="mt-5 border border-[#eef2f6] bg-[#f8fafb] px-5 py-5">
-                  <p className="text-[13px] font-medium text-[#8791a0]">내 관심 조건</p>
-                  <p className="mt-2 text-[17px] font-normal text-[#252b36]">RA 외 2개</p>
-                  <p className="mt-1 text-[13px] font-medium leading-[1.5] text-[#687383]">3~5년 · 서울 · 경기</p>
-                  <Link
-                    href={sharedRoutes.myPagePreferences}
-                    className="mt-4 inline-flex h-[34px] items-center border border-[#d9e1e8] bg-white px-3 text-[13px] font-medium text-[#46505f] hover:border-[#111111] hover:text-[#111111]"
-                  >
-                    관심 조건 수정
-                  </Link>
-                  <div className="mt-5 flex items-center gap-2 bg-white px-3 py-2 text-[12px] font-medium text-[#687383]">
-                    <MailCheck size={17} className="text-[#111111]" />
+              <InterestConditionCard
+                chips={interestConditionChips}
+                emptyStateText={
+                  <>
+                    관심조건을 설정해두면 원하는 공고만
+                    <br />
+                    빠르게 확인할 수 있어요.
+                  </>
+                }
+                summaryText="관심조건에 맞는 공고만 빠르게 확인할 수 있어요."
+                applied={interestConditionApplied}
+                primaryCtaLabel="내 관심 조건 적용"
+                primaryCtaAppliedLabel="관심조건 해제"
+                onPrimaryCtaClick={interestConditionApplied ? clearInterestCondition : applyInterestCondition}
+                secondaryActionLabel="관심 조건 수정"
+                secondaryActionHref={sharedRoutes.myPagePreferences}
+                bottomSlot={
+                  <div className="flex items-center gap-2 border-t border-gray-200 pt-4 text-[13px] font-medium text-gray-500">
+                    <MailCheck size={15} className="text-gray-700" />
                     이메일 알림 사용 중
                   </div>
-                </div>
-              </section>
+                }
+              />
+
+              <JobUsageTipsCard
+                savedCount={tabCounts.saved}
+                onSavedClick={showSavedJobs}
+                onRecentClick={showRecentJobs}
+                onPreferenceSettingsClick={goToPreferences}
+              />
 
               <section className="surface p-5">
                 <div className="flex items-center gap-2">

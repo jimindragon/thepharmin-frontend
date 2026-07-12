@@ -1,13 +1,14 @@
 "use client";
 
-import { Bookmark, Clock3, Info, Lightbulb, Lock, LucideIcon, Settings2, SlidersHorizontal, X } from "lucide-react";
-import Link from "next/link";
+import { Lock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { optionLabelMaps } from "@/config/jobFilters/index";
+import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
+import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { sharedRoutes } from "@/config/routes";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
+import { buildPreferenceChips } from "@/utils/preferenceChips";
 import type { JobTrack, UserJobPreference } from "@/types/jobs";
 
 interface SidebarQuickLinksProps {
@@ -55,59 +56,6 @@ function PreferenceLoginGateModal({ onClose, onLogin }: { onClose: () => void; o
   );
 }
 
-/** 저장된 관심조건의 각 필드를 칩으로 나열하기 위한 라벨 목록. 순서는 직무 > 지역 > 근무 조건 > 그 외. */
-function buildPreferenceChips(preference: UserJobPreference): string[] {
-  const groups: Array<[string[], string]> = [
-    [preference.jobSubcategoryIds, "jobSubcategory"],
-    [preference.regionIds, "region"],
-    [preference.experienceId ? [preference.experienceId] : [], "experience"],
-    [preference.educationId ? [preference.educationId] : [], "education"],
-    [preference.employmentTypeIds, "employmentType"],
-    [preference.workTypeIds, "workType"],
-    [preference.workModeIds, "workMode"],
-    [preference.scheduleIds, "schedule"],
-    [preference.hospitalTypeIds, "hospitalType"],
-    [preference.shiftTypeIds, "shiftType"],
-    [preference.contractPeriodIds, "contractPeriod"],
-    [preference.salaryId ? [preference.salaryId] : [], "salary"],
-    [preference.hourlyPayRangeId ? [preference.hourlyPayRangeId] : [], "hourlyPay"],
-    [preference.companyTypeIds, "companyType"],
-    [preference.institutionTypeIds, "institutionType"],
-    [preference.pharmacyFeatureIds, "pharmacyFeature"],
-  ];
-
-  return groups.flatMap(([ids, mapKey]) =>
-    ids.map((id) => optionLabelMaps[mapKey]?.get(id)).filter((label): label is string => Boolean(label)),
-  );
-}
-
-function TipRow({
-  icon: Icon,
-  title,
-  badge,
-  description,
-  onClick,
-}: {
-  icon: LucideIcon;
-  title: string;
-  badge?: number;
-  description: string;
-  onClick: () => void;
-}) {
-  return (
-    <button type="button" onClick={onClick} className="flex w-full items-start gap-3 py-4 text-left transition hover:bg-gray-50">
-      <Icon size={18} strokeWidth={2} className="mt-0.5 shrink-0 text-gray-700" />
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5">
-          <span className="text-[14px] font-semibold text-[#171b20]">{title}</span>
-          {badge != null ? <span className="text-[12px] font-medium text-gray-400">{badge}</span> : null}
-        </span>
-        <span className="mt-1 block text-[13px] leading-[1.5] text-gray-500">{description}</span>
-      </span>
-    </button>
-  );
-}
-
 export function SidebarQuickLinks({
   track,
   savedCount,
@@ -119,7 +67,6 @@ export function SidebarQuickLinks({
   onClearPreferenceFilters,
 }: SidebarQuickLinksProps) {
   const router = useRouter();
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [loginGateOpen, setLoginGateOpen] = useState(false);
   const { isLoggedIn, login } = usePersonalLoginState();
   const preferencesHref = `${sharedRoutes.myPagePreferences}?track=${track}`;
@@ -131,7 +78,6 @@ export function SidebarQuickLinks({
 
   const goToPreferences = () => {
     onQuickLinkClick("preference");
-    setPopoverOpen(false);
     if (!isLoggedIn) {
       setLoginGateOpen(true);
       return;
@@ -139,132 +85,45 @@ export function SidebarQuickLinks({
     router.push(preferencesHref);
   };
 
-  const handlePrimaryClick = () => {
-    if (!isLoggedIn) {
-      setLoginGateOpen(true);
-      return;
-    }
-
+  const handleApplyPreference = () => {
     onQuickLinkClick("preference");
-
-    if (preferenceApplied) {
-      setPopoverOpen((current) => !current);
-      return;
-    }
-
     if (savedPreference) {
       onApplyPreference(savedPreference);
     }
   };
 
   const handleClearPreference = () => {
+    onQuickLinkClick("preference");
     onClearPreferenceFilters();
-    setPopoverOpen(false);
   };
 
   return (
     <aside className="flex flex-col gap-4">
-      <div className="border border-gray-200 bg-white p-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal size={17} strokeWidth={2} className="text-gray-700" />
-            <h3 className="text-[15px] font-semibold text-[#171b20]">내 관심조건</h3>
-          </div>
-          <Info size={15} className="text-gray-400" />
-        </div>
+      <InterestConditionCard
+        chips={hasPreference ? preferenceChips : []}
+        emptyStateText={
+          <>
+            관심조건을 설정해두면 원하는 공고만
+            <br />
+            빠르게 확인할 수 있어요.
+          </>
+        }
+        summaryText="관심조건에 맞는 공고만 빠르게 확인할 수 있어요."
+        applied={preferenceApplied}
+        primaryCtaLabel={hasPreference ? "관심조건으로 보기" : "관심조건 설정하기"}
+        primaryCtaAppliedLabel="관심조건 해제"
+        onPrimaryCtaClick={!hasPreference ? goToPreferences : preferenceApplied ? handleClearPreference : handleApplyPreference}
+        secondaryActionLabel={hasPreference ? "관심조건 수정" : undefined}
+        secondaryActionHref={hasPreference ? preferencesHref : undefined}
+        onSecondaryActionClick={hasPreference ? () => onQuickLinkClick("preference") : undefined}
+      />
 
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          {hasPreference ? (
-            <>
-              <div className="flex flex-wrap gap-1.5">
-                {preferenceChips.map((label, index) => (
-                  <span key={`${label}-${index}`} className="bg-gray-100 px-2.5 py-1 text-[13px] leading-[1.4] text-[#3d4653]">
-                    {label}
-                  </span>
-                ))}
-              </div>
-
-              <div className="relative mt-4">
-                <button
-                  type="button"
-                  onClick={handlePrimaryClick}
-                  className="h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
-                  style={{ backgroundImage: "var(--gradient-cta)" }}
-                >
-                  관심조건으로 보기
-                </button>
-
-                {popoverOpen ? (
-                  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 border border-gray-200 bg-white p-1">
-                    <button
-                      type="button"
-                      onClick={handleClearPreference}
-                      className="flex h-9 w-full items-center px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-gray-50"
-                    >
-                      관심조건 해제
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-
-              <Link
-                href={preferencesHref}
-                onClick={() => onQuickLinkClick("preference")}
-                className="mt-2 flex h-11 w-full items-center justify-center border border-gray-300 text-[14px] font-semibold text-[#171b20] hover:bg-gray-50"
-              >
-                관심조건 수정
-              </Link>
-
-              <p className="mt-4 text-[13px] text-gray-500">관심조건에 맞는 공고만 빠르게 확인할 수 있어요.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-[13px] leading-[1.6] text-gray-500">
-                관심조건을 설정해두면 원하는 공고만
-                <br />
-                빠르게 확인할 수 있어요.
-              </p>
-              <button
-                type="button"
-                onClick={goToPreferences}
-                className="mt-4 h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
-                style={{ backgroundImage: "var(--gradient-cta)" }}
-              >
-                관심조건 설정하기
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="border border-gray-200 bg-white p-5">
-        <div className="flex items-center gap-2">
-          <Lightbulb size={17} strokeWidth={2} className="text-gray-700" />
-          <h3 className="text-[15px] font-semibold text-[#171b20]">공고 활용 팁</h3>
-        </div>
-
-        <div className="mt-4 divide-y divide-gray-200 border-t border-gray-200">
-          <TipRow
-            icon={Bookmark}
-            title="저장한 공고"
-            badge={savedCount}
-            description="관심 있는 공고를 저장하고 나중에 다시 확인할 수 있어요."
-            onClick={() => onQuickLinkClick("saved")}
-          />
-          <TipRow
-            icon={Clock3}
-            title="최근 본 공고"
-            description="최근 확인한 공고를 빠르게 다시 볼 수 있어요."
-            onClick={() => onQuickLinkClick("recent")}
-          />
-          <TipRow
-            icon={Settings2}
-            title="관심조건 설정"
-            description="원하는 조건을 저장하면 맞춤 공고를 빠르게 볼 수 있어요."
-            onClick={goToPreferences}
-          />
-        </div>
-      </div>
+      <JobUsageTipsCard
+        savedCount={savedCount}
+        onSavedClick={() => onQuickLinkClick("saved")}
+        onRecentClick={() => onQuickLinkClick("recent")}
+        onPreferenceSettingsClick={goToPreferences}
+      />
 
       {loginGateOpen ? (
         <PreferenceLoginGateModal
