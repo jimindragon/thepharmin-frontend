@@ -5,6 +5,7 @@ import { HospitalJobDetailV2 } from "@/components/job-detail/HospitalJobDetailV2
 import { IndustryJobDetailClient } from "@/components/job-detail/IndustryJobDetailClient";
 import { PharmacyJobDetailV2 } from "@/components/job-detail/PharmacyJobDetailV2";
 import { ResearchJobDetailV2 } from "@/components/job-detail/ResearchJobDetailV2";
+import { RecentJobRecorder } from "@/components/jobs/RecentJobRecorder";
 import { getHospitalJobDetail } from "@/data/hospitalJobDetails";
 import { getIndustryJobDetail } from "@/data/industryJobDetails";
 import { hasJobDetail } from "@/data/jobDetailIndex";
@@ -57,6 +58,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     return (
       <>
         <Header />
+        <RecentJobRecorder jobId={job.id} />
         <HospitalJobDetailV2 data={hospitalDetailV2} />
       </>
     );
@@ -71,6 +73,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     return (
       <>
         <Header />
+        <RecentJobRecorder jobId={job.id} />
         <PharmacyJobDetailV2 data={pharmacyDetailV2} />
       </>
     );
@@ -85,6 +88,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     return (
       <>
         <Header />
+        <RecentJobRecorder jobId={job.id} />
         <ResearchJobDetailV2 data={researchDetailV2} />
       </>
     );
@@ -98,6 +102,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   return (
     <>
       <Header />
+      <RecentJobRecorder jobId={job.id} />
       <IndustryJobDetailClient data={industryDetail} />
     </>
   );

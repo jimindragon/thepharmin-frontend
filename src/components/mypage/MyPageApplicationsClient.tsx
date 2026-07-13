@@ -1,57 +1,82 @@
 "use client";
 
 import clsx from "clsx";
-import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ApplicationStepper } from "@/components/mypage/ApplicationStepper";
+import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { Button, LinkButton } from "@/components/ui/Button";
+import { sharedRoutes } from "@/config/routes";
 import { mockApplications, type JobApplication } from "@/data/mockApplications";
 
 type TabId = "all" | "active" | "closed";
 
+function getStatusDetail(application: JobApplication): string | undefined {
+  if (application.isClosed) {
+    return application.resultDate ? `결과 발표일 ${application.resultDate}` : undefined;
+  }
+  if (application.applyChannel === "external") {
+    return application.deadlineDate ? `마감 ${application.deadlineDate}` : undefined;
+  }
+  if (application.currentStage === "screening" && application.expectedDate) {
+    return `서류 발표 예정일 ${application.expectedDate}`;
+  }
+  if (application.currentStage === "interview" && application.expectedDate) {
+    return `면접일 ${application.expectedDate}`;
+  }
+  return undefined;
+}
+
 function ApplicationCard({ application }: { application: JobApplication }) {
+  const isQuick = application.applyChannel === "quick";
+  const statusDetail = getStatusDetail(application);
+  const statusText = application.isClosed && application.resultLabel ? application.resultLabel : application.statusLabel;
+
   return (
     <article className="border border-[#dfe4ea] bg-white p-6 max-[640px]:p-5">
-      <div className="flex items-start justify-between gap-4 max-[520px]:flex-col max-[520px]:gap-2">
-        <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-          {application.jobHref ? (
-            <Link href={application.jobHref} className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline">
-              {application.jobTitle}
-            </Link>
-          ) : (
-            <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
-          )}
-          <span className="shrink-0 border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[11px] font-medium text-[#596373]">
-            {application.applyChannelLabel}
-          </span>
-        </div>
-        <p className={clsx("shrink-0 text-[13px] font-bold tracking-[-0.01em]", application.isClosed ? "text-[#a0a9b7]" : "text-[#111111]")}>
-          {application.statusLabel}
-        </p>
-      </div>
-
-      <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">
-        {application.company}
-        {application.resumeUsed ? ` · 사용 이력서: ${application.resumeUsed}` : ""}
-        {` · 지원 ${application.appliedDate}`}
-        {application.deadlineDate ? ` · 마감 ${application.deadlineDate}` : ""}
-      </p>
-
-      {application.applyChannel === "quick" ? (
-        <ApplicationStepper currentStage={application.currentStage} />
-      ) : (
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1f5] pt-4">
-          <p className="inline-flex items-center gap-1.5 text-[12px] font-normal text-[#8a94a3]">
-            <ExternalLink size={13} />
-            외부 지원 · 전형 상태는 기업에서 관리됩니다
+      <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
+        {/* 좌측: 공고 정보 + 진행 단계 */}
+        <div className="min-w-0 flex-1 basis-[260px]">
+          <p className="text-[13px] font-normal text-[#68717e]">{application.company}</p>
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
+            {application.jobHref ? (
+              <Link href={application.jobHref} className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline">
+                {application.jobTitle}
+              </Link>
+            ) : (
+              <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
+            )}
+            <span className="shrink-0 border border-[#dfe4ea] bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
+              {application.applyChannelLabel}
+            </span>
+          </div>
+          <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">
+            {application.resumeUsed ? `사용 이력서: ${application.resumeUsed} · ` : ""}
+            {`지원 ${application.appliedDate}`}
+            {isQuick && application.deadlineDate ? ` · 마감 ${application.deadlineDate}` : ""}
+            {!isQuick ? " · 외부 지원 · 전형 상태는 기업에서 관리됩니다" : ""}
           </p>
-          <div className="flex gap-2">
-            <Button type="button" variant="secondary" size="sm">
-              결과 직접 입력
-            </Button>
+
+          {isQuick ? (
+            <div className="mt-4 w-full max-w-[620px]">
+              <ApplicationStepper currentStage={application.currentStage} />
+            </div>
+          ) : null}
+        </div>
+
+        {/* 우측: 상태 + 액션 */}
+        <div className="ml-auto flex shrink-0 flex-col items-end gap-2">
+          <p className={clsx("text-[15px] font-bold tracking-[-0.01em]", application.isClosed && application.resultLabel ? "text-danger" : "text-[#111111]")}>
+            {statusText}
+          </p>
+          {statusDetail ? <p className="text-[12px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
+          <div className="mt-1 flex justify-end gap-2">
+            {!isQuick ? (
+              <Button type="button" variant="secondary" size="sm">
+                결과 직접 입력
+              </Button>
+            ) : null}
             {application.jobHref ? (
               <LinkButton href={application.jobHref} variant="secondary" size="sm">
                 공고 보기
@@ -59,14 +84,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             ) : null}
           </div>
         </div>
-      )}
-
-      {application.isClosed && application.resultLabel ? (
-        <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-[#edf1f5] pt-4">
-          <span className="border border-[#f0d8d4] bg-[#fdf6f5] px-2.5 py-1 text-[12px] font-medium text-danger">{application.resultLabel}</span>
-          <p className="text-[12px] font-normal text-[#8a94a3]">{application.resultNote}</p>
-        </div>
-      ) : null}
+      </div>
     </article>
   );
 }
@@ -134,6 +152,18 @@ export function MyPageApplicationsClient() {
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">관심 있는 공고에 지원하면 이곳에서 진행 상황을 확인할 수 있습니다.</p>
           </div>
         )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-[#e5e9ef] bg-white px-5 py-4">
+        <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e]">
+          <span aria-hidden="true" className="text-[13px] text-[#9aa3af]">
+            ⓘ
+          </span>
+          지원한 공고가 보이지 않나요? 다른 계정으로 지원했거나, 삭제된 공고일 수 있습니다.
+        </p>
+        <Link href={sharedRoutes.support} className="shrink-0 text-[13px] font-medium text-[#111111] hover:underline">
+          문의하기
+        </Link>
       </div>
     </MyPageShell>
   );

@@ -121,7 +121,10 @@ export function SidebarQuickLinks({
       <JobUsageTipsCard
         savedCount={savedCount}
         onSavedClick={() => onQuickLinkClick("saved")}
-        onRecentClick={() => onQuickLinkClick("recent")}
+        onRecentClick={() => {
+          onQuickLinkClick("recent");
+          router.push(sharedRoutes.myPageRecentJobs);
+        }}
         onPreferenceSettingsClick={goToPreferences}
       />
 

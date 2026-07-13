@@ -66,9 +66,8 @@ export function InterestConditionCard({
               className={
                 showAppliedStyle
                   ? "mt-4 h-11 w-full border border-gray-300 text-[14px] font-semibold text-[#171b20] transition hover:bg-gray-50"
-                  : "mt-4 h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
+                  : "mt-4 h-11 w-full border-[1.5px] border-[#111111] text-[14px] font-semibold text-[#111111] transition hover:bg-[#f5f6f8]"
               }
-              style={showAppliedStyle ? undefined : { backgroundImage: "var(--gradient-cta)" }}
             >
               {showAppliedStyle ? primaryCtaAppliedLabel : primaryCtaLabel}
             </button>
@@ -91,8 +90,7 @@ export function InterestConditionCard({
             <button
               type="button"
               onClick={onPrimaryCtaClick}
-              className="mt-4 h-11 w-full text-[14px] font-semibold text-white transition hover:brightness-95"
-              style={{ backgroundImage: "var(--gradient-cta)" }}
+              className="mt-4 h-11 w-full border-[1.5px] border-[#111111] text-[14px] font-semibold text-[#111111] transition hover:bg-[#f5f6f8]"
             >
               {primaryCtaLabel}
             </button>

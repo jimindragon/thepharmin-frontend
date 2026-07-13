@@ -16,7 +16,7 @@ const memberTypeOptions: { id: MemberType; label: string }[] = [
 ];
 
 const inquiryTypesByMember: Record<MemberType, string[]> = {
-  personal: ["이력서 · 지원", "저장한 공고 · 알림", "계정 · 로그인", "기타 문의"],
+  personal: ["이력서 · 지원", "스크랩 · 알림", "계정 · 로그인", "기타 문의"],
   business: ["공고 등록 · 관리", "헤드헌팅", "결제 · 이용권", "기업정보 관리", "계정 · 로그인", "기타 문의"],
 };
 

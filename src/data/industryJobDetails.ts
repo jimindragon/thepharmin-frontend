@@ -133,6 +133,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       description:
         "덴티움은 치과용 임플란트를 중심으로 다양한 의료기기와 의료장비를 만들며, 국내외 인증과 인허가 대응 경험을 쌓아 왔습니다.",
       keywords: ["의료기기", "치과용 임플란트", "글로벌 인증", "RA"],
+      logoUrl: companyLogos["(주)덴티움"],
     },
     businessContext: {
       businessFields: ["치과용 의료기기", "의료장비", "글로벌 인증"],
@@ -219,6 +220,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       description:
         "삼성바이오로직스는 글로벌 제약·바이오 기업의 바이오의약품 생산을 맡는 CDMO로, 생산 공정과 품질·안전 기준에 맞춘 현장 운영 체계를 갖추고 있습니다.",
       keywords: ["CDMO", "바이오의약품", "생산공정", "송도"],
+      logoUrl: companyLogos["삼성바이오로직스"],
     },
     businessContext: {
       businessFields: ["바이오의약품", "CDMO", "생산공정"],
@@ -287,8 +289,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
         "하이브리드 근무로 운영되며, 규제기관 대응 일정에 따라 사무실 출근과 재택 근무를 병행합니다.",
       positionIntro:
         "허가전략 담당자는 개발·품질·해외법인과 협업하며 허가 전략 수립부터 자료 검토, 규제기관 대응까지 폭넓은 인허가 업무를 경험할 수 있는 포지션입니다.",
-      // additionalNotes/attachments: 없음
-      detailImages: [companyLogos["유한양행"]],
+      // additionalNotes/attachments/detailImages: 없음
     },
     org: {
       name: "(주)유한양행",
@@ -298,6 +299,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       description:
         "비소세포폐암 표적항암제 렉라자를 중심으로 글로벌 허가를 잇달아 획득하며 항암·면역 분야 R&D와 해외 인허가 역량을 빠르게 확장하고 있습니다.",
       keywords: ["신약개발", "글로벌 진출", "R&D 중심", "항암·면역"],
+      logoUrl: companyLogos["유한양행"],
     },
   },
 
@@ -365,6 +367,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       description:
         "국내 제약사와 바이오벤처의 임상을 폭넓게 수탁하며, 다국가 임상 비중을 늘려가는 성장기 CRO입니다. CRA·DM·통계 직군의 채용이 꾸준합니다.",
       keywords: ["풀서비스 CRO", "CRA 채용", "다국가 임상", "성장기"],
+      logoUrl: companyLogos["메디코아"],
     },
   },
 };

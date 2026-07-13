@@ -13,6 +13,10 @@ export interface JobApplication {
   isClosed: boolean;
   currentStage: ApplicationStage;
   statusLabel: string;
+  /** 서류전형/면접 단계에서 다음 일정 예정일 (예: "06.25") — 상태 텍스트 아래 보조 정보로 표시 */
+  expectedDate?: string;
+  /** 결과 확정일 (예: "06.18") — 종료된 지원 건의 상태 영역에 표시 */
+  resultDate?: string;
   resultLabel?: string;
   resultNote?: string;
 }
@@ -37,6 +41,7 @@ export const mockApplications: JobApplication[] = [
     isClosed: false,
     currentStage: "screening",
     statusLabel: "서류발표 D-4",
+    expectedDate: "06.25",
   },
   {
     id: "app-2",
@@ -49,6 +54,7 @@ export const mockApplications: JobApplication[] = [
     isClosed: false,
     currentStage: "interview",
     statusLabel: "면접 D-DAY",
+    expectedDate: "06.21",
   },
   {
     id: "app-3",
@@ -75,6 +81,7 @@ export const mockApplications: JobApplication[] = [
     isClosed: true,
     currentStage: "result",
     statusLabel: "종료",
+    resultDate: "06.18",
     resultLabel: "최종 불합격",
     resultNote: "결과 발표 06.18 · 면접 전형까지 진행되었습니다",
   },

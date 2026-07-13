@@ -7,7 +7,15 @@ import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
-import { PopularTagsPanel, QnaAuthorAvatar, QnaNotice, QnaOperationPrinciplePanel, showQnaNotice } from "@/components/qna/QnaShared";
+import {
+  MyActivityPanel,
+  PopularTagsPanel,
+  QnaAuthorAvatar,
+  QnaNotice,
+  QnaOperationPrinciplePanel,
+  showQnaNotice,
+  TrendingPostsPanel,
+} from "@/components/qna/QnaShared";
 import { QnaComposer } from "@/components/qna/QnaComposer";
 
 type QnaSortOption = "추천순" | "최신순" | "공감순";
@@ -135,44 +143,6 @@ function QnaListEmptyState() {
   );
 }
 
-function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]; previewQuery: string }) {
-  return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
-      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
-        <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
-        실시간 인기 글
-      </h2>
-      <ol className="mt-4 space-y-4">
-        {entries.map((entry, index) => {
-          const clickable = true;
-          const row = (
-            <span className="flex items-start gap-3">
-              <span className="text-[16px] font-extrabold text-[#c8ced7]">{index + 1}</span>
-              <span className="min-w-0">
-                <span className="block truncate text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
-                <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
-                  #{entry.tags[0]} · 댓글 {getEntryCommentCount(entry)}
-                </span>
-              </span>
-            </span>
-          );
-          return (
-            <li key={entry.id}>
-              {clickable ? (
-                <Link href={`/qna/${entry.id}${previewQuery}`} className="transition hover:opacity-70">
-                  {row}
-                </Link>
-              ) : (
-                <div className="cursor-default">{row}</div>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </section>
-  );
-}
-
 interface QnaHomeClientProps {
   activeType: QnaType;
   canSwitchType: boolean;
@@ -264,6 +234,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
 
           <aside className="space-y-5">
             <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} />
+            {isLoggedIn ? <MyActivityPanel activeType={activeType} /> : null}
             <PopularTagsPanel
               activeType={activeType}
               selectedTag={categoryFilter !== "전체" ? categoryFilter : undefined}

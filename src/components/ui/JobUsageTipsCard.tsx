@@ -41,9 +41,9 @@ export function JobUsageTipsCard({ savedCount, onSavedClick, onRecentClick, onPr
       <div className="mt-4 divide-y divide-gray-200 border-t border-gray-200">
         <TipRow
           icon={Bookmark}
-          title="저장한 공고"
+          title="스크랩한 공고"
           badge={savedCount}
-          description="관심 있는 공고를 저장하고 나중에 다시 확인할 수 있어요."
+          description="관심 있는 공고를 스크랩하고 나중에 다시 확인할 수 있어요."
           onClick={onSavedClick}
         />
         <TipRow

@@ -16,6 +16,8 @@ export interface QnaReply {
   createdAtLabel: string;
   likeCount: number;
   body: string;
+  /** 현재 로그인 사용자(김더팜)가 작성한 댓글/답글인지 — "내 활동" 집계 전용 내부 플래그, 닉네임 표시엔 영향 없음 */
+  isMine?: boolean;
 }
 
 export interface QnaComment extends QnaReply {
@@ -45,6 +47,8 @@ export interface QnaPost {
   isBest?: boolean;
   comments: QnaComment[];
   relatedPostIds: string[];
+  /** 현재 로그인 사용자(김더팜)가 작성한 글인지 — "내 활동" 집계 전용 내부 플래그, 닉네임 표시엔 영향 없음 */
+  isMine?: boolean;
 }
 
 /** 목록·상세가 항상 같은 형태의 글을 다루도록 QnaPost로 단일화(과거 QnaPreviewCard는 폐기) */

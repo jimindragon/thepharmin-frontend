@@ -69,6 +69,7 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
         ctaLabel: "무료 열람권 받고 보기",
         ctaHref: "#" as string | undefined,
         onCtaClick: undefined as (() => void) | undefined,
+        ctaVariant: "outline" as const,
       };
     case "noCredits":
       return {
@@ -77,6 +78,7 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
         ctaLabel: "후기 작성하고 열람권 받기",
         ctaHref: access.writeHref as string | undefined,
         onCtaClick: undefined as (() => void) | undefined,
+        ctaVariant: "outline" as const,
       };
     case "canUnlock":
       return {
@@ -85,6 +87,7 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
         ctaLabel: "1장 사용하고 보기",
         ctaHref: undefined as string | undefined,
         onCtaClick: access.onUnlockRequest as (() => void) | undefined,
+        ctaVariant: "solid" as const,
       };
   }
 }
@@ -177,11 +180,13 @@ export function CompanyReviewCard({
           <LockedContent
             className="mt-3"
             lines={3}
+            roomy
             message={interviewAccessCopy.message}
             secondaryMessage={interviewAccessCopy.secondaryMessage}
             ctaLabel={interviewAccessCopy.ctaLabel}
             ctaHref={interviewAccessCopy.ctaHref}
             onCtaClick={interviewAccessCopy.onCtaClick}
+            ctaVariant={interviewAccessCopy.ctaVariant}
           />
         ) : (
           <LockedContent

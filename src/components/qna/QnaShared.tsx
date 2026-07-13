@@ -1,8 +1,12 @@
+"use client";
+
 import clsx from "clsx";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getPopularQnaTags, qnaOperationPrinciple } from "@/data/qna";
-import type { QnaAuthorType, QnaType } from "@/types/qna";
+import { useEffect, useState } from "react";
+import { getEntryCommentCount, getMyQnaComments, getMyQnaPosts, getPopularQnaTags, getQnaPostById, qnaOperationPrinciple } from "@/data/qna";
+import { readQnaScraps } from "@/components/qna/qnaScraps";
+import type { QnaAuthorType, QnaListEntry, QnaType } from "@/types/qna";
 
 /** 글쓰기/댓글/공감/스크랩/공유/신고 — 백엔드가 없는 동작은 이 토스트로 통일해서 알린다 */
 export function showQnaNotice(setNotice: (message: string) => void, message: string) {
@@ -128,6 +132,76 @@ export function QnaOperationPrinciplePanel() {
     <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
       <h2 className="text-[15px] font-bold tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
       <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-[#b9c0ca]">{qnaOperationPrinciple.description}</p>
+    </section>
+  );
+}
+
+/** 허브/상세 사이드바가 공유하는 "실시간 인기 글" 패널 — 대상 목록만 호출부에서 넘긴다 */
+export function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]; previewQuery: string }) {
+  return (
+    <section className="border border-[#e5e9ef] bg-white p-5">
+      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+        <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
+        실시간 인기 글
+      </h2>
+      <ol className="mt-4 space-y-4">
+        {entries.map((entry, index) => (
+          <li key={entry.id}>
+            <Link href={`/qna/${entry.id}${previewQuery}`} className="transition hover:opacity-70">
+              <span className="flex items-start gap-3">
+                <span className="text-[16px] font-extrabold text-[#c8ced7]">{index + 1}</span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
+                  <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
+                    #{entry.tags[0]} · 댓글 {getEntryCommentCount(entry)}
+                  </span>
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function MyActivitySummaryRow({ label, count, href }: { label: string; count: number; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center justify-between py-2.5 text-[13px] font-medium text-[#596373] transition hover:text-[#111111]"
+    >
+      <span>{label}</span>
+      <span>{count}</span>
+    </Link>
+  );
+}
+
+/** 허브/상세 사이드바가 공유하는 "내 활동" 카드 — 스크랩 카운트만 activeType 기준으로 필터링한다 */
+export function MyActivityPanel({ activeType }: { activeType: QnaType }) {
+  const [scrapCount, setScrapCount] = useState(0);
+  const myPostsCount = getMyQnaPosts().length;
+  const myCommentsCount = getMyQnaComments().length;
+
+  useEffect(() => {
+    const scrapped = [...readQnaScraps()]
+      .map((id) => getQnaPostById(id))
+      .filter((entry): entry is QnaListEntry => Boolean(entry && entry.qnaType === activeType));
+    setScrapCount(scrapped.length);
+  }, [activeType]);
+
+  return (
+    <section className="border border-[#e5e9ef] bg-white p-5">
+      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+        <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
+        내 활동
+      </h2>
+
+      <div className="mt-3 divide-y divide-[#edf1f5]">
+        <MyActivitySummaryRow label="스크랩한 글" count={scrapCount} href="/qna/activity?tab=scraps" />
+        <MyActivitySummaryRow label="내가 쓴 글" count={myPostsCount} href="/qna/activity?tab=posts" />
+        <MyActivitySummaryRow label="내가 단 댓글" count={myCommentsCount} href="/qna/activity?tab=comments" />
+      </div>
     </section>
   );
 }

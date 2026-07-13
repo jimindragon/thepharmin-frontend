@@ -70,9 +70,8 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
         </div>
       </div>
 
-      <InterviewAccessStatusCard userState={displayState} credits={credits} writeHref={writeHref} />
-
       <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+        <InterviewAccessStatusCard userState={displayState} credits={credits} writeHref={writeHref} />
         {items.map((item) => {
           const unlocked = unlockedIds.includes(item.id);
           const accessLabel = item.isMine ? "내가 작성한 후기" : unlocked ? "열람 완료 · 추가 차감 없음" : undefined;

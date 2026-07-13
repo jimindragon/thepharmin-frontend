@@ -76,4 +76,7 @@ export const companyLogos: Record<string, string> = {
   "서울대학교병원 신경내과 연구실": "/images/companies/서울대학교병원.svg",
   "한국과학기술연구원(KIST) 신경생리연구실": "/images/companies/KIST.png",
   "한국과학기술연구원(KIST)": "/images/companies/KIST.png",
+  "(주)유한양행": "/images/companies/yuhan.png", // 별칭: jobs.ts company 표기 대응
+  "메디코아CRO(주)": "/images/companies/메디코아.png", // 별칭: jobs.ts company 표기 대응
+  "서울대학교병원": "/images/companies/서울대학교병원.svg", // 별칭: jobs.ts company 표기 대응
 };

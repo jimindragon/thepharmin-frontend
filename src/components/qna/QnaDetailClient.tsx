@@ -1,33 +1,58 @@
 "use client";
 
+import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Bookmark, Flag, Share2, ThumbsUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { myPageUser } from "@/config/myPageMenu";
-import { getEntryCommentCount, getRelatedQnaEntries } from "@/data/qna";
-import type { QnaPost, QnaReply } from "@/types/qna";
+import { getPopularQnaEntries, getRelatedQnaEntries } from "@/data/qna";
+import { readQnaScraps, writeQnaScraps } from "@/components/qna/qnaScraps";
+import type { QnaPost, QnaReply, QnaType } from "@/types/qna";
 import {
+  MyActivityPanel,
   PopularTagsPanel,
   QnaAuthorAvatar,
   QnaAuthorLabelBadge,
   QnaNotice,
   QnaOperationPrinciplePanel,
+  TrendingPostsPanel,
   showQnaNotice,
 } from "@/components/qna/QnaShared";
 
 type CommentSortOption = "인기순" | "최신순";
 
+/** /qna/activity 목록 행과 동일한 문법(제목 · 메타 · 본문 발췌) — 본문 하단 "이런 글은 어때요?" 전용 */
+const qnaTypeLabel: Record<QnaType, string> = {
+  pharmacist: "약사 QNA",
+  industry: "산업 QNA",
+};
+
+function RelatedQnaRow({ entry, previewQuery }: { entry: QnaPost; previewQuery: string }) {
+  const excerpt = entry.body[0];
+  return (
+    <Link href={`/qna/${entry.id}${previewQuery}`} className="block transition hover:opacity-70">
+      <p className="text-[15px] font-bold leading-[1.4] text-[#171d26]">{entry.title}</p>
+      <p className="mt-1 text-[13px] font-normal text-[#8b95a1]">
+        {qnaTypeLabel[entry.qnaType]} · {entry.createdAtLabel}
+      </p>
+      <p className="mt-1.5 line-clamp-1 text-[14px] font-normal leading-[1.6] text-[#596373]">{excerpt}</p>
+    </Link>
+  );
+}
+
 function ReactionRow({
   likeCount,
   onLike,
   onScrap,
+  scrapActive,
   onShare,
   onReport,
 }: {
   likeCount: number;
   onLike: () => void;
   onScrap: () => void;
+  scrapActive?: boolean;
   onShare: () => void;
   onReport: () => void;
 }) {
@@ -45,9 +70,14 @@ function ReactionRow({
         <button
           type="button"
           onClick={onScrap}
-          className="inline-flex h-9 items-center gap-1.5 border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#111111] hover:text-[#111111]"
+          className={clsx(
+            "inline-flex h-9 items-center gap-1.5 border px-3 text-[13px] font-medium transition",
+            scrapActive
+              ? "border-[#111111] bg-[#111111] text-white"
+              : "border-[#cfd8e3] bg-white text-[#596373] hover:border-[#111111] hover:text-[#111111]",
+          )}
         >
-          <Bookmark size={15} aria-hidden="true" />
+          <Bookmark size={15} aria-hidden="true" fill={scrapActive ? "currentColor" : "none"} />
           스크랩
         </button>
         <button
@@ -201,8 +231,18 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
   const [commentSort, setCommentSort] = useState<CommentSortOption>("인기순");
   const [notice, setNotice] = useState("");
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
+  const [isScraped, setIsScraped] = useState(false);
 
-  const relatedEntries = useMemo(() => getRelatedQnaEntries(post), [post]);
+  useEffect(() => {
+    setIsScraped(readQnaScraps().has(post.id));
+  }, [post.id]);
+
+  const relatedEntries = useMemo(() => getRelatedQnaEntries(post).slice(0, 3), [post]);
+  /** 허브 사이드바와 동일한 "실시간 인기 글" — 현재 글의 qnaType 기준, 지금 보고 있는 글은 제외 */
+  const trendingEntries = useMemo(
+    () => getPopularQnaEntries(post.qnaType).filter((entry) => entry.id !== post.id),
+    [post],
+  );
   const totalCommentCount = useMemo(
     () => post.comments.reduce((total, comment) => total + 1 + comment.replies.length, 0),
     [post.comments],
@@ -215,6 +255,23 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
   }, [post.comments, commentSort]);
 
   const notify = (message: string) => showQnaNotice(setNotice, message);
+
+  const handleScrapToggle = () => {
+    if (!isLoggedIn) {
+      notify("로그인 후 이용할 수 있습니다.");
+      return;
+    }
+    const scraps = readQnaScraps();
+    const next = !scraps.has(post.id);
+    if (next) {
+      scraps.add(post.id);
+    } else {
+      scraps.delete(post.id);
+    }
+    writeQnaScraps(scraps);
+    setIsScraped(next);
+    notify(next ? "스크랩했습니다." : "스크랩을 해제했습니다.");
+  };
 
   /** 상세페이지엔 리스트의 로컬 필터 상태가 없어, 인기 태그 클릭은 해당 태그로 리스트를 여는 링크로 처리한다 */
   const popularTagHref = (tag: string) => {
@@ -272,7 +329,8 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
               <ReactionRow
                 likeCount={post.likeCount}
                 onLike={() => notify("공감 기능은 추후 연결될 예정입니다.")}
-                onScrap={() => notify("스크랩 기능은 추후 연결될 예정입니다.")}
+                onScrap={handleScrapToggle}
+                scrapActive={isScraped}
                 onShare={() => notify("공유 기능은 추후 연결될 예정입니다.")}
                 onReport={() => notify("신고 접수 화면은 추후 연결될 예정입니다.")}
               />
@@ -343,39 +401,24 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <p className="mt-6 text-center text-[13px] font-normal text-[#8791a0]">아직 등록된 댓글이 없습니다.</p>
               )}
             </section>
-          </div>
 
-          <aside className="space-y-5">
             {relatedEntries.length ? (
-              <section className="border border-[#e5e9ef] bg-white p-5">
+              <section className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
                 <h2 className="text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
-                <div className="mt-3 divide-y divide-[#edf1f5]">
-                  {relatedEntries.map((entry) => {
-                    const clickable = true;
-                    const itemContent = (
-                      <>
-                        <p className="line-clamp-2 text-[13px] font-medium leading-[1.5] text-[#303946]">{entry.title}</p>
-                        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[11px] font-normal text-[#a0a9b7]">
-                          <span>#{entry.tags[0]}</span>
-                          <span>
-                            댓글 {getEntryCommentCount(entry)} · 공감 {entry.likeCount}
-                          </span>
-                        </p>
-                      </>
-                    );
-                    return clickable ? (
-                      <Link key={entry.id} href={`/qna/${entry.id}${previewQuery}`} className="block py-4 first:pt-0 last:pb-0 transition hover:opacity-70">
-                        {itemContent}
-                      </Link>
-                    ) : (
-                      <div key={entry.id} className="cursor-default py-4 first:pt-0 last:pb-0">
-                        {itemContent}
-                      </div>
-                    );
-                  })}
+                <div className="mt-3 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
+                  {relatedEntries.map((entry) => (
+                    <div key={entry.id} className="py-4 last:pb-0">
+                      <RelatedQnaRow entry={entry} previewQuery={previewQuery} />
+                    </div>
+                  ))}
                 </div>
               </section>
             ) : null}
+          </div>
+
+          <aside className="space-y-5">
+            <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} />
+            {isLoggedIn ? <MyActivityPanel activeType={post.qnaType} /> : null}
             <PopularTagsPanel activeType={post.qnaType} tagHref={popularTagHref} />
             <QnaOperationPrinciplePanel />
           </aside>

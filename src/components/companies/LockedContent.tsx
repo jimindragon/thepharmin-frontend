@@ -16,8 +16,11 @@ interface LockedContentProps {
   /** 잠금 영역의 스켈레톤 줄 수. 맥락(카드/본문)에 맞게 조정한다. */
   lines?: number;
   className?: string;
-  /** 기본은 모노톤 아웃라인 버튼. "gradient"는 페이지당 대표 액션 하나(예: 면접 후기 작성하기)에만 사용할 것 — 미지정 시 기존 동작과 동일하다. */
-  ctaVariant?: "outline" | "gradient";
+  /** 기본은 모노톤 아웃라인 버튼. "gradient"는 페이지당 대표 액션 하나(예: 면접 후기 작성하기)에만 사용할 것 —
+   * "solid"는 즉시 실행 가능한 단일 액션(예: 열람권으로 바로 열람)에만 사용한다. 미지정 시 기존 동작과 동일하다. */
+  ctaVariant?: "outline" | "gradient" | "solid";
+  /** 상하 여백/요소 간격을 한 단계 넓힌 변형. 미지정 시 기존 레이아웃과 동일하다. */
+  roomy?: boolean;
 }
 
 /**
@@ -34,11 +37,14 @@ export function LockedContent({
   lines = 3,
   className,
   ctaVariant = "outline",
+  roomy = false,
 }: LockedContentProps) {
   const ctaClassName =
     ctaVariant === "gradient"
       ? "mt-1 inline-flex h-9 items-center px-4 text-[12px] font-medium text-white transition hover:brightness-110 active:brightness-90"
-      : "mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white";
+      : ctaVariant === "solid"
+        ? "mt-1 inline-flex h-9 items-center bg-[#111111] px-4 text-[12px] font-medium text-white transition hover:bg-[#2a2a2a]"
+        : "mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white";
   const ctaStyle =
     ctaVariant === "gradient" ? { backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" } : undefined;
 
@@ -46,9 +52,12 @@ export function LockedContent({
     <div
       role="region"
       aria-label="잠긴 콘텐츠"
-      className={clsx("relative overflow-hidden border border-[#e5e9ef] bg-white", className)}
+      className={clsx("relative overflow-hidden border border-[#e5e9ef] bg-white", roomy && "min-h-[210px]", className)}
     >
-      <div aria-hidden="true" className="space-y-2 px-4 pt-4">
+      <div
+        aria-hidden="true"
+        className={clsx("px-4", roomy ? "absolute inset-x-0 top-0 space-y-2.5 pt-5" : "space-y-2 pt-4")}
+      >
         {Array.from({ length: lines }).map((_, index) => (
           <div
             key={index}
@@ -61,7 +70,12 @@ export function LockedContent({
         aria-hidden="true"
         className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.82)_50%,rgba(255,255,255,0.98)_78%)]"
       />
-      <div className="relative z-10 flex flex-col items-center gap-2 px-4 pb-5 pt-9 text-center">
+      <div
+        className={clsx(
+          "z-10 flex flex-col items-center px-4 text-center",
+          roomy ? "absolute inset-0 justify-center gap-2.5" : "relative gap-2 pb-5 pt-9",
+        )}
+      >
         <Lock size={17} className="text-[#8a95a5]" aria-hidden="true" />
         <p className="max-w-[260px] text-[13px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
         {secondaryMessage ? <p className="max-w-[260px] text-[11.5px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}

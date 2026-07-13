@@ -50,6 +50,7 @@ export const qnaPosts: QnaPost[] = [
         createdAtLabel: "2시간 전",
         likeCount: 5,
         body: "RA 매니저 포지션 경력 요건이 정확히 어떻게 되나요? 공고에 명시된 것보다 더 구체적으로 알 수 있을까요?",
+        isMine: true,
         replies: [
           {
             id: "industry-job-001-c1-r1",
@@ -71,6 +72,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "industry-career-001",
     qnaType: "industry",
+    isMine: true,
     tags: ["커리어", "인허가·임상"],
     title: "RA에서 Medical Affairs로 직무 전환, 현실적인 조언 구합니다",
     body: [
@@ -110,6 +112,7 @@ export const qnaPosts: QnaPost[] = [
             createdAtLabel: "4시간 전",
             likeCount: 3,
             body: "역시 MSL을 먼저 거치는 게 안전하겠네요. 경험 공유 감사합니다!",
+            isMine: true,
           },
         ],
       },
@@ -183,6 +186,7 @@ export const qnaPosts: QnaPost[] = [
         createdAtLabel: "6시간 전",
         likeCount: 9,
         body: "정리 깔끔하네요. 저는 안정성을 택해서 제약사에 남았습니다.",
+        isMine: true,
         replies: [],
       },
       {
@@ -319,6 +323,7 @@ export const qnaPosts: QnaPost[] = [
         createdAtLabel: "38분 전",
         likeCount: 11,
         body: "최근에 비슷한 입지 양수했는데, 일매보다 처방 안정성을 훨씬 깐깐하게 봤습니다. 단골 비중도 같이 보세요.",
+        isMine: true,
         replies: [],
       },
     ],
@@ -327,6 +332,7 @@ export const qnaPosts: QnaPost[] = [
   {
     id: "pharmacist-practice-001",
     qnaType: "pharmacist",
+    isMine: true,
     tags: ["약국 실무", "복약지도"],
     title: "조제 더블체크 루틴, 이렇게 바꾸니 실수가 줄었어요",
     body: [
@@ -425,6 +431,7 @@ export const qnaPosts: QnaPost[] = [
         createdAtLabel: "1시간 전",
         likeCount: 5,
         body: "메디컬 부서마다 요구하는 자격이 좀 달라요. MSL은 임상 경험을, RA는 인허가 지식을 더 보는 편이니 목표 부서를 먼저 정하시는 게 좋을 것 같아요.",
+        isMine: true,
         replies: [],
       },
     ],
@@ -604,4 +611,35 @@ export function getPopularQnaTags(type: QnaType, limit = 8): string[] {
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit)
     .map(([tag]) => tag);
+}
+
+/** 로그인 사용자가 작성한 글 — "내 활동" 페이지의 "내가 쓴 글" 탭이 사용 */
+export function getMyQnaPosts(): QnaPost[] {
+  return qnaPosts.filter((post) => post.isMine);
+}
+
+export interface MyQnaCommentEntry {
+  id: string;
+  body: string;
+  createdAtLabel: string;
+  postId: string;
+  postTitle: string;
+}
+
+/** 로그인 사용자가 남긴 댓글/답글을 원문 글 정보와 함께 평탄화 — "내 활동" 페이지의 "내가 단 댓글" 탭이 사용 */
+export function getMyQnaComments(): MyQnaCommentEntry[] {
+  const entries: MyQnaCommentEntry[] = [];
+  for (const post of qnaPosts) {
+    for (const comment of post.comments) {
+      if (comment.isMine) {
+        entries.push({ id: comment.id, body: comment.body, createdAtLabel: comment.createdAtLabel, postId: post.id, postTitle: post.title });
+      }
+      for (const reply of comment.replies) {
+        if (reply.isMine) {
+          entries.push({ id: reply.id, body: reply.body, createdAtLabel: reply.createdAtLabel, postId: post.id, postTitle: post.title });
+        }
+      }
+    }
+  }
+  return entries;
 }

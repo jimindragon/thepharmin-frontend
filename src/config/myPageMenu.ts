@@ -22,7 +22,8 @@ export const myPageMenuGroups: MyPageMenuGroup[] = [
   {
     title: "관심",
     items: [
-      { label: "스크랩", href: "/mypage/scraps", badge: 8 },
+      { label: "스크랩", href: "/mypage/scraps", badge: 9 },
+      { label: "최근 본 공고", href: "/mypage/recent-jobs" },
       { label: "관심 조건", href: "/mypage/preferences" },
     ],
   },

@@ -1,13 +1,14 @@
 "use client";
 
 import {
+  CalendarClock,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
   Lock,
   MailCheck,
-  Pin,
+  Plus,
   RotateCcw,
   X,
 } from "lucide-react";
@@ -20,10 +21,11 @@ import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageHeader } from "@/components/PageHeader";
+import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
 import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { sharedRoutes } from "@/config/routes";
-import { calendarJobs, type CalendarEventType, type CalendarJob, type CalendarJobStage } from "@/data/calendar";
+import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
@@ -56,7 +58,7 @@ const ALL_JOB_CATEGORY_ID = "__all";
 
 const tabs: Array<{ id: CalendarTab; label: string }> = [
   { id: "all", label: "전체 공고" },
-  { id: "saved", label: "관심 공고" },
+  { id: "saved", label: "스크랩한 공고" },
   { id: "applied", label: "지원한 공고" },
 ];
 
@@ -113,15 +115,6 @@ const calendarFilterDefinitions: Record<CalendarAvailableTrack, CalendarFilterDe
   ],
 };
 
-const stageLabels: Record<CalendarJobStage, string> = {
-  applied: "지원완료",
-  screening: "서류전형",
-  interview: "면접",
-  result: "결과",
-};
-
-const stageOrder: CalendarJobStage[] = ["applied", "screening", "interview", "result"];
-
 function dateKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -144,11 +137,6 @@ function buildMonthDays(year: number, month: number) {
   }
 
   return days;
-}
-
-function getStageIndex(stage?: CalendarJobStage) {
-  if (!stage) return 0;
-  return Math.max(0, stageOrder.indexOf(stage));
 }
 
 function jobMatchesTab(job: CalendarJob, activeTab: CalendarTab) {
@@ -503,52 +491,36 @@ function CalendarJobChip({ job }: { job: CalendarJob }) {
   );
 }
 
-function ApplicationStepper({ stage }: { stage?: CalendarJobStage }) {
-  const activeIndex = getStageIndex(stage);
-
+function ApplicationSummaryCard({ job }: { job: CalendarJob }) {
   return (
-    <div className="mt-4">
-      <div className="relative grid grid-cols-4 gap-0">
-        <div className="absolute left-[10%] right-[10%] top-[9px] h-[2px] bg-[#e7ebef]" />
-        <div
-          className="absolute left-[10%] top-[9px] h-[2px] bg-[#111111]"
-          style={{ width: `${Math.min(activeIndex, 3) * 26.6}%` }}
-        />
-        {stageOrder.map((item, index) => {
-          const active = index <= activeIndex;
-          return (
-            <div key={item} className="relative z-10 flex flex-col items-center gap-1.5">
-              <span className={`h-4 w-4 rounded-full border-[3px] ${active ? "border-[#d8dce2] bg-[#111111]" : "border-[#eef1f4] bg-white"}`} />
-              <span className={`text-[10px] font-medium ${active ? "text-[#25303b]" : "text-[#a4acb8]"}`}>
-                {stageLabels[item]}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <Link
+      href="/mypage/applications"
+      className="block h-full border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]"
+    >
+      {job.statusLabel ? (
+        <span
+          className={`inline-block px-2.5 py-1 text-[12px] font-medium ${
+            job.statusLabel.includes("면접") ? "bg-[#f1f3f5] text-[#111111]" : "bg-[#fff0ec] text-[#e95544]"
+          }`}
+        >
+          {job.statusLabel}
+        </span>
+      ) : null}
+      <p className="mt-3 truncate text-[14px] font-medium text-[#1e232b]">{job.companyName}</p>
+      <p className="mt-1 truncate text-[12px] font-medium text-[#8b94a2]">{job.title}</p>
+      <ApplicationStepper currentStage={job.applicationStage ?? "applied"} />
+    </Link>
   );
 }
 
-function ApplicationStatusCard({ job }: { job: CalendarJob }) {
+function ApplicationMoreCard() {
   return (
-    <Link href="/mypage/applications" className="block border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-[14px] font-medium text-[#1e232b]">{job.companyName}</p>
-          <p className="mt-2 truncate text-[12px] font-medium text-[#8b94a2]">{job.title}</p>
-        </div>
-        {job.statusLabel ? (
-          <span
-            className={`shrink-0 px-2.5 py-1 text-[12px] font-medium ${
-              job.statusLabel.includes("면접") ? "bg-[#f1f3f5] text-[#111111]" : "bg-[#fff0ec] text-[#e95544]"
-            }`}
-          >
-            {job.statusLabel}
-          </span>
-        ) : null}
-      </div>
-      <ApplicationStepper stage={job.applicationStage} />
+    <Link
+      href="/mypage/applications"
+      className="flex h-full min-h-[140px] flex-col items-center justify-center gap-2 border border-dashed border-[#d8dce2] bg-white p-3.5 text-[#5f6875] transition hover:border-[#111111] hover:text-[#111111]"
+    >
+      <Plus size={18} />
+      <span className="text-[13px] font-medium">지원 현황 더보기</span>
     </Link>
   );
 }
@@ -570,7 +542,7 @@ function LoginGateModal({
             </div>
             <h2 className="mt-5 text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#171b20]">로그인이 필요합니다</h2>
             <p className="mt-3 text-[13px] font-medium leading-6 text-[#7a8490]">
-              내 관심 공고, 지원 현황, 다른 달 이동은 회원 기능입니다. 로그인 후 채용 마감 일정을 이어서 확인할 수 있습니다.
+              내 스크랩한 공고, 지원 현황, 다른 달 이동은 회원 기능입니다. 로그인 후 채용 마감 일정을 이어서 확인할 수 있습니다.
             </p>
           </div>
           <button type="button" className="grid h-8 w-8 place-items-center hover:bg-[#f2f3f5]" onClick={onClose} aria-label="닫기">
@@ -694,7 +666,9 @@ export function RecruitmentCalendarClient() {
   }, [filteredJobs]);
 
   const days = useMemo(() => buildMonthDays(visibleMonth.getFullYear(), visibleMonth.getMonth()), [visibleMonth]);
-  const appliedJobs = useMemo(() => availableCalendarJobs.filter((job) => job.isApplied).slice(0, 3), [availableCalendarJobs]);
+  const appliedJobsAll = useMemo(() => availableCalendarJobs.filter((job) => job.isApplied), [availableCalendarJobs]);
+  const appliedJobsCount = appliedJobsAll.length;
+  const appliedJobs = useMemo(() => appliedJobsAll.slice(0, 3), [appliedJobsAll]);
 
   /** 트랙별 저장 파이프라인이 아직 없어 전 트랙의 mock 관심조건을 합쳐 칩으로 보여준다 — 데이터 정비는 별도 범위. */
   const interestConditionChips = useMemo(() => {
@@ -841,7 +815,9 @@ export function RecruitmentCalendarClient() {
     setActiveTab("saved");
   };
 
-  const showRecentJobs = () => {};
+  const showRecentJobs = () => {
+    router.push(sharedRoutes.myPageRecentJobs);
+  };
 
   const goToPreferences = () => {
     if (requireLogin()) return;
@@ -891,6 +867,29 @@ export function RecruitmentCalendarClient() {
               );
             })}
           </section>
+
+          {appliedJobsCount > 0 ? (
+            <section className="mt-3.5 border border-[#e0e5eb] bg-white p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CalendarClock size={17} strokeWidth={2} className="text-gray-700" />
+                    <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d]">다가오는 지원 일정</h2>
+                  </div>
+                  <p className="mt-1.5 text-[13px] font-medium text-[#8b94a2]">지원 중인 공고의 다음 일정을 확인하세요.</p>
+                </div>
+                <Link href="/mypage/applications" className="shrink-0 text-[13px] font-medium text-[#5f6875] hover:text-[#111111]">
+                  전체 지원 현황 보기 &gt;
+                </Link>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4">
+                {appliedJobs.map((job) => (
+                  <ApplicationSummaryCard key={job.id} job={job} />
+                ))}
+                {appliedJobsCount > 3 ? <ApplicationMoreCard /> : null}
+              </div>
+            </section>
+          ) : null}
 
           <div className="jobs-layout mt-3.5">
             <section className="overflow-hidden border border-[#e0e5eb] bg-white">
@@ -1111,7 +1110,7 @@ export function RecruitmentCalendarClient() {
               </div>
             </section>
 
-            <aside className="sticky top-5 grid content-start gap-5">
+            <aside className="grid content-start gap-5">
               <InterestConditionCard
                 chips={interestConditionChips}
                 emptyStateText={
@@ -1142,19 +1141,6 @@ export function RecruitmentCalendarClient() {
                 onRecentClick={showRecentJobs}
                 onPreferenceSettingsClick={goToPreferences}
               />
-
-              <section className="surface p-5">
-                <div className="flex items-center gap-2">
-                  <Pin size={16} className="text-[#596373]" />
-                  <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d]">지원 현황</h2>
-                </div>
-                <p className="mt-2 text-[12px] font-medium leading-5 text-[#8b94a2]">지원한 공고의 다음 일정을 확인합니다.</p>
-                <div className="mt-4 grid gap-2.5">
-                  {appliedJobs.map((job) => (
-                    <ApplicationStatusCard key={job.id} job={job} />
-                  ))}
-                </div>
-              </section>
             </aside>
           </div>
         </div>

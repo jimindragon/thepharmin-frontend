@@ -5,7 +5,7 @@ import { CalendarDays, FileText, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ApplicationStepper } from "@/components/mypage/ApplicationStepper";
+import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { myPageUser } from "@/config/myPageMenu";
@@ -253,7 +253,7 @@ export function MyPageDashboardClient() {
           />
           <BusinessStatCard
             label="스크랩"
-            value="8"
+            value="9"
             unit="건"
             sub="공고 5 · 기관 4 · 마감임박 1"
           />

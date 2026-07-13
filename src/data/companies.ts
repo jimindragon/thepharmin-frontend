@@ -1773,8 +1773,12 @@ export const reviewAccessMock: ReviewAccessState = {
 export const reviewAccessHistoryMock: ReviewAccessHistoryEntry[] = [
   { id: "review-access-history-1", date: "2026.07.13", label: "RA 면접 후기 열람", delta: -1 },
   { id: "review-access-history-2", date: "2026.07.10", label: "면접 후기 승인", delta: 2 },
-  { id: "review-access-history-3", date: "2025.12.20", label: "가입 축하 지급", delta: 2 },
+  { id: "review-access-history-3", date: "2026.06.02", label: "QA 면접 후기 열람", delta: -1 },
+  { id: "review-access-history-4", date: "2025.12.20", label: "가입 축하 지급", delta: 2 },
 ];
 
 /** companyReviews 원본을 참조만 한다 — 기업명·직무 등 표시용 텍스트는 companyProfiles/companyReviews에서 그대로 가져온다. */
-export const myUnlockedInterviewReviewsMock: MyUnlockedInterviewReview[] = [{ reviewId: "review-interview-2", companyId: "thepharmin-pharma" }];
+export const myUnlockedInterviewReviewsMock: MyUnlockedInterviewReview[] = [
+  { reviewId: "review-interview-2", companyId: "thepharmin-pharma" },
+  { reviewId: "review-interview-samsung-1", companyId: "samsung-biologics" },
+];

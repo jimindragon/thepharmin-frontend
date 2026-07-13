@@ -1,3 +1,4 @@
+import { companyLogos } from "@/config/companyImages";
 import type { JobTrack } from "@/types/jobs";
 
 export type ScrapedOrganizationType = "company" | "research" | "hospital" | "pharmacy";
@@ -8,6 +9,7 @@ export interface ScrapedOrganization {
   type: ScrapedOrganizationType;
   logoText: string;
   logoColor: string;
+  logoUrl?: string;
   summary: string;
   activeJobCount: number;
   /** 프로필 페이지가 있으면 해당 경로, 없으면 채용공고 검색으로 연결되는 자연스러운 대체 경로 */
@@ -60,6 +62,7 @@ export const scrapedOrganizations: ScrapedOrganization[] = [
     type: "hospital",
     logoText: "서울대병원",
     logoColor: "#1d4ed8",
+    logoUrl: companyLogos["서울대학교병원"],
     summary: "상급종합병원 · 임상시험센터(CRC·CRA) 채용",
     activeJobCount: 3,
     href: fallbackHref("서울대학교병원", "hospital"),

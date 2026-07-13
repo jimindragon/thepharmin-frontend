@@ -5,14 +5,15 @@
 // companyId로 companies.ts/companyProfiles.ts 엔티티(예: "kist", "seoul-asan-hospital")와 연결되지만,
 // 기관 정보(org)는 여전히 이 파일 안에 인라인으로 보유한다 — org는 공고 폼이 실제로 입력하는 값(job/org 이원 구조)이고
 // Company/CompanyProfile은 그 값을 재사용해 만든 별도의 인사이트 엔티티라, org 자체를 없애지 않는다.
-// 로고 이미지 파일이 없어 logoUrl 대신 jobs.ts의 해당 공고가 가진 logoText/logoColor(이니셜 배지)를
-// org로 그대로 옮겨 담는다.
+// 로고는 jobs.ts의 해당 공고가 가진 logoText/logoColor(이니셜 배지)를 org로 그대로 옮겨 담되,
+// 실제 로고 자산이 있는 기관은 logoUrl도 companyLogos의 실제 키로 명시한다(이니셜은 로딩 실패 시 안전망으로 유지).
 // 폼(공고 등록 + 기관 정보)에 입력 UI가 없는 필드(researchDegree, researchEligibility,
 // overseasSupport, institutionIntro, scope/country/secondment, researchDocuments,
 // researchRecruitType 등)는 이 정본에 포함하지 않는다.
 // 정형 선택지 = id 저장 + 라벨 매핑 상수로 표시 / 자유입력 = 입력 문자열 그대로
 // ============================================================
 
+import { companyLogos } from "@/config/companyImages";
 import { educationOptions, employmentTypeOptions, experienceOptions, workModeOptions } from "@/config/jobFilters/shared";
 import { researchInstitutionTypeOptions, researchStaffScaleOptions } from "@/config/jobFilters/researchFilters";
 
@@ -116,9 +117,11 @@ export interface ResearchJobPosting {
 
 export interface ResearchOrg {
   institutionName: string;
-  /** 로고 이미지 파일이 없어 jobs.ts의 logoText/logoColor(이니셜 배지)를 그대로 옮겨 담는다 */
+  /** jobs.ts의 logoText/logoColor(이니셜 배지)를 그대로 옮겨 담는다. logoUrl 로딩 실패 시 안전망으로 쓰인다 */
   logoText: string;
   logoColor: string;
+  /** 기업정보 폼 업로드 이미지. industryJobDetails.ts의 IndustryOrg.logoUrl과 동일 목적 */
+  logoUrl?: string;
 
   /** institutionTypeLabelMap의 키(=researchInstitutionTypeOptions의 id) */
   institutionTypeId: string;
@@ -213,6 +216,7 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
     institutionName: "한국과학기술연구원(KIST)",
     logoText: "KIST",
     logoColor: "#1e3a5f",
+    logoUrl: companyLogos["한국과학기술연구원(KIST)"],
 
     institutionTypeId: "government_research_institute",
     foundedYear: "1966",
@@ -292,6 +296,7 @@ export const kistNeurophysiologyInternJobDetail: ResearchJobDetail = {
     institutionName: "한국과학기술연구원(KIST)",
     logoText: "KIST",
     logoColor: "#1e3a5f",
+    logoUrl: companyLogos["한국과학기술연구원(KIST)"],
 
     institutionTypeId: "government_research_institute",
     foundedYear: "1966",
@@ -370,6 +375,7 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
     institutionName: "서울아산병원",
     logoText: "서울아산병원",
     logoColor: "#44505e",
+    logoUrl: companyLogos["서울아산병원"],
 
     institutionTypeId: "hospital_research_institute",
     foundedYear: "1989",

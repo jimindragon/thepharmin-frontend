@@ -126,6 +126,7 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                   <JobDetailActionRow
                     orgName={org.institutionName}
                     showLogo
+                    logoUrl={org.logoUrl}
                     saved={saved}
                     onToggleSave={() => setSaved((v) => !v)}
                     interested={interested}
@@ -337,7 +338,7 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
               {/* 기관 정보 */}
               <IconSectionShell id="org" icon={Building2} title="기관 정보">
                 <div className="flex items-start gap-4">
-                  <CompanyLogo name={org.institutionName} logoText="" size="lg" />
+                  <CompanyLogo name={org.institutionName} logoText="" logoUrl={org.logoUrl} size="lg" />
                   <div>
                     <p className="text-[17px] font-bold text-[#1f2733]">{org.institutionName}</p>
                     <p className="mt-2 text-[16px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>
