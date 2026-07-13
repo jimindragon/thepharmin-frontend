@@ -25,6 +25,20 @@ export interface CompanyReviewCardItem {
   applyHalf?: "상반기" | "하반기";
   /** "지원"/"면접" 표현 분기용 — 면접 후기 목록에서만 true로 내려온다 */
   isInterview?: boolean;
+  /** 현재 로그인 사용자가 작성한 후기인지. interviewAccess 게이팅과 무관하게 항상 원문을 노출해야 한다. */
+  isMine?: boolean;
+}
+
+/** 면접 후기 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라
+ * 본문을 잠근다 — interviews 탭(CompanyInterviewsListClient)에서만 전달되고, 그 외 사용처는 undefined다. */
+export interface CompanyReviewInterviewAccess {
+  status: "loggedOut" | "noCredits" | "canUnlock";
+  /** canUnlock일 때 보조 문구("보유 n장")에 쓰는 현재 보유 장수 */
+  credits: number;
+  /** noCredits 상태의 CTA("후기 작성하고 열람권 받기")가 이동할 작성 페이지 링크 */
+  writeHref: string;
+  /** canUnlock 상태의 CTA("1장 사용하고 보기") 클릭 시 상위(부모)가 확인 모달을 띄우도록 위임 */
+  onUnlockRequest: () => void;
 }
 
 interface CompanyReviewCardProps {
@@ -39,6 +53,40 @@ interface CompanyReviewCardProps {
   lockedCtaHref?: string;
   lockedCtaVariant?: "outline" | "gradient";
   onLockedCtaClick?: () => void;
+  /** 면접 후기 열람권 게이팅 — 지정되면 review.content 값과 무관하게 이 상태로 잠금 여부를 결정한다.
+   * 미지정 시(기본) 기존처럼 review.content === null 여부로만 잠금을 판단한다. */
+  interviewAccess?: CompanyReviewInterviewAccess;
+  /** 잠기지 않은 본문 위에 그리는 보조 라벨(예: "열람 완료 · 추가 차감 없음", "내가 작성한 후기"). */
+  accessLabel?: string;
+}
+
+function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
+  switch (access.status) {
+    case "loggedOut":
+      return {
+        message: "로그인 후 열람 가능",
+        secondaryMessage: "가입 시 열람권 2장 지급",
+        ctaLabel: "무료 열람권 받고 보기",
+        ctaHref: "#" as string | undefined,
+        onCtaClick: undefined as (() => void) | undefined,
+      };
+    case "noCredits":
+      return {
+        message: "보유 열람권 0장",
+        secondaryMessage: "후기 작성 시 2장 지급",
+        ctaLabel: "후기 작성하고 열람권 받기",
+        ctaHref: access.writeHref as string | undefined,
+        onCtaClick: undefined as (() => void) | undefined,
+      };
+    case "canUnlock":
+      return {
+        message: "열람권 1장으로 보기",
+        secondaryMessage: `보유 ${access.credits}장`,
+        ctaLabel: "1장 사용하고 보기",
+        ctaHref: undefined as string | undefined,
+        onCtaClick: access.onUnlockRequest as (() => void) | undefined,
+      };
+  }
 }
 
 /** [companyId]/reviews, [companyId]/interviews 전용 페이지(variant="full")와 개요 미리보기(variant="compact")가
@@ -52,9 +100,12 @@ export function CompanyReviewCard({
   lockedCtaHref,
   lockedCtaVariant,
   onLockedCtaClick,
+  interviewAccess,
+  accessLabel,
 }: CompanyReviewCardProps) {
   const compact = variant === "compact";
-  const locked = review.content === null;
+  const locked = interviewAccess ? true : review.content === null;
+  const interviewAccessCopy = interviewAccess ? getInterviewAccessCopy(interviewAccess) : null;
   const [helpful, setHelpful] = useState({ active: false, count: review.helpfulCount });
   const [saved, setSaved] = useState(false);
   const interviewMeta = [review.interviewDifficulty ? `난이도 ${review.interviewDifficulty}` : null, review.interviewFormat ?? null]
@@ -122,20 +173,35 @@ export function CompanyReviewCard({
           </p>
         ) : null
       ) : locked ? (
-        <LockedContent
-          className="mt-3"
-          lines={3}
-          message={lockedMessage ?? ""}
-          ctaLabel={lockedCtaLabel ?? ""}
-          ctaHref={lockedCtaHref}
-          ctaVariant={lockedCtaVariant}
-          onCtaClick={onLockedCtaClick}
-        />
+        interviewAccessCopy ? (
+          <LockedContent
+            className="mt-3"
+            lines={3}
+            message={interviewAccessCopy.message}
+            secondaryMessage={interviewAccessCopy.secondaryMessage}
+            ctaLabel={interviewAccessCopy.ctaLabel}
+            ctaHref={interviewAccessCopy.ctaHref}
+            onCtaClick={interviewAccessCopy.onCtaClick}
+          />
+        ) : (
+          <LockedContent
+            className="mt-3"
+            lines={3}
+            message={lockedMessage ?? ""}
+            ctaLabel={lockedCtaLabel ?? ""}
+            ctaHref={lockedCtaHref}
+            ctaVariant={lockedCtaVariant}
+            onCtaClick={onLockedCtaClick}
+          />
+        )
       ) : (
-        <p className="mt-3 flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]">
-          <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
-          <span>{review.content}</span>
-        </p>
+        <>
+          {accessLabel ? <p className="mt-3 text-[11px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
+          <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
+            <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
+            <span>{review.content}</span>
+          </p>
+        </>
       )}
       {!compact && applyLabel ? <p className="mt-2 text-[11px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       {review.outcome ? (

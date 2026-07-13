@@ -16,6 +16,7 @@ export const myPageMenuGroups: MyPageMenuGroup[] = [
       { label: "대시보드", href: "/mypage/dashboard" },
       { label: "지원 현황", href: "/mypage/applications", badge: 4 },
       { label: "받은 제안", href: "/mypage/offers", badge: 2 },
+      { label: "후기 열람권", href: "/mypage/review-credits" },
     ],
   },
   {

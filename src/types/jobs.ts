@@ -496,12 +496,29 @@ export interface CompanyReview {
   /** 지원(면접)한 시기. writtenAt(작성일)과 별개 개념 — 리뷰·면접후기 둘 다 옵셔널로 받는다 */
   applyYear?: number;
   applyHalf?: "상반기" | "하반기";
+  /** 현재 로그인 사용자가 작성한 후기인지. 열람권 게이팅과 무관하게 항상 원문이 노출된다(면접 후기 전용). */
+  isMine?: boolean;
 }
 
+/** 면접 후기 열람권(credit) 데모 상태의 정본 타입. reviewAccessMock이 이 타입의 초기값 소스다. */
 export interface ReviewAccessState {
   remainingPasses: number;
   canRead: boolean;
   statusText: string;
+}
+
+/** /mypage/review-credits의 열람권 내역 한 줄. delta는 지급이면 양수, 사용이면 음수다. */
+export interface ReviewAccessHistoryEntry {
+  id: string;
+  date: string;
+  label: string;
+  delta: number;
+}
+
+/** /mypage/review-credits의 "내가 열람한 후기" 항목 — 원본은 companyReviews에 있으므로 참조만 들고 있는다. */
+export interface MyUnlockedInterviewReview {
+  reviewId: string;
+  companyId: string;
 }
 
 export interface RecommendedJob {

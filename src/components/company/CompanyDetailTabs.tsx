@@ -29,10 +29,14 @@ export function CompanyDetailTabs({ companyId, profile }: { companyId: string; p
     ...(showNewsTab ? [{ href: `/companies/${companyId}/news`, label: `뉴스 ${profile.news.length}` }] : []),
   ];
 
+  const rootHref = `/companies/${companyId}`;
+
   return (
     <nav className="mt-6 flex h-11 w-fit overflow-x-auto overflow-hidden border border-[#dfe4ea] bg-white" role="tablist" aria-label="기업 정보 메뉴">
       {tabs.map((tab) => {
-        const active = pathname === tab.href;
+        // 기업 개요 탭(루트 href)은 정확 일치만 활성으로 본다 — 하위 경로 매칭을 적용하면 모든 하위 페이지에서 항상 활성이 되어버린다.
+        // 그 외 탭은 목록 페이지(/interviews)뿐 아니라 하위 경로(/interviews/new 등)에서도 활성으로 본다.
+        const active = tab.href === rootHref ? pathname === tab.href : pathname === tab.href || pathname?.startsWith(`${tab.href}/`);
         return (
           <Link
             key={tab.href}

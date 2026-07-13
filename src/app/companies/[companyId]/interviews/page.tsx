@@ -6,21 +6,20 @@ import { getCompanyProfile } from "@/data/companyProfiles";
 
 interface CompanyInterviewsPageProps {
   params: Promise<{ companyId: string }>;
-  searchParams: Promise<{ guest?: string; reviewer?: string }>;
+  searchParams: Promise<{ guest?: string }>;
 }
 
 export const metadata: Metadata = {
   title: "면접 후기 | THE PHARMA Recruit.",
 };
 
-/** 허브의 /companies/interviews와 동일한 guest/reviewer 게이팅 규칙을 개별 기업 페이지에도 그대로 적용한다.
- * KeywordReview 기반 요약 섹션은 제거됐다 — companyReviews 원문 목록 하나가 이 페이지의 전체 내용이다. */
+/** 열람권(credit) 게이팅은 클라이언트(CompanyInterviewsListClient)의 데모 상태가 담당한다 — 이 페이지는
+ * 더 이상 searchParams로 content를 null 처리하지 않고 항상 원문을 내려보낸다. ?guest=true만 클라이언트의
+ * 초기 로그인 상태(데모 진입점)를 정하는 데 쓰이고, 그 밖의 게이팅 파라미터(?reviewer=)는 더 이상 없다. */
 export default async function CompanyInterviewsPage({ params, searchParams }: CompanyInterviewsPageProps) {
   const { companyId } = await params;
   const sp = await searchParams;
   const isLoggedIn = sp.guest !== "true";
-  const hasWrittenInterviewReview = sp.reviewer === "true";
-  const canRead = isLoggedIn && hasWrittenInterviewReview;
 
   const profile = getCompanyProfile(companyId);
 
@@ -30,7 +29,7 @@ export default async function CompanyInterviewsPage({ params, searchParams }: Co
     .map((review) => ({
       id: review.id,
       tags: review.tags,
-      content: canRead ? review.content : null,
+      content: review.content,
       jobRole: review.jobRole,
       authorStatus: review.authorStatus,
       writtenAt: review.writtenAt,
@@ -40,6 +39,7 @@ export default async function CompanyInterviewsPage({ params, searchParams }: Co
       applyYear: review.applyYear,
       applyHalf: review.applyHalf,
       isInterview: true,
+      isMine: review.isMine,
     }));
 
   const body = <CompanyInterviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />;

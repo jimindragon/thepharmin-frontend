@@ -1,5 +1,5 @@
 import { companyExampleImages, companyLogos } from "@/config/companyImages";
-import type { Company, CompanyReview, ReviewAccessState } from "@/types/jobs";
+import type { Company, CompanyReview, MyUnlockedInterviewReview, ReviewAccessHistoryEntry, ReviewAccessState } from "@/types/jobs";
 
 export const companies: Company[] = [
   {
@@ -723,6 +723,7 @@ export const companyReviews: CompanyReview[] = [
     applyYear: 2026,
     applyHalf: "상반기",
     isRead: true,
+    isMine: true,
   },
   {
     id: "review-company-1",
@@ -1766,3 +1767,14 @@ export const reviewAccessMock: ReviewAccessState = {
   canRead: true,
   statusText: "후기 열람권 2장 남음",
 };
+
+/** /mypage/review-credits 전용 mock. STEP 1의 reviewAccessMock(기업 인사이트 데모 상태)과는 독립적이다 —
+ * 이 페이지가 보여주는 보유 열람권 수는 아래 내역의 delta 합계(3장)에서 그대로 파생한다. */
+export const reviewAccessHistoryMock: ReviewAccessHistoryEntry[] = [
+  { id: "review-access-history-1", date: "2026.07.13", label: "RA 면접 후기 열람", delta: -1 },
+  { id: "review-access-history-2", date: "2026.07.10", label: "면접 후기 승인", delta: 2 },
+  { id: "review-access-history-3", date: "2025.12.20", label: "가입 축하 지급", delta: 2 },
+];
+
+/** companyReviews 원본을 참조만 한다 — 기업명·직무 등 표시용 텍스트는 companyProfiles/companyReviews에서 그대로 가져온다. */
+export const myUnlockedInterviewReviewsMock: MyUnlockedInterviewReview[] = [{ reviewId: "review-interview-2", companyId: "thepharmin-pharma" }];

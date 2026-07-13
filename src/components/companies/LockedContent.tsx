@@ -6,6 +6,8 @@ import Link from "next/link";
 
 interface LockedContentProps {
   message: string;
+  /** message 아래에 보조 설명 한 줄을 더 그린다(예: "보유 2장"). 미지정 시 기존과 동일하게 한 줄만 렌더한다. */
+  secondaryMessage?: string;
   ctaLabel: string;
   /** 실제 라우트로 이동해야 할 때 사용(예: 로그인 상태 복구). */
   ctaHref?: string;
@@ -23,7 +25,16 @@ interface LockedContentProps {
  * 않으므로(부모가 잠금 여부에 따라 콘텐츠 자체를 보내지 않음), 흐릿한 텍스트 대신 항상
  * 스켈레톤 placeholder + 흰색 gradient + 자물쇠 아이콘 + 안내문 + CTA만 렌더링한다.
  */
-export function LockedContent({ message, ctaLabel, ctaHref, onCtaClick, lines = 3, className, ctaVariant = "outline" }: LockedContentProps) {
+export function LockedContent({
+  message,
+  secondaryMessage,
+  ctaLabel,
+  ctaHref,
+  onCtaClick,
+  lines = 3,
+  className,
+  ctaVariant = "outline",
+}: LockedContentProps) {
   const ctaClassName =
     ctaVariant === "gradient"
       ? "mt-1 inline-flex h-9 items-center px-4 text-[12px] font-medium text-white transition hover:brightness-110 active:brightness-90"
@@ -53,6 +64,7 @@ export function LockedContent({ message, ctaLabel, ctaHref, onCtaClick, lines = 
       <div className="relative z-10 flex flex-col items-center gap-2 px-4 pb-5 pt-9 text-center">
         <Lock size={17} className="text-[#8a95a5]" aria-hidden="true" />
         <p className="max-w-[260px] text-[13px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
+        {secondaryMessage ? <p className="max-w-[260px] text-[11.5px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
         {ctaHref ? (
           <Link href={ctaHref} className={ctaClassName} style={ctaStyle}>
             {ctaLabel}

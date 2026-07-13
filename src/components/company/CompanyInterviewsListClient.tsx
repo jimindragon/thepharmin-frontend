@@ -1,8 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
-import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
+import { useState } from "react";
+import clsx from "clsx";
+import { CompanyReviewCard, type CompanyReviewCardItem, type CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
+import { InterviewAccessStatusCard, type InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
+import { InterviewUnlockConfirmModal } from "@/components/company/InterviewUnlockConfirmModal";
+import { reviewAccessMock } from "@/data/companies";
 
 interface CompanyInterviewsListClientProps {
   companyId: string;
@@ -10,33 +13,87 @@ interface CompanyInterviewsListClientProps {
   isLoggedIn: boolean;
 }
 
-/** 허브의 InterviewsFeedClient와 동일한 guest/reviewer 게이팅 CTA 동작을 개별 기업 페이지에서도 재현한다 */
+const DEMO_OPTIONS: { value: InterviewAccessUserState; label: string }[] = [
+  { value: "loggedOut", label: "비로그인" },
+  { value: "noCredits", label: "열람권 0장" },
+  { value: "hasCredits", label: "열람권 2장" },
+];
+
+/** 열람권(credit) 데모 상태를 이 컴포넌트가 관리한다 — 실제 저장/인증은 없는 클라이언트 전용 목업이다.
+ * userState는 데모 토글이 선택한 프리셋이고, credits는 열람에 따라 실시간으로 줄어든다. 카드별 잠금 판정은
+ * userState가 loggedOut이 아닌 한 credits(0 여부)로 계산해 "열람 중 0장 도달" 전환(STEP 10)을 자연스럽게 반영한다. */
 export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: CompanyInterviewsListClientProps) {
-  const router = useRouter();
   const writeHref = `/companies/${companyId}/interviews/new`;
 
-  const handleRequestWriteReview = () => {
-    router.push(writeHref);
+  const [userState, setUserState] = useState<InterviewAccessUserState>(isLoggedIn ? "hasCredits" : "loggedOut");
+  const [credits, setCredits] = useState(isLoggedIn ? reviewAccessMock.remainingPasses : 0);
+  const [unlockedIds, setUnlockedIds] = useState<string[]>([]);
+  const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
+
+  const displayState: InterviewAccessUserState = userState === "loggedOut" ? "loggedOut" : credits > 0 ? "hasCredits" : "noCredits";
+
+  const handleDemoChange = (next: InterviewAccessUserState) => {
+    setUserState(next);
+    setCredits(next === "hasCredits" ? reviewAccessMock.remainingPasses : 0);
+    setUnlockedIds([]);
+    setPendingUnlockId(null);
   };
 
+  const handleConfirmUnlock = () => {
+    if (!pendingUnlockId) return;
+    setCredits((prev) => Math.max(prev - 1, 0));
+    setUnlockedIds((prev) => [...prev, pendingUnlockId]);
+    setPendingUnlockId(null);
+  };
+
+  const pendingItem = items.find((item) => item.id === pendingUnlockId);
+
   return (
-    <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
-      <CompanyReviewWriteCard companyId={companyId} reviewType="interview" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
-      {items.map((item) => (
-        <CompanyReviewCard
-          key={item.id}
-          review={item}
-          lockedMessage={
-            isLoggedIn
-              ? "면접 후기를 작성하면 다른 사용자의 상세 후기를 확인할 수 있습니다."
-              : "로그인 후 면접 후기 열람 조건을 확인할 수 있습니다."
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2 border border-dashed border-[#c7cdd6] bg-[#fafbfc] px-3 py-2">
+        <span className="text-[11px] font-medium text-[#9aa3af]">데모: 상태 전환</span>
+        <div className="flex items-center gap-1.5">
+          {DEMO_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleDemoChange(option.value)}
+              aria-pressed={userState === option.value}
+              className={clsx(
+                "h-6 border border-dashed px-2 text-[10.5px] font-medium transition",
+                userState === option.value ? "border-[#111111] text-[#111111]" : "border-[#c7cdd6] text-[#8a95a5] hover:border-[#8a95a5]",
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <InterviewAccessStatusCard userState={displayState} credits={credits} writeHref={writeHref} />
+
+      <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+        {items.map((item) => {
+          const unlocked = unlockedIds.includes(item.id);
+          const accessLabel = item.isMine ? "내가 작성한 후기" : unlocked ? "열람 완료 · 추가 차감 없음" : undefined;
+
+          let interviewAccess: CompanyReviewInterviewAccess | undefined;
+          if (!item.isMine && !unlocked) {
+            interviewAccess = {
+              status: displayState === "loggedOut" ? "loggedOut" : displayState === "noCredits" ? "noCredits" : "canUnlock",
+              credits,
+              writeHref,
+              onUnlockRequest: () => setPendingUnlockId(item.id),
+            };
           }
-          lockedCtaLabel={isLoggedIn ? "면접 후기 작성하기" : "로그인하기"}
-          lockedCtaHref={isLoggedIn ? undefined : "/companies"}
-          lockedCtaVariant={isLoggedIn ? "gradient" : "outline"}
-          onLockedCtaClick={isLoggedIn ? handleRequestWriteReview : undefined}
-        />
-      ))}
+
+          return <CompanyReviewCard key={item.id} review={item} accessLabel={accessLabel} interviewAccess={interviewAccess} />;
+        })}
+      </div>
+
+      {pendingItem ? (
+        <InterviewUnlockConfirmModal credits={credits} onConfirm={handleConfirmUnlock} onCancel={() => setPendingUnlockId(null)} />
+      ) : null}
     </div>
   );
 }

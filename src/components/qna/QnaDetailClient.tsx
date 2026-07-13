@@ -11,7 +11,6 @@ import {
   PopularTagsPanel,
   QnaAuthorAvatar,
   QnaAuthorLabelBadge,
-  QnaAvatar,
   QnaNotice,
   QnaOperationPrinciplePanel,
   showQnaNotice,
@@ -136,22 +135,45 @@ function CommentRow({
   );
 }
 
-function CommentComposer({ isLoggedIn, onSubmit }: { isLoggedIn: boolean; onSubmit: () => void }) {
+/** 글 작성 폼(QnaComposer)의 ComposerAvatar와 동일 패턴 — 익명은 항상 단색, 실명은 로테이션 톤 */
+function CommentComposerAvatar({ anonymous }: { anonymous: boolean }) {
+  return anonymous ? (
+    <QnaAuthorAvatar id="qna-comment-composer-anonymous" nickname="익명" size={32} />
+  ) : (
+    <QnaAuthorAvatar id={myPageUser.name} nickname={myPageUser.name} size={32} />
+  );
+}
+
+function CommentComposer({ isLoggedIn, placeholder, onSubmit }: { isLoggedIn: boolean; placeholder: string; onSubmit: () => void }) {
   const [draft, setDraft] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(true);
 
   return (
     <div className="border border-[#e5e9ef] bg-white p-4">
-      <div className="flex gap-3">
-        <QnaAvatar authorType="anonymous" initial={myPageUser.name.slice(0, 1)} size={32} />
-        <textarea
-          rows={3}
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder={isLoggedIn ? "댓글을 남겨보세요" : "로그인 후 댓글을 남길 수 있습니다"}
-          disabled={!isLoggedIn}
-          className="flex-1 resize-none bg-transparent text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] disabled:cursor-not-allowed"
-        />
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <CommentComposerAvatar anonymous={isAnonymous} />
+          <span className="truncate text-[13px] font-bold text-[#171d26]">{isAnonymous ? "익명" : `${myPageUser.name}님`}</span>
+        </div>
+        <label className="flex shrink-0 items-center gap-1.5 text-[12px] font-medium text-[#596373]">
+          <input
+            type="checkbox"
+            checked={isAnonymous}
+            onChange={(event) => setIsAnonymous(event.target.checked)}
+            className="h-3.5 w-3.5 accent-[#111111]"
+          />
+          익명으로 작성
+        </label>
       </div>
+
+      <textarea
+        rows={3}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        placeholder={isLoggedIn ? placeholder : "로그인 후 이용할 수 있습니다."}
+        disabled={!isLoggedIn}
+        className="mt-3 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] disabled:cursor-not-allowed"
+      />
       <div className="mt-3 flex items-center justify-end border-t border-[#edf1f5] pt-3">
         <Button
           type="button"
@@ -178,6 +200,7 @@ interface QnaDetailClientProps {
 export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: QnaDetailClientProps) {
   const [commentSort, setCommentSort] = useState<CommentSortOption>("인기순");
   const [notice, setNotice] = useState("");
+  const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
 
   const relatedEntries = useMemo(() => getRelatedQnaEntries(post), [post]);
   const totalCommentCount = useMemo(
@@ -262,7 +285,11 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
               </div>
 
               <div className="mt-4">
-                <CommentComposer isLoggedIn={isLoggedIn} onSubmit={() => notify("댓글 등록 기능은 추후 연결될 예정입니다.")} />
+                <CommentComposer
+                  isLoggedIn={isLoggedIn}
+                  placeholder="댓글을 남겨보세요"
+                  onSubmit={() => notify("댓글 등록 기능은 추후 연결될 예정입니다.")}
+                />
               </div>
 
               {sortedComments.length ? (
@@ -279,9 +306,9 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                         likeCount={comment.likeCount}
                         body={comment.body}
                         onReact={() => notify("공감 기능은 추후 연결될 예정입니다.")}
-                        onReply={() => notify("답글 작성 화면은 추후 연결될 예정입니다.")}
+                        onReply={() => setReplyTargetId((current) => (current === comment.id ? null : comment.id))}
                       />
-                      {comment.replies.length ? (
+                      {comment.replies.length || replyTargetId === comment.id ? (
                         <div className="mt-4 ml-11 space-y-4 border-l border-[#edf1f5] pl-4">
                           {comment.replies.map((reply: QnaReply) => (
                             <CommentRow
@@ -297,6 +324,16 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                               onReact={() => notify("공감 기능은 추후 연결될 예정입니다.")}
                             />
                           ))}
+                          {replyTargetId === comment.id ? (
+                            <CommentComposer
+                              isLoggedIn={isLoggedIn}
+                              placeholder="답글을 입력해 주세요"
+                              onSubmit={() => {
+                                notify("답글 작성 기능은 추후 연결될 예정입니다.");
+                                setReplyTargetId(null);
+                              }}
+                            />
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
