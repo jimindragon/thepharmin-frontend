@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
@@ -86,11 +86,13 @@ function ChipGroup({
   const id = labelId ?? internalId;
   return (
     <div>
-      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-        {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2">
+          {label}
+          {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
+          {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+        </FieldLabel>
+      </div>
       <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const optId = chipOptionId(opt);
@@ -133,10 +135,11 @@ function SegControl({
   const id = useId();
   return (
     <div>
-      <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2" required={required}>
+          {label}
+        </FieldLabel>
+      </div>
       <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
         {options.map((opt) => (
           <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
@@ -207,11 +210,11 @@ function TwoTierPicker({
 
   return (
     <div>
-      <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
+      <FieldLabel className="block mb-2">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
         {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
-      </p>
+      </FieldLabel>
       <div className="grid grid-cols-[180px_1fr] border border-[#d8e0e8] max-[640px]:grid-cols-1">
         <div
           role="radiogroup"
@@ -274,9 +277,7 @@ function TwoTierPicker({
 
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
-const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
-const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -444,7 +445,7 @@ export function HospitalJobPostingForm() {
         <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
-            <label htmlFor="h-title" className={LBL}>공고 제목{REQ}</label>
+            <FieldLabel htmlFor="h-title" className="block mb-1.5" required>공고 제목</FieldLabel>
             <input id="h-title" value={title} onChange={(e) => setTitle(e.target.value)}
               className={IN} placeholder="약제부 병원약사 채용" aria-required="true" />
             <FieldError message={errors.title} />
@@ -470,7 +471,7 @@ export function HospitalJobPostingForm() {
           {/* 모집인원 + 고용형태 */}
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div ref={setRef("headcount")}>
-              <label htmlFor="h-headcount" className={LBL}>모집인원{REQ}</label>
+              <FieldLabel htmlFor="h-headcount" className="block mb-1.5" required>모집인원</FieldLabel>
               <select id="h-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
                 className={SEL} aria-required="true">
                 <option value="" disabled>채용 예정 인원을 선택해 주세요</option>
@@ -482,7 +483,7 @@ export function HospitalJobPostingForm() {
               <FieldError message={errors.headcount} />
             </div>
             <div>
-              <label htmlFor="h-emptype" className={LBL}>고용형태{REQ}</label>
+              <FieldLabel htmlFor="h-emptype" className="block mb-1.5" required>고용형태</FieldLabel>
               <select id="h-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
                 {employmentTypeOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -494,7 +495,7 @@ export function HospitalJobPostingForm() {
           {/* 경력 + 학력 */}
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="h-career" className={LBL}>경력{REQ}</label>
+              <FieldLabel htmlFor="h-career" className="block mb-1.5" required>경력</FieldLabel>
               <select id="h-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
                 {experienceOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -502,10 +503,11 @@ export function HospitalJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="h-edu" className={LBL}>
-                학력{REQ}
+              <FieldLabel htmlFor="h-edu" className="block mb-1.5">
+                학력
+                <span className="ml-1 text-danger" aria-hidden>*</span>
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
-              </label>
+              </FieldLabel>
               <select id="h-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -528,10 +530,11 @@ export function HospitalJobPostingForm() {
         {/* ── §2 모집 내용 ──────────────────────────────────────────────────── */}
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="h-summary" className={LBL}>
-              공고 요약{REQ}
+            <FieldLabel htmlFor="h-summary" className="block mb-1.5">
+              공고 요약
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
-            </label>
+            </FieldLabel>
             <input id="h-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
               placeholder="조제 및 의약품 관리를 담당해주실 약사님을 모집합니다."
@@ -542,10 +545,11 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("responsibilities")}>
-            <label htmlFor="h-duties" className={LBL}>
-              주요 업무{REQ}
+            <FieldLabel htmlFor="h-duties" className="block mb-1.5">
+              주요 업무
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="h-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"입원·외래 처방 검토 및 조제\n복약상담 및 투약 설명\n의약품 재고·마약류 관리"}
@@ -554,10 +558,11 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("requirements")}>
-            <label htmlFor="h-reqQual" className={LBL}>
-              필수 자격요건{REQ}
+            <FieldLabel htmlFor="h-reqQual" className="block mb-1.5">
+              필수 자격요건
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="h-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="약사 면허 소지자" aria-required="true" />
@@ -565,20 +570,20 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="h-preferred" className={LBL}>
+            <FieldLabel htmlFor="h-preferred" className="block mb-1.5">
               우대사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="h-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"병원 약제부 근무 경험 보유자\n전문약사 자격 또는 관련 교육 이수자"} />
           </div>
 
-          <div>
-            <label htmlFor="h-additionalNotes" className={LBL}>
+          <div className="mt-5">
+            <FieldLabel htmlFor="h-additionalNotes" className="block mb-1.5">
               기타 참고사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
-            </label>
+            </FieldLabel>
             <textarea id="h-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
@@ -599,7 +604,7 @@ export function HospitalJobPostingForm() {
 
           <div className="mb-5" ref={setRef("address")}>
             <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="h-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+              <FieldLabel htmlFor="h-address" required>근무지</FieldLabel>
               <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                 <input type="checkbox" checked={sameAsInstitutionAddress}
                   onChange={(e) => toggleSameAsInstitutionAddress(e.target.checked)}
@@ -627,7 +632,7 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="h-workcond" className={LBL}>근무조건 상세</label>
+            <FieldLabel htmlFor="h-workcond" className="block mb-1.5">근무조건 상세</FieldLabel>
             <textarea id="h-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="당직 여부, 휴일 수당 등 구체적인 근무 조건을 적어주세요." />
@@ -637,11 +642,11 @@ export function HospitalJobPostingForm() {
         {/* ── §4 검색 노출 설정 ─────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
           <div className="mb-6">
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.</span>
-            </p>
+            </FieldLabel>
 
             <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
               {HOSPITAL_KEYWORDS.map((kw) => {
@@ -665,10 +670,10 @@ export function HospitalJobPostingForm() {
 
             <div className="my-4 border-t border-[#f0f2f5]" />
 
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               기타 키워드 직접 추가
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -707,10 +712,12 @@ export function HospitalJobPostingForm() {
           </div>
 
           <div>
-            <p className={LBL} id="h-img-lbl">
-              대표 이미지
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
-            </p>
+            <div id="h-img-lbl">
+              <FieldLabel className="block mb-1.5">
+                대표 이미지
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+              </FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="h-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -749,9 +756,9 @@ export function HospitalJobPostingForm() {
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <p id="h-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
-              지원 방식{REQ}
-            </p>
+            <div id="h-apply-method-label">
+              <FieldLabel className="block mb-2" required>지원 방식</FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="h-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
               {(
                 [
@@ -793,9 +800,9 @@ export function HospitalJobPostingForm() {
                 </InlineNote>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="h-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="h-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -807,7 +814,7 @@ export function HospitalJobPostingForm() {
           ) : applyMethod === "url" ? (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyUrl")}>
-                <label htmlFor="h-apply-url" className={LBL}>채용페이지 URL{REQ}</label>
+                <FieldLabel htmlFor="h-apply-url" className="block mb-1.5" required>채용페이지 URL</FieldLabel>
                 <input id="h-apply-url" type="url"
                   value={applyUrl} onChange={(e) => setApplyUrl(e.target.value)}
                   className={IN}
@@ -816,9 +823,9 @@ export function HospitalJobPostingForm() {
                 <FieldError message={errors.applyUrl} />
               </div>
               <div ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="h-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="h-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -830,7 +837,7 @@ export function HospitalJobPostingForm() {
           ) : (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyEmail")}>
-                <label htmlFor="h-apply-email" className={LBL}>지원 이메일 주소{REQ}</label>
+                <FieldLabel htmlFor="h-apply-email" className="block mb-1.5" required>지원 이메일 주소</FieldLabel>
                 <input id="h-apply-email" type="email"
                   value={applyEmail} onChange={(e) => setApplyEmail(e.target.value)}
                   className={IN}
@@ -839,9 +846,9 @@ export function HospitalJobPostingForm() {
                 <FieldError message={errors.applyEmail} />
               </div>
               <div ref={setRef("deadline")}>
-                <label htmlFor="h-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="h-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="h-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}

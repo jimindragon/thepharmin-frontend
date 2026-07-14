@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
@@ -92,11 +92,13 @@ function ChipGroup({
   const id = labelId ?? internalId;
   return (
     <div>
-      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-        {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2">
+          {label}
+          {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
+          {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+        </FieldLabel>
+      </div>
       <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const on = selected.has(opt);
@@ -137,10 +139,11 @@ function SegControl({
   const id = useId();
   return (
     <div>
-      <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2" required={required}>
+          {label}
+        </FieldLabel>
+      </div>
       <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
         {options.map((opt) => (
           <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
@@ -211,11 +214,11 @@ function TwoTierPicker({
 
   return (
     <div>
-      <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
+      <FieldLabel className="block mb-2">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
         {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
-      </p>
+      </FieldLabel>
       <div className="grid grid-cols-[180px_1fr] border border-[#d8e0e8] max-[640px]:grid-cols-1">
         <div
           role="radiogroup"
@@ -280,11 +283,7 @@ const IN =
   "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
 const TA = `${IN} h-auto resize-y py-2.5 leading-relaxed`;
-const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
-const REQ = (
-  <span className="ml-1 text-danger" aria-hidden>*</span>
-);
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -477,7 +476,7 @@ export function ResearchJobPostingForm() {
         <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
-            <label htmlFor="r-title" className={LBL}>공고 제목{REQ}</label>
+            <FieldLabel htmlFor="r-title" className="block mb-1.5" required>공고 제목</FieldLabel>
             <input id="r-title" value={title} onChange={(e) => setTitle(e.target.value)}
               className={IN} placeholder="대장암 오가노이드 연구 박사후연구원 모집" aria-required="true" />
             <FieldError message={errors.title} />
@@ -520,7 +519,7 @@ export function ResearchJobPostingForm() {
           {/* 모집인원 + 고용형태 */}
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div ref={setRef("headcount")}>
-              <label htmlFor="r-headcount" className={LBL}>모집인원{REQ}</label>
+              <FieldLabel htmlFor="r-headcount" className="block mb-1.5" required>모집인원</FieldLabel>
               <select id="r-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
                 className={SEL} aria-required="true">
                 <option value="" disabled>채용 예정 인원을 선택해 주세요</option>
@@ -532,7 +531,7 @@ export function ResearchJobPostingForm() {
               <FieldError message={errors.headcount} />
             </div>
             <div>
-              <label htmlFor="r-emptype" className={LBL}>고용형태{REQ}</label>
+              <FieldLabel htmlFor="r-emptype" className="block mb-1.5" required>고용형태</FieldLabel>
               <select id="r-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
                 {employmentTypeOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -544,7 +543,7 @@ export function ResearchJobPostingForm() {
           {/* 경력 + 학력 */}
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="r-career" className={LBL}>경력{REQ}</label>
+              <FieldLabel htmlFor="r-career" className="block mb-1.5" required>경력</FieldLabel>
               <select id="r-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
                 {experienceOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -552,10 +551,11 @@ export function ResearchJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="r-edu" className={LBL}>
-                학력{REQ}
+              <FieldLabel htmlFor="r-edu" className="block mb-1.5">
+                학력
+                <span className="ml-1 text-danger" aria-hidden>*</span>
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
-              </label>
+              </FieldLabel>
               <select id="r-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -578,7 +578,7 @@ export function ResearchJobPostingForm() {
         {/* ── §2 연구실 정보 ────────────────────────────────────────────────── */}
         <SectionCard title="연구실 정보">
           <div className="mb-5" ref={setRef("labInstitutionType")}>
-            <label htmlFor="r-lab-type" className={LBL}>기관 분류{REQ}</label>
+            <FieldLabel htmlFor="r-lab-type" className="block mb-1.5" required>기관 분류</FieldLabel>
             <select id="r-lab-type" value={labInstitutionType} onChange={(e) => setLabInstitutionType(e.target.value)}
               className={SEL} aria-required="true">
               <option value="" disabled>기관 유형을 선택해 주세요</option>
@@ -590,17 +590,17 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div className="mb-5">
-            <label htmlFor="r-lab-name" className={LBL}>
+            <FieldLabel htmlFor="r-lab-name" className="block mb-1.5">
               소속 연구실·부서
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
-            </label>
+            </FieldLabel>
             <p className={`${HINT} mb-2`}>실제 근무하게 될 연구실, 진료과, 센터명이 있다면 입력해 주세요.</p>
             <input id="r-lab-name" value={labName} onChange={(e) => setLabName(e.target.value)}
               placeholder="예: 대장항문외과 연구팀, 신경과학연구실, ○○연구센터" className={IN} />
           </div>
 
           <div className="mb-5" ref={setRef("labPi")}>
-            <label htmlFor="r-lab-pi" className={LBL}>PI·책임자명{REQ}</label>
+            <FieldLabel htmlFor="r-lab-pi" className="block mb-1.5" required>PI·책임자명</FieldLabel>
             <input id="r-lab-pi" value={labPi} onChange={(e) => setLabPi(e.target.value)}
               placeholder="예: 홍길동 교수" className={IN} aria-required="true" />
             <FieldError message={errors.labPi} />
@@ -608,7 +608,7 @@ export function ResearchJobPostingForm() {
 
           <div className="mb-5" ref={setRef("labAddress")}>
             <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="r-lab-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+              <FieldLabel htmlFor="r-lab-address" required>근무지</FieldLabel>
               <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                 <input type="checkbox" checked={sameAsInstitutionAddress}
                   onChange={(e) => toggleSameAsInstitutionAddress(e.target.checked)}
@@ -626,28 +626,28 @@ export function ResearchJobPostingForm() {
 
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="r-lab-home" className={LBL}>
+              <FieldLabel htmlFor="r-lab-home" className="block mb-1.5">
                 홈페이지 URL
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
-              </label>
+              </FieldLabel>
               <input id="r-lab-home" value={labHomepage} onChange={(e) => setLabHomepage(e.target.value)}
                 placeholder="예: https://..." className={IN} />
             </div>
             <div>
-              <label htmlFor="r-lab-career" className={LBL}>
+              <FieldLabel htmlFor="r-lab-career" className="block mb-1.5">
                 채용 웹페이지 URL
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
-              </label>
+              </FieldLabel>
               <input id="r-lab-career" value={labCareerPage} onChange={(e) => setLabCareerPage(e.target.value)}
                 placeholder="예: https://..." className={IN} />
             </div>
           </div>
 
           <div>
-            <label htmlFor="r-lab-intro" className={LBL}>
+            <FieldLabel htmlFor="r-lab-intro" className="block mb-1.5">
               연구실 소개
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">선택 사항</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-lab-intro" value={labIntro} onChange={(e) => setLabIntro(e.target.value)} rows={3}
               placeholder="연구실 연구 분야와 특징을 간단히 소개해 주세요."
               className={TA} />
@@ -657,10 +657,11 @@ export function ResearchJobPostingForm() {
         {/* ── §3 모집 내용 ──────────────────────────────────────────────────── */}
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="r-summary" className={LBL}>
-              공고 요약{REQ}
+            <FieldLabel htmlFor="r-summary" className="block mb-1.5">
+              공고 요약
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
-            </label>
+            </FieldLabel>
             <input id="r-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
               placeholder="대장암 오가노이드와 환자유래 모델을 활용한 중개연구를 함께할 연구원을 찾습니다."
@@ -671,10 +672,11 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("researchTopics")}>
-            <label htmlFor="r-topics" className={LBL}>
-              연구 주제{REQ}
+            <FieldLabel htmlFor="r-topics" className="block mb-1.5">
+              연구 주제
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">이 연구실에서 수행하는 연구를 소개해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-topics" value={researchTopics} onChange={(e) => setResearchTopics(e.target.value)} rows={4}
               placeholder={"대장암 오가노이드 기반 약물 반응성 연구\nPDX 모델을 이용한 종양 미세환경 분석\n단일세포 전사체 기반 종양 이질성 규명"}
               className={TA} aria-required="true" />
@@ -682,10 +684,11 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("responsibilities")}>
-            <label htmlFor="r-duties" className={LBL}>
-              주요 업무{REQ}
+            <FieldLabel htmlFor="r-duties" className="block mb-1.5">
+              주요 업무
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
               placeholder={"환자유래 오가노이드 모델 수립 및 유지\n약물 반응성 평가 및 데이터 정리\n분자생물학 실험 수행 및 결과 분석\n연구 결과 정리, 논문화 및 학회 발표 지원"}
               className={TA} aria-required="true" />
@@ -693,10 +696,11 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("requirements")}>
-            <label htmlFor="r-req" className={LBL}>
-              필수 자격요건{REQ}
+            <FieldLabel htmlFor="r-req" className="block mb-1.5">
+              필수 자격요건
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-req" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
               placeholder={"약학, 생명과학, 화학, 생명공학 등 관련 전공 학사 이상\n신입 또는 관련 연구 경험 보유자"}
               className={TA} aria-required="true" />
@@ -704,20 +708,20 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="r-pref" className={LBL}>
+            <FieldLabel htmlFor="r-pref" className="block mb-1.5">
               우대사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-pref" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={5}
               placeholder={"오가노이드, 세포배양 또는 동물실험 경험 보유자\nNGS, FACS, IHC 등 연구기술 활용 경험\n영어 논문 작성 또는 학회 발표 경험\nR, Python 등 데이터 분석 경험"}
               className={TA} />
           </div>
 
-          <div>
-            <label htmlFor="r-additionalNotes" className={LBL}>
+          <div className="mt-5">
+            <FieldLabel htmlFor="r-additionalNotes" className="block mb-1.5">
               기타 참고사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
-            </label>
+            </FieldLabel>
             <textarea id="r-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
               className={TA}
               placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
@@ -727,7 +731,7 @@ export function ResearchJobPostingForm() {
         {/* ── §4 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard title="근무조건">
           <div className="mb-5" ref={setRef("workMode")}>
-            <label htmlFor="r-workmode" className={LBL}>근무 방식{REQ}</label>
+            <FieldLabel htmlFor="r-workmode" className="block mb-1.5" required>근무 방식</FieldLabel>
             <select id="r-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
               className={SEL} aria-required="true">
               <option value="" disabled>근무 방식을 선택해 주세요</option>
@@ -744,7 +748,7 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("contractPeriod")}>
-            <label htmlFor="r-contract" className={LBL}>계약 기간{REQ}</label>
+            <FieldLabel htmlFor="r-contract" className="block mb-1.5" required>계약 기간</FieldLabel>
             <select id="r-contract" value={contractPeriod} onChange={(e) => setContractPeriod(e.target.value)}
               className={SEL} aria-required="true">
               <option value="" disabled>계약 기간을 선택해 주세요</option>
@@ -760,7 +764,7 @@ export function ResearchJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="r-workcond" className={LBL}>근무조건 상세</label>
+            <FieldLabel htmlFor="r-workcond" className="block mb-1.5">근무조건 상세</FieldLabel>
             <textarea id="r-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={TA}
               placeholder="예: 연구 과제 일정에 따라 근무시간을 조정할 수 있으며, 학회·세미나 참석과 연구활동을 지원합니다." />
@@ -770,7 +774,7 @@ export function ResearchJobPostingForm() {
         {/* ── §5 검색 노출 설정 ─────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
           <div className="mb-6">
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">
@@ -778,7 +782,7 @@ export function ResearchJobPostingForm() {
                   ? "선택한 연구 분야에 맞춰 자주 쓰이는 키워드를 추천합니다."
                   : "연구 분야를 먼저 선택하면 관련 키워드를 추천해 드립니다."}
               </span>
-            </p>
+            </FieldLabel>
 
             {/* Recommended pool — changes with §1 연구 분야 selection */}
             {recommendedKeywords.length > 0 ? (
@@ -808,10 +812,10 @@ export function ResearchJobPostingForm() {
             <div className="my-4 border-t border-[#f0f2f5]" />
 
             {/* Custom keyword input */}
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               기타 키워드 직접 추가
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -852,10 +856,12 @@ export function ResearchJobPostingForm() {
 
           {/* 대표 이미지 */}
           <div>
-            <p className={LBL} id="r-img-lbl">
-              대표 이미지
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
-            </p>
+            <div id="r-img-lbl">
+              <FieldLabel className="block mb-1.5">
+                대표 이미지
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+              </FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="r-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -894,9 +900,9 @@ export function ResearchJobPostingForm() {
         {/* ── §6 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <p id="r-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
-              지원 방식{REQ}
-            </p>
+            <div id="r-apply-method-label">
+              <FieldLabel className="block mb-2" required>지원 방식</FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="r-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
               {(
                 [
@@ -938,9 +944,9 @@ export function ResearchJobPostingForm() {
                 </InlineNote>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="r-deadline" className={LBL}>
-                  {earlyClose ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="r-deadline" className="block mb-1.5" required={!earlyClose}>
+                  {earlyClose ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="r-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={earlyClose}
@@ -953,7 +959,7 @@ export function ResearchJobPostingForm() {
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               {applyMethod === "url" ? (
                 <div ref={setRef("applyUrl")}>
-                  <label htmlFor="r-apply-url" className={LBL}>채용페이지 URL{REQ}</label>
+                  <FieldLabel htmlFor="r-apply-url" className="block mb-1.5" required>채용페이지 URL</FieldLabel>
                   <input id="r-apply-url" type="url" value={applyUrl} onChange={(e) => setApplyUrl(e.target.value)}
                     className={IN}
                     placeholder="예: https://lab.hospital.or.kr/careers/..."
@@ -962,7 +968,7 @@ export function ResearchJobPostingForm() {
                 </div>
               ) : (
                 <div ref={setRef("applyEmail")}>
-                  <label htmlFor="r-apply-email" className={LBL}>지원 이메일 주소{REQ}</label>
+                  <FieldLabel htmlFor="r-apply-email" className="block mb-1.5" required>지원 이메일 주소</FieldLabel>
                   <input id="r-apply-email" type="email" value={applyEmail} onChange={(e) => setApplyEmail(e.target.value)}
                     className={IN}
                     placeholder="예: recruit@lab.or.kr"
@@ -972,9 +978,9 @@ export function ResearchJobPostingForm() {
               )}
 
               <div ref={setRef("deadline")}>
-                <label htmlFor="r-deadline" className={LBL}>
-                  {earlyClose ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="r-deadline" className="block mb-1.5" required={!earlyClose}>
+                  {earlyClose ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="r-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={earlyClose}

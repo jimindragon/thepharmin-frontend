@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
@@ -93,12 +93,14 @@ function ChipGroup({
   const id = labelId ?? internalId;
   return (
     <div>
-      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-        {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
-        {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2">
+          {label}
+          {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
+          {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+          {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
+        </FieldLabel>
+      </div>
       <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const optId = chipOptionId(opt);
@@ -140,10 +142,11 @@ function SegControl({
   const id = useId();
   return (
     <div>
-      <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2" required={required}>
+          {label}
+        </FieldLabel>
+      </div>
       <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
         {options.map((opt) => (
           <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
@@ -214,11 +217,11 @@ function TwoTierPicker({
 
   return (
     <div>
-      <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
+      <FieldLabel className="block mb-2">
         {label}
         {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
         {hint && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{hint}</span>}
-      </p>
+      </FieldLabel>
       <div className="grid grid-cols-[180px_1fr] border border-[#d8e0e8] max-[640px]:grid-cols-1">
         <div
           role="radiogroup"
@@ -281,9 +284,7 @@ function TwoTierPicker({
 
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
-const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
-const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -492,7 +493,7 @@ export function PharmacyJobPostingForm() {
         <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
-            <label htmlFor="p-title" className={LBL}>공고 제목{REQ}</label>
+            <FieldLabel htmlFor="p-title" className="block mb-1.5" required>공고 제목</FieldLabel>
             <input id="p-title" value={title} onChange={(e) => setTitle(e.target.value)}
               className={IN} placeholder="문전약국 풀타임 약사 모집" aria-required="true" />
             <FieldError message={errors.title} />
@@ -525,7 +526,7 @@ export function PharmacyJobPostingForm() {
           {/* 고용형태 + 모집인원 */}
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="p-emptype" className={LBL}>고용형태{REQ}</label>
+              <FieldLabel htmlFor="p-emptype" className="block mb-1.5" required>고용형태</FieldLabel>
               <select id="p-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
                 {employmentTypeOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -533,7 +534,7 @@ export function PharmacyJobPostingForm() {
               </select>
             </div>
             <div ref={setRef("headcount")}>
-              <label htmlFor="p-headcount" className={LBL}>모집인원{REQ}</label>
+              <FieldLabel htmlFor="p-headcount" className="block mb-1.5" required>모집인원</FieldLabel>
               <input id="p-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
                 className={IN} placeholder="예: 1명" aria-required="true" />
               <FieldError message={errors.headcount} />
@@ -543,7 +544,7 @@ export function PharmacyJobPostingForm() {
           {/* 경력 + 학력 */}
           <div className="mt-4 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="p-career" className={LBL}>경력{REQ}</label>
+              <FieldLabel htmlFor="p-career" className="block mb-1.5" required>경력</FieldLabel>
               <select id="p-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
                 {experienceOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -551,10 +552,11 @@ export function PharmacyJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="p-edu" className={LBL}>
-                학력{REQ}
+              <FieldLabel htmlFor="p-edu" className="block mb-1.5">
+                학력
+                <span className="ml-1 text-danger" aria-hidden>*</span>
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
-              </label>
+              </FieldLabel>
               <select id="p-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -567,10 +569,11 @@ export function PharmacyJobPostingForm() {
         {/* ── §2 모집 내용 ──────────────────────────────────────────────────── */}
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="p-summary" className={LBL}>
-              공고 요약{REQ}
+            <FieldLabel htmlFor="p-summary" className="block mb-1.5">
+              공고 요약
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 목록과 상세 상단에 노출되는 짧은 소개 문장입니다.</span>
-            </label>
+            </FieldLabel>
             <input id="p-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
               placeholder="조제와 복약상담을 함께해주실 약사님을 모집합니다."
@@ -581,10 +584,11 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("responsibilities")}>
-            <label htmlFor="p-duties" className={LBL}>
-              주요 업무{REQ}
+            <FieldLabel htmlFor="p-duties" className="block mb-1.5">
+              주요 업무
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="p-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"처방전 검토 및 조제\n복약상담 및 고객 응대\n의약품 재고 관리 및 발주\nOTC 의약품 상담"}
@@ -593,10 +597,11 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("requirements")}>
-            <label htmlFor="p-reqQual" className={LBL}>
-              필수 자격요건{REQ}
+            <FieldLabel htmlFor="p-reqQual" className="block mb-1.5">
+              필수 자격요건
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="p-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="약사 면허 소지자" aria-required="true" />
@@ -604,20 +609,20 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="p-preferred" className={LBL}>
+            <FieldLabel htmlFor="p-preferred" className="block mb-1.5">
               우대사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="p-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"약국 근무 경험 보유자\n전산 프로그램 사용 경험자\n주말 또는 야간 근무 가능자"} />
           </div>
 
-          <div>
-            <label htmlFor="p-additionalNotes" className={LBL}>
+          <div className="mt-5">
+            <FieldLabel htmlFor="p-additionalNotes" className="block mb-1.5">
               기타 참고사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
-            </label>
+            </FieldLabel>
             <textarea id="p-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
@@ -627,10 +632,11 @@ export function PharmacyJobPostingForm() {
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard title="근무조건">
           <div className="mb-5" ref={setRef("workSchedule")}>
-            <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
-              근무 시간대{REQ}
+            <FieldLabel className="block mb-2">
+              근무 시간대
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">요일마다 근무 시간이 다르면 시간대를 나눠서 추가하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="space-y-3">
               {workSchedule.map((block, idx) => (
                 <div key={idx} className="border border-[#dfe4ea] bg-[#fbfcfd] p-4">
@@ -671,7 +677,7 @@ export function PharmacyJobPostingForm() {
 
           <div className="mb-5" ref={setRef("address")}>
             <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="p-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+              <FieldLabel htmlFor="p-address" required>근무지</FieldLabel>
               <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                 <input type="checkbox" checked={sameAsInstitutionAddress}
                   onChange={(e) => toggleSameAsInstitutionAddress(e.target.checked)}
@@ -697,7 +703,7 @@ export function PharmacyJobPostingForm() {
           {salaryKind !== "면접 후 결정" && (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("salaryAmount")}>
-                <label htmlFor="p-salary-amount" className={LBL}>{salaryKind}{REQ}</label>
+                <FieldLabel htmlFor="p-salary-amount" className="block mb-1.5" required>{salaryKind}</FieldLabel>
                 <div className="relative">
                   <input id="p-salary-amount" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)}
                     className={`${IN} pr-12`}
@@ -716,10 +722,10 @@ export function PharmacyJobPostingForm() {
 
               {salaryKind !== "시급" && (
                 <div>
-                  <label htmlFor="p-salary-hours" className={LBL}>
+                  <FieldLabel htmlFor="p-salary-hours" className="block mb-1.5">
                     {salaryKind === "일급" ? "1일 근무시간" : "주당 근무시간"}
                     <span className="ml-1 text-[12px] font-normal text-[#7b8491]">시급 환산용, 선택</span>
-                  </label>
+                  </FieldLabel>
                   <div className="relative">
                     <input id="p-salary-hours" value={salaryHours} onChange={(e) => setSalaryHours(e.target.value)}
                       className={`${IN} pr-10`} placeholder={salaryKind === "일급" ? "예: 8" : "예: 40"}
@@ -733,7 +739,7 @@ export function PharmacyJobPostingForm() {
 
           {salaryKind !== "면접 후 결정" && salaryKind !== "시급" && (
             <div className="mb-5">
-              <p className={LBL}>환산 시급 <span className="text-[12px] font-normal text-[#7b8491]">자동 계산</span></p>
+              <FieldLabel className="block mb-1.5">환산 시급 <span className="text-[12px] font-normal text-[#7b8491]">자동 계산</span></FieldLabel>
               {estimateHourly() != null ? (
                 <div className="flex h-11 items-center border border-[#c5e8e3] bg-[#edf7f5] px-3.5">
                   <span className="text-[13px] font-semibold text-[#0d7369]">약 {formatWon(estimateHourly()!)} (추정)</span>
@@ -749,7 +755,7 @@ export function PharmacyJobPostingForm() {
           )}
 
           <div className="mb-5">
-            <label htmlFor="p-salary-note" className={LBL}>급여 비고</label>
+            <FieldLabel htmlFor="p-salary-note" className="block mb-1.5">급여 비고</FieldLabel>
             <input id="p-salary-note" value={salaryNote} onChange={(e) => setSalaryNote(e.target.value)}
               className={IN} placeholder="예: 경력과 근무 요일에 따라 협의 가능합니다." />
           </div>
@@ -763,7 +769,7 @@ export function PharmacyJobPostingForm() {
           <div className="my-5 border-t border-[#f0f2f5]" />
 
           <div className="mb-5">
-            <p className={LBL}>근무자 구성</p>
+            <FieldLabel className="block mb-1.5">근무자 구성</FieldLabel>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div>
                 <label htmlFor="p-staff-ph" className="mb-1 block text-[12px] font-medium text-[#6b7280]">약사 수</label>
@@ -785,15 +791,15 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div className="mb-5">
-            <label htmlFor="p-mainhospital" className={LBL}>
+            <FieldLabel htmlFor="p-mainhospital" className="block mb-1.5">
               주요 처방 병원
-            </label>
+            </FieldLabel>
             <input id="p-mainhospital" value={mainPrescribingHospital} onChange={(e) => setMainPrescribingHospital(e.target.value)}
               className={IN} placeholder="예: 인근 OO내과, OO정형외과" />
           </div>
 
           <div ref={setRef("workCondDetail")}>
-            <label htmlFor="p-workcond" className={LBL}>근무조건 상세{REQ}</label>
+            <FieldLabel htmlFor="p-workcond" className="block mb-1.5" required>근무조건 상세</FieldLabel>
             <textarea id="p-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="예: 주 5일 근무, 오전·오후 교대, 파트타임 가능 여부, 요일별 근무자 구성" />
@@ -804,11 +810,11 @@ export function PharmacyJobPostingForm() {
         {/* ── §4 검색 노출 설정 ─────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
           <div className="mb-6">
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">약국 약사 직무에 자주 쓰이는 키워드를 추천합니다.</span>
-            </p>
+            </FieldLabel>
 
             <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
               {PHARMACY_KEYWORDS.map((kw) => {
@@ -832,10 +838,10 @@ export function PharmacyJobPostingForm() {
 
             <div className="my-4 border-t border-[#f0f2f5]" />
 
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               기타 키워드 직접 추가
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -874,10 +880,12 @@ export function PharmacyJobPostingForm() {
           </div>
 
           <div>
-            <p className={LBL} id="p-img-lbl">
-              대표 이미지
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
-            </p>
+            <div id="p-img-lbl">
+              <FieldLabel className="block mb-1.5">
+                대표 이미지
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+              </FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="p-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -916,9 +924,9 @@ export function PharmacyJobPostingForm() {
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <p id="p-apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
-              지원 방식{REQ}
-            </p>
+            <div id="p-apply-method-label">
+              <FieldLabel className="block mb-2" required>지원 방식</FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="p-apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
               {(
                 [
@@ -960,9 +968,9 @@ export function PharmacyJobPostingForm() {
                 </InlineNote>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="p-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="p-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -975,7 +983,7 @@ export function PharmacyJobPostingForm() {
             <div className="mb-5">
               <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div ref={setRef("applyPhone")}>
-                  <label htmlFor="p-apply-phone" className={LBL}>지원 연락처{REQ}</label>
+                  <FieldLabel htmlFor="p-apply-phone" className="block mb-1.5" required>지원 연락처</FieldLabel>
                   <input id="p-apply-phone" type="tel"
                     value={applyPhone} onChange={(e) => setApplyPhone(e.target.value)}
                     className={IN}
@@ -985,17 +993,17 @@ export function PharmacyJobPostingForm() {
                   <FieldError message={errors.applyPhone} />
                 </div>
                 <div>
-                  <label htmlFor="p-apply-manager" className={LBL}>
+                  <FieldLabel htmlFor="p-apply-manager" className="block mb-1.5">
                     담당자명
-                  </label>
+                  </FieldLabel>
                   <input id="p-apply-manager" value={applyManagerName} onChange={(e) => setApplyManagerName(e.target.value)}
                     className={IN} placeholder="예: 홍길동" />
                 </div>
               </div>
               <div className="mt-4 max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="p-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="p-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -1007,7 +1015,7 @@ export function PharmacyJobPostingForm() {
           ) : (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyEmail")}>
-                <label htmlFor="p-apply-email" className={LBL}>지원 이메일{REQ}</label>
+                <FieldLabel htmlFor="p-apply-email" className="block mb-1.5" required>지원 이메일</FieldLabel>
                 <input id="p-apply-email" type="email"
                   value={applyEmail} onChange={(e) => setApplyEmail(e.target.value)}
                   className={IN}
@@ -1017,9 +1025,9 @@ export function PharmacyJobPostingForm() {
                 <FieldError message={errors.applyEmail} />
               </div>
               <div ref={setRef("deadline")}>
-                <label htmlFor="p-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="p-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="p-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -1031,9 +1039,9 @@ export function PharmacyJobPostingForm() {
           )}
 
           <div className="mb-5">
-            <label htmlFor="p-contact-note" className={LBL}>
+            <FieldLabel htmlFor="p-contact-note" className="block mb-1.5">
               연락 안내 문구
-            </label>
+            </FieldLabel>
             <input id="p-contact-note" value={contactNote} onChange={(e) => setContactNote(e.target.value)}
               className={IN} placeholder="예: 문자로 간단한 자기소개와 희망 근무시간을 보내주세요." />
             <p className={HINT}>지원자에게 전달할 연락 안내나 유의사항을 입력해 주세요.</p>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
-import { SectionCard } from "@/components/business/BusinessFormControls";
+import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
@@ -124,11 +124,13 @@ function ChipGroup({
   const id = labelId ?? internalId;
   return (
     <div>
-      <p id={id} className="mb-2 text-[14px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-        {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2">
+          {label}
+          {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
+          {max != null && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">최대 {max}개</span>}
+        </FieldLabel>
+      </div>
       <div role="group" aria-labelledby={id} className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const on = selected.has(opt);
@@ -169,10 +171,11 @@ function SegControl({
   const id = useId();
   return (
     <div>
-      <p id={id} className="mb-2 text-[13px] font-medium text-[#2f3845]">
-        {label}
-        {required && <span className="ml-1 text-danger" aria-hidden>*</span>}
-      </p>
+      <div id={id}>
+        <FieldLabel className="block mb-2" required={required}>
+          {label}
+        </FieldLabel>
+      </div>
       <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
         {options.map((opt) => (
           <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
@@ -216,9 +219,7 @@ function ToggleRow({
 
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 const SEL = `${IN} appearance-none pr-8`;
-const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
-const REQ = <span className="ml-1 text-danger" aria-hidden>*</span>;
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -393,7 +394,7 @@ export function IndustryJobPostingForm() {
         <SectionCard title="기본 정보">
           {/* 공고 제목 */}
           <div className="mb-5" ref={setRef("title")}>
-            <label htmlFor="i-title" className={LBL}>공고 제목{REQ}</label>
+            <FieldLabel htmlFor="i-title" className="block mb-1.5" required>공고 제목</FieldLabel>
             <input id="i-title" value={title} onChange={(e) => setTitle(e.target.value)}
               className={IN} placeholder="의약품 안전관리(PV) 담당자 채용" aria-required="true" />
             <FieldError message={errors.title} />
@@ -401,10 +402,11 @@ export function IndustryJobPostingForm() {
 
           {/* 모집 직무 — 2단계 선택기 */}
           <div className="mb-5" ref={setRef("selectedJobs")}>
-            <p className="mb-2 text-[14px] font-medium text-[#2f3845]">
-              모집 직무{REQ}
+            <FieldLabel className="block mb-2">
+              모집 직무
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">1차 분류를 고르고 세부 직무를 선택하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="grid grid-cols-[180px_1fr] border border-[#d8e0e8] max-[640px]:grid-cols-1">
               {/* Left: category list */}
               <div
@@ -466,7 +468,7 @@ export function IndustryJobPostingForm() {
           {/* 모집인원 + 고용형태 */}
           <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div ref={setRef("headcount")}>
-              <label htmlFor="i-headcount" className={LBL}>모집인원{REQ}</label>
+              <FieldLabel htmlFor="i-headcount" className="block mb-1.5" required>모집인원</FieldLabel>
               <select id="i-headcount" value={headcount} onChange={(e) => setHeadcount(e.target.value)}
                 className={SEL} aria-required="true">
                 <option value="" disabled>채용 예정 인원을 선택해 주세요</option>
@@ -478,7 +480,7 @@ export function IndustryJobPostingForm() {
               <FieldError message={errors.headcount} />
             </div>
             <div>
-              <label htmlFor="i-emptype" className={LBL}>고용형태{REQ}</label>
+              <FieldLabel htmlFor="i-emptype" className="block mb-1.5" required>고용형태</FieldLabel>
               <select id="i-emptype" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} className={SEL}>
                 {employmentTypeOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -490,7 +492,7 @@ export function IndustryJobPostingForm() {
           {/* 경력 + 학력 */}
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
             <div>
-              <label htmlFor="i-career" className={LBL}>경력{REQ}</label>
+              <FieldLabel htmlFor="i-career" className="block mb-1.5" required>경력</FieldLabel>
               <select id="i-career" value={careerType} onChange={(e) => setCareerType(e.target.value)} className={SEL}>
                 {experienceOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -498,10 +500,11 @@ export function IndustryJobPostingForm() {
               </select>
             </div>
             <div>
-              <label htmlFor="i-edu" className={LBL}>
-                학력{REQ}
+              <FieldLabel htmlFor="i-edu" className="block mb-1.5">
+                학력
+                <span className="ml-1 text-danger" aria-hidden>*</span>
                 <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 가능한 학력 조건을 선택해 주세요.</span>
-              </label>
+              </FieldLabel>
               <select id="i-edu" value={educationType} onChange={(e) => setEducationType(e.target.value)} className={SEL}>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.id}>{option.label}</option>
@@ -524,10 +527,11 @@ export function IndustryJobPostingForm() {
         {/* ── §2 포지션 소개 · 업무 · 자격 ─────────────────────────────────── */}
         <SectionCard title="모집 내용">
           <div className="mb-5" ref={setRef("summary")}>
-            <label htmlFor="i-summary" className={LBL}>
-              한 줄 소개{REQ}
+            <FieldLabel htmlFor="i-summary" className="block mb-1.5">
+              한 줄 소개
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 카드와 상세 상단에 노출되는 짧은 소개 문구입니다.</span>
-            </label>
+            </FieldLabel>
             <input id="i-summary" value={summary} onChange={(e) => setSummary(e.target.value)}
               className={IN}
               placeholder="예: 글로벌 RA 커리어를 시작할 의료기기 인허가 담당자를 찾습니다."
@@ -538,20 +542,21 @@ export function IndustryJobPostingForm() {
           </div>
 
           <div className="mb-5">
-            <label htmlFor="i-positionintro" className={LBL}>
+            <FieldLabel htmlFor="i-positionintro" className="block mb-1.5">
               포지션 소개
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">구직자가 포지션의 맥락을 이해할 수 있도록 줄글로 작성해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="i-positionintro" value={positionIntro} onChange={(e) => setPositionIntro(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="이 포지션이 어떤 팀, 제품, 과제와 연결되는지, 입사 후 어떤 역할을 맡게 되는지 3~5문장으로 작성해 주세요." />
           </div>
 
           <div className="mb-5" ref={setRef("mainDuties")}>
-            <label htmlFor="i-duties" className={LBL}>
-              주요업무{REQ}
+            <FieldLabel htmlFor="i-duties" className="block mb-1.5">
+              주요업무
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="i-duties" value={mainDuties} onChange={(e) => setMainDuties(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"국내외 허가자료 작성 및 제출\nCTD 문서 검토 및 관리\n규제기관 질의 대응 및 변경허가 업무 수행"}
@@ -560,10 +565,11 @@ export function IndustryJobPostingForm() {
           </div>
 
           <div className="mb-5" ref={setRef("requiredQual")}>
-            <label htmlFor="i-reqQual" className={LBL}>
-              필수 자격요건{REQ}
+            <FieldLabel htmlFor="i-reqQual" className="block mb-1.5">
+              필수 자격요건
+              <span className="ml-1 text-danger" aria-hidden>*</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="i-reqQual" value={requiredQual} onChange={(e) => setRequiredQual(e.target.value)} rows={3}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"약학, 생명과학, 화학, 생명공학 등 관련 전공 학사 이상\n신입 또는 관련 업무 경험 보유자"}
@@ -572,20 +578,20 @@ export function IndustryJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="i-preferred" className={LBL}>
+            <FieldLabel htmlFor="i-preferred" className="block mb-1.5">
               우대사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
-            </label>
+            </FieldLabel>
             <textarea id="i-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder={"관련 인턴 또는 프로젝트 경험\n영어 문서 작성 및 커뮤니케이션 가능자\n약사 등 관련 면허 보유자"} />
           </div>
 
           <div className="mt-5">
-            <label htmlFor="i-additionalnotes" className={LBL}>
+            <FieldLabel htmlFor="i-additionalnotes" className="block mb-1.5">
               기타 참고사항
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
-            </label>
+            </FieldLabel>
             <textarea id="i-additionalnotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 포트폴리오 제출 안내, 전형 일정 관련 안내 등" />
@@ -595,7 +601,7 @@ export function IndustryJobPostingForm() {
         {/* ── §3 근무조건 ───────────────────────────────────────────────────── */}
         <SectionCard title="근무조건">
           <div className="mb-5" ref={setRef("workMode")}>
-            <label htmlFor="i-workmode" className={LBL}>근무 방식{REQ}</label>
+            <FieldLabel htmlFor="i-workmode" className="block mb-1.5" required>근무 방식</FieldLabel>
             <select id="i-workmode" value={workMode} onChange={(e) => setWorkMode(e.target.value)}
               className={SEL} aria-required="true">
               <option value="" disabled>근무 방식을 선택해 주세요</option>
@@ -609,7 +615,7 @@ export function IndustryJobPostingForm() {
           {workMode !== "remote" && (
             <div className="mb-5" ref={setRef("address")}>
               <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                <label htmlFor="i-address" className="text-[14px] font-medium text-[#2f3845]">근무지{REQ}</label>
+                <FieldLabel htmlFor="i-address" required>근무지</FieldLabel>
                 <label className="inline-flex items-center gap-2 text-[13px] font-medium text-[#4c5665]">
                   <input type="checkbox" checked={sameAsCompanyAddress}
                     onChange={(e) => toggleSameAsCompanyAddress(e.target.checked)}
@@ -645,7 +651,7 @@ export function IndustryJobPostingForm() {
           </div>
 
           <div>
-            <label htmlFor="i-workcond" className={LBL}>근무조건 상세</label>
+            <FieldLabel htmlFor="i-workcond" className="block mb-1.5">근무조건 상세</FieldLabel>
             <textarea id="i-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
               className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
               placeholder="주 2회 재택근무 가능, 프로젝트 일정에 따라 유연근무를 운영합니다." />
@@ -655,11 +661,11 @@ export function IndustryJobPostingForm() {
         {/* ── §4 키워드 · 이미지 ────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
           <div className="mb-6">
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               검색 키워드
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{keywords.size} / {MAX_KW}개 선택</span>
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">모집 직무에 맞춰 자주 쓰이는 키워드를 추천합니다.</span>
-            </p>
+            </FieldLabel>
 
             {/* Recommended pool — changes with job category */}
             <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
@@ -685,10 +691,10 @@ export function IndustryJobPostingForm() {
             <div className="my-4 border-t border-[#f0f2f5]" />
 
             {/* Custom keyword input */}
-            <p className={LBL}>
+            <FieldLabel className="block mb-1.5">
               기타 키워드 직접 추가
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </p>
+            </FieldLabel>
             <div className="flex gap-2">
               <input
                 value={customKwInput}
@@ -729,10 +735,12 @@ export function IndustryJobPostingForm() {
 
           {/* 대표 이미지 */}
           <div>
-            <p className={LBL} id="i-img-lbl">
-              대표 이미지
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
-            </p>
+            <div id="i-img-lbl">
+              <FieldLabel className="block mb-1.5">
+                대표 이미지
+                <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세 상단에 표시할 이미지를 선택합니다.</span>
+              </FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="i-img-lbl" className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
               {(["default", "upload", "none"] as const).map((opt) => {
                 const labels = {
@@ -771,9 +779,9 @@ export function IndustryJobPostingForm() {
         {/* ── §5 지원방법 및 마감일 ─────────────────────────────────────────── */}
         <SectionCard title="지원방법 및 마감일">
           <div className="mb-5">
-            <p id="apply-method-label" className="mb-2 text-[13px] font-medium text-[#2f3845]">
-              지원 방식{REQ}
-            </p>
+            <div id="apply-method-label">
+              <FieldLabel className="block mb-2" required>지원 방식</FieldLabel>
+            </div>
             <div role="radiogroup" aria-labelledby="apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
               {(
                 [
@@ -815,9 +823,9 @@ export function IndustryJobPostingForm() {
                 </InlineNote>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
-                <label htmlFor="i-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="i-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="i-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}
@@ -829,9 +837,9 @@ export function IndustryJobPostingForm() {
           ) : (
             <div className="mb-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div ref={setRef("applyTarget")}>
-                <label htmlFor="i-apply-target" className={LBL}>
-                  {applyMethod === "url" ? "채용페이지 URL" : "지원 이메일 주소"}{REQ}
-                </label>
+                <FieldLabel htmlFor="i-apply-target" className="block mb-1.5" required>
+                  {applyMethod === "url" ? "채용페이지 URL" : "지원 이메일 주소"}
+                </FieldLabel>
                 <input id="i-apply-target" type={applyMethod === "url" ? "url" : "email"}
                   value={applyTarget} onChange={(e) => setApplyTarget(e.target.value)}
                   className={IN}
@@ -841,9 +849,9 @@ export function IndustryJobPostingForm() {
               </div>
 
               <div ref={setRef("deadline")}>
-                <label htmlFor="i-deadline" className={LBL}>
-                  {rollingToggle ? "마감 예정일" : <>접수 마감일{REQ}</>}
-                </label>
+                <FieldLabel htmlFor="i-deadline" className="block mb-1.5" required={!rollingToggle}>
+                  {rollingToggle ? "마감 예정일" : "접수 마감일"}
+                </FieldLabel>
                 <input id="i-deadline" type="date" value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={rollingToggle}

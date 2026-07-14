@@ -97,11 +97,25 @@ export function InfoTooltip({ text }: { text: string }) {
   );
 }
 
-export function FieldLabel({ children, required = false }: { children: ReactNode; required?: boolean }) {
+export function FieldLabel({
+  children,
+  required = false,
+  htmlFor,
+  className,
+}: {
+  children: ReactNode;
+  required?: boolean;
+  htmlFor?: string;
+  className?: string;
+}) {
   return (
-    <label className="text-[14px] font-medium text-[#2f3845]">
+    <label htmlFor={htmlFor} className={clsx("text-[14px] font-medium text-[#2f3845]", className)}>
       {children}
-      {required ? <span className="ml-1 text-danger">*</span> : null}
+      {required ? (
+        <span className="ml-1 text-danger" aria-hidden>
+          *
+        </span>
+      ) : null}
     </label>
   );
 }

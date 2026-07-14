@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useRef } from "react";
+import { FieldLabel } from "@/components/business/BusinessFormControls";
 
 export type AttachmentItem = { name: string; size: number };
 
@@ -43,10 +44,10 @@ export function AttachmentUploader({
 
   return (
     <div>
-      <p className="block mb-1.5 text-[14px] font-medium text-[#2f3845]">
+      <FieldLabel className="block mb-1.5">
         {label}
         {description && <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{description}</span>}
-      </p>
+      </FieldLabel>
 
       <input
         ref={inputRef}

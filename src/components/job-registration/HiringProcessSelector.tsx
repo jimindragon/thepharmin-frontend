@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useState } from "react";
+import { FieldLabel } from "@/components/business/BusinessFormControls";
 
 const PROCESS_STEP_OPTIONS = [
   "서류 전형",
@@ -32,7 +33,6 @@ const DOCUMENT_OPTIONS = [
   "개인정보 수집·이용 동의서",
 ];
 
-const LBL = "block mb-1.5 text-[14px] font-medium text-[#2f3845]";
 const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 
 export interface HiringProcessSelectorProps {
@@ -103,10 +103,10 @@ export function HiringProcessSelector({
     <div className="space-y-8">
       {/* 전형절차 */}
       <div>
-        <p className={LBL}>
+        <FieldLabel className="block mb-1.5">
           전형절차
           <span className="ml-2 text-[12px] font-normal text-[#7b8491]">진행되는 순서대로 클릭해 선택해 주세요.</span>
-        </p>
+        </FieldLabel>
 
         <div role="group" aria-label="전형절차 선택" className="flex flex-wrap gap-2">
           {PROCESS_STEP_OPTIONS.map((option) => {
@@ -127,10 +127,10 @@ export function HiringProcessSelector({
 
         <div className="my-4 border-t border-[#f0f2f5]" />
 
-        <p className={LBL}>
+        <FieldLabel className="block mb-1.5">
           기타 전형절차 직접 추가
           <span className="ml-2 text-[12px] font-normal text-[#7b8491]">20자 이내</span>
-        </p>
+        </FieldLabel>
         <div className="flex gap-2">
           <input
             value={customStepInput}
@@ -149,7 +149,7 @@ export function HiringProcessSelector({
 
         {processSteps.length > 0 && (
           <div className="mt-4">
-            <p className={LBL}>선택된 절차 ({processSteps.length})</p>
+            <FieldLabel className="block mb-1.5">선택된 절차 ({processSteps.length})</FieldLabel>
             <div className="space-y-2">
               {processSteps.map((step, index) => (
                 <div key={step} className="flex items-center gap-2 border border-[#d8e0e8] bg-white px-3 py-2">
@@ -181,10 +181,10 @@ export function HiringProcessSelector({
 
       {/* 제출서류 */}
       <div>
-        <p className={LBL}>
+        <FieldLabel className="block mb-1.5">
           제출서류
           <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원 시 제출받을 서류를 선택해 주세요.</span>
-        </p>
+        </FieldLabel>
 
         <div role="group" aria-label="제출서류 선택" className="flex flex-wrap gap-2">
           {DOCUMENT_OPTIONS.map((option) => {
@@ -205,10 +205,10 @@ export function HiringProcessSelector({
 
         <div className="my-4 border-t border-[#f0f2f5]" />
 
-        <p className={LBL}>
+        <FieldLabel className="block mb-1.5">
           기타 제출서류 직접 추가
           <span className="ml-2 text-[12px] font-normal text-[#7b8491]">20자 이내</span>
-        </p>
+        </FieldLabel>
         <div className="flex gap-2">
           <input
             value={customDocInput}
