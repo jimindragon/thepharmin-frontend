@@ -34,6 +34,7 @@ import {
   InfoRowList,
   JobDetailActionRow,
   MapPlaceholder,
+  SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
   useStickySidebarTop,
@@ -48,6 +49,7 @@ import {
   staffScaleLabelMap,
   type ResearchJobDetail,
 } from "@/data/researchJobDetails";
+import { getSimilarJobs } from "@/data/similarJobs";
 import { getResearchJobCoverImage } from "@/utils/researchImage";
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -62,6 +64,7 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
   const heroImage = getResearchJobCoverImage(data.slug);
+  const similarJobs = getSimilarJobs(data.slug, 3);
 
   const employmentTypeLabel = employmentTypeLabelMap[job.employmentTypeId] ?? job.employmentTypeId;
   const institutionTypeLabel = institutionTypeLabelMap[org.institutionTypeId] ?? org.institutionTypeId;
@@ -351,6 +354,9 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                 {/* CTA 버튼 3개 — 기업 인사이트로 연결. companyId가 없는(미승격) 기관은 렌더하지 않는다 */}
                 {data.companyId ? <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" /> : null}
               </IconSectionShell>
+
+              {/* 비슷한 공고 */}
+              <SimilarJobsSection jobs={similarJobs} track="research" />
             </div>
 
             {/* ── 사이드바 ──────────────────────────────────────────────── */}
@@ -382,9 +388,9 @@ export function ResearchJobDetailV2({ data }: { data: ResearchJobDetail }) {
                     </div>
                   ))}
                 </div>
-                {job.keywords && job.keywords.length > 0 ? (
+                {job.coreKeywords && job.coreKeywords.length > 0 ? (
                   <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 border-t border-[#f0f2f5] pt-3">
-                    {job.keywords.slice(0, 6).map((keyword) => (
+                    {job.coreKeywords.slice(0, 6).map((keyword) => (
                       <span key={keyword} className="text-[12px] font-medium text-[#667181]">
                         #{keyword}
                       </span>

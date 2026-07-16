@@ -1,4 +1,28 @@
-export const RESEARCH_KW_BY_FIELD: Record<string, string[]> = {
+// src/config/coreKeywords.ts
+// 공고 등록 폼의 "핵심 키워드(추천 키워드)" 데이터.
+// 트랙(JobTrack)별로 추천 로직이 다르다:
+//  - industry: 직무 대분류 id → 키워드 배열
+//  - research: 연구 분야 소분류 id → 키워드 배열 (매핑 없는 소분류는 상위 대분류 키워드로 폴백)
+//  - hospital / pharmacy: 직무 분화 없는 단일 풀
+// industry/hospital/pharmacy/research 4개 트랙 전부를 정의한다.
+
+import type { JobTrack } from "@/types/jobs";
+import { researchFieldCategoryOptions } from "@/config/researchFields";
+
+const INDUSTRY_KW_BY_CATEGORY: Record<string, string[]> = {
+  rd: ["신약개발", "전임상 연구", "후보물질 발굴", "스크리닝", "약리평가", "독성평가", "약동학/약력학", "제형연구", "분석법 개발", "CMC", "바이오의약품", "세포주 개발", "의료기기 R&D", "특허/IP"],
+  "sales-marketing": ["제약영업", "MR", "의료기기 영업", "병원영업", "KOL 관리", "Product Marketing", "브랜드 전략", "디지털 마케팅", "시장분석", "영업기획", "Key Account", "해외영업"],
+  clinical: ["CRA", "CRC", "임상 PM", "Clinical Operations", "Medical Writing", "임상 QA", "ICH-GCP", "프로토콜", "Site Management", "모니터링", "SAE", "Data Management", "Biostatistics", "eTMF"],
+  regulatory: ["RA", "인허가", "CTD", "eCTD", "IND/NDA", "MFDS", "FDA", "EMA", "허가전략", "변경허가", "CMC RA", "의료기기 RA", "글로벌 인허가", "규제기관 대응"],
+  "medical-market": ["Medical Affairs", "MSL", "Medical Science", "KOL Engagement", "Scientific Communication", "Medical Education", "HEOR", "RWE", "근거생성", "Market Access", "보험등재", "약가전략", "약물경제성", "논문·학술자료"],
+  "production-quality": ["GMP", "QA", "QC", "품질보증", "품질관리", "QMS", "Validation", "CSV", "SOP", "CAPA", "Deviation", "Audit", "공정관리", "제조관리", "LIMS"],
+  "pharmacy-safety": ["PV", "Drug Safety", "Pharmacovigilance", "이상사례", "ICSR", "Safety Database", "Signal Detection", "Literature Review", "DSUR", "PSUR/PBRER", "RMP", "안전성 보고", "SOP", "규제기관 보고"],
+  "strategy-investment": ["BD", "사업개발", "Licensing", "License-in", "License-out", "기술이전", "파트너링", "Alliance Management", "M&A", "IR", "사업전략", "시장성 평가", "기술가치평가", "계약협상"],
+  "data-ai": ["AI 신약개발", "Bioinformatics", "Data Science", "의료데이터", "RWE 데이터", "머신러닝", "빅데이터 분석", "데이터 파이프라인", "Python", "SQL", "CDISC", "SAS", "헬스케어 소프트웨어", "SaMD"],
+  management: ["HR", "채용", "조직문화", "재무", "회계", "법무", "컴플라이언스", "구매", "SCM", "물류", "홍보", "PR", "IR 지원", "총무"],
+};
+
+const RESEARCH_KW_BY_FIELD: Record<string, string[]> = {
   // 생명과학
   "molecular-cell-biology": ["세포배양", "분자생물학", "PCR", "Western blot", "단백질 발현", "세포신호전달", "현미경 분석", "FACS", "IHC", "세포기능 분석"],
   "immunology": ["면역세포", "염증반응", "사이토카인", "T cell", "B cell", "Flow cytometry", "ELISA", "면역조직화학", "숙주-미생물 상호작용", "면역질환"],
@@ -40,7 +64,7 @@ export const RESEARCH_KW_BY_FIELD: Record<string, string[]> = {
   "field-etc-sub": ["기초연구", "응용연구", "융합연구", "실험기술", "데이터분석", "연구지원", "논문작성", "학회발표"],
 };
 
-export const RESEARCH_KW_BY_FIELD_GROUP: Record<string, string[]> = {
+const RESEARCH_KW_BY_FIELD_GROUP: Record<string, string[]> = {
   "life-science": ["세포배양", "PCR", "Western blot", "FACS", "IHC", "유전자 발현", "단백질 분석", "동물실험", "현미경 분석", "세포기능 분석"],
   "pharma-medicine": ["약리평가", "독성평가", "PK/PD", "ADME", "제형연구", "약물전달", "의약합성", "동물모델", "효능평가", "안전성 평가"],
   "clinical-translational": ["임상연구", "IRB", "임상검체", "의무기록", "코호트", "레지스트리", "통계분석", "바이오마커", "정밀의학", "RWE"],
@@ -49,3 +73,53 @@ export const RESEARCH_KW_BY_FIELD_GROUP: Record<string, string[]> = {
   "medical-device-eng": ["의공학", "의료영상", "진단기기", "디지털헬스", "바이오센서", "신호처리", "의료기기", "SaMD", "IVD", "성능평가"],
   "field-etc": ["기초연구", "응용연구", "융합연구", "연구기술", "데이터분석", "논문작성", "학회발표"],
 };
+
+// 병원은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다
+const HOSPITAL_KEYWORDS: string[] = [
+  "조제", "투약", "처방검토", "복약상담", "병동약료", "임상약료", "무균조제", "항암조제",
+  "TPN", "NST", "ASP", "감염약료", "종양약료", "DI", "마약류 관리", "의약품 관리", "임상시험약 관리",
+];
+
+// 약국은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다
+const PHARMACY_KEYWORDS: string[] = [
+  "처방조제", "복약지도", "처방검토", "OTC 상담", "매약 상담",
+  "건기식 상담", "자동조제기", "산제포장",
+];
+
+export interface CoreKeywordOptions {
+  /** industry 전용: 직무 대분류 id */
+  categoryId?: string;
+  /** research 전용: 선택된 연구 분야(소분류) id 목록 */
+  fieldIds?: string[];
+}
+
+/**
+ * 트랙 + 옵션으로 추천 키워드를 꺼낸다.
+ * industry는 opts.categoryId, research는 opts.fieldIds(소분류→대분류 폴백 포함)를 사용하고,
+ * hospital/pharmacy는 opts를 무시하고 고정 풀을 반환한다.
+ */
+export function getRecommendedKeywords(track: JobTrack, opts: CoreKeywordOptions = {}): string[] {
+  switch (track) {
+    case "industry":
+      return opts.categoryId ? (INDUSTRY_KW_BY_CATEGORY[opts.categoryId] ?? []) : [];
+    case "research": {
+      const fieldIds = opts.fieldIds ?? [];
+      if (fieldIds.length === 0) return [];
+      const bySubfield = fieldIds.flatMap((id) => RESEARCH_KW_BY_FIELD[id] ?? []);
+      if (bySubfield.length > 0) return Array.from(new Set(bySubfield));
+      // 매핑에 없는 소분류만 선택된 경우, 그 소분류의 상위 대분류 키워드로 대체
+      const groupIds = new Set(
+        fieldIds
+          .map((id) => researchFieldCategoryOptions.find((g) => g.subcategories.some((s) => s.id === id))?.id)
+          .filter((id): id is string => Boolean(id)),
+      );
+      return Array.from(new Set(Array.from(groupIds).flatMap((id) => RESEARCH_KW_BY_FIELD_GROUP[id] ?? [])));
+    }
+    case "hospital":
+      return HOSPITAL_KEYWORDS;
+    case "pharmacy":
+      return PHARMACY_KEYWORDS;
+    default:
+      return [];
+  }
+}

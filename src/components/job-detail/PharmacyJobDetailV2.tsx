@@ -34,6 +34,7 @@ import {
   InfoRowList,
   JobDetailActionRow,
   MapPlaceholder,
+  SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
   useStickySidebarTop,
@@ -47,6 +48,7 @@ import {
   pharmacyWorkTypeLabelMap,
   type PharmacyJobDetail,
 } from "@/data/pharmacyJobDetails";
+import { getSimilarJobs } from "@/data/similarJobs";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -87,6 +89,8 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
   const mainPrescribingHospital = job.mainPrescribingHospital.trim()
     ? job.mainPrescribingHospital
     : org.mainHospitals.join(", ");
+
+  const similarJobs = getSimilarJobs(data.slug, 3);
 
   const heroIdx = [...data.id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % PHARMACY_HERO_IMAGES.length;
   const heroImage = org.coverImageUrl ?? PHARMACY_HERO_IMAGES[heroIdx];
@@ -354,6 +358,9 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
 
                 <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" />
               </IconSectionShell>
+
+              {/* 비슷한 공고 */}
+              <SimilarJobsSection jobs={similarJobs} track="pharmacy" />
             </div>
 
             {/* ── 사이드바 ──────────────────────────────────────────────── */}

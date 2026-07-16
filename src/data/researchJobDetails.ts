@@ -97,7 +97,7 @@ export interface ResearchJobPosting {
   benefitIds?: string[];
   workConditionDetail?: string;
 
-  keywords?: string[];
+  coreKeywords?: string[];
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
@@ -196,7 +196,7 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
     workConditionDetail:
       "계약 기간은 연 단위이며, 연구 성과와 과제 상황에 따라 갱신을 협의합니다. 4대 보험이 적용됩니다.",
 
-    keywords: ["neurogenesis", "중추신경발달", "이온채널", "뇌오가노이드", "칼슘이미징", "RNAscope"],
+    coreKeywords: ["neurogenesis", "중추신경발달", "이온채널", "뇌오가노이드", "칼슘이미징", "RNAscope"],
     additionalNotes: "입사 후 연구실 안전교육과 기관 공통 교육이 진행됩니다.",
     // detailImages/attachments: 없음
     hiringProcess: ["서류 전형", "1차 면접", "최종합격"],
@@ -277,7 +277,7 @@ export const kistNeurophysiologyInternJobDetail: ResearchJobDetail = {
     salary: "기관 내규에 따른 활동비 지급",
     workConditionDetail: "주 3일 이상 출근 가능자를 대상으로 하며, 학기 중에도 유연하게 근무 일정을 조율합니다.",
 
-    keywords: ["중추신경발달", "뇌오가노이드", "칼슘이미징", "학생연구원"],
+    coreKeywords: ["중추신경발달", "뇌오가노이드", "칼슘이미징", "학생연구원"],
     // additionalNotes/detailImages/attachments: 3종 모두 없음
     hiringProcess: ["서류 전형", "1차 면접", "최종합격"],
     requiredDocuments: ["이력서", "재학증명서"],
@@ -357,7 +357,7 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
     benefitIds: ["학회·세미나 지원"],
     workConditionDetail: "주간 근무 기준이며, 계약 기간과 처우는 면접 시 협의합니다.",
 
-    keywords: ["organoid", "PDX", "tumor research"],
+    coreKeywords: ["organoid", "PDX", "tumor research"],
     // additionalNotes: 없음 — 추가 안내 섹션 숨김 검증 케이스
     // detailImages/attachments: 없음
 

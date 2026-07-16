@@ -35,12 +35,14 @@ import {
   IconSectionShell,
   JobDetailActionRow,
   MapPlaceholder,
+  SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
   useStickySidebarTop,
 } from "@/components/job-detail/shared";
 import type { IndustryJobDetail } from "@/data/industryJobDetails";
 import { getIndustryNews, hasDirectCompanyNews } from "@/data/industryNews";
+import { getSimilarJobs } from "@/data/similarJobs";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -90,6 +92,7 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
 
   const newsItems = getIndustryNews(data.companyId);
   const hasDirectNews = hasDirectCompanyNews(data.companyId);
+  const similarJobs = getSimilarJobs(data.slug, 3);
 
   return (
     <>
@@ -375,12 +378,22 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
 
               {/* 관련 뉴스 */}
               {newsItems.length > 0 ? (
-                <IconSectionShell id="news" icon={Newspaper} title="관련 뉴스">
-                  {hasDirectNews ? (
-                    <p className="text-[14px] font-normal leading-[1.7] text-[#667181]">
-                      더파마뉴스에 보도된 기업 관련 기사와 산업 뉴스를 확인해 보세요.
-                    </p>
-                  ) : (
+                <IconSectionShell
+                  id="news"
+                  icon={Newspaper}
+                  title="관련 뉴스"
+                  action={
+                    <a
+                      href="https://thepharmanews.net/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 text-[13px] font-medium text-[#777777] hover:text-[#111111]"
+                    >
+                      더파마뉴스에서 보기 ›
+                    </a>
+                  }
+                >
+                  {hasDirectNews ? null : (
                     <div className="flex items-start gap-1.5">
                       <Info size={14} className="mt-0.5 shrink-0 text-[#8993a1]" />
                       <p className="text-[13px] font-normal leading-[1.6] text-[#8993a1]">
@@ -389,7 +402,7 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
                     </div>
                   )}
 
-                  <div className="mt-5 grid grid-cols-2 gap-4 max-[720px]:grid-cols-1">
+                  <div className={clsx("grid grid-cols-2 gap-4 max-[720px]:grid-cols-1", !hasDirectNews && "mt-5")}>
                     {newsItems.map((item) => (
                       <a
                         key={item.id}
@@ -427,6 +440,9 @@ export function IndustryJobDetailClient({ data }: { data: IndustryJobDetail }) {
                   </div>
                 </IconSectionShell>
               ) : null}
+
+              {/* 비슷한 공고 */}
+              <SimilarJobsSection jobs={similarJobs} track="industry" />
             </div>
 
             {/* ── 사이드바 ──────────────────────────────────────────────── */}

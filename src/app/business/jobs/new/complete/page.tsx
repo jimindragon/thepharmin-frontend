@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
@@ -9,21 +8,29 @@ import { BoostModal } from "@/components/business/BoostModal";
 import { jobPostings } from "@/data/businessJobs";
 import type { JobTrack } from "@/types/jobs";
 import { jobTrackLabels } from "@/config/jobTracks";
+import { BOOST_PRICING, trackToPricingCat, type BoostGrade, type PricingCat } from "@/data/boostPricing";
 
-// ─── Boost option data (same values as BusinessPricingClient) ────────────────
+// ─── Boost grade summary rows (prices sourced from boostPricing.ts) ──────────
 
-interface BoostOption {
-  id: string;
-  label: string;
-  originalKrw: number;
-  discountedKrw: number;
-  discountPct: number;
-}
-
-const BOOST_OPTIONS: BoostOption[] = [
-  { id: "1w", label: "부스트 1주", originalKrw: 120000, discountedKrw: 84000, discountPct: 30 },
-  { id: "2w", label: "부스트 2주", originalKrw: 228000, discountedKrw: 148000, discountPct: 35 },
-  { id: "4w", label: "부스트 4주", originalKrw: 432000, discountedKrw: 259000, discountPct: 40 },
+const GRADE_INFO: { id: BoostGrade; name: string; location: string; desc: { default: string; pharmacy: string } }[] = [
+  {
+    id: "premium",
+    name: "PREMIUM",
+    location: "최상단 추천 영역",
+    desc: { default: "웹사이트 최상단부터 전 채널 집중 노출", pharmacy: "웹사이트 최상단 추천 영역에 노출" },
+  },
+  {
+    id: "featured",
+    name: "FEATURED",
+    location: "상단 추천 영역",
+    desc: { default: "상단 추천 노출 + 주요 채널 노출", pharmacy: "상단 추천 영역에 노출" },
+  },
+  {
+    id: "standard",
+    name: "STANDARD",
+    location: "추천 공고 영역",
+    desc: { default: "추천 공고 영역에 안정적으로 노출", pharmacy: "추천 공고 영역에 안정적으로 노출" },
+  },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -41,16 +48,6 @@ function formatDeadlineShort(raw: string): string {
   return `${d.getFullYear()}.${mm}.${dd}`;
 }
 
-function personLabel(track: string): string {
-  const map: Partial<Record<JobTrack, string>> = {
-    industry: "제약·바이오 인재",
-    research: "연구 인재",
-    hospital: "약사",
-    pharmacy: "약사",
-  };
-  return map[track as JobTrack] ?? "약사·의료 인재";
-}
-
 // ─── Fallback defaults (shown when URL params are absent) ────────────────────
 
 const FALLBACK = {
@@ -66,7 +63,6 @@ const FALLBACK = {
 function CompleteContent() {
   const params = useSearchParams();
   const router = useRouter();
-  const [selectedBoost, setSelectedBoost] = useState<string>("4w");
   const [boostModalOpen, setBoostModalOpen] = useState(false);
 
   const title = params.get("title") || FALLBACK.title;
@@ -74,11 +70,15 @@ function CompleteContent() {
   const track = (params.get("track") || FALLBACK.track) as JobTrack;
 
   const trackLabel = (jobTrackLabels as Record<string, string>)[track] ?? track;
-  const person = personLabel(track);
-  const selectedOption = BOOST_OPTIONS.find((o) => o.id === selectedBoost);
 
-  // 방금 등록한 공고를 mock 목록에서 찾아 모달 사전 선택에 사용
-  const matchedJobId = jobPostings.find((j) => j.title === title)?.id ?? null;
+  // 방금 등록한 공고를 mock 목록에서 찾아 모달 사전 선택 및 가격 조회에 사용
+  const matchedJob = jobPostings.find((j) => j.title === title) ?? null;
+  const matchedJobId = matchedJob?.id ?? null;
+
+  // 가격 표시용 트랙: 1순위 matchedJob.track, 2순위 URL의 track 원본값. FALLBACK("hospital")은 가격 결정에 사용하지 않음.
+  const urlTrackParam = params.get("track");
+  const pricingTrack: JobTrack | null = matchedJob?.track ?? (urlTrackParam ? (urlTrackParam as JobTrack) : null);
+  const pricingCat: PricingCat | null = pricingTrack ? trackToPricingCat(pricingTrack) : null;
 
   return (
     <div className="pb-12">
@@ -115,9 +115,9 @@ function CompleteContent() {
       </div>
 
       {/* 공고 요약 카드 + 부스트 카드 */}
-      <div className="mx-auto mt-8 max-w-[680px] space-y-4">
+      <div className="mx-auto mt-8 max-w-[680px]">
         {/* 공고 요약 카드 */}
-        <div className="surface px-5 py-4">
+        <div className="surface px-8 py-4 max-[480px]:px-5">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -130,86 +130,82 @@ function CompleteContent() {
                 게시중 · ~{deadline}
               </p>
             </div>
-            {/* 공고 상세(/business/jobs/[id]) 미구현 */}
-            <button
-              type="button"
-              disabled
-              title="공고 상세 페이지는 준비 중입니다"
-              className="shrink-0 border border-[#d8e0e8] bg-white px-4 py-2 text-[13px] font-medium text-[#9aa4b2] disabled:cursor-not-allowed"
-            >
-              공고 보기
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              {/* 공고 상세(/business/jobs/[id]) 미구현 */}
+              <button
+                type="button"
+                disabled
+                title="공고 상세 페이지는 준비 중입니다"
+                className="border border-[#d8e0e8] bg-white px-4 py-2 text-[13px] font-medium text-[#9aa4b2] disabled:cursor-not-allowed"
+              >
+                공고 보기
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/business/jobs")}
+                className="border border-[#d8e0e8] bg-white px-4 py-2 text-[13px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#17202c]"
+              >
+                공고 관리로 이동
+              </button>
+            </div>
           </div>
         </div>
 
         {/* 부스트 유도 카드 */}
-        <div className="surface px-5 py-6">
+        <div className="surface mt-6 px-8 py-6 max-[480px]:px-5">
           <p className="text-[12px] font-medium uppercase tracking-[0.06em] text-[#8a9ab0]">선택 사항</p>
           <h2 className="mt-1.5 text-[20px] font-black tracking-[-0.02em] text-[#17202c]">
-            더 많은 {person}에게 이 공고를 노출할까요?
+            공고 노출을 더 높여볼까요?
           </h2>
           <p className="mt-2 text-[13px] font-normal leading-[1.7] text-[#68717e]">
-            부스트를 적용하면 공고가 목록 상단에 노출되고, 관련 직무 인재에게 알림이 발송됩니다. 기간을 선택해 바로 적용할 수 있습니다.
+            부스트를 적용하면 공고가 추천 영역에 노출되어 더 많은 인재에게 도달합니다.
           </p>
 
-          {/* 라디오 옵션 */}
-          <div className="mt-5 space-y-2.5">
-            {BOOST_OPTIONS.map((opt) => (
-              <label
-                key={opt.id}
-                className={clsx(
-                  "flex cursor-pointer items-center justify-between gap-3 border px-4 py-3.5 transition-colors",
-                  selectedBoost === opt.id
-                    ? "border-[#17A68C] bg-[#f4fdf9]"
-                    : "border-[#dfe4ea] bg-white hover:border-[#b0bac6]",
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="boost"
-                    value={opt.id}
-                    checked={selectedBoost === opt.id}
-                    onChange={() => setSelectedBoost(opt.id)}
-                    className="h-[18px] w-[18px] cursor-pointer accent-[#17A68C]"
-                  />
-                  <span className="text-[15px] font-bold text-[#17202c]">{opt.label}</span>
+          {/* 등급 요약 행 */}
+          <div className="mt-5 divide-y divide-[#f0f3f6]">
+            {GRADE_INFO.map((g) => {
+              const amount = pricingCat ? BOOST_PRICING[g.id][pricingCat][0].discountedKrw : null;
+              const desc = pricingCat === "pharmacy" ? g.desc.pharmacy : g.desc.default;
+              return (
+                <div key={g.id} className="flex items-start justify-between gap-4 py-5">
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a9ab0]">{g.name}</p>
+                    <p className="mt-1 text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">{g.location}</p>
+                    <p className="mt-1 text-[13px] font-normal text-[#8a9ab0]">{desc}</p>
+                  </div>
+                  {amount !== null && (
+                    <div className="shrink-0 text-right">
+                      <p className="text-[11px] font-normal text-[#8a9ab0]">1주 기준</p>
+                      <p className="mt-1 text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">{formatKrw(amount)}~</p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex shrink-0 items-center gap-2.5">
-                  <span className="border border-[#e2998a] px-1.5 py-0.5 text-[11px] font-medium text-[#c0523b]">
-                    {opt.discountPct}%
-                  </span>
-                  <span className="text-[13px] text-[#a0a9b7] line-through">
-                    {formatKrw(opt.originalKrw)}
-                  </span>
-                  <span className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
-                    {formatKrw(opt.discountedKrw)}
-                  </span>
-                </div>
-              </label>
-            ))}
+              );
+            })}
           </div>
 
-          {/* 하단 액션 바 */}
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#f0f3f6] pt-4 max-[480px]:flex-col max-[480px]:items-stretch">
-            <p className="text-[12px] font-normal text-[#8a9ab0]">오픈 1년 입점 할인 적용 · VAT 별도</p>
-            <div className="flex items-center gap-3 max-[480px]:flex-col">
-              <button
-                type="button"
-                onClick={() => router.push("/business/jobs")}
-                className="text-[13px] font-medium text-[#596373] transition hover:text-[#17202c] max-[480px]:py-2"
-              >
-                나중에 하기
-              </button>
-              <button
-                type="button"
-                onClick={() => setBoostModalOpen(true)}
-                className="inline-flex h-11 items-center justify-center px-6 text-[14px] font-bold text-white transition hover:brightness-110 max-[480px]:w-full"
-                style={{ backgroundImage: "var(--gradient-cta)" }}
-              >
-                {selectedOption ? `${formatKrw(selectedOption.discountedKrw)} 결제하기` : "결제하기"}
-              </button>
-            </div>
+          {/* 하단 안내 문구 */}
+          <p className="mt-4 border-t border-[#f0f3f6] pt-4 text-[12px] font-normal text-[#8a9ab0]">
+            {pricingCat ? "오픈 기념 1년 한정 프로모션가 적용 · VAT 별도" : "공고 정보를 확인한 뒤 상품별 금액이 표시됩니다."}
+          </p>
+
+          {/* CTA */}
+          <div className="mt-4 flex items-center justify-end gap-3 max-[480px]:flex-col max-[480px]:items-stretch">
+            <button
+              type="button"
+              onClick={() => router.push("/business/jobs")}
+              className="text-[13px] font-medium text-[#596373] transition hover:text-[#17202c] max-[480px]:py-2"
+            >
+              나중에 하기
+            </button>
+            <button
+              type="button"
+              onClick={() => setBoostModalOpen(true)}
+              className="inline-flex h-11 items-center justify-center px-6 text-[14px] font-bold text-white transition hover:brightness-110 max-[480px]:w-full"
+              style={{ backgroundImage: "var(--gradient-cta)" }}
+            >
+              부스트 적용하기
+            </button>
           </div>
         </div>
       </div>

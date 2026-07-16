@@ -1,13 +1,14 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Info } from "lucide-react";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
+import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   contractPeriodOptions,
@@ -18,7 +19,7 @@ import {
   workModeOptions,
 } from "@/config/jobFilters/index";
 import { researchInstitutionTypeOptions } from "@/config/jobFilters/researchFilters";
-import { RESEARCH_KW_BY_FIELD, RESEARCH_KW_BY_FIELD_GROUP } from "@/config/researchKeywords";
+import { getRecommendedKeywords } from "@/config/coreKeywords";
 import { researchFieldCategoryOptions } from "@/config/researchFields";
 import type { JobCategoryOption } from "@/types/jobs";
 
@@ -328,7 +329,6 @@ export function ResearchJobPostingForm() {
   // §5 검색 노출 설정
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const [customKeywords, setCustomKeywords] = useState<string[]>([]);
-  const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
   // 전형절차 및 제출서류 (선택 입력)
@@ -352,19 +352,11 @@ export function ResearchJobPostingForm() {
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
   const setRef = (key: string) => (el: HTMLElement | null) => { fieldRefs.current[key] = el; };
 
-  // 선택된 연구 분야(소분류) 기준으로 추천 키워드를 합쳐 계산 — 분야가 바뀔 때마다 재계산
-  const recommendedKeywords = useMemo(() => {
-    if (selectedFields.size === 0) return [];
-    const bySubfield = Array.from(selectedFields).flatMap((id) => RESEARCH_KW_BY_FIELD[id] ?? []);
-    if (bySubfield.length > 0) return Array.from(new Set(bySubfield));
-    // 매핑에 없는 소분류만 선택된 경우, 그 소분류의 상위 대분류 키워드로 대체
-    const groupIds = new Set(
-      Array.from(selectedFields)
-        .map((id) => researchFieldCategoryOptions.find((g) => g.subcategories.some((s) => s.id === id))?.id)
-        .filter((id): id is string => Boolean(id)),
-    );
-    return Array.from(new Set(Array.from(groupIds).flatMap((id) => RESEARCH_KW_BY_FIELD_GROUP[id] ?? [])));
-  }, [selectedFields]);
+  // 선택된 연구 분야(소분류) 기준으로 추천 키워드를 계산 — 분야가 바뀔 때마다 재계산
+  const recommendedKeywords = useMemo(
+    () => getRecommendedKeywords("research", { fieldIds: Array.from(selectedFields) }),
+    [selectedFields],
+  );
 
   function validate(): boolean {
     const next: Record<string, string> = {};
@@ -414,28 +406,6 @@ export function ResearchJobPostingForm() {
 
   function toggleBenefit(item: string) {
     setSelectedBenefits((prev) => toggleSet(prev, item));
-  }
-
-  function toggleKeyword(kw: string) {
-    setSelectedKeywords((prev) => {
-      const n = new Set(prev);
-      if (n.has(kw)) n.delete(kw);
-      else if (n.size < MAX_KW) n.add(kw);
-      return n;
-    });
-  }
-
-  function addCustomKeyword() {
-    const v = customKwInput.trim();
-    if (!v || v.length > 10 || selectedKeywords.has(v) || selectedKeywords.size >= MAX_KW) return;
-    setSelectedKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
-    setCustomKeywords((prev) => [...prev, v]);
-    setCustomKwInput("");
-  }
-
-  function removeCustomKeyword(kw: string) {
-    setSelectedKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
-    setCustomKeywords((prev) => prev.filter((k) => k !== kw));
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -773,86 +743,16 @@ export function ResearchJobPostingForm() {
 
         {/* ── §5 검색 노출 설정 ─────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
-          <div className="mb-6">
-            <FieldLabel className="block mb-1.5">
-              검색 키워드
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">
-                {selectedFields.size > 0
-                  ? "선택한 연구 분야에 맞춰 자주 쓰이는 키워드를 추천합니다."
-                  : "연구 분야를 먼저 선택하면 관련 키워드를 추천해 드립니다."}
-              </span>
-            </FieldLabel>
-
-            {/* Recommended pool — changes with §1 연구 분야 selection */}
-            {recommendedKeywords.length > 0 ? (
-              <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
-                {recommendedKeywords.map((kw) => {
-                  const on = selectedKeywords.has(kw);
-                  const blocked = selectedKeywords.size >= MAX_KW && !on;
-                  return (
-                    <button key={kw} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
-                      onClick={() => !blocked && toggleKeyword(kw)}
-                      className={clsx(
-                        "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
-                        on ? "border-[#111111] bg-[#111111] text-white"
-                          : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
-                            : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-                      )}>
-                      {on && <span className="text-[10px]" aria-hidden>✓</span>}
-                      {kw}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-[12px] text-[#98a2b0]">연구 분야를 먼저 선택해 주세요.</p>
-            )}
-
-            <div className="my-4 border-t border-[#f0f2f5]" />
-
-            {/* Custom keyword input */}
-            <FieldLabel className="block mb-1.5">
-              기타 키워드 직접 추가
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </FieldLabel>
-            <div className="flex gap-2">
-              <input
-                value={customKwInput}
-                onChange={(e) => setCustomKwInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
-                maxLength={10}
-                placeholder="예: PDX, scRNA-seq, LC-MS"
-                className={`${IN} flex-1`}
-                aria-label="키워드 직접 입력"
-              />
-              <button type="button" onClick={addCustomKeyword}
-                disabled={selectedKeywords.size >= MAX_KW}
-                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:text-[#aeb6c0]">
-                ＋ 직접 추가
-              </button>
-            </div>
-            <p className={HINT}>(10자 이내)</p>
-
-            {/* Custom keywords as chips (always "on", click removes) */}
-            {customKeywords.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {customKeywords.map((kw) => (
-                  <button key={kw} type="button" onClick={() => removeCustomKeyword(kw)}
-                    aria-label={`${kw} 키워드 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white">
-                    <span className="text-[10px]" aria-hidden>✓</span>
-                    {kw}
-                    <X size={11} className="ml-0.5 opacity-70" aria-hidden />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택한 키워드는 공고 목록과 추천 매칭에 활용되며, 목록에는 최대 5개까지 표시됩니다.
-            </p>
-          </div>
+          <RecommendedKeywordPicker
+            recommendedKeywords={recommendedKeywords}
+            hint="연구 분야를 선택하면 관련 키워드를 추천해 드립니다."
+            customPlaceholder="예: PDX, scRNA-seq, LC-MS"
+            selected={selectedKeywords}
+            onSelectedChange={setSelectedKeywords}
+            customKeywords={customKeywords}
+            onCustomKeywordsChange={setCustomKeywords}
+            maxCount={MAX_KW}
+          />
 
           {/* 대표 이미지 */}
           <div>

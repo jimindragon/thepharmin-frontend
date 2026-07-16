@@ -70,6 +70,16 @@ export const jobPostings: JobPosting[] = [
     applicantCount: 23,
     boost: null,
   },
+  {
+    id: "job-5",
+    title: "주 5일 근무 약사님을 모십니다",
+    track: "pharmacy",
+    registeredAt: "2026.07.10",
+    closingDate: "2026.08.10",
+    status: "active",
+    applicantCount: 3,
+    boost: null,
+  },
 ];
 
 export function filterJobPostings(

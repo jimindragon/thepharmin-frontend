@@ -4,10 +4,29 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { jobPostings, jobTrackLabel } from "@/data/businessJobs";
-import { BOOST_OPTIONS } from "@/data/boostOptions";
+import { BOOST_PRICING, trackToPricingCat, type BoostGrade } from "@/data/boostPricing";
 
 type PaymentMethod = "신용카드" | "계좌이체" | "간편결제";
 const PAYMENT_METHODS: PaymentMethod[] = ["신용카드", "계좌이체", "간편결제"];
+
+interface GradeOption {
+  id: BoostGrade;
+  name: string;
+  badge: string;
+}
+
+const GRADE_OPTIONS: GradeOption[] = [
+  { id: "premium", name: "PREMIUM", badge: "최상단 추천 영역" },
+  { id: "featured", name: "FEATURED", badge: "상단 추천 영역" },
+  { id: "standard", name: "STANDARD", badge: "추천 공고 영역" },
+];
+
+const WEEK_OPTS: { weeks: 1 | 2 | 3 | 4; label: string; discountLabel: string | null }[] = [
+  { weeks: 1, label: "1주", discountLabel: null },
+  { weeks: 2, label: "2주", discountLabel: "30%" },
+  { weeks: 3, label: "3주", discountLabel: "40%" },
+  { weeks: 4, label: "4주", discountLabel: "50%" },
+];
 
 function formatKrw(n: number) {
   return n.toLocaleString("ko-KR") + "원";
@@ -22,7 +41,8 @@ interface BoostModalProps {
 
 export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps) {
   const [selectedJobId, setSelectedJobId] = useState<string>("");
-  const [selectedBoostId, setSelectedBoostId] = useState<string>("1w");
+  const [selectedGrade, setSelectedGrade] = useState<BoostGrade>("premium");
+  const [selectedWeeks, setSelectedWeeks] = useState<1 | 2 | 3 | 4>(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("신용카드");
 
   const activeJobs = jobPostings.filter((j) => j.status === "active");
@@ -30,7 +50,8 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
   useEffect(() => {
     if (open) {
       setSelectedJobId(preselectedJobId ?? "");
-      setSelectedBoostId("1w");
+      setSelectedGrade("premium");
+      setSelectedWeeks(1);
       setPaymentMethod("신용카드");
     }
   }, [open, preselectedJobId]);
@@ -50,8 +71,13 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
 
   if (!open) return null;
 
-  const selectedBoost = BOOST_OPTIONS.find((o) => o.id === selectedBoostId)!;
-  const discountAmount = selectedBoost.originalKrw - selectedBoost.discountedKrw;
+  const selectedJob = jobPostings.find((j) => j.id === selectedJobId) ?? null;
+  const pricingCat = selectedJob ? trackToPricingCat(selectedJob.track) : null;
+  const pricePoint = pricingCat
+    ? BOOST_PRICING[selectedGrade][pricingCat].find((p) => p.weeks === selectedWeeks) ?? null
+    : null;
+  const discountAmount = pricePoint ? pricePoint.originalKrw - pricePoint.discountedKrw : 0;
+  const selectedGradeOption = GRADE_OPTIONS.find((g) => g.id === selectedGrade)!;
   const canPay = !!selectedJobId;
 
   return (
@@ -116,52 +142,96 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
               </div>
             </div>
 
-            {/* ② 이용 기간 */}
+            {/* ② 상품 선택 */}
             <div>
               <div className="mb-3 flex items-center gap-2">
                 <StepBadge n={2} />
-                <span className="text-[14px] font-semibold text-[#17202c]">이용 기간</span>
+                <span className="text-[14px] font-semibold text-[#17202c]">상품 선택</span>
               </div>
               <div className="space-y-2">
-                {BOOST_OPTIONS.map((opt) => (
+                {GRADE_OPTIONS.map((g) => (
                   <label
-                    key={opt.id}
+                    key={g.id}
                     className={clsx(
-                      "flex cursor-pointer items-center justify-between gap-3 border px-4 py-3.5 transition-colors",
-                      selectedBoostId === opt.id
+                      "flex cursor-pointer items-center gap-3 border px-4 py-3.5 transition-colors",
+                      selectedGrade === g.id
                         ? "border-[#17A68C] bg-[#f4fdf9]"
                         : "border-[#dfe4ea] bg-white hover:border-[#b0bac6]",
                     )}
                   >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="boost-modal-period"
-                        value={opt.id}
-                        checked={selectedBoostId === opt.id}
-                        onChange={() => setSelectedBoostId(opt.id)}
-                        className="h-[18px] w-[18px] cursor-pointer accent-[#17A68C]"
-                      />
-                      <span className="whitespace-nowrap text-[14px] font-bold text-[#17202c]">{opt.label}</span>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="border border-[#e2998a] px-1.5 py-0.5 text-[11px] font-medium text-[#c0523b]">
-                        {opt.discountPct}%
-                      </span>
-                      <span className="text-[12px] text-[#a0a9b7] line-through">{formatKrw(opt.originalKrw)}</span>
-                      <span className="text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">
-                        {formatKrw(opt.discountedKrw)}
-                      </span>
-                    </div>
+                    <input
+                      type="radio"
+                      name="boost-modal-grade"
+                      value={g.id}
+                      checked={selectedGrade === g.id}
+                      onChange={() => setSelectedGrade(g.id)}
+                      className="h-[18px] w-[18px] cursor-pointer accent-[#17A68C]"
+                    />
+                    <span className="text-[14px] font-bold text-[#17202c]">{g.name} — {g.badge}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* ③ 결제 수단 */}
+            {/* ③ 이용 기간 */}
             <div>
               <div className="mb-3 flex items-center gap-2">
                 <StepBadge n={3} />
+                <span className="text-[14px] font-semibold text-[#17202c]">이용 기간</span>
+              </div>
+              <div className="space-y-2">
+                {WEEK_OPTS.map((opt) => {
+                  const point = pricingCat
+                    ? BOOST_PRICING[selectedGrade][pricingCat].find((p) => p.weeks === opt.weeks) ?? null
+                    : null;
+                  return (
+                    <label
+                      key={opt.weeks}
+                      className={clsx(
+                        "flex cursor-pointer items-center justify-between gap-3 border px-4 py-3.5 transition-colors",
+                        selectedWeeks === opt.weeks
+                          ? "border-[#17A68C] bg-[#f4fdf9]"
+                          : "border-[#dfe4ea] bg-white hover:border-[#b0bac6]",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="boost-modal-period"
+                          value={opt.weeks}
+                          checked={selectedWeeks === opt.weeks}
+                          onChange={() => setSelectedWeeks(opt.weeks)}
+                          className="h-[18px] w-[18px] cursor-pointer accent-[#17A68C]"
+                        />
+                        <span className="whitespace-nowrap text-[14px] font-bold text-[#17202c]">{opt.label}</span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {opt.discountLabel && (
+                          <span className="border border-[#e2998a] px-1.5 py-0.5 text-[11px] font-medium text-[#c0523b]">
+                            {opt.discountLabel}
+                          </span>
+                        )}
+                        {point && (
+                          <>
+                            {point.originalKrw !== point.discountedKrw && (
+                              <span className="text-[12px] text-[#a0a9b7] line-through">{formatKrw(point.originalKrw)}</span>
+                            )}
+                            <span className="text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">
+                              {formatKrw(point.discountedKrw)}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ④ 결제 수단 */}
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <StepBadge n={4} />
                 <span className="text-[14px] font-semibold text-[#17202c]">결제 수단</span>
               </div>
               <div className="grid grid-cols-3">
@@ -185,26 +255,35 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
 
             {/* 금액 요약 */}
             <div className="border-t border-[#e5e9ef] pt-5">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-normal text-[#8a94a3]">{selectedBoost.label} 정가</span>
-                  <span className="text-[13px] font-normal text-[#596373]">
-                    {formatKrw(selectedBoost.originalKrw)}
-                  </span>
+              {pricePoint ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-normal text-[#8a94a3]">{selectedGradeOption.name} {selectedWeeks}주 정가</span>
+                    <span className="text-[13px] font-normal text-[#596373]">
+                      {formatKrw(pricePoint.originalKrw)}
+                    </span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[13px] font-normal text-[#8a94a3]">오픈 프로모션 할인</span>
+                        <span className="text-[13px] font-semibold text-status-urgent">
+                          -{formatKrw(discountAmount)}
+                        </span>
+                      </div>
+                      <p className="text-[12px] font-normal text-[#a0aab6]">선택한 기간에 따라 오픈 기념 프로모션가가 적용됩니다.</p>
+                    </>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-normal text-[#8a94a3]">입점 할인</span>
-                  <span className="text-[13px] font-semibold text-status-urgent">
-                    -{formatKrw(discountAmount)}
-                  </span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-[13px] font-normal text-[#8a94a3]">공고를 먼저 선택하면 상품별 금액이 표시됩니다.</p>
+              )}
               <div className="mt-4 flex items-end justify-between border-t border-[#e5e9ef] pt-4">
                 <span className="text-[14px] font-bold text-[#17202c]">결제 금액</span>
                 <div className="text-right">
                   <p className="text-[26px] font-bold tracking-[-0.025em] text-[#17202c]">
-                    {selectedBoost.discountedKrw.toLocaleString("ko-KR")}
-                    <span className="text-[17px]">원</span>
+                    {pricePoint ? pricePoint.discountedKrw.toLocaleString("ko-KR") : "-"}
+                    {pricePoint && <span className="text-[17px]">원</span>}
                   </p>
                   <p className="text-[11px] font-normal text-[#a0aab6]">VAT 별도</p>
                 </div>
@@ -229,7 +308,7 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
                 : { background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" }
             }
           >
-            {formatKrw(selectedBoost.discountedKrw)} 결제하기
+            {pricePoint ? `${formatKrw(pricePoint.discountedKrw)} 결제하기` : "결제하기"}
           </button>
         </div>
       </div>

@@ -1,14 +1,16 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Info } from "lucide-react";
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
+import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { getRecommendedKeywords } from "@/config/coreKeywords";
 import { educationOptions, employmentTypeOptions, experienceOptions } from "@/config/jobFilters/index";
 import { hospitalJobCategoryOptions, shiftTypeOptions } from "@/config/jobFilters/hospitalFilters";
 import { initialHospitalOrgProfile } from "@/data/businessOrgProfile";
@@ -21,11 +23,6 @@ const SALARY_OPTS = ["기관 내규", "3,000만↑", "5,000만↑", "7,000만↑
 const WELFARE_OPTS = [
   "퇴직연금", "연차·휴가", "의료비 지원", "식대 지원", "구내식당", "당직·휴일수당",
   "교육 지원", "학회·연수 지원", "전문약사 교육 지원", "경조사 지원", "직원 주차", "기숙사·사택",
-];
-// 병원은 직무별 분기 없이 항상 동일한 단일 키워드 목록을 쓴다(산업의 KW_BY_CAT 같은 분기 로직 없음)
-const HOSPITAL_KEYWORDS = [
-  "조제", "투약", "처방검토", "복약상담", "병동약료", "임상약료", "무균조제", "항암조제",
-  "TPN", "NST", "ASP", "감염약료", "종양약료", "DI", "마약류 관리", "의약품 관리", "임상시험약 관리",
 ];
 const MAX_KW = 8;
 
@@ -311,7 +308,6 @@ export function HospitalJobPostingForm() {
   // §4 검색 노출 설정
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const [customKeywords, setCustomKeywords] = useState<string[]>([]);
-  const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
   // 전형절차 및 제출서류 (선택 입력)
@@ -383,28 +379,6 @@ export function HospitalJobPostingForm() {
   function toggleSameAsInstitutionAddress(checked: boolean) {
     setSameAsInstitutionAddress(checked);
     if (checked) setAddress(initialHospitalOrgProfile.address);
-  }
-
-  function toggleKeyword(kw: string) {
-    setSelectedKeywords((prev) => {
-      const n = new Set(prev);
-      if (n.has(kw)) n.delete(kw);
-      else if (n.size < MAX_KW) n.add(kw);
-      return n;
-    });
-  }
-
-  function addCustomKeyword() {
-    const v = customKwInput.trim();
-    if (!v || v.length > 10 || selectedKeywords.has(v) || selectedKeywords.size >= MAX_KW) return;
-    setSelectedKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
-    setCustomKeywords((prev) => [...prev, v]);
-    setCustomKwInput("");
-  }
-
-  function removeCustomKeyword(kw: string) {
-    setSelectedKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
-    setCustomKeywords((prev) => prev.filter((k) => k !== kw));
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -641,75 +615,16 @@ export function HospitalJobPostingForm() {
 
         {/* ── §4 검색 노출 설정 ─────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
-          <div className="mb-6">
-            <FieldLabel className="block mb-1.5">
-              검색 키워드
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{selectedKeywords.size} / {MAX_KW}개 선택</span>
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">병원 약사 직무에 자주 쓰이는 키워드를 추천합니다.</span>
-            </FieldLabel>
-
-            <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
-              {HOSPITAL_KEYWORDS.map((kw) => {
-                const on = selectedKeywords.has(kw);
-                const blocked = selectedKeywords.size >= MAX_KW && !on;
-                return (
-                  <button key={kw} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
-                    onClick={() => !blocked && toggleKeyword(kw)}
-                    className={clsx(
-                      "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
-                      on ? "border-[#111111] bg-[#111111] text-white"
-                        : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
-                          : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-                    )}>
-                    {on && <span className="text-[10px]" aria-hidden>✓</span>}
-                    {kw}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="my-4 border-t border-[#f0f2f5]" />
-
-            <FieldLabel className="block mb-1.5">
-              기타 키워드 직접 추가
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </FieldLabel>
-            <div className="flex gap-2">
-              <input
-                value={customKwInput}
-                onChange={(e) => setCustomKwInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
-                maxLength={10}
-                placeholder="예: DUR, 조제실 관리, 약물상담"
-                className={`${IN} flex-1`}
-                aria-label="키워드 직접 입력"
-              />
-              <button type="button" onClick={addCustomKeyword}
-                disabled={selectedKeywords.size >= MAX_KW}
-                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:text-[#aeb6c0]">
-                ＋ 직접 추가
-              </button>
-            </div>
-            <p className={HINT}>(10자 이내)</p>
-
-            {customKeywords.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {customKeywords.map((kw) => (
-                  <button key={kw} type="button" onClick={() => removeCustomKeyword(kw)}
-                    aria-label={`${kw} 키워드 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white">
-                    <span className="text-[10px]" aria-hidden>✓</span>
-                    {kw}
-                    <X size={11} className="ml-0.5 opacity-70" aria-hidden />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택한 키워드는 공고 목록과 추천 매칭에 활용되며, 목록에는 최대 5개까지 표시됩니다.
-            </p>
-          </div>
+          <RecommendedKeywordPicker
+            recommendedKeywords={getRecommendedKeywords("hospital")}
+            hint="추천 키워드에서 선택하거나 직접 추가할 수 있습니다."
+            customPlaceholder="예: DUR, 조제실 관리, 약물상담"
+            selected={selectedKeywords}
+            onSelectedChange={setSelectedKeywords}
+            customKeywords={customKeywords}
+            onCustomKeywordsChange={setCustomKeywords}
+            maxCount={MAX_KW}
+          />
 
           <div>
             <div id="h-img-lbl">

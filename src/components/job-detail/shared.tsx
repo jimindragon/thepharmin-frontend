@@ -3,11 +3,12 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, ChevronRight, Heart, Lock, MapPin, Share2, type LucideIcon } from "lucide-react";
+import { Bookmark, ChevronRight, Heart, Layers, Lock, MapPin, Share2, type LucideIcon } from "lucide-react";
+import { JobCard } from "@/components/JobCard";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
-import type { FormattedContent, Job } from "@/types/jobs";
+import type { FormattedContent, Job, JobTrack } from "@/types/jobs";
 
 /**
  * 공고 상세 페이지(산업/약국 등 트랙 공용)에서 재사용하는 패널·타이포그래피·저장 상태 유틸.
@@ -216,19 +217,25 @@ export function IconSectionShell({
   id,
   icon: Icon,
   title,
+  action,
   children,
 }: {
   id: string;
   icon: LucideIcon;
   title: string;
+  /** 제목 우측 보조 링크 등. 넘기지 않으면 기존과 동일하게 h2만 렌더한다. */
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section id={id} className="scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
-      <h2 className="flex items-center gap-2 text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">
-        <Icon size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
-        {title}
-      </h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="flex items-center gap-2 text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">
+          <Icon size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
+          {title}
+        </h2>
+        {action}
+      </div>
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -479,5 +486,59 @@ export function CompanyCtaButtons({ companyId, detailLabel = "기업 정보 더�
         면접 후기 보기
       </Link>
     </div>
+  );
+}
+
+// ── 비슷한 공고 (본문 최하단) ──────────────────────────────────────────────────────
+
+/**
+ * V2 상세(산업/병원/약국/연구 공통) 본문 최하단 "비슷한 공고" 섹션. 본문 카드들(IconSectionShell,
+ * rounded+shadow)과 달리 radius 0·그림자 없이 눌러, "다음으로 볼 공고"라는 다른 성격의 구역임을
+ * 구분한다. 카드는 목록 페이지와 동일한 JobCard를 그대로 써서 저장 상태(readSavedJobs/writeSavedJobs)와
+ * 링크 가드(JobCard 내부의 hasJobDetail 체크)를 공유한다. jobs가 비어 있으면(이론상 발생하지 않지만)
+ * 섹션 자체를 렌더하지 않는다. 우상단 "관련 공고 더보기" 링크는 /jobs의 track 쿼리 파라미터로
+ * 해당 트랙 탭을 바로 연다(useJobFilters가 초기화 시 읽는 값과 동일한 키).
+ */
+export function SimilarJobsSection({ jobs, track }: { jobs: Job[]; track: JobTrack }) {
+  const [savedIds, setSavedIds] = useState<Set<number>>(() => new Set());
+
+  useEffect(() => {
+    setSavedIds(readSavedJobs());
+  }, []);
+
+  if (jobs.length === 0) {
+    return null;
+  }
+
+  const toggleSave = (jobId: number) => {
+    setSavedIds((current) => {
+      const next = new Set(current);
+      if (next.has(jobId)) {
+        next.delete(jobId);
+      } else {
+        next.add(jobId);
+      }
+      writeSavedJobs(next);
+      return next;
+    });
+  };
+
+  return (
+    <section className="border border-border bg-white px-7 py-6 max-[720px]:px-5">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="flex items-center gap-2 text-[26px] font-bold tracking-[-0.02em] text-[#242b36] max-[720px]:text-[20px]">
+          <Layers size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
+          비슷한 공고
+        </h2>
+        <Link href={`/jobs?track=${track}`} className="shrink-0 text-[13px] font-medium text-[#777777] hover:text-[#111111]">
+          관련 공고 더보기 ›
+        </Link>
+      </div>
+      <div className="mt-5 flex flex-col gap-3">
+        {jobs.map((job) => (
+          <JobCard key={job.id} job={job} isBookmarked={savedIds.has(job.id)} onToggleBookmark={toggleSave} />
+        ))}
+      </div>
+    </section>
   );
 }

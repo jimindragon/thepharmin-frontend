@@ -1,14 +1,16 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, ArrowUpRight, Info, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Info } from "lucide-react";
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
+import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { getRecommendedKeywords } from "@/config/coreKeywords";
 import {
   educationOptions,
   employmentTypeOptions,
@@ -26,7 +28,7 @@ type JobCat = "rnd" | "sales" | "clinical" | "ra" | "ma" | "qc" | "pv" | "strate
 // ── Static data ────────────────────────────────────────────────────────────────
 
 /**
- * 이 폼의 대분류 탭 키(JobCat)는 키워드 추천(KW_BY_CAT)을 위한 내부 식별자이며,
+ * 이 폼의 대분류 탭 키(JobCat)는 키워드 추천(coreKeywords.ts)을 위한 내부 식별자이며,
  * 정본 카테고리 id와 1:1로 매핑해 라벨·소분류를 industryJobCategoryOptions에서 가져온다.
  */
 const JOB_CAT_TO_CATEGORY_ID: Record<JobCat, string> = {
@@ -52,19 +54,6 @@ const JOB_CATEGORIES: { key: JobCat; label: string; subcategories: JobSubcategor
 const SUBCATEGORY_LABEL_BY_ID = new Map(
   industryJobCategoryOptions.flatMap((category) => category.subcategories).map((sub) => [sub.id, sub.label] as const),
 );
-
-const KW_BY_CAT: Record<JobCat, string[]> = {
-  rnd: ["신약개발", "전임상 연구", "후보물질 발굴", "스크리닝", "약리평가", "독성평가", "약동학/약력학", "제형연구", "분석법 개발", "CMC", "바이오의약품", "세포주 개발", "의료기기 R&D", "특허/IP"],
-  sales: ["제약영업", "MR", "의료기기 영업", "병원영업", "KOL 관리", "Product Marketing", "브랜드 전략", "디지털 마케팅", "시장분석", "영업기획", "Key Account", "해외영업"],
-  clinical: ["CRA", "CRC", "임상 PM", "Clinical Operations", "Medical Writing", "임상 QA", "ICH-GCP", "프로토콜", "Site Management", "모니터링", "SAE", "Data Management", "Biostatistics", "eTMF"],
-  ra: ["RA", "인허가", "CTD", "eCTD", "IND/NDA", "MFDS", "FDA", "EMA", "허가전략", "변경허가", "CMC RA", "의료기기 RA", "글로벌 인허가", "규제기관 대응"],
-  ma: ["Medical Affairs", "MSL", "Medical Science", "KOL Engagement", "Scientific Communication", "Medical Education", "HEOR", "RWE", "근거생성", "Market Access", "보험등재", "약가전략", "약물경제성", "논문·학술자료"],
-  qc: ["GMP", "QA", "QC", "품질보증", "품질관리", "QMS", "Validation", "CSV", "SOP", "CAPA", "Deviation", "Audit", "공정관리", "제조관리", "LIMS"],
-  pv: ["PV", "Drug Safety", "Pharmacovigilance", "이상사례", "ICSR", "Safety Database", "Signal Detection", "Literature Review", "DSUR", "PSUR/PBRER", "RMP", "안전성 보고", "SOP", "규제기관 보고"],
-  strategy: ["BD", "사업개발", "Licensing", "License-in", "License-out", "기술이전", "파트너링", "Alliance Management", "M&A", "IR", "사업전략", "시장성 평가", "기술가치평가", "계약협상"],
-  data: ["AI 신약개발", "Bioinformatics", "Data Science", "의료데이터", "RWE 데이터", "머신러닝", "빅데이터 분석", "데이터 파이프라인", "Python", "SQL", "CDISC", "SAS", "헬스케어 소프트웨어", "SaMD"],
-  biz: ["HR", "채용", "조직문화", "재무", "회계", "법무", "컴플라이언스", "구매", "SCM", "물류", "홍보", "PR", "IR 지원", "총무"],
-};
 
 const WELFARE_OPTS = ["유연근무제", "재택근무", "성과급", "인센티브", "연차·반차", "건강검진", "식대 지원", "교통비 지원", "교육비 지원", "자격증 취득 지원", "어학 교육 지원", "학회·세미나 지원", "셔틀버스", "기숙사·사택"];
 const SALARY_OPTS = ["회사 내규", "3,000만↑", "5,000만↑", "7,000만↑", "9,000만↑"];
@@ -250,11 +239,9 @@ export function IndustryJobPostingForm() {
   const [welfare, setWelfare] = useState<Set<string>>(new Set());
   const [workCondDetail, setWorkCondDetail] = useState("");
 
-  // §4 키워드·이미지 — kwCategory tracks which category's pool to show
-  const [kwCategory, setKwCategory] = useState<JobCat>("rnd");
-  const [keywords, setKeywords] = useState<Set<string>>(new Set());
+  // §4 키워드·이미지
+  const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const [customKeywords, setCustomKeywords] = useState<string[]>([]);
-  const [customKwInput, setCustomKwInput] = useState("");
   const [imageOption, setImageOption] = useState<"default" | "upload" | "none">("default");
 
   // 전형절차 및 제출서류 (선택 입력)
@@ -309,36 +296,12 @@ export function IndustryJobPostingForm() {
     return count === 0;
   }
 
-  // Selecting a job category updates both the picker display AND the keyword pool
   function selectJobCat(cat: JobCat) {
     setActiveJobCat(cat);
-    setKwCategory(cat);
   }
 
   function toggleJob(job: string) {
     setSelectedJobs((prev) => toggleSet(prev, job));
-  }
-
-  function toggleKeyword(kw: string) {
-    setKeywords((prev) => {
-      const n = new Set(prev);
-      if (n.has(kw)) n.delete(kw);
-      else if (n.size < MAX_KW) n.add(kw);
-      return n;
-    });
-  }
-
-  function addCustomKeyword() {
-    const v = customKwInput.trim();
-    if (!v || v.length > 10 || keywords.has(v) || keywords.size >= MAX_KW) return;
-    setKeywords((prev) => { const n = new Set(prev); n.add(v); return n; });
-    setCustomKeywords((prev) => [...prev, v]);
-    setCustomKwInput("");
-  }
-
-  function removeCustomKeyword(kw: string) {
-    setKeywords((prev) => { const n = new Set(prev); n.delete(kw); return n; });
-    setCustomKeywords((prev) => prev.filter((k) => k !== kw));
   }
 
   function toggleSameAsCompanyAddress(checked: boolean) {
@@ -356,7 +319,11 @@ export function IndustryJobPostingForm() {
   const activeCategory = JOB_CATEGORIES.find((c) => c.key === activeJobCat);
   const activeCatLabel = activeCategory?.label ?? "";
   const activeCategorySubcategories = activeCategory?.subcategories ?? [];
-  const kwCatLabel     = JOB_CATEGORIES.find((c) => c.key === kwCategory)?.label ?? "";
+
+  // 추천 키워드는 모집 직무(1차 분류)에 연동 — 아직 아무 직무도 선택하지 않았으면 풀이 비어 칩 영역만 비워둠
+  const recommendedKeywords = selectedJobs.size > 0
+    ? getRecommendedKeywords("industry", { categoryId: JOB_CAT_TO_CATEGORY_ID[activeJobCat] })
+    : [];
 
   return (
     <div>
@@ -660,78 +627,16 @@ export function IndustryJobPostingForm() {
 
         {/* ── §4 키워드 · 이미지 ────────────────────────────────────────────── */}
         <SectionCard title="검색 노출 설정">
-          <div className="mb-6">
-            <FieldLabel className="block mb-1.5">
-              검색 키워드
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">{keywords.size} / {MAX_KW}개 선택</span>
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">모집 직무에 맞춰 자주 쓰이는 키워드를 추천합니다.</span>
-            </FieldLabel>
-
-            {/* Recommended pool — changes with job category */}
-            <div role="group" aria-label="추천 키워드" className="flex flex-wrap gap-2">
-              {KW_BY_CAT[kwCategory].map((kw) => {
-                const on = keywords.has(kw);
-                const blocked = keywords.size >= MAX_KW && !on;
-                return (
-                  <button key={kw} type="button" role="checkbox" aria-checked={on} aria-disabled={blocked}
-                    onClick={() => !blocked && toggleKeyword(kw)}
-                    className={clsx(
-                      "inline-flex h-9 items-center gap-1.5 border px-3.5 text-[12px] font-medium transition-colors",
-                      on ? "border-[#111111] bg-[#111111] text-white"
-                        : blocked ? "cursor-not-allowed border-[#dfe4ea] bg-[#f5f6f7] text-[#aeb6c0]"
-                          : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
-                    )}>
-                    {on && <span className="text-[10px]" aria-hidden>✓</span>}
-                    {kw}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="my-4 border-t border-[#f0f2f5]" />
-
-            {/* Custom keyword input */}
-            <FieldLabel className="block mb-1.5">
-              기타 키워드 직접 추가
-              <span className="ml-2 text-[12px] font-normal text-[#7b8491]">추천 목록에 없는 키워드는 직접 입력하세요.</span>
-            </FieldLabel>
-            <div className="flex gap-2">
-              <input
-                value={customKwInput}
-                onChange={(e) => setCustomKwInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } }}
-                maxLength={10}
-                placeholder="예: ICH-GCP"
-                className={`${IN} flex-1`}
-                aria-label="키워드 직접 입력"
-              />
-              <button type="button" onClick={addCustomKeyword}
-                disabled={keywords.size >= MAX_KW}
-                className="h-11 border border-[#111111] bg-white px-4 text-[13px] font-semibold text-[#111111] transition-colors hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:text-[#aeb6c0]">
-                ＋ 직접 추가
-              </button>
-            </div>
-            <p className={HINT}>(10자 이내)</p>
-
-            {/* Custom keywords as chips (always "on", click removes) */}
-            {customKeywords.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {customKeywords.map((kw) => (
-                  <button key={kw} type="button" onClick={() => removeCustomKeyword(kw)}
-                    aria-label={`${kw} 키워드 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white">
-                    <span className="text-[10px]" aria-hidden>✓</span>
-                    {kw}
-                    <X size={11} className="ml-0.5 opacity-70" aria-hidden />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
-              선택한 키워드는 공고 목록과 추천 매칭에 활용되며, 목록에는 최대 5개까지 표시됩니다.
-            </p>
-          </div>
+          <RecommendedKeywordPicker
+            recommendedKeywords={recommendedKeywords}
+            hint="모집 직무를 선택하면 관련 키워드를 추천해 드립니다."
+            customPlaceholder="예: ICH-GCP"
+            selected={selectedKeywords}
+            onSelectedChange={setSelectedKeywords}
+            customKeywords={customKeywords}
+            onCustomKeywordsChange={setCustomKeywords}
+            maxCount={MAX_KW}
+          />
 
           {/* 대표 이미지 */}
           <div>

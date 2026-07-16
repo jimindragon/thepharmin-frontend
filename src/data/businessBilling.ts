@@ -1,4 +1,5 @@
 import type { JobTrack } from "@/types/jobs";
+import type { BoostGrade } from "@/data/boostPricing";
 
 // ── 요금제 관리 (부스트 현황) ──────────────────────────────────────────────
 
@@ -8,6 +9,7 @@ export interface ActiveBoost {
   id: string;
   jobTitle: string;
   track: JobTrack;
+  grade: BoostGrade;
   status: BoostStatus;
   daysLeft: number;
   durationWeeks: number;
@@ -48,21 +50,23 @@ export const activeBoosts: ActiveBoost[] = [
     id: "boost-1",
     jobTitle: "임상개발 PM 채용",
     track: "industry",
+    grade: "standard",
     status: "ending_soon",
     daysLeft: 2,
     durationWeeks: 4,
     endDate: "2026.07.21",
-    amountKrw: 259000,
+    amountKrw: 700000,
   },
   {
     id: "boost-2",
     jobTitle: "제제연구 선임연구원 모집",
     track: "research",
+    grade: "standard",
     status: "active",
     daysLeft: 9,
     durationWeeks: 2,
     endDate: "2026.07.28",
-    amountKrw: 148000,
+    amountKrw: 490000,
   },
 ];
 

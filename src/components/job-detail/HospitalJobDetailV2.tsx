@@ -34,6 +34,7 @@ import {
   InfoRowList,
   JobDetailActionRow,
   MapPlaceholder,
+  SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
   useStickySidebarTop,
@@ -48,6 +49,7 @@ import {
   shiftTypeLabelMap,
   type HospitalJobDetail,
 } from "@/data/hospitalJobDetails";
+import { getSimilarJobs } from "@/data/similarJobs";
 import { getHospitalJobCoverImage } from "@/utils/hospitalImage";
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -62,6 +64,7 @@ export function HospitalJobDetailV2({ data }: { data: HospitalJobDetail }) {
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
 
   const heroImage = getHospitalJobCoverImage(data.slug);
+  const similarJobs = getSimilarJobs(data.slug, 3);
 
   const shiftTypeLabel = job.shiftTypeIds.map((id) => shiftTypeLabelMap[id] ?? id).join("/");
   const hospitalTypeLabel = hospitalTypeLabels[org.hospitalTypeId] ?? org.hospitalTypeId;
@@ -343,6 +346,9 @@ export function HospitalJobDetailV2({ data }: { data: HospitalJobDetail }) {
 
                 <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" />
               </IconSectionShell>
+
+              {/* 비슷한 공고 */}
+              <SimilarJobsSection jobs={similarJobs} track="hospital" />
             </div>
 
             {/* ── 사이드바 ──────────────────────────────────────────────── */}
@@ -374,9 +380,9 @@ export function HospitalJobDetailV2({ data }: { data: HospitalJobDetail }) {
                     </div>
                   ))}
                 </div>
-                {job.keywords && job.keywords.length > 0 ? (
+                {job.coreKeywords && job.coreKeywords.length > 0 ? (
                   <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 border-t border-[#f0f2f5] pt-3">
-                    {job.keywords.slice(0, 6).map((keyword) => (
+                    {job.coreKeywords.slice(0, 6).map((keyword) => (
                       <span key={keyword} className="text-[12px] font-medium text-[#667181]">
                         #{keyword}
                       </span>

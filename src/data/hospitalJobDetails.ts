@@ -102,7 +102,7 @@ export interface HospitalJobPosting {
   benefitIds?: string[];
   workConditionDetail?: string;
 
-  keywords?: string[];
+  coreKeywords?: string[];
   additionalNotes?: string;
   detailImages?: string[];
   attachments?: { name: string; url: string }[];
@@ -197,7 +197,7 @@ export const osanHospitalJobDetail: HospitalJobDetail = {
     workConditionDetail:
       "일요일 당직 근무 중심의 계약직 포지션입니다. 당직 일정은 월 단위로 사전 협의하며, 당직·휴일수당이 지급됩니다.",
 
-    keywords: ["휴직대체", "일요당직", "종합병원", "경기남부"],
+    coreKeywords: ["휴직대체", "일요당직", "종합병원", "경기남부"],
     // additionalNotes: 없음 — 추가 안내 섹션 숨김 검증 케이스
     // detailImages/attachments: 없음
 
@@ -278,7 +278,7 @@ export const armedForcesSeoulDistrictHospitalJobDetail: HospitalJobDetail = {
     benefitIds: ["연차·휴가", "의료비 지원", "교육 지원"],
     workConditionDetail: "주간 근무 중심이며, 규정에 따른 연차와 공휴일 휴무가 보장됩니다.",
 
-    keywords: ["군무원", "약제과장", "공공기관", "관리약사"],
+    coreKeywords: ["군무원", "약제과장", "공공기관", "관리약사"],
     additionalNotes: "군 병원 특성상 채용 시 신원조회 절차가 진행됩니다.",
     // detailImages/attachments: 없음
     hiringProcess: ["서류 전형", "실무 면접", "신원조회", "최종합격"],
@@ -359,7 +359,7 @@ export const nationalFireHospitalJobDetail: HospitalJobDetail = {
     workConditionDetail:
       "주간 근무 중심으로 운영되며, 신설 병원 특성상 주거지원이 예정되어 있습니다.",
 
-    keywords: ["공공기관", "신입가능", "주거지원", "약무직", "종합병원"],
+    coreKeywords: ["공공기관", "신입가능", "주거지원", "약무직", "종합병원"],
     // additionalNotes/detailImages: 없음
     attachments: [
       { name: "국립소방병원 약무직 신규직원 채용공고문.pdf", url: "#" },
@@ -434,7 +434,7 @@ export const sungaeHospitalJobDetail: HospitalJobDetail = {
     salary: "연봉 3,180~3,230만원",
     workConditionDetail: "평일 오전(08:30~12:30) 근무이며, 오후 시간 활용이 가능합니다.",
 
-    keywords: ["오전근무", "파트타임", "종합병원", "워라밸", "육아병행"],
+    coreKeywords: ["오전근무", "파트타임", "종합병원", "워라밸", "육아병행"],
     // detailImages/attachments/additionalNotes: 3종 모두 없음
     hiringProcess: ["서류전형", "1차 면접", "2차 면접", "최종합격"],
     requiredDocuments: [

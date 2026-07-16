@@ -7,74 +7,32 @@ import { useEffect, useRef, useState } from "react";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
+import { BOOST_PRICING, type BoostGrade, type BoostPricePoint, type PricingCat } from "@/data/boostPricing";
 
 // ── 가격 데이터 ─────────────────────────────────────────────
-type Cat = "industry" | "hospital" | "pharmacy";
+type Cat = PricingCat;
 interface PP { price: string; original?: string; }
-function won(n: number) { return n.toLocaleString("ko-KR") + "원"; }
 
-const PRICES: Record<"premium" | "featured" | "standard", Record<Cat, [PP, PP, PP, PP]>> = {
-  premium: {
-    industry: [
-      { price: won(857_000) },
-      { price: won(1_200_000), original: won(2_400_000) },
-      { price: won(1_543_000), original: won(2_571_000) },
-      { price: won(1_714_000), original: won(3_428_000) },
-    ],
-    hospital: [
-      { price: won(1_029_000) },
-      { price: won(1_440_000), original: won(2_057_000) },
-      { price: won(1_851_000), original: won(3_087_000) },
-      { price: won(2_057_000), original: won(4_116_000) },
-    ],
-    pharmacy: [
-      { price: won(86_000) },
-      { price: won(120_000), original: won(171_000) },
-      { price: won(154_000), original: won(258_000) },
-      { price: won(171_000), original: won(344_000) },
-    ],
-  },
-  featured: {
-    industry: [
-      { price: won(564_000) },
-      { price: won(790_000), original: won(1_129_000) },
-      { price: won(1_016_000), original: won(1_692_000) },
-      { price: won(1_129_000), original: won(2_256_000) },
-    ],
-    hospital: [
-      { price: won(457_000) },
-      { price: won(640_000), original: won(914_000) },
-      { price: won(823_000), original: won(1_371_000) },
-      { price: won(914_000), original: won(1_828_000) },
-    ],
-    pharmacy: [
-      { price: won(57_000) },
-      { price: won(80_000), original: won(114_000) },
-      { price: won(103_000), original: won(171_000) },
-      { price: won(114_000), original: won(228_000) },
-    ],
-  },
-  standard: {
-    industry: [
-      { price: won(400_000) },
-      { price: won(560_000), original: won(800_000) },
-      { price: won(720_000), original: won(1_200_000) },
-      { price: won(800_000), original: won(1_600_000) },
-    ],
-    hospital: [
-      { price: won(343_000) },
-      { price: won(480_000), original: won(686_000) },
-      { price: won(617_000), original: won(1_029_000) },
-      { price: won(686_000), original: won(1_372_000) },
-    ],
-    pharmacy: [
-      { price: won(21_000) },
-      { price: won(29_000), original: won(41_000) },
-      { price: won(37_000), original: won(63_000) },
-      { price: won(41_000), original: won(84_000) },
-    ],
-  },
-};
+function formatKrw(n: number) { return n.toLocaleString("ko-KR") + "원"; }
+
+function toPP(points: BoostPricePoint[]): [PP, PP, PP, PP] {
+  return points.map((p) =>
+    p.originalKrw === p.discountedKrw
+      ? { price: formatKrw(p.discountedKrw) }
+      : { price: formatKrw(p.discountedKrw), original: formatKrw(p.originalKrw) },
+  ) as [PP, PP, PP, PP];
+}
+
+const GRADES: BoostGrade[] = ["premium", "featured", "standard"];
+const CATS: Cat[] = ["industry", "hospital", "pharmacy"];
+
+const PRICES = GRADES.reduce((acc, grade) => {
+  acc[grade] = CATS.reduce((catAcc, cat) => {
+    catAcc[cat] = toPP(BOOST_PRICING[grade][cat]);
+    return catAcc;
+  }, {} as Record<Cat, [PP, PP, PP, PP]>);
+  return acc;
+}, {} as Record<BoostGrade, Record<Cat, [PP, PP, PP, PP]>>);
 
 const PERIOD_OPTS = [
   { label: "1주", discount: "" },
@@ -183,6 +141,13 @@ export function BusinessPricingClient() {
   const prem = PRICES.premium[activeCat][premPeriod];
   const feat = PRICES.featured[activeCat][featPeriod];
   const std  = PRICES.standard[activeCat][stdPeriod];
+
+  const premCopy = activeCat === "pharmacy"
+    ? { subtitle: "빠른 채용을 위한 최상단 노출", desc: "웹사이트 최상단 추천 영역에 노출됩니다. 가장 빠른 채용이 필요할 때 추천합니다." }
+    : { subtitle: "빠른 채용을 위한 전 채널 집중 노출 패키지", desc: "웹사이트 최상단부터 SNS·카카오톡·미디어까지 한 번에 노출합니다. 가장 빠른 채용이 필요할 때 추천합니다." };
+  const featCopy = activeCat === "pharmacy"
+    ? { subtitle: "상단 추천 노출", desc: "상단 추천 영역에 노출되어 공고 도달 범위를 넓힙니다." }
+    : { subtitle: "추천 노출 + 주요 채널 노출 구성", desc: "상단 추천 노출에 SNS·카카오톡 주간 노출을 더해 공고 도달 범위를 넓힙니다." };
 
   const applyHref = isMember ? "/support/contact" : "/business/signup";
   const freeHref  = isMember ? "/business/jobs/new" : "/business/signup";
@@ -435,14 +400,14 @@ export function BusinessPricingClient() {
               분류별 상품 안내
             </h2>
             <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373]">
-              산업·기관 / 병원 / 약국에 따라 금액이 다릅니다.
+              산업·연구기관 / 병원 / 약국에 따라 금액이 다릅니다.
             </p>
 
             {/* 분류 탭 — 중앙 정렬 */}
             <div className="mt-9 flex justify-center">
               <div className="flex gap-2">
                 {(["industry","hospital","pharmacy"] as const).map((cat) => {
-                  const label = cat === "industry" ? "산업·기관" : cat === "hospital" ? "병원" : "약국";
+                  const label = cat === "industry" ? "산업·연구기관" : cat === "hospital" ? "병원" : "약국";
                   return (
                     <button
                       key={cat}
@@ -517,8 +482,8 @@ export function BusinessPricingClient() {
                       </div>
                       <div className="mb-3"><span className="bg-[#17A68C] px-2 py-[3px] text-[10.5px] font-bold text-white">빠른 채용</span></div>
                       <div>
-                        <p className="text-[15px] font-medium text-[#0a0a0a]">전 채널 집중 노출 패키지</p>
-                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">웹사이트 최상단부터 SNS·카카오톡·미디어까지 한 번에.<br />가장 빠른 채용이 필요할 때.</p>
+                        <p className="text-[15px] font-medium text-[#0a0a0a]">{premCopy.subtitle}</p>
+                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">{premCopy.desc}</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
@@ -540,8 +505,8 @@ export function BusinessPricingClient() {
                       </div>
                       <div className="mb-3"><span className="bg-[#0a0a0a] px-2 py-[3px] text-[10.5px] font-bold text-white">BEST</span></div>
                       <div>
-                        <p className="text-[15px] font-medium text-[#0a0a0a]">추천 + 채널 노출 구성</p>
-                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">상단 추천 노출에 SNS·카카오톡 주간 노출을 더해<br />도달을 넓힙니다.</p>
+                        <p className="text-[15px] font-medium text-[#0a0a0a]">{featCopy.subtitle}</p>
+                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">{featCopy.desc}</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
@@ -563,7 +528,7 @@ export function BusinessPricingClient() {
                       </div>
                       <div className="mt-[6px]">
                         <p className="text-[15px] font-medium text-[#0a0a0a]">웹사이트 추천 노출</p>
-                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">추천 공고 영역에 14일간 안정적으로 노출됩니다.</p>
+                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">추천 공고 영역에 선택한 기간 동안 안정적으로 노출됩니다.</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
@@ -585,7 +550,7 @@ export function BusinessPricingClient() {
                       </div>
                       <div className="mt-[6px]">
                         <p className="text-[15px] font-medium text-[#0a0a0a]">공고 등록·게시 무료</p>
-                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">마감일까지 노출, 별도 마감이 없으면 최대 30일.</p>
+                        <p className="mt-[4px] text-[13px] text-[#a3a3a3]">마감일까지 노출되며, 별도 마감일이 없으면 최대 30일까지 게시됩니다.</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
