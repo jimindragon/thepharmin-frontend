@@ -21,6 +21,15 @@ export function getOrgTrackForInstitutionType(type: SignupInstitutionType): OrgT
   return "industry";
 }
 
+/** 트랙별 정보관리 페이지 경로 — 트랙 미상 화면의 분배기(BusinessOrgProfilePageClient)와
+ * 트랙을 이미 알고 있는 화면(가입완료, 브랜드 페이지 미리보기)이 함께 쓰는 공유 매핑이다. */
+export const trackProfilePath: Record<OrgTrack, string> = {
+  industry: "/business/industry/profile",
+  hospital: "/business/hospital/profile",
+  pharmacy: "/business/pharmacy/profile",
+  research: "/business/research/profile",
+};
+
 const ORG_TRACK_KEY = "thepharmin_signup_org_track";
 const PHARMACY_TYPE_KEY = "thepharmin_signup_pharmacy_type";
 const PHARMACY_FEATURE_KEY = "thepharmin_signup_pharmacy_feature";
@@ -29,7 +38,10 @@ const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy", "researc
 const validPharmacyTypes: PharmacyType[] = ["local", "clinic-front", "large", "beauty"];
 const validPharmacyFeatureIds: string[] = pharmacyFeatureOptions.map((option) => option.id);
 
-/** 가입 완료 시 저장된 orgTrack — /business/company/profile(BusinessOrgProfilePageClient)이 어느 트랙 전용 정보관리 페이지(/business/{track}/profile)로 리다이렉트할지 결정하는 데 쓰인다. */
+/** 가입 완료 시 저장된 orgTrack — 트랙 정보가 없는 화면(결제내역, 1:1 문의 등)의 진입점인
+ * /business/company/profile(BusinessOrgProfilePageClient)이 trackProfilePath 중 어디로 리다이렉트할지
+ * 결정하는 데 쓰인다. 가입완료·브랜드 페이지 미리보기처럼 트랙을 이미 알고 있는 화면은 이 분배기를
+ * 거치지 않고 trackProfilePath로 직접 이동한다. */
 export function readSignupOrgTrack(): OrgTrack | null {
   if (typeof window === "undefined") return null;
   const value = window.localStorage.getItem(ORG_TRACK_KEY);

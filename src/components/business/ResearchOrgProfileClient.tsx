@@ -177,27 +177,18 @@ export function ResearchOrgProfileClient() {
           }
           action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기관 인증 완료</span>}
         >
-          <div className="grid grid-cols-3 border border-[#dfe4ea] max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
+          <div className="grid grid-cols-4 border border-[#dfe4ea] max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
               ["사업자등록번호", profile.businessNumber],
               ["기관명", profile.institutionName],
               ["대표자명", profile.representativeName],
+              ["사업자등록증명원", statusLabel(profile.businessLicenseFile.status)],
             ].map(([label, value]) => (
               <div key={label} className="border-r border-[#dfe4ea] px-4 py-4 last:border-r-0 max-[900px]:border-b">
                 <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
                 <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
               </div>
             ))}
-          </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_2fr] border border-t-0 border-[#dfe4ea] max-[900px]:grid-cols-1">
-            <div className="border-r border-[#dfe4ea] px-4 py-4 max-[900px]:border-b max-[900px]:border-r-0">
-              <p className="text-[11px] font-medium text-[#8a94a3]">기관 고유번호</p>
-              <p className="mt-2 text-[13px] font-medium text-[#17202c]">{profile.institutionCode}</p>
-            </div>
-            <div className="px-4 py-4">
-              <p className="text-[11px] font-medium text-[#8a94a3]">사업자등록증명원</p>
-              <p className="mt-2 text-[13px] font-medium text-[#17202c]">{statusLabel(profile.businessLicenseFile.status)}</p>
-            </div>
           </div>
           <div className="mt-4">
             <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
@@ -219,25 +210,25 @@ export function ResearchOrgProfileClient() {
                   <FormActionButton>우편번호 찾기</FormActionButton>
                 </div>
                 <TextInput value={profile.address} onChange={(value) => updateProfile("address", value)} placeholder="예: 서울 강남구 테헤란로 123" />
-                <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 8층 인사팀" />
+                <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 3층 행정실" />
               </div>
             </div>
             <div className="space-y-2">
               <FieldLabel required>설립 연도</FieldLabel>
-              <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} />
+              <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} placeholder="예: 2015" />
             </div>
             <div className="space-y-2">
               <FieldLabel>홈페이지</FieldLabel>
-              <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} />
+              <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} placeholder="예: https://www.research.or.kr" />
             </div>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div className="space-y-2">
                 <FieldLabel required>대표 전화번호</FieldLabel>
-                <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} />
+                <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} placeholder="예: 02-1234-5678" />
               </div>
               <div className="space-y-2">
                 <FieldLabel required>이메일</FieldLabel>
-                <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} />
+                <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} placeholder="예: contact@research.or.kr" />
               </div>
             </div>
           </div>
@@ -472,7 +463,7 @@ export function ResearchOrgProfileClient() {
                   }
                 }}
                 disabled={profile.keywords.length >= MAX_KEYWORDS}
-                placeholder="키워드 입력"
+                placeholder="예: 신약개발"
                 className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
               />
               <FormActionButton onClick={addKeyword} disabled={profile.keywords.length >= MAX_KEYWORDS}>
@@ -497,15 +488,15 @@ export function ResearchOrgProfileClient() {
             </div>
             <div className="space-y-2">
               <FieldLabel>부서</FieldLabel>
-              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 인사팀" />
+              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 채용담당팀" />
             </div>
             <div className="space-y-2">
               <FieldLabel>직책</FieldLabel>
-              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 매니저" />
+              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 채용담당자" />
             </div>
             <div className="space-y-2">
               <FieldLabel required>이메일</FieldLabel>
-              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: manager@company.co.kr" />
+              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: recruit@example.com" />
             </div>
             <div className="space-y-2 col-span-2 max-[640px]:col-span-1">
               <FieldLabel required>연락처</FieldLabel>

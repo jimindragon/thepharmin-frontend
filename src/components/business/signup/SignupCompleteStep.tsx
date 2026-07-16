@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import type { OrgTrack } from "@/data/businessCompanyProfile";
+import { trackProfilePath } from "@/config/businessSignup";
 import { useRouter } from "next/navigation";
 
 const orgTrackCompleteLabel: Record<OrgTrack, string> = {
@@ -41,7 +42,7 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
           상세 정보는 {infoLabel}에서 입력할 수 있습니다.
         </p>
         <div className="mt-8 flex flex-col gap-2.5">
-          <LinkButton href="/business/company/profile" variant="gradient" className="w-full">
+          <LinkButton href={trackProfilePath[orgTrack]} variant="gradient" className="w-full">
             {infoLabel} 입력하러 가기
           </LinkButton>
           <Button type="button" variant="secondary" className="w-full" onClick={() => router.push("/business/dashboard")}>

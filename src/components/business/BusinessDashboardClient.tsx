@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import clsx from "clsx";
-import { User, Clock, MessageSquare, CalendarDays, FileText } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
@@ -31,7 +29,6 @@ function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: bo
 
 const TASKS: Array<{
   id: string;
-  Icon: LucideIcon;
   title: string;
   badge: { label: string; className: string };
   desc: string;
@@ -39,41 +36,36 @@ const TASKS: Array<{
 }> = [
   {
     id: "t1",
-    Icon: User,
     title: "신규 지원자 3명이 검토를 기다려요",
-    badge: { label: "미검토", className: "border-status-error-border bg-status-error-subtle text-status-error" },
+    badge: { label: "미검토", className: "text-status-error" },
     desc: "제제연구 선임연구원 모집 · 가장 오래된 지원 3일 경과",
     action: { label: "지원자 검토", href: "/business/applicants" },
   },
   {
     id: "t2",
-    Icon: Clock,
     title: "임상개발 PM 채용 공고가 곧 마감돼요",
-    badge: { label: "D-2", className: "border-status-error-border bg-status-error-subtle text-status-urgent" },
-    desc: "2026.07.21 마감 · 현재 지원자 4명 · 연장하거나 마감 처리하세요",
+    badge: { label: "D-2", className: "text-status-urgent" },
+    desc: "2026.07.21 마감 · 현재 지원자 4명",
     action: { label: "공고 연장", href: "/business/jobs" },
   },
   {
     id: "t3",
-    Icon: MessageSquare,
     title: "헤드헌팅 후보자 CAND-008이 검토를 기다려요",
-    badge: { label: "검토 대기", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
+    badge: { label: "검토 대기", className: "text-status-warning" },
     desc: "RA 팀장급 (허가 전략) · 적합도 88% · 6월 5일 추천됨",
     action: { label: "후보자 확인", href: "/business/headhunting/manage" },
   },
   {
     id: "t4",
-    Icon: CalendarDays,
     title: "정수민님 최종 면접 일정을 확정하세요",
-    badge: { label: "D-2", className: "border-status-error-border bg-status-error-subtle text-status-urgent" },
+    badge: { label: "D-2", className: "text-status-urgent" },
     desc: "제제연구 선임연구원 · 6월 29일(일) 14:00 제안됨",
     action: { label: "일정 확정", href: "/business/applicants" },
   },
   {
     id: "t5",
-    Icon: FileText,
     title: "CAND-009 처우 협의가 진행 중이에요",
-    badge: { label: "처우 협의", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
+    badge: { label: "처우 협의", className: "text-status-positive" },
     desc: "RA 팀장급 (허가 전략) · 헤드헌터 회신 필요",
     action: { label: "협의 보기", href: "/business/headhunting/manage" },
   },
@@ -88,7 +80,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "정수민",
     stage: "최종 면접",
     posting: "제제연구 선임연구원 모집",
-    badge: { label: "일정 확정 대기", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
+    badge: { label: "일정 확정 대기", className: "text-status-warning" },
   },
   {
     id: "i2",
@@ -98,22 +90,27 @@ const UPCOMING_INTERVIEWS = [
     candidate: "CAND-014",
     stage: "1차 면접",
     posting: "임상개발 PM (CRA 총괄) · 헤드헌팅",
-    badge: { label: "확정", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
+    badge: { label: "확정", className: "text-status-positive" },
   },
 ];
 
-const RECENT_ACTIVITIES = [
-  { id: "a1", text: "윤가람님이 제제연구 선임연구원 모집에 지원했어요", time: "방금 전" },
-  { id: "a2", text: "서나윤님이 지원해 서류 검토 단계로 이동했어요", time: "2시간 전" },
-  { id: "a3", text: "헤드헌터가 CAND-008 후보자를 추천했어요", time: "어제" },
-  { id: "a4", text: "배기태님에게 합격 제안을 보냈어요", time: "2일 전" },
-  { id: "a5", text: "임상개발 PM 채용 공고를 게시했어요", time: "3일 전" },
+const RECENT_ACTIVITIES: Array<{
+  id: string;
+  before: string;
+  keyword: string;
+  after: string;
+  time: string;
+}> = [
+  { id: "a1", before: "", keyword: "윤가람님", after: "이 제제연구 선임연구원 모집에 지원했어요", time: "방금 전" },
+  { id: "a2", before: "", keyword: "서나윤님", after: "이 지원해 서류 검토 단계로 이동했어요", time: "2시간 전" },
+  { id: "a3", before: "헤드헌터가 ", keyword: "CAND-008", after: " 후보자를 추천했어요", time: "어제" },
+  { id: "a4", before: "", keyword: "배기태님", after: "에게 합격 제안을 보냈어요", time: "2일 전" },
+  { id: "a5", before: "", keyword: "임상개발 PM 채용", after: " 공고를 게시했어요", time: "3일 전" },
 ];
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
 function TaskRow({
-  Icon,
   title,
   badge,
   desc,
@@ -121,15 +118,12 @@ function TaskRow({
 }: (typeof TASKS)[0]) {
   return (
     <div className="flex items-start gap-3 px-5 py-4 max-[600px]:flex-wrap">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-[#e5e9ef] bg-[#f7f8fa]">
-        <Icon className="h-[15px] w-[15px] text-[#596373]" />
-      </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[13px] font-semibold text-[#17202c]">{title}</span>
+          <span className="text-[15px] font-semibold text-[#17202c]">{title}</span>
           <span
             className={clsx(
-              "inline-flex h-5 items-center border px-1.5 text-[11px] font-medium",
+              "inline-flex items-center text-[12px] font-medium",
               badge.className,
             )}
           >
@@ -175,7 +169,7 @@ function InterviewRow({
         <div className="mt-2">
           <span
             className={clsx(
-              "inline-flex h-5 items-center border px-1.5 text-[11px] font-medium",
+              "inline-flex items-center text-[12px] font-medium",
               badge.className,
             )}
           >
@@ -222,9 +216,6 @@ export function BusinessDashboardClient() {
           </div>
           <div className="text-right">
             <p className="text-[13px] text-[#8a94a3]">2026년 6월 27일 금요일</p>
-            <p className="mt-0.5 text-[13px] font-medium text-[#4f5967]">
-              채용 진행 중 {activeJobs.length}개 공고
-            </p>
           </div>
           </div>
         </div>
@@ -366,7 +357,11 @@ export function BusinessDashboardClient() {
                   <div key={act.id} className="flex items-start gap-3 px-5 py-3">
                     <div className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-status-positive" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] leading-[1.5] text-[#17202c]">{act.text}</p>
+                      <p className="text-[13px] leading-[1.5] text-[#17202c]">
+                        {act.before}
+                        <span className="font-medium text-[#17202c]">{act.keyword}</span>
+                        {act.after}
+                      </p>
                       <p className="mt-0.5 text-[12px] text-[#8a94a3]">{act.time}</p>
                     </div>
                   </div>

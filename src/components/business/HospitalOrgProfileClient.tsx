@@ -237,25 +237,25 @@ export function HospitalOrgProfileClient() {
                   <FormActionButton>우편번호 찾기</FormActionButton>
                 </div>
                 <TextInput value={profile.address} onChange={(value) => updateProfile("address", value)} placeholder="예: 서울 강남구 테헤란로 123" />
-                <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 8층 인사팀" />
+                <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 3층 행정실" />
               </div>
             </div>
             <div className="space-y-2">
               <FieldLabel required>설립 연도</FieldLabel>
-              <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} />
+              <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} placeholder="예: 1998" />
             </div>
             <div className="space-y-2">
               <FieldLabel>홈페이지</FieldLabel>
-              <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} />
+              <TextInput value={profile.homepageUrl} onChange={(value) => updateProfile("homepageUrl", value)} placeholder="예: https://www.hospital.or.kr" />
             </div>
             <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
               <div className="space-y-2">
                 <FieldLabel required>대표 전화번호</FieldLabel>
-                <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} />
+                <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} placeholder="예: 02-1234-5678" />
               </div>
               <div className="space-y-2">
                 <FieldLabel required>이메일</FieldLabel>
-                <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} />
+                <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} placeholder="예: recruit@hospital.or.kr" />
               </div>
             </div>
           </div>
@@ -332,7 +332,7 @@ export function HospitalOrgProfileClient() {
               value={profile.fullIntro ?? ""}
               onChange={(event) => updateProfile("fullIntro", event.target.value)}
               maxLength={2000}
-              placeholder="주요 사업, 성장 방향, 조직 문화와 일하는 방식을 자유롭게 소개해 주세요."
+              placeholder="병원의 진료 체계, 약제부 운영 방식, 교육 환경과 근무 문화를 자유롭게 소개해 주세요."
               className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
             />
           </div>
@@ -414,7 +414,7 @@ export function HospitalOrgProfileClient() {
                   }
                 }}
                 disabled={profile.keywords.length >= MAX_KEYWORDS}
-                placeholder="키워드 입력"
+                placeholder="예: 임상약료"
                 className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
               />
               <FormActionButton onClick={addKeyword} disabled={profile.keywords.length >= MAX_KEYWORDS}>
@@ -536,15 +536,15 @@ export function HospitalOrgProfileClient() {
             </div>
             <div className="space-y-2">
               <FieldLabel>부서</FieldLabel>
-              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 인사팀" />
+              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 채용담당팀" />
             </div>
             <div className="space-y-2">
               <FieldLabel>직책</FieldLabel>
-              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 매니저" />
+              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 채용담당자" />
             </div>
             <div className="space-y-2">
               <FieldLabel required>이메일</FieldLabel>
-              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: manager@company.co.kr" />
+              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: recruit@example.com" />
             </div>
             <div className="space-y-2 col-span-2 max-[640px]:col-span-1">
               <FieldLabel required>연락처</FieldLabel>

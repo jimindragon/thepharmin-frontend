@@ -284,7 +284,6 @@ export interface ResearchOrgProfile {
   institutionName: string;
   representativeName: string;
   approvedAt: string;
-  institutionCode: string;
   businessLicenseFile: { name: string; status: FileStatus };
   // 기관 정보 — 기본 사항·연락처 (병원과 동일 골격, 유형/병상 등 병원 특화 제외)
   zipCode: string;
@@ -317,12 +316,10 @@ export interface ResearchOrgProfile {
 export const initialResearchOrgProfile: ResearchOrgProfile = {
   id: "",
   orgTrack: "research",
-  // 가입 위저드(OrgVerificationStep, institutionType==="research")에서 받는 값 — 신규 가입자도 이미 가짐
   businessNumber: "224-82-*****",
   institutionName: "한국과학기술연구원(KIST)",
   representativeName: "이길동",
   approvedAt: "2025.12.30",
-  institutionCode: "41*****5",
   businessLicenseFile: { name: "사업자등록증명원.pdf", status: "approved" },
   // 가입 후 연구기관정보 관리 페이지에서 채우는 상세값 — 신규 가입 직후엔 비어 있어야 함
   zipCode: "",

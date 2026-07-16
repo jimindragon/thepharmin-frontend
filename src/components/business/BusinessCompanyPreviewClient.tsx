@@ -16,7 +16,7 @@ import {
   PharmacyAsidePanel,
   PharmacySummarySection,
 } from "@/components/company/CompanyDetailSections";
-import { readSignupOrgTrack } from "@/config/businessSignup";
+import { readSignupOrgTrack, trackProfilePath } from "@/config/businessSignup";
 import {
   getMissingRequiredIndustryOrgFields,
   initialIndustryOrgAdmin,
@@ -52,7 +52,7 @@ interface MissingInfoState {
 }
 
 function PreviewControlBar({ track, missing }: { track: OrgTrack; missing: MissingInfoState }) {
-  const editHref = `/business/company/profile?track=${track}`;
+  const editHref = trackProfilePath[track];
   const fillHref = missing.firstSectionId ? `${editHref}#${missing.firstSectionId}` : editHref;
 
   return (

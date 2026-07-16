@@ -3,19 +3,10 @@
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 import { initialBusinessCompanyProfile, type OrgTrack } from "@/data/businessCompanyProfile";
-import { readSignupOrgTrack } from "@/config/businessSignup";
-
-type ProfileTrack = OrgTrack | "research";
-
-const trackProfilePath: Record<ProfileTrack, string> = {
-  industry: "/business/industry/profile",
-  hospital: "/business/hospital/profile",
-  pharmacy: "/business/pharmacy/profile",
-  research: "/business/research/profile",
-};
+import { readSignupOrgTrack, trackProfilePath } from "@/config/businessSignup";
 
 /** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry | research */
-function readTrackOverride(): ProfileTrack | null {
+function readTrackOverride(): OrgTrack | null {
   const params = new URLSearchParams(window.location.search);
   const track = params.get("track");
   if (track === "pharmacy" || track === "hospital" || track === "industry" || track === "research") return track;
@@ -31,7 +22,7 @@ export function BusinessOrgProfilePageClient() {
     const override = readTrackOverride();
     // ?track= 쿼리 오버라이드는 개발 확인용으로 가입 결과보다 우선한다.
     const fromSignup = readSignupOrgTrack();
-    const track: ProfileTrack = override ?? fromSignup ?? initialBusinessCompanyProfile.orgTrack;
+    const track: OrgTrack = override ?? fromSignup ?? initialBusinessCompanyProfile.orgTrack;
     redirect(trackProfilePath[track]);
   }, []);
 

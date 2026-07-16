@@ -280,32 +280,32 @@ export function PharmacyOrgProfileClient() {
                     <FormActionButton>우편번호 찾기</FormActionButton>
                   </div>
                   <TextInput value={profile.address} onChange={(value) => updateProfile("address", value)} placeholder="예: 서울 강남구 테헤란로 123" />
-                  <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 8층 인사팀" />
+                  <TextInput value={profile.detailAddress} onChange={(value) => updateProfile("detailAddress", value)} placeholder="예: 1층 상가" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div className="space-y-2">
                   <FieldLabel>개국 연도</FieldLabel>
-                  <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} />
+                  <TextInput value={profile.foundedYear} onChange={(value) => updateProfile("foundedYear", value)} placeholder="예: 2020" />
                 </div>
                 <div className="space-y-2">
                   <FieldLabel>대표 약사명</FieldLabel>
-                  <TextInput value={profile.headPharmacistName} onChange={(value) => updateProfile("headPharmacistName", value)} />
+                  <TextInput value={profile.headPharmacistName} onChange={(value) => updateProfile("headPharmacistName", value)} placeholder="예: 김더팜" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                 <div className="space-y-2">
                   <FieldLabel required>약국 전화번호</FieldLabel>
-                  <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} />
+                  <TextInput value={profile.phone} onChange={(value) => updateProfile("phone", value)} placeholder="예: 02-1234-5678" />
                 </div>
                 <div className="space-y-2">
                   <FieldLabel required>이메일</FieldLabel>
-                  <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} />
+                  <TextInput value={profile.email} onChange={(value) => updateProfile("email", value)} placeholder="예: pharmacy@example.com" />
                 </div>
               </div>
               <div className="space-y-2">
                 <FieldLabel>영업시간</FieldLabel>
-                <TextInput value={profile.businessHours} onChange={(value) => updateProfile("businessHours", value)} placeholder="예: 평일 09:00~19:00 · 토요일 격주" />
+                <TextInput value={profile.businessHours} onChange={(value) => updateProfile("businessHours", value)} placeholder="예: 평일 09:00~19:00 · 토요일 09:00~14:00" />
                 <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">약국 운영시간 기준입니다. 채용 근무시간은 공고 등록 시 별도로 입력합니다.</p>
               </div>
             </div>
@@ -387,7 +387,7 @@ export function PharmacyOrgProfileClient() {
               value={profile.fullIntro}
               onChange={(event) => updateProfile("fullIntro", event.target.value)}
               maxLength={2000}
-              placeholder="주요 사업, 성장 방향, 조직 문화와 일하는 방식을 자유롭게 소개해 주세요."
+              placeholder="약국의 처방 환경, 조제 방식, 근무 분위기와 함께 일하는 방식을 자유롭게 소개해 주세요."
               className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
             />
           </div>
@@ -421,7 +421,7 @@ export function PharmacyOrgProfileClient() {
                   }
                 }}
                 disabled={profile.keywords.length >= MAX_KEYWORDS}
-                placeholder="키워드 입력"
+                placeholder="예: 조제 중심"
                 className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
               />
               <FormActionButton onClick={addKeyword} disabled={profile.keywords.length >= MAX_KEYWORDS}>
@@ -448,6 +448,7 @@ export function PharmacyOrgProfileClient() {
                     value={profile.avgDailyPrescriptions}
                     onChange={(event) => updateProfile("avgDailyPrescriptions", event.target.value)}
                     aria-label="일평균 처방 건수"
+                    placeholder="예: 250건"
                     className="h-11 w-24 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none focus:border-[#111111]"
                   />
                   <span className="text-[13px] font-medium text-[#68717e]">건 내외</span>
@@ -528,7 +529,7 @@ export function PharmacyOrgProfileClient() {
                     }
                   }}
                   disabled={profile.mainHospitals.length >= MAX_HOSPITALS}
-                  placeholder="예: 삼성서울병원"
+                  placeholder="예: OO대학교병원"
                   className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
                 />
                 <FormActionButton onClick={addHospital} disabled={profile.mainHospitals.length >= MAX_HOSPITALS}>
@@ -545,7 +546,7 @@ export function PharmacyOrgProfileClient() {
             </div>
             <div className="space-y-2">
               <FieldLabel>주차·교통</FieldLabel>
-              <TextInput value={profile.parkingTransit} onChange={(value) => updateProfile("parkingTransit", value)} placeholder="예: 건물 주차 2시간 무료 · 양지IC 5분" />
+              <TextInput value={profile.parkingTransit} onChange={(value) => updateProfile("parkingTransit", value)} placeholder="예: 건물 주차 2시간 무료 · 지하철역 도보 5분" />
             </div>
           </div>
         </SectionCard>
@@ -558,15 +559,15 @@ export function PharmacyOrgProfileClient() {
             </div>
             <div className="space-y-2">
               <FieldLabel>부서</FieldLabel>
-              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 인사팀" />
+              <TextInput value={manager.department} onChange={(value) => updateManager("department", value)} placeholder="예: 채용담당팀" />
             </div>
             <div className="space-y-2">
               <FieldLabel>직책</FieldLabel>
-              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 매니저" />
+              <TextInput value={manager.position} onChange={(value) => updateManager("position", value)} placeholder="예: 채용담당자" />
             </div>
             <div className="space-y-2">
               <FieldLabel required>이메일</FieldLabel>
-              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: manager@company.co.kr" />
+              <TextInput value={manager.email} onChange={(value) => updateManager("email", value)} placeholder="예: recruit@example.com" />
             </div>
             <div className="space-y-2 col-span-2 max-[640px]:col-span-1">
               <FieldLabel required>연락처</FieldLabel>
