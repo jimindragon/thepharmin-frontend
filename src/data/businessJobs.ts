@@ -1,6 +1,6 @@
 import type { JobTrack } from "@/types/jobs";
 
-export type JobPostingStatus = "active" | "closed";
+export type JobPostingStatus = "pending" | "active" | "closed";
 export type JobPostingStatusFilter = "all" | JobPostingStatus;
 
 export interface JobBoostInfo {
@@ -30,6 +30,16 @@ export function jobTrackLabel(track: JobTrack): string {
 }
 
 export const jobPostings: JobPosting[] = [
+  {
+    id: "job-6",
+    title: "RA Specialist (제약·바이오 인허가 담당)",
+    track: "industry",
+    registeredAt: "2026.07.17",
+    closingDate: "2026.08.16",
+    status: "pending",
+    applicantCount: 0,
+    boost: null,
+  },
   {
     id: "job-1",
     title: "병원 약제팀 약사 채용",

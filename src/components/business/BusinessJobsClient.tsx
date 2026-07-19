@@ -15,9 +15,12 @@ import {
 
 const STATUS_TABS: Array<{ id: JobPostingStatusFilter; label: string }> = [
   { id: "all", label: "전체" },
-  { id: "active", label: "게시중" },
+  { id: "pending", label: "검토 대기" },
+  { id: "active", label: "게시 중" },
   { id: "closed", label: "마감" },
 ];
+
+const EXTEND_DISABLED_TITLE = "게시 중인 공고만 연장할 수 있습니다.";
 
 export function BusinessJobsClient() {
   const [statusFilter, setStatusFilter] = useState<JobPostingStatusFilter>("all");
@@ -82,6 +85,7 @@ export function BusinessJobsClient() {
                 <div className="divide-y divide-[#e5e9ef]">
                   {filtered.map((posting) => {
                     const isClosed = posting.status === "closed";
+                    const isPending = posting.status === "pending";
                     const { boost } = posting;
 
                     return (
@@ -105,10 +109,8 @@ export function BusinessJobsClient() {
                             </span>
                           </div>
                           <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
-                            {posting.registeredAt} 등록
-                            {posting.closingDate
-                              ? ` · ~${posting.closingDate}`
-                              : " · 마감됨"}
+                            {posting.registeredAt} 등록 ·{" "}
+                            {posting.closingDate ? `${posting.closingDate} 마감` : "마감됨"}
                           </p>
                         </div>
 
@@ -118,21 +120,27 @@ export function BusinessJobsClient() {
                             "inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium",
                             isClosed
                               ? "border-[#d8dee7] bg-[#f7f8fa] text-[#8a94a3]"
-                              : "border-status-positive-border bg-status-positive-subtle text-status-positive",
+                              : isPending
+                                ? "border-status-warning-border bg-status-warning-subtle text-status-warning"
+                                : "border-status-positive-border bg-status-positive-subtle text-status-positive",
                           )}
                         >
-                          {isClosed ? "마감" : "게시중"}
+                          {isClosed ? "마감" : isPending ? "검토 대기" : "게시 중"}
                         </span>
 
                         {/* 지원자 */}
-                        <span
-                          className={clsx(
-                            "text-[13px] font-semibold",
-                            isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
-                          )}
-                        >
-                          {posting.applicantCount}명
-                        </span>
+                        {isPending ? (
+                          <span className="text-[13px] text-[#8a94a3]">—</span>
+                        ) : (
+                          <span
+                            className={clsx(
+                              "text-[13px] font-semibold",
+                              isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
+                            )}
+                          >
+                            {posting.applicantCount}명
+                          </span>
+                        )}
 
                         {/* 부스트 */}
                         {boost ? (
@@ -150,10 +158,12 @@ export function BusinessJobsClient() {
 
                         {/* 액션 */}
                         <div className="flex justify-end">
-                          {isClosed ? (
+                          {isClosed || isPending ? (
                             <button
                               type="button"
                               disabled
+                              title={EXTEND_DISABLED_TITLE}
+                              aria-label={EXTEND_DISABLED_TITLE}
                               className="inline-flex h-9 cursor-not-allowed items-center justify-center border border-[#e5e9ef] px-4 text-[13px] font-medium text-[#c0c8d2]"
                             >
                               연장

@@ -1,14 +1,17 @@
 "use client";
 
 import clsx from "clsx";
-import { Bell, ChevronDown, Plus } from "lucide-react";
+import { Bell, ChevronDown, Lock, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LinkButton } from "@/components/ui/Button";
-import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
+import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { businessCompanyManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
+
+const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
 
 // 가운데 nav: 요금제 · 고객센터만 유지.
 // 기업센터는 BusinessAccountMenu 드롭다운 안에 이미 있어 중복을 피함.
@@ -51,6 +54,7 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
  */
 export function BusinessAccountMenu() {
   const pathname = usePathname();
+  const orgVerificationStatus = useOrgVerificationStatus();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const isHomeActive = pathname === businessCenterHomeItem.href;
 
@@ -99,17 +103,23 @@ export function BusinessAccountMenu() {
                 <div className="mt-1">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
+                    const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setOpen(false)}
                         className={clsx(
-                          "flex items-center px-2 py-2 text-[13px] font-medium transition-colors",
+                          "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
                           active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
                         )}
                       >
-                        {item.label}
+                        <span>{item.label}</span>
+                        {locked ? (
+                          <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
+                            <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
+                          </span>
+                        ) : null}
                       </Link>
                     );
                   })}

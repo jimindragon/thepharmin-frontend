@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
 const TRACKS = [
   {
@@ -37,6 +39,7 @@ const TRACKS = [
 
 export function ProfileHubClient() {
   const router = useRouter();
+  const orgVerificationStatus = useOrgVerificationStatus();
 
   return (
     <BusinessCenterShell>
@@ -103,6 +106,28 @@ export function ProfileHubClient() {
             </div>
           </button>
         ))}
+      </div>
+
+      {/* 개발용 인증 상태 전환 컨트롤 — 실서비스 기능과 혼동되지 않도록 옅은 회색 톤으로 분리 */}
+      <div className="mt-12 border border-[#e5e9ef] bg-[#f7f8fa] px-5 py-4">
+        <p className="text-[12px] font-medium text-[#9aa3af]">개발용 · 기업 인증 상태 전환</p>
+        <p className="mt-2 text-[13px] font-medium text-[#4f5967]">
+          현재 상태: {orgVerificationStatus === "pending" ? "검토 중" : "승인 완료"}
+        </p>
+        <div className="mt-3 flex gap-2">
+          <Link
+            href="/business/dashboard?orgStatus=pending"
+            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            검토 중 상태로 보기
+          </Link>
+          <Link
+            href="/business/dashboard?orgStatus=approved"
+            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            승인 완료 상태로 보기
+          </Link>
+        </div>
       </div>
     </BusinessCenterShell>
   );

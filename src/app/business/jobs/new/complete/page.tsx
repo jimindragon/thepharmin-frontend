@@ -1,10 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { BoostModal } from "@/components/business/BoostModal";
 import { jobPostings } from "@/data/businessJobs";
 import type { JobTrack } from "@/types/jobs";
 import { jobTrackLabels } from "@/config/jobTracks";
@@ -53,7 +52,7 @@ function formatDeadlineShort(raw: string): string {
 const FALLBACK = {
   title: "병원 약제팀 약사 채용",
   jobRole: "약국·임상약학",
-  deadline: "2026-07-20",
+  deadline: "2026-08-16",
   company: "더팜인제약(주)",
   track: "hospital" as JobTrack,
 };
@@ -63,7 +62,6 @@ const FALLBACK = {
 function CompleteContent() {
   const params = useSearchParams();
   const router = useRouter();
-  const [boostModalOpen, setBoostModalOpen] = useState(false);
 
   const title = params.get("title") || FALLBACK.title;
   const deadline = formatDeadlineShort(params.get("deadline") || FALLBACK.deadline);
@@ -71,9 +69,8 @@ function CompleteContent() {
 
   const trackLabel = (jobTrackLabels as Record<string, string>)[track] ?? track;
 
-  // 방금 등록한 공고를 mock 목록에서 찾아 모달 사전 선택 및 가격 조회에 사용
+  // 방금 등록한 공고를 mock 목록에서 찾아 가격 조회에 사용
   const matchedJob = jobPostings.find((j) => j.title === title) ?? null;
-  const matchedJobId = matchedJob?.id ?? null;
 
   // 가격 표시용 트랙: 1순위 matchedJob.track, 2순위 URL의 track 원본값. FALLBACK("hospital")은 가격 결정에 사용하지 않음.
   const urlTrackParam = params.get("track");
@@ -112,6 +109,12 @@ function CompleteContent() {
         <p className="mt-2 text-[14px] font-normal leading-[1.7] text-[#68717e]">
           등록한 공고는 채용공고 목록에 무료로 노출됩니다.
         </p>
+        <span className="mt-4 inline-flex h-7 w-fit items-center justify-center border border-status-warning-border bg-status-warning-subtle px-2 text-[11px] font-medium text-status-warning">
+          검토 대기
+        </span>
+        <p className="mt-3 text-[13px] font-normal leading-[1.7] text-[#68717e]">
+          등록하신 공고는 운영팀 검토 후 게시됩니다. 진행 상태는 공고 관리에서 확인할 수 있습니다.
+        </p>
       </div>
 
       {/* 공고 요약 카드 + 부스트 카드 */}
@@ -127,7 +130,7 @@ function CompleteContent() {
                 </span>
               </div>
               <p className="mt-1 text-[13px] font-normal text-[#8a9ab0]">
-                게시중 · ~{deadline}
+                검토 대기 · {deadline} 마감
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
@@ -186,7 +189,7 @@ function CompleteContent() {
 
           {/* 하단 안내 문구 */}
           <p className="mt-4 border-t border-[#f0f3f6] pt-4 text-[12px] font-normal text-[#8a9ab0]">
-            {pricingCat ? "오픈 기념 1년 한정 프로모션가 적용 · VAT 별도" : "공고 정보를 확인한 뒤 상품별 금액이 표시됩니다."}
+            공고가 게시되면 공고 관리에서 부스트를 적용해 노출을 높일 수 있습니다.
           </p>
 
           {/* CTA */}
@@ -200,21 +203,15 @@ function CompleteContent() {
             </button>
             <button
               type="button"
-              onClick={() => setBoostModalOpen(true)}
-              className="inline-flex h-11 items-center justify-center px-6 text-[14px] font-bold text-white transition hover:brightness-110 max-[480px]:w-full"
-              style={{ backgroundImage: "var(--gradient-cta)" }}
+              disabled
+              className="inline-flex h-11 cursor-not-allowed items-center justify-center px-6 text-[14px] font-bold max-[480px]:w-full"
+              style={{ background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" }}
             >
-              부스트 적용하기
+              공고 게시 후 적용 가능
             </button>
           </div>
         </div>
       </div>
-
-      <BoostModal
-        open={boostModalOpen}
-        onClose={() => setBoostModalOpen(false)}
-        preselectedJobId={matchedJobId}
-      />
     </div>
   );
 }
