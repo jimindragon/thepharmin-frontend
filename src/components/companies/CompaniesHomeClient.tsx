@@ -191,7 +191,7 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
   if (!entries.length) return null;
 
   return (
-    <div className="relative mt-8 border border-[#e5e9ef] bg-white py-[30px]">
+    <div className="relative mt-8 border border-border bg-white py-[30px]">
       <div
         ref={scrollRef}
         onPointerDown={handlePointerDown}
@@ -238,7 +238,7 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
 
 function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track: TrackFilter) => void }) {
   return (
-    <nav className="flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="기업·기관 트랙">
+    <nav className="flex overflow-x-auto border-b border-border" aria-label="기업·기관 트랙">
       {trackFilterTabs.map((tab) => {
         const selected = active === tab.id;
         return (
@@ -263,7 +263,7 @@ function TrackTabs({ active, onChange }: { active: TrackFilter; onChange: (track
 
 function FeedFilterTabs({ active, onChange }: { active: FeedFilter; onChange: (filter: FeedFilter) => void }) {
   return (
-    <nav className="flex overflow-x-auto border-b border-[#dfe4ea]" aria-label="최근 올라온 이야기 필터">
+    <nav className="flex overflow-x-auto border-b border-border" aria-label="최근 올라온 이야기 필터">
       {feedFilterTabs.map((tab) => {
         const selected = active === tab.id;
         return (
@@ -311,7 +311,7 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {item.tags.map((tag) => (
-              <span key={tag} className="border border-[#e5e9ef] px-2 py-0.5 text-[12px] font-normal text-[#596373]">
+              <span key={tag} className="border border-border px-2 py-0.5 text-[12px] font-normal text-[#596373]">
                 {tag}
               </span>
             ))}
@@ -353,7 +353,7 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
   };
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-6 max-[560px]:p-4">
+    <section className="border border-border bg-white p-6 max-[560px]:p-4">
       <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 올라온 이야기</h2>
       <div className="mt-4">
         <FeedFilterTabs active={feedFilter} onChange={setFeedFilter} />
@@ -389,7 +389,7 @@ function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry
   if (!entries.length) return null;
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <SidebarBlockTitle>리뷰 많은 기업 TOP 5</SidebarBlockTitle>
       <ol className="mt-4 space-y-3.5">
         {entries.map((entry, index) => (
@@ -412,7 +412,7 @@ function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry
 
 function WriteReviewCtaPanel({ onCtaClick }: { onCtaClick: () => void }) {
   return (
-    <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
+    <section className="border border-border bg-[#050505] p-5 text-white">
       <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">다녀온 회사의 이야기를 남겨주세요</h2>
       <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">후기를 작성하면 모든 면접 후기 원문을 열람할 수 있습니다.</p>
       <Button type="button" variant="gradient" onClick={onCtaClick} className="mt-4 w-full">
@@ -432,7 +432,7 @@ function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => v
   }, []);
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <SidebarBlockTitle>업종별 탐색</SidebarBlockTitle>
       <div className="mt-4 divide-y divide-[#edf1f5]">
         {jobTracks.map((track) => (
@@ -632,7 +632,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
         </aside>
       </div>
 
-      <section id="company-directory" className="mt-14 border border-[#e5e9ef] bg-white p-6 max-[560px]:p-4">
+      <section id="company-directory" className="mt-14 border border-border bg-white p-6 max-[560px]:p-4">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
           <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">

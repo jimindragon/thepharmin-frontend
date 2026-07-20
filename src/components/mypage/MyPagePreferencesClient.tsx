@@ -274,7 +274,7 @@ export function MyPagePreferencesClient() {
         <SelectedFilterChips chips={chips} onRemove={handleRemoveChip} />
       </section>
 
-      <section className="mt-8 border border-[#dfe4ea] bg-white p-6">
+      <section className="mt-8 border border-border bg-white p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-[16px] font-bold tracking-[-0.02em] text-[#17202c]">이메일 알림</h2>
@@ -315,7 +315,7 @@ export function MyPagePreferencesClient() {
         ) : null}
       </section>
 
-      <div className="mt-8 flex items-center justify-end gap-2 border-t border-[#e5e9ef] pt-6 max-[520px]:flex-wrap">
+      <div className="mt-8 flex items-center justify-end gap-2 border-t border-border pt-6 max-[520px]:flex-wrap">
         <Button type="button" variant="secondary" size="md" onClick={handleCancel}>
           취소
         </Button>
@@ -332,7 +332,7 @@ export function MyPagePreferencesClient() {
       </div>
 
       {showSavedToast ? (
-        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
           관심 조건이 저장되었습니다.
         </div>
       ) : null}

@@ -147,7 +147,7 @@ export function ResearchOrgProfileClient() {
   return (
     <div>
       {saved ? (
-        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
           연구기관 정보가 저장되었습니다.
         </div>
       ) : null}
@@ -177,14 +177,14 @@ export function ResearchOrgProfileClient() {
           }
           action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기관 인증 완료</span>}
         >
-          <div className="grid grid-cols-4 border border-[#dfe4ea] max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
+          <div className="grid grid-cols-4 border border-border max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
               ["사업자등록번호", profile.businessNumber],
               ["기관명", profile.institutionName],
               ["대표자명", profile.representativeName],
               ["사업자등록증명원", statusLabel(profile.businessLicenseFile.status)],
             ].map(([label, value]) => (
-              <div key={label} className="border-r border-[#dfe4ea] px-4 py-4 last:border-r-0 max-[900px]:border-b">
+              <div key={label} className="border-r border-border px-4 py-4 last:border-r-0 max-[900px]:border-b">
                 <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
                 <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
               </div>
@@ -556,7 +556,7 @@ export function ResearchOrgProfileClient() {
           </div>
         </SectionCard>
 
-        <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
+        <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
             <p className="text-[12px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
             <div className="flex gap-2 max-[640px]:w-full">

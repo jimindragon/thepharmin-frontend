@@ -118,7 +118,7 @@ export function CompanyReviewCard({
     review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} ${review.isInterview ? "면접" : "지원"}` : null;
 
   return (
-    <article className={clsx("border border-[#e5e9ef] bg-white", compact ? "p-3" : "p-4")}>
+    <article className={clsx("border border-border bg-white", compact ? "p-3" : "p-4")}>
       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
         <span className={clsx("min-w-0 truncate font-medium text-[#3f4855]", compact ? "text-[11.5px]" : "text-[12px]")}>
           {review.jobRole} · {review.authorStatus}

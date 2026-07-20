@@ -34,7 +34,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
   const statusText = application.isClosed && application.resultLabel ? application.resultLabel : application.statusLabel;
 
   return (
-    <article className="border border-[#dfe4ea] bg-white p-6 max-[640px]:p-5">
+    <article className="border border-border bg-white p-6 max-[640px]:p-5">
       <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
         {/* 좌측: 공고 정보 + 진행 단계 */}
         <div className="min-w-0 flex-1 basis-[260px]">
@@ -47,7 +47,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             ) : (
               <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
             )}
-            <span className="shrink-0 border border-[#dfe4ea] bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
+            <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
               {application.applyChannelLabel}
             </span>
           </div>
@@ -67,7 +67,15 @@ function ApplicationCard({ application }: { application: JobApplication }) {
 
         {/* 우측: 상태 + 액션 */}
         <div className="ml-auto flex shrink-0 flex-col items-end gap-2">
-          <p className={clsx("text-[15px] font-bold tracking-[-0.01em]", application.isClosed && application.resultLabel ? "text-danger" : "text-[#111111]")}>
+          <p
+            className={clsx(
+              "inline-flex items-center gap-[8px] text-[15px] font-bold tracking-[-0.01em]",
+              application.isClosed && application.resultLabel ? "text-danger" : "text-[#111111]",
+            )}
+          >
+            {application.isClosed && application.resultLabel ? (
+              <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-error-dot" />
+            ) : null}
             {statusText}
           </p>
           {statusDetail ? <p className="text-[12px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
@@ -122,7 +130,7 @@ export function MyPageApplicationsClient() {
         지원완료부터 최종 결과까지 진행 상황을 확인합니다. 간편지원은 전형 단계를 실시간으로, 외부 지원은 기업이 관리하는 일정 기준으로 보여드립니다.
       </p>
 
-      <div className="mt-7 flex items-center gap-6 border-b border-[#e5e9ef]">
+      <div className="mt-7 flex items-center gap-6 border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -147,14 +155,14 @@ export function MyPageApplicationsClient() {
         {visibleApplications.length > 0 ? (
           visibleApplications.map((application) => <ApplicationCard key={application.id} application={application} />)
         ) : (
-          <div className="border border-[#dfe4ea] bg-white p-10 text-center">
+          <div className="border border-border bg-white p-10 text-center">
             <p className="text-[14px] font-medium text-[#303946]">해당하는 지원 내역이 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">관심 있는 공고에 지원하면 이곳에서 진행 상황을 확인할 수 있습니다.</p>
           </div>
         )}
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-[#e5e9ef] bg-white px-5 py-4">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-border bg-white px-5 py-4">
         <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e]">
           <span aria-hidden="true" className="text-[13px] text-[#9aa3af]">
             ⓘ

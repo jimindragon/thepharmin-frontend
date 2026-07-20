@@ -37,7 +37,7 @@ export function AccountMenu() {
       {open ? (
         <div
           role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-[#e5e9ef] bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>

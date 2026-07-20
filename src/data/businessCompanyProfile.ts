@@ -6,6 +6,13 @@ export type FileStatus = "approved" | "pending" | "rejected" | "change_requested
 /** 기업정보 관리 페이지가 어떤 트랙 폼을 그려야 하는지 결정하는 값. 기본은 항상 "industry". */
 export type OrgTrack = "industry" | "hospital" | "pharmacy" | "research";
 
+/** 목업 로그인 기업(가상 고객사). 사업자번호는 의도적으로 가짜 티 나는 연속 숫자.
+ * 플랫폼 운영사(더파마뉴스)와 반드시 달라야 함 — 세금계산서 공급자/공급받는자 구분 목적. */
+export const LOGIN_COMPANY = {
+  displayName: "더파마제약(주)",
+  businessNumber: "123-45-67890",
+} as const;
+
 export interface CompanyProfileMaster {
   orgTrack: "industry";
   id: string;
@@ -39,15 +46,6 @@ export interface CompanyProfileMaster {
   };
 }
 
-export interface CompanyManager {
-  managerName: string;
-  department: string;
-  position: string;
-  email: string;
-  phone: string;
-  accountId: string;
-}
-
 export const companyTypeOptions: Array<{ id: CompanyType; label: string }> = [
   { id: "pharma", label: "제약사" },
   { id: "biotech", label: "바이오텍" },
@@ -68,8 +66,8 @@ export const initialBusinessCompanyProfile: CompanyProfileMaster = {
   orgTrack: "industry",
   id: "thepharma-news",
   // 가입 위저드(OrgVerificationStep)에서 받는 값 — 신규 가입자도 이미 가짐
-  displayName: "더파마뉴스",
-  businessNumber: "570-86-03548",
+  displayName: LOGIN_COMPANY.displayName,
+  businessNumber: LOGIN_COMPANY.businessNumber,
   representativeName: "홍길동",
   verificationStatus: "approved",
   approvedAt: "2024.02.21",
@@ -97,15 +95,6 @@ export const initialBusinessCompanyProfile: CompanyProfileMaster = {
     exposeOnJobs: true,
     exposeOnSearch: true,
   },
-};
-
-export const businessCompanyManager: CompanyManager = {
-  managerName: "이길동",
-  department: "마케팅팀",
-  position: "채용 담당자",
-  email: "manager@thepharmanews.net",
-  phone: "010-1234-5678",
-  accountId: "biz-thepharma-news",
 };
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -196,7 +185,7 @@ export const initialIndustryOrgProfile: IndustryOrgProfile = {
   id: "thepharma-news",
   orgTrack: "industry",
   orgType: "",
-  name: "더파마뉴스",
+  name: LOGIN_COMPANY.displayName,
   foundedYear: "",
   zipCode: "",
   address: "",
@@ -220,8 +209,9 @@ export const initialIndustryOrgProfile: IndustryOrgProfile = {
 };
 
 export const initialIndustryOrgAdmin: OrgAdmin = {
-  businessNumber: "570-86-03548",
+  businessNumber: LOGIN_COMPANY.businessNumber,
   representativeName: "홍길동",
+  // 가입 폼 입력값 아님 — 운영팀 승인 처리 시 시스템이 부여하는 값(목업)
   approvedAt: "2025.12.23",
   businessLicenseFile: { name: "사업자등록증명원.pdf", status: "approved" },
   verificationStatus: "approved",
@@ -229,7 +219,7 @@ export const initialIndustryOrgAdmin: OrgAdmin = {
 
 export const initialIndustryOrgManager: OrgManager = {
   managerName: "이길동",
-  department: "마케팅팀",
+  department: "채용담당팀",
   position: "채용 담당자",
   email: "manager@thepharmanews.net",
   phone: "010-1234-5678",

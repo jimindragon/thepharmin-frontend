@@ -100,7 +100,7 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref 
   const tags = getPopularQnaTags(activeType);
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 태그
@@ -129,7 +129,7 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref 
 
 export function QnaOperationPrinciplePanel() {
   return (
-    <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
+    <section className="border border-border bg-[#050505] p-5 text-white">
       <h2 className="text-[15px] font-bold tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
       <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-[#b9c0ca]">{qnaOperationPrinciple.description}</p>
     </section>
@@ -139,7 +139,7 @@ export function QnaOperationPrinciplePanel() {
 /** 허브/상세 사이드바가 공유하는 "실시간 인기 글" 패널 — 대상 목록만 호출부에서 넘긴다 */
 export function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]; previewQuery: string }) {
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         실시간 인기 글
@@ -191,7 +191,7 @@ export function MyActivityPanel({ activeType }: { activeType: QnaType }) {
   }, [activeType]);
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         내 활동

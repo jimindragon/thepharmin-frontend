@@ -77,7 +77,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
 
   if (!isLoggedIn) {
     return (
-      <div className="mt-6 border border-[#e5e9ef] bg-white px-4 py-3">
+      <div className="mt-6 border border-border bg-white px-4 py-3">
         <div className="flex items-center gap-3">
           <ComposerAvatar />
           <p className="flex-1 truncate text-[13px] font-normal text-[#a0a9b7]">로그인 후 글을 작성할 수 있습니다.</p>
@@ -91,7 +91,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
 
   if (!expanded) {
     return (
-      <div className="mt-6 border border-[#e5e9ef] bg-white px-4 py-3">
+      <div className="mt-6 border border-border bg-white px-4 py-3">
         <div className="flex items-center gap-3">
           <ComposerAvatar />
           <button
@@ -111,7 +111,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
   }
 
   return (
-    <div className="mt-6 border border-[#e5e9ef] bg-white p-4">
+    <div className="mt-6 border border-border bg-white p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <ComposerAvatar anonymous={isAnonymous} />

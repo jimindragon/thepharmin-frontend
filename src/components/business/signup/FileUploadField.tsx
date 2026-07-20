@@ -36,7 +36,7 @@ export function FileUploadField({
         onClick={() => inputRef.current?.click()}
         className="flex min-h-[64px] w-full items-center gap-3 border border-dashed border-[#d8e0e8] bg-[#fbfcfd] px-4 text-left transition hover:border-[#111111]"
       >
-        <span className="grid h-9 w-9 shrink-0 place-items-center border border-[#dfe4ea] bg-white text-[#596373]">
+        <span className="grid h-9 w-9 shrink-0 place-items-center border border-border bg-white text-[#596373]">
           <Upload size={16} />
         </span>
         <span className="min-w-0">

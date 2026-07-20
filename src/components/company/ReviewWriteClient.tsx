@@ -44,7 +44,7 @@ function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="border border-[#dfe4ea] bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
+    <section className="border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
       <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
         <div>
           <p className="text-[12px] font-normal tracking-[0.02em] text-[#a0a9b7]">{number}</p>
@@ -263,7 +263,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
       </div>
 
       {showToast ? (
-        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
           작성이 완료되었습니다.
         </div>
       ) : null}

@@ -30,7 +30,7 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
 
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="border border-[#dfe4ea] bg-white p-10 text-center">
+    <div className="border border-border bg-white p-10 text-center">
       <p className="text-[14px] font-medium text-[#303946]">{title}</p>
       <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
     </div>
@@ -215,7 +215,7 @@ export function MyPageScrapsClient() {
         관심 있는 채용공고와 기관을 모아 보고, 마감 전에 다시 확인하세요.
       </p>
 
-      <div className="mt-7 flex items-center gap-6 border-b border-[#e5e9ef]">
+      <div className="mt-7 flex items-center gap-6 border-b border-border">
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (

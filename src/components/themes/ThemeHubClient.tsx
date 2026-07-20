@@ -117,7 +117,7 @@ function RelatedThemesPanel({ currentThemeId }: { currentThemeId: ThemeId }) {
   );
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <SidebarPanelHeading>관련 채용관</SidebarPanelHeading>
       <ul className="mt-4 space-y-3.5">
         {related.map((meta) => (
@@ -142,7 +142,7 @@ function ThemeNewsPanel({ themeId }: { themeId: ThemeId }) {
   if (newsItems.length === 0) return null;
 
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <SidebarPanelHeading>관련 뉴스</SidebarPanelHeading>
       <ol className="mt-4 space-y-3.5">
         {newsItems.map((news, index) => (

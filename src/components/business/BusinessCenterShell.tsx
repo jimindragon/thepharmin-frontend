@@ -46,7 +46,7 @@ export function BusinessSidebar() {
   const isLocked = (href: string) => orgVerificationStatus === "pending" && isApprovalGatedPath(href);
 
   return (
-    <aside className="border-r border-[#dfe4ea] bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
+    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
       <h2 className="text-[22px] font-black tracking-[0] text-[#17202c]">기업 센터</h2>
       <div className="mt-5 h-px bg-[#e5e9ef]" />
       <nav className="mt-5 space-y-7 max-[1040px]:flex max-[1040px]:gap-6 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">

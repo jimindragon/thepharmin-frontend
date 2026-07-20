@@ -86,7 +86,7 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
     >
       <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[#e5e9ef] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{title}</h2>
           <button
             type="button"
@@ -142,7 +142,7 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
               )}
 
               {/* 하단 소자 */}
-              <div className="mt-6 border-t border-[#e5e9ef] pt-4">
+              <div className="mt-6 border-t border-border pt-4">
                 <p className="text-[11px] font-normal text-[#a0aab6]">{RECEIPT_FOOTER}</p>
                 <p className="mt-0.5 text-[11px] font-normal text-[#a0aab6]">본 영수증은 결제 내역 확인용입니다.</p>
               </div>

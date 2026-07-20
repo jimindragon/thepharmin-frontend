@@ -109,7 +109,7 @@ export function MyPageResumeClient() {
             ),
           )
         ) : (
-          <div className="border border-[#dfe4ea] bg-white p-10 text-center">
+          <div className="border border-border bg-white p-10 text-center">
             <p className="text-[14px] font-medium text-[#303946]">등록된 이력서가 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">새 이력서를 작성하면 간편지원과 포지션 제안에 활용할 수 있어요.</p>
             <LinkButton href="/mypage/resume/new" variant="secondary" size="sm" className="mt-4">
@@ -130,7 +130,7 @@ export function MyPageResumeClient() {
       ) : null}
 
       {toast ? (
-        <div className="fixed right-6 top-[84px] z-[80] border border-[#cfd8e3] bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
           {toast}
         </div>
       ) : null}

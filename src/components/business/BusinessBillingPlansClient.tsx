@@ -115,13 +115,13 @@ export function BusinessBillingPlansClient() {
         <h2 className="mt-6 text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">
           진행 중인 부스트
         </h2>
-        <div className="mt-3 border border-[#dfe4ea] bg-white">
+        <div className="mt-3 border border-border bg-white">
           <div className="px-6 py-6">
             {hasBoosts ? (
               <div className="overflow-x-auto">
                 <div className="min-w-[700px]">
                   {/* 테이블 헤더 */}
-                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] gap-4 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] gap-4 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
                     <span>공고</span>
                     <span>상태</span>
                     <span>기간</span>
@@ -186,7 +186,7 @@ export function BusinessBillingPlansClient() {
         </div>
 
         {/* 하단 안내 배너 */}
-        <div className="mt-5 flex items-center justify-between gap-4 border border-[#dfe4ea] bg-white px-6 py-5 max-[760px]:flex-col max-[760px]:items-start">
+        <div className="mt-5 flex items-center justify-between gap-4 border border-border bg-white px-6 py-5 max-[760px]:flex-col max-[760px]:items-start">
           <div>
             <p className="text-[14px] font-bold text-[#17202c]">부스트가 처음이신가요?</p>
             <p className="mt-1 text-[13px] font-normal text-[#68717e]">

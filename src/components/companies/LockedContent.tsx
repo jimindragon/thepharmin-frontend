@@ -52,7 +52,7 @@ export function LockedContent({
     <div
       role="region"
       aria-label="잠긴 콘텐츠"
-      className={clsx("relative overflow-hidden border border-[#e5e9ef] bg-white", roomy && "min-h-[210px]", className)}
+      className={clsx("relative overflow-hidden border border-border bg-white", roomy && "min-h-[210px]", className)}
     >
       <div
         aria-hidden="true"

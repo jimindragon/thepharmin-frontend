@@ -7,12 +7,12 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { getClosingDday, jobPostings, jobTrackLabel } from "@/data/businessJobs";
-import { initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
+import { LOGIN_COMPANY } from "@/data/businessCompanyProfile";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
 // ─── derived from existing mock data ──────────────────────────────────────────
 
-const COMPANY_NAME = initialBusinessCompanyProfile.displayName;
+const COMPANY_NAME = LOGIN_COMPANY.displayName;
 
 const activeJobs = jobPostings.filter((j) => j.status === "active");
 
@@ -27,14 +27,14 @@ function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: bo
 const TASKS: Array<{
   id: string;
   title: string;
-  badge: { label: string; className: string };
+  badge: { label: string; className: string; dotClassName?: string };
   desc: string;
   action: { label: string; href: string };
 }> = [
   {
     id: "t1",
     title: "신규 지원자 3명이 검토를 기다려요",
-    badge: { label: "미검토", className: "text-status-error" },
+    badge: { label: "미검토", className: "text-status-error", dotClassName: "bg-status-error-dot" },
     desc: "제제연구 선임연구원 모집 · 가장 오래된 지원 3일 경과",
     action: { label: "지원자 검토", href: "/business/applicants" },
   },
@@ -48,7 +48,7 @@ const TASKS: Array<{
   {
     id: "t3",
     title: "헤드헌팅 후보자 CAND-008이 검토를 기다려요",
-    badge: { label: "검토 대기", className: "text-status-warning" },
+    badge: { label: "검토 대기", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
     desc: "RA 팀장급 (허가 전략) · 적합도 88% · 6월 5일 추천됨",
     action: { label: "후보자 확인", href: "/business/headhunting/manage" },
   },
@@ -62,7 +62,7 @@ const TASKS: Array<{
   {
     id: "t5",
     title: "CAND-009 처우 협의가 진행 중이에요",
-    badge: { label: "처우 협의", className: "text-status-positive" },
+    badge: { label: "처우 협의", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
     desc: "RA 팀장급 (허가 전략) · 헤드헌터 회신 필요",
     action: { label: "협의 보기", href: "/business/headhunting/manage" },
   },
@@ -77,7 +77,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "정수민",
     stage: "최종 면접",
     posting: "제제연구 선임연구원 모집",
-    badge: { label: "일정 확정 대기", className: "text-status-warning" },
+    badge: { label: "일정 확정 대기", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
   },
   {
     id: "i2",
@@ -87,7 +87,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "CAND-014",
     stage: "1차 면접",
     posting: "임상개발 PM (CRA 총괄) · 헤드헌팅",
-    badge: { label: "확정", className: "text-status-positive" },
+    badge: { label: "확정", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
   },
 ];
 
@@ -118,13 +118,13 @@ function TaskRow({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[15px] font-semibold text-[#17202c]">{title}</span>
-          <span
-            className={clsx(
-              "inline-flex items-center text-[12px] font-medium",
-              badge.className,
-            )}
-          >
-            {badge.label}
+          <span className="inline-flex items-center gap-[8px]">
+            {badge.dotClassName ? (
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
+            ) : null}
+            <span className={clsx("text-[12px] font-medium", badge.className)}>
+              {badge.label}
+            </span>
           </span>
         </div>
         <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{desc}</p>
@@ -164,13 +164,13 @@ function InterviewRow({
         </p>
         <p className="mt-0.5 text-[12px] text-[#8a94a3]">{posting}</p>
         <div className="mt-2">
-          <span
-            className={clsx(
-              "inline-flex items-center text-[12px] font-medium",
-              badge.className,
-            )}
-          >
-            {badge.label}
+          <span className="inline-flex items-center gap-[8px]">
+            {badge.dotClassName ? (
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
+            ) : null}
+            <span className={clsx("text-[12px] font-medium", badge.className)}>
+              {badge.label}
+            </span>
           </span>
         </div>
       </div>
@@ -265,8 +265,8 @@ export function BusinessDashboardClient() {
           <div className="space-y-4">
 
             {/* 처리할 항목 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">
                   처리할 항목
                   <span className="ml-2 text-status-positive">5</span>
@@ -286,8 +286,8 @@ export function BusinessDashboardClient() {
             </section>
 
             {/* 공고별 지원 현황 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">공고별 지원 현황</h2>
                 <Link
                   href="/business/jobs"
@@ -344,8 +344,8 @@ export function BusinessDashboardClient() {
           <div className="space-y-4">
 
             {/* 다가오는 면접 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">다가오는 면접</h2>
                 <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
               </div>
@@ -357,8 +357,8 @@ export function BusinessDashboardClient() {
             </section>
 
             {/* 최근 활동 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">최근 활동</h2>
               </div>
               <div className="divide-y divide-[#e5e9ef]">

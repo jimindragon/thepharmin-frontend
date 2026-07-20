@@ -190,7 +190,7 @@ export function SupportHomeClient() {
         <div className="app-shell--default">
           <div className="mt-10 grid grid-cols-2 gap-5 max-[900px]:grid-cols-1">
             {filteredGroups.map((group) => (
-              <section key={group.id} className="border border-[#dfe4ea] bg-white p-6">
+              <section key={group.id} className="border border-border bg-white p-6">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 shrink-0 bg-[#111111]" />
                   <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#17202c]">{group.title}</h2>

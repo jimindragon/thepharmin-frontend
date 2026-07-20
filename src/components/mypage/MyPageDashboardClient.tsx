@@ -20,7 +20,7 @@ const ALERTS: Array<{
   id: string;
   Icon: LucideIcon;
   title: string;
-  badge: { label: string; className: string };
+  badge: { label: string; className: string; dotClassName?: string };
   desc: string;
   action: { label: string; href: string };
   isNew: boolean;
@@ -29,7 +29,7 @@ const ALERTS: Array<{
     id: "al1",
     Icon: MessageSquare,
     title: "의학부 학술영업 담당자 (MSL) 입사 제안",
-    badge: { label: "신규", className: "text-status-positive" },
+    badge: { label: "신규", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
     desc: "한독 · 받은 날짜 2026.06.25 · 미열람",
     action: { label: "제안 확인", href: "/mypage/offers" },
     isNew: true,
@@ -38,7 +38,7 @@ const ALERTS: Array<{
     id: "al2",
     Icon: MessageSquare,
     title: "제약 R&D PM (대리~과장급) 헤드헌팅 제안",
-    badge: { label: "신규", className: "text-status-positive" },
+    badge: { label: "신규", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
     desc: "더파마 헤드헌터 · 받은 날짜 2026.06.24 · 미열람",
     action: { label: "제안 확인", href: "/mypage/offers" },
     isNew: true,
@@ -101,7 +101,15 @@ const DASHBOARD_APPLICATIONS: Array<{
   },
 ];
 
-const UPCOMING_SCHEDULES = [
+const UPCOMING_SCHEDULES: Array<{
+  id: string;
+  day: string;
+  monthLabel: string;
+  time: string;
+  title: string;
+  company: string;
+  badge: { label: string; className: string; dotClassName?: string };
+}> = [
   {
     id: "sch1",
     day: "28",
@@ -118,7 +126,7 @@ const UPCOMING_SCHEDULES = [
     time: "",
     title: "Regulatory Affairs Associate · 서류 발표",
     company: "바이오넥스(주)",
-    badge: { label: "발표 예정", className: "text-status-warning" },
+    badge: { label: "발표 예정", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
   },
 ];
 
@@ -138,13 +146,13 @@ function AlertRow({ Icon, title, badge, desc, action, isNew }: (typeof ALERTS)[0
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[13px] font-semibold text-[#17202c]">{title}</span>
-          <span
-            className={clsx(
-              "inline-flex w-fit items-center text-[12px] font-medium",
-              badge.className,
-            )}
-          >
-            {badge.label}
+          <span className="inline-flex w-fit items-center gap-[8px]">
+            {badge.dotClassName ? (
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
+            ) : null}
+            <span className={clsx("text-[12px] font-medium", badge.className)}>
+              {badge.label}
+            </span>
           </span>
         </div>
         <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{desc}</p>
@@ -180,13 +188,13 @@ function ScheduleRow({
         <p className="text-[13px] font-semibold text-[#17202c]">{title}</p>
         <p className="mt-0.5 text-[12px] text-[#8a94a3]">{company}</p>
         <div className="mt-2">
-          <span
-            className={clsx(
-              "inline-flex w-fit items-center text-[12px] font-medium",
-              badge.className,
-            )}
-          >
-            {badge.label}
+          <span className="inline-flex w-fit items-center gap-[8px]">
+            {badge.dotClassName ? (
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
+            ) : null}
+            <span className={clsx("text-[12px] font-medium", badge.className)}>
+              {badge.label}
+            </span>
           </span>
         </div>
       </div>
@@ -272,8 +280,8 @@ export function MyPageDashboardClient() {
           <div className="space-y-4">
 
             {/* 놓치지 마세요 — ② 신규 제안 행(1·2)에만 mint 배경 강조 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">
                   놓치지 마세요
                   <span className="ml-2 text-status-positive">4</span>
@@ -293,8 +301,8 @@ export function MyPageDashboardClient() {
             </section>
 
             {/* 지원 현황 — ③ 지원 현황 페이지의 ApplicationStepper 재사용 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">지원 현황</h2>
                 <Link
                   href="/mypage/applications"
@@ -333,8 +341,8 @@ export function MyPageDashboardClient() {
           <div className="space-y-4">
 
             {/* 다가오는 일정 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">다가오는 일정</h2>
                 <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
               </div>
@@ -346,8 +354,8 @@ export function MyPageDashboardClient() {
             </section>
 
             {/* 내 이력서 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">내 이력서</h2>
                 <Link
                   href="/mypage/resume"
@@ -387,7 +395,7 @@ export function MyPageDashboardClient() {
                 })}
               </div>
               {incompleteResume ? (
-                <div className="border-t border-[#e5e9ef] px-5 py-4">
+                <div className="border-t border-border px-5 py-4">
                   <p className="text-[12px] leading-[1.6] text-[#68717e]">
                     {incompleteResume.title}을 완성하면 해당 직무 공고에 간편지원이 가능해요.
                   </p>
@@ -402,8 +410,8 @@ export function MyPageDashboardClient() {
             </section>
 
             {/* 관심 조건 */}
-            <section className="border border-[#dfe4ea] bg-white">
-              <div className="flex items-center justify-between border-b border-[#e5e9ef] px-5 py-4">
+            <section className="border border-border bg-white">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">관심 조건</h2>
                 <Link
                   href="/mypage/preferences"

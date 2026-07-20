@@ -29,9 +29,9 @@ function showPlaceholderNotice(setNotice: (message: string) => void, message: st
 
 function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onPurchaseClick: () => void }) {
   return (
-    <section className="border border-[#e5e9ef] bg-white">
+    <section className="border border-border bg-white">
       <div className="grid grid-cols-[320px_1fr] gap-8 p-8 max-[860px]:grid-cols-1 max-[860px]:gap-5 max-[860px]:p-5">
-        <div className="relative aspect-[4/3] overflow-hidden border border-[#e5e9ef]">
+        <div className="relative aspect-[4/3] overflow-hidden border border-border">
           <PriceBadge file={pkg} size="md" />
           <img src={pkg.coverImage} alt="" className="h-full w-full object-cover" />
         </div>
@@ -112,7 +112,7 @@ function ResourceCard({ file }: { file: ResourceFile }) {
       href={`/resources/${file.slug}`}
       className="group flex flex-col border border-[#e5e9ef] bg-white transition hover:border-[#111111]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden border-b border-[#e5e9ef]">
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
         <PriceBadge file={file} />
         <img src={file.coverImage} alt="" className="h-full w-full object-cover" />
       </div>
@@ -134,7 +134,7 @@ function ResourceCard({ file }: { file: ResourceFile }) {
 
 function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
   return (
-    <section className="border border-[#e5e9ef] bg-white p-5">
+    <section className="border border-border bg-white p-5">
       <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 자료
@@ -163,7 +163,7 @@ function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
 
 function MembershipPanel({ onCtaClick }: { onCtaClick: () => void }) {
   return (
-    <section className="border border-[#dfe4ea] bg-[#050505] p-5 text-white">
+    <section className="border border-border bg-[#050505] p-5 text-white">
       <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/55">MEMBERSHIP</span>
       <h2 className="mt-2 text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">더파마 멤버십으로 모든 유료 자료 무제한</h2>
       <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">기업분석·면접후기·직무가이드 전 자료를 월 구독으로 자유롭게 보세요.</p>
@@ -220,7 +220,7 @@ export function ResourcesHomeClient() {
                 ))}
               </div>
             ) : (
-              <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 border border-[#e5e9ef] bg-white text-center">
+              <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 border border-border bg-white text-center">
                 <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 자료가 없습니다.</p>
                 <p className="text-[13px] font-normal text-[#8791a0]">다른 카테고리를 선택해보세요.</p>
               </div>

@@ -25,7 +25,7 @@ function InfoBadge({ children }: { children: string }) {
 
 function SectionShell({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="border border-[#e5e9ef] bg-white p-6 max-[640px]:p-5">
+    <section className="border border-border bg-white p-6 max-[640px]:p-5">
       <h2 className="text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
@@ -35,7 +35,7 @@ function SectionShell({ title, children }: { title: string; children: ReactNode 
 function RelatedResourceCard({ file }: { file: ResourceFile }) {
   return (
     <Link href={`/resources/${file.slug}`} className="flex flex-col border border-[#e5e9ef] bg-white transition hover:border-[#111111]">
-      <div className="relative aspect-[4/3] overflow-hidden border-b border-[#e5e9ef]">
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
         <span className="absolute left-2 top-2 z-10 bg-[#111111] px-2 py-0.5 text-[11px] font-medium text-white">{file.isFree ? "무료" : "유료"}</span>
         <img src={file.coverImage} alt="" className="h-full w-full object-cover" />
       </div>
@@ -59,7 +59,7 @@ function PurchasePanel({
 }) {
   return (
     <aside className="sticky top-[88px] h-fit space-y-3 self-start max-[1024px]:static">
-      <section className="border border-[#e5e9ef] bg-white p-5">
+      <section className="border border-border bg-white p-5">
         <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{resource.isPackage ? "올인원 패키지" : "전자책"}</span>
         <h2 className="mt-1.5 text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-[#17202c]">{resource.title}</h2>
         <div className="mt-3">
@@ -109,9 +109,9 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
         <div className="mt-5 grid grid-cols-[minmax(0,1fr)_320px] gap-8 max-[1024px]:grid-cols-1">
           <div className="min-w-0 space-y-5">
             {/* 상단 상품 정보 */}
-            <section className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
+            <section className="border border-border bg-white p-7 max-[640px]:p-5">
               <div className="grid grid-cols-[260px_1fr] gap-7 max-[720px]:grid-cols-1">
-                <div className="relative aspect-[4/3] overflow-hidden border border-[#e5e9ef]">
+                <div className="relative aspect-[4/3] overflow-hidden border border-border">
                   <span className="absolute left-2 top-2 z-10 bg-[#111111] px-2.5 py-1 text-[12px] font-medium text-white">{resource.isFree ? "무료" : "유료"}</span>
                   <img src={resource.coverImage} alt="" className="h-full w-full object-cover" />
                 </div>
@@ -188,7 +188,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
             ) : null}
 
             {resource.introImageUrl ? (
-              <section className="border border-[#e5e9ef] bg-white p-6 max-[640px]:p-5">
+              <section className="border border-border bg-white p-6 max-[640px]:p-5">
                 <h2 className="text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">자료 소개</h2>
                 <img src={resource.introImageUrl} alt={`${resource.title} 상세 소개`} className="mt-4 h-auto w-full" />
               </section>

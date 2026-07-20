@@ -179,7 +179,7 @@ function CommentComposer({ isLoggedIn, placeholder, onSubmit }: { isLoggedIn: bo
   const [isAnonymous, setIsAnonymous] = useState(true);
 
   return (
-    <div className="border border-[#e5e9ef] bg-white p-4">
+    <div className="border border-border bg-white p-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <CommentComposerAvatar anonymous={isAnonymous} />
@@ -291,7 +291,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
         <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1024px]:grid-cols-1">
           <div className="min-w-0 space-y-5">
-            <article className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
+            <article className="border border-border bg-white p-7 max-[640px]:p-5">
               {post.isBest ? (
                 <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span>
               ) : null}
@@ -336,7 +336,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
               />
             </article>
 
-            <section className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
+            <section className="border border-border bg-white p-7 max-[640px]:p-5">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">댓글 {totalCommentCount}</h2>
                 <CommentSortControl value={commentSort} onChange={setCommentSort} />
@@ -403,7 +403,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             </section>
 
             {relatedEntries.length ? (
-              <section className="border border-[#e5e9ef] bg-white p-7 max-[640px]:p-5">
+              <section className="border border-border bg-white p-7 max-[640px]:p-5">
                 <h2 className="text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
                 <div className="mt-3 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
                   {relatedEntries.map((entry) => (

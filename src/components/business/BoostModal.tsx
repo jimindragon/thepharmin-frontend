@@ -97,7 +97,7 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
     >
       <div className="flex w-full max-w-[480px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[#e5e9ef] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">부스트 적용</h2>
           <button
             type="button"
@@ -268,7 +268,7 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
             </div>
 
             {/* 금액 요약 */}
-            <div className="border-t border-[#e5e9ef] pt-5">
+            <div className="border-t border-border pt-5">
               {pricePoint ? (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -292,7 +292,7 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
               ) : (
                 <p className="text-[13px] font-normal text-[#8a94a3]">공고를 먼저 선택하면 상품별 금액이 표시됩니다.</p>
               )}
-              <div className="mt-4 flex items-end justify-between border-t border-[#e5e9ef] pt-4">
+              <div className="mt-4 flex items-end justify-between border-t border-border pt-4">
                 <span className="text-[14px] font-bold text-[#17202c]">결제 금액</span>
                 <div className="text-right">
                   <p className="text-[26px] font-bold tracking-[-0.025em] text-[#17202c]">

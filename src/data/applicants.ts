@@ -243,5 +243,14 @@ export function applicantStageClass(stage: ApplicantStage): string {
   if (stage === "first_interview") return "text-status-warning";
   if (stage === "final_interview") return "text-status-warning";
   if (stage === "offer") return "text-[#596373]";
-  return "text-[#596373]";
+  return "text-status-error";
+}
+
+export function applicantStageDotClass(stage: ApplicantStage): string {
+  if (stage === "new") return "bg-status-neutral-dot";
+  if (stage === "screening") return "bg-status-positive-dot";
+  if (stage === "first_interview") return "bg-status-warning-dot";
+  if (stage === "final_interview") return "bg-status-warning-dot";
+  if (stage === "offer") return "bg-status-neutral-dot";
+  return "bg-status-error-dot";
 }

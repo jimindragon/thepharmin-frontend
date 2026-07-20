@@ -68,7 +68,7 @@ export function SupportContactClient() {
         <main className="bg-[#f5f6f7] pb-20 pt-[18px]">
           <div className="app-shell--text">
             <PageBreadcrumb items={[{ label: "고객센터", href: "/support" }, { label: "1:1 문의하기" }]} />
-            <section className="mt-7 border border-[#dfe4ea] bg-white p-10 text-center">
+            <section className="mt-7 border border-border bg-white p-10 text-center">
               <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
               <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">문의가 접수되었습니다.</h1>
               <p className="mt-3 text-[14px] font-normal leading-[1.8] text-[#68717e]">
@@ -98,13 +98,13 @@ export function SupportContactClient() {
             문의를 남겨주시면 영업일 기준 1~2일 이내 답변드립니다.
           </p>
 
-          <div className="mt-7 border border-[#dfe4ea] bg-white p-8 max-[760px]:p-5">
+          <div className="mt-7 border border-border bg-white p-8 max-[760px]:p-5">
             <p className="border border-[#dfe4ea] bg-[#f7f8fa] px-4 py-3 text-[13px] font-normal leading-[1.6] text-[#596373]">
               정확한 답변을 위해 회원 유형과 문의 유형을 먼저 선택해주세요.
             </p>
 
             <FieldGroup label="회원 유형" required>
-              <div className="grid grid-cols-2 border border-[#dfe4ea]">
+              <div className="grid grid-cols-2 border border-border">
                 {memberTypeOptions.map((option, index) => (
                   <button
                     key={option.id}
@@ -112,7 +112,7 @@ export function SupportContactClient() {
                     onClick={() => handleMemberTypeChange(option.id)}
                     className={clsx(
                       "h-12 text-[14px] font-medium transition",
-                      index === 0 && "border-r border-[#dfe4ea]",
+                      index === 0 && "border-r border-border",
                       memberType === option.id ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
                     )}
                   >

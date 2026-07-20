@@ -10,7 +10,8 @@
   --color-accent: #333333;
   --color-text: #171b20;
   --color-muted: #6f767f;
-  --color-border: #e0e2e5;
+  /* 카드·박스 공통 테두리. 개별 hex 하드코딩 금지 — border-border 사용 */
+  --color-border: #e6e9ee;
   --color-bg: #ffffff;
   --color-surface: #ffffff;
   --color-soft-bg: #f5f5f3;
@@ -20,32 +21,28 @@
      의미 단위로 묶은 상태 색 3종(텍스트/배경/보더)세트.
      하드코딩 값들의 대표값을 채택한 근거는 각 주석에 표기.
      예외적으로 토큰에 흡수하지 않은 값:
-       - #9ECEC9 border (MyPageOffersClient) — #BFE7E2 대비 밝기 14% 차, 유지
        - #0F6E56 / #E4F4EE (HeadhuntingLandingClient) — 색조 다름(초록 계열), 유지
        - #00A896 (BusinessPricingClient 체크 아이콘) — 확연히 밝은 틸, 유지
        - #C0523B / #E2998A (BoostModal, 완료 페이지) — 밝기 7% 차, 유지
-       - #EAD8D3 / #FFFAFA (거부 상태 일부) — 채도/색조 차이, 유지
        - #8A6D1F (ResumeCard 미완성) — 색조 다름(올리브), 유지
-       - #B4791B (CompanyProfileClient 추정 레이블) — 주석용 별도 색, 유지
-       - #7D5960 (BusinessCompanyProfileClient 이차 오류 텍스트) — 다른 색조(분홍 계열), 유지
        - #E5D27B (PREMIUM 라벨 금색) — 마케팅 강조색, 상태 색 아님
        - logoColor(#B45309) — 렌더링에서 소비 안 함
   ──────────────────────────────────────────────────────────────────────────── */
 
   /* 긍정/진행/승인 — 진행 중 채용 단계, 승인된 상태, active 구독 등
-     대표값: #00746C (23/27회). 흡수: #005F59(밝기 4% 차, 1회), #B8DAD8→border(밝기 5% 차), #E8F5F4→subtle(채널 차 2~6) */
-  --status-positive: #00746c;
+     대표값: #00806E (23/27회). 흡수: #005F59(밝기 4% 차, 1회), #B8DAD8→border(밝기 5% 차), #E8F5F4→subtle(채널 차 2~6) */
+  --status-positive: #00806E;
   --status-positive-subtle: #eafbf8;
   --status-positive-border: #bfe7e2;
 
   /* 완료/성공 — 이력서 완성 등 최종 완료 상태 (진행 계열과 색조 다름, 분리) */
   --status-complete: #1a8f5c;
 
-  /* 경고/대기 — 검토 대기, 면접 단계, 오퍼 수신 등 중간 단계
-     대표값: #9A6500 (7/9회) */
-  --status-warning: #9a6500;
-  --status-warning-subtle: #fff9ef;
-  --status-warning-border: #f1dcb7;
+  /* 대기·진행 상태(검토 대기/면접 진행/일정 대기 등) — 청색 계열.
+     토큰명 warning은 참조처 9곳 호환을 위해 유지, 리네임은 백로그 */
+  --status-warning: #1B66CC;
+  --status-warning-subtle: #eff4fb;
+  --status-warning-border: #c7d7ec;
 
   /* 거부/오류 — 심사 거부, 필수 항목 누락 등 최종 부정 상태
      대표값: #A43F31 (6회). 흡수: #9B3A2D(밝기 3% 차, 4회), #FDF2F0/#FDF6F5→subtle(채널 차 2~3) */
@@ -55,6 +52,13 @@
 
   /* 긴급 — 종료 임박, 긴급 공고 (--color-danger와 시각적으로 거의 동일하나 의미 분리 유지) */
   --status-urgent: #E14B2D;
+
+  /* 상태 점 인디케이터 전용 — 텍스트가 아니라 대비(AA) 제약 없이 채도 높게 사용.
+     텍스트 색은 기존 --status-* 유지 */
+  --status-positive-dot: #00BD93;
+  --status-warning-dot: #2E7FE6;
+  --status-error-dot: #E14B2D;
+  --status-neutral-dot: #9ca3af;
 
   --radius: 3px;
   --shadow: 0 1px 0 rgba(18, 24, 30, 0.04);

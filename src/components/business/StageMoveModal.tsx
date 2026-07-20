@@ -61,7 +61,7 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
     >
       <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[#e5e9ef] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">단계 이동</h2>
           <button
             type="button"
@@ -74,7 +74,7 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
         </div>
 
         {/* 지원자 요약 */}
-        <div className="shrink-0 border-b border-[#e5e9ef] px-6 py-4">
+        <div className="shrink-0 border-b border-border px-6 py-4">
           <p className="text-[15px] font-bold text-[#17202c]">{applicant.name}</p>
           <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">{postingTitle}</p>
         </div>
@@ -116,7 +116,7 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
           </div>
 
           {/* 불합격 처리 */}
-          <div className="mt-4 border-t border-[#e5e9ef] pt-4">
+          <div className="mt-4 border-t border-border pt-4">
             <label
               className={clsx(
                 "flex items-center gap-3 border px-4 py-3.5 transition-colors",

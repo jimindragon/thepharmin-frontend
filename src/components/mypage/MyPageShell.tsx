@@ -29,7 +29,7 @@ export function MyPageSidebar() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className="border-r border-[#dfe4ea] bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
+    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
       <div>
         <p className="text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">{myPageUser.name} 님</p>
         <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">{myPageUser.email}</p>

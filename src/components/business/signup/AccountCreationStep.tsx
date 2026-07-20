@@ -34,7 +34,7 @@ function AgreeCheckbox({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex items-center gap-2.5 border border-[#dfe4ea] bg-white px-4 py-3">
+    <label className="flex items-center gap-2.5 border border-border bg-white px-4 py-3">
       <input
         type="checkbox"
         checked={checked}

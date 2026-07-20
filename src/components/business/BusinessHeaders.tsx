@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LinkButton } from "@/components/ui/Button";
 import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
-import { businessCompanyManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
+import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
@@ -67,20 +67,20 @@ export function BusinessAccountMenu() {
         aria-expanded={open}
         className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]"
       >
-        <span className="grid h-6 w-6 place-items-center bg-[#f0f2f4] text-[11px]">더</span>
-        <span className="hidden whitespace-nowrap md:inline">더파마뉴스</span>
+        <span className="grid h-6 w-6 place-items-center bg-[#f0f2f4] text-[11px]">{initialBusinessCompanyProfile.displayName.slice(0, 1)}</span>
+        <span className="hidden whitespace-nowrap md:inline">{initialBusinessCompanyProfile.displayName}</span>
         <ChevronDown size={14} className={clsx("text-[#7d8796] transition-transform", open && "rotate-180")} />
       </button>
 
       {open ? (
         <div
           role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-[#e5e9ef] bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
             <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
-              {businessCompanyManager.department} · {businessCompanyManager.position}
+              {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
             </p>
           </div>
           <div className="h-px bg-[#edf1f5]" />
@@ -154,7 +154,7 @@ export function BusinessHeader() {
   const isMember = useBusinessMember();
 
   return (
-    <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#dfe4ea] bg-white text-[#17202c]">
+    <header className="site-header sticky top-0 z-50 h-[64px] border-b border-border bg-white text-[#17202c]">
       <div className="app-shell flex h-full items-center justify-between">
         {/* 좌측: 로고 | 기업 센터 | 요금제 · 고객센터 */}
         <div className="flex min-w-0 items-center gap-5">

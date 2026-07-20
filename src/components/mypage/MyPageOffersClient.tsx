@@ -67,14 +67,16 @@ function OfferTypeBadge({ type }: { type: OfferType }) {
 function OfferStatusBadge({ status }: { status: OfferStatus }) {
   if (status === "new") {
     return (
-      <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-status-positive">
-        신규
+      <span className="inline-flex w-fit shrink-0 items-center gap-[8px]">
+        <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-positive-dot" />
+        <span className="text-[12px] font-medium text-status-positive">신규</span>
       </span>
     );
   }
   return (
-    <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-[#8a94a3]">
-      확인함
+    <span className="inline-flex w-fit shrink-0 items-center gap-[8px]">
+      <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-neutral-dot" />
+      <span className="text-[12px] font-medium text-[#8a94a3]">확인함</span>
     </span>
   );
 }
@@ -116,7 +118,7 @@ export function MyPageOffersClient() {
       </div>
 
       {/* 탭 — 지원 현황과 동일한 패턴 */}
-      <div className="mt-7 flex items-center gap-6 border-b border-[#e5e9ef]">
+      <div className="mt-7 flex items-center gap-6 border-b border-border">
         {OFFER_TABS.map((tab) => (
           <button
             key={tab.id}
@@ -146,7 +148,7 @@ export function MyPageOffersClient() {
       <div className="mt-5 space-y-4">
         {filtered.length > 0 ? (
           filtered.map((offer) => (
-            <article key={offer.id} className="border border-[#dfe4ea] bg-white">
+            <article key={offer.id} className="border border-border bg-white">
               {/* 행 */}
               <div className="flex items-center gap-4 p-6 max-[600px]:flex-wrap max-[600px]:gap-2.5 max-[640px]:p-5">
                 {/* 좌: 뱃지 + 포지션 + 발신자 */}
@@ -229,7 +231,7 @@ export function MyPageOffersClient() {
             </article>
           ))
         ) : (
-          <div className="border border-[#dfe4ea] bg-white p-10 text-center">
+          <div className="border border-border bg-white p-10 text-center">
             <p className="text-[14px] font-medium text-[#303946]">해당하는 제안이 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
               이력서를 공개하면 기업과 헤드헌터가 포지션을 제안할 수 있습니다.

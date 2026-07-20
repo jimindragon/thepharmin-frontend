@@ -7,7 +7,7 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FieldLabel, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import { industryJobCategoryOptions } from "@/config/jobFilters";
-import { businessCompanyManager } from "@/data/businessCompanyProfile";
+import { initialIndustryOrgManager } from "@/data/businessCompanyProfile";
 
 export function BusinessHeadhuntingNewClient() {
   const [positionTitle, setPositionTitle] = useState("");
@@ -16,7 +16,7 @@ export function BusinessHeadhuntingNewClient() {
   const [headcount, setHeadcount] = useState("1");
   const [experienceCondition, setExperienceCondition] = useState("");
   const [requirements, setRequirements] = useState("");
-  const [managerName, setManagerName] = useState(businessCompanyManager.managerName);
+  const [managerName, setManagerName] = useState(initialIndustryOrgManager.managerName);
   const [submitted, setSubmitted] = useState(false);
 
   const jobSubcategoryOptions =
@@ -31,7 +31,7 @@ export function BusinessHeadhuntingNewClient() {
   if (submitted) {
     return (
       <BusinessCenterShell>
-        <section className="mx-auto max-w-[640px] border border-[#dfe4ea] bg-white p-10 text-center">
+        <section className="mx-auto max-w-[640px] border border-border bg-white p-10 text-center">
           <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
           <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
           <p className="mt-3 text-[13px] font-normal leading-[1.8] text-[#68717e]">
@@ -150,12 +150,12 @@ export function BusinessHeadhuntingNewClient() {
               </div>
               <div className="space-y-2">
                 <FieldLabel>연락처</FieldLabel>
-                <TextInput value={businessCompanyManager.phone} disabled />
+                <TextInput value={initialIndustryOrgManager.phone} disabled />
               </div>
             </div>
           </SectionCard>
 
-          <div className="sticky bottom-0 z-20 border border-[#dfe4ea] bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
+          <div className="sticky bottom-0 z-20 border border-border bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
             <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
               <p className="text-[12px] font-normal text-[#7b8491]">제출 후 담당 매니저가 1~2영업일 내에 연락드립니다.</p>
               <button

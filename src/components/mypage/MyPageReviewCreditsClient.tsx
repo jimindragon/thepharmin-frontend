@@ -42,7 +42,7 @@ export function MyPageReviewCreditsClient() {
         면접 후기 열람권 보유 현황과 사용 내역을 확인할 수 있습니다.
       </p>
 
-      <section className="mt-8 border border-[#dfe4ea] bg-white">
+      <section className="mt-8 border border-border bg-white">
         <div className="grid grid-cols-1 divide-y divide-[#edf1f5] md:grid-cols-3 md:divide-x md:divide-y-0">
           <div className="px-8 py-7">
             <p className="text-[13px] font-medium text-[#596373]">보유 열람권</p>
@@ -79,7 +79,7 @@ export function MyPageReviewCreditsClient() {
       </section>
 
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <section className="border border-[#dfe4ea] bg-white p-6">
+        <section className="border border-border bg-white p-6">
           <h2 className="text-[16px] font-bold tracking-[-0.02em] text-[#17202c]">열람권 내역</h2>
           <div className="mt-4 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
             {reviewAccessHistoryMock.map((entry) => (
@@ -92,7 +92,7 @@ export function MyPageReviewCreditsClient() {
           </div>
         </section>
 
-        <section className="border border-[#dfe4ea] bg-white p-6">
+        <section className="border border-border bg-white p-6">
           <h2 className="text-[16px] font-bold tracking-[-0.02em] text-[#17202c]">내가 열람한 후기</h2>
           <div className="mt-4 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
             {myUnlockedInterviewReviewsMock.map((entry) => {

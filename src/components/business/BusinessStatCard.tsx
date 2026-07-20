@@ -61,20 +61,20 @@ export function BusinessStatGrid({
   className,
 }: BusinessStatGridProps) {
   return (
-    <div className={clsx("mt-6 border border-[#dfe4ea] bg-white", className)}>
+    <div className={clsx("mt-6 border border-border bg-white", className)}>
       <div
         className={clsx(
           "grid max-[900px]:grid-cols-2 max-[640px]:grid-cols-1",
           cols === 3 ? "grid-cols-3" : "grid-cols-4",
           // 기본(데스크톱): 각 행 첫 셀만 좌측 구분선 제거, 둘째 행부터 상단 구분선
-          "[&>*]:border-l [&>*]:border-[#dfe4ea]",
+          "[&>*]:border-l [&>*]:border-border",
           cols === 3
-            ? "[&>*:nth-child(3n+1)]:border-l-0 [&>*:nth-child(n+4)]:border-t [&>*:nth-child(n+4)]:border-[#dfe4ea]"
-            : "[&>*:nth-child(4n+1)]:border-l-0 [&>*:nth-child(n+5)]:border-t [&>*:nth-child(n+5)]:border-[#dfe4ea]",
+            ? "[&>*:nth-child(3n+1)]:border-l-0 [&>*:nth-child(n+4)]:border-t [&>*:nth-child(n+4)]:border-border"
+            : "[&>*:nth-child(4n+1)]:border-l-0 [&>*:nth-child(n+5)]:border-t [&>*:nth-child(n+5)]:border-border",
           // max-900px(2열)에서는 홀수 번째가 각 행의 시작 셀
-          "max-[900px]:[&>*:nth-child(2n+1)]:border-l-0 max-[900px]:[&>*:nth-child(n+3)]:border-t max-[900px]:[&>*:nth-child(n+3)]:border-[#dfe4ea]",
+          "max-[900px]:[&>*:nth-child(2n+1)]:border-l-0 max-[900px]:[&>*:nth-child(n+3)]:border-t max-[900px]:[&>*:nth-child(n+3)]:border-border",
           // max-640px(1열)에서는 좌측 구분선 없이 모든 행 사이에 상단 구분선
-          "max-[640px]:[&>*]:border-l-0 max-[640px]:[&>*:nth-child(n+2)]:border-t max-[640px]:[&>*:nth-child(n+2)]:border-[#dfe4ea]",
+          "max-[640px]:[&>*]:border-l-0 max-[640px]:[&>*:nth-child(n+2)]:border-t max-[640px]:[&>*:nth-child(n+2)]:border-border",
         )}
       >
         {children}

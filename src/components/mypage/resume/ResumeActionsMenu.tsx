@@ -35,7 +35,7 @@ export function ResumeActionsMenu({
       {open ? (
         <div
           role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+6px)] z-30 w-[180px] border border-[#e5e9ef] bg-white p-1.5 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute right-0 top-[calc(100%+6px)] z-30 w-[180px] border border-border bg-white p-1.5 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           {!isPrimary && onSetPrimary ? (
             <button

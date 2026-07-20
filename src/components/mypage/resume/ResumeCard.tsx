@@ -26,7 +26,7 @@ export function ResumeCard({
   const tagLabels = resume.jobSubcategoryIds.map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id).slice(0, 3);
 
   return (
-    <article className="border border-[#dfe4ea] bg-white p-6 max-[640px]:p-5">
+    <article className="border border-border bg-white p-6 max-[640px]:p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">

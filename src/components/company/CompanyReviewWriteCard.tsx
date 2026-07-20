@@ -34,7 +34,7 @@ export function CompanyReviewWriteCard({ companyId, reviewType, isLoggedIn, hasI
   const message = hasItems ? copy.withItems : copy.empty;
 
   return (
-    <article className="flex h-full min-h-[160px] flex-col items-center justify-center gap-3 border border-[#e5e9ef] bg-white p-4 text-center">
+    <article className="flex h-full min-h-[160px] flex-col items-center justify-center gap-3 border border-border bg-white p-4 text-center">
       <p className="text-[13px] font-medium leading-[1.6] text-[#3f4855]">{message}</p>
       <LinkButton href={href} variant="gradient" size="sm">
         {label}

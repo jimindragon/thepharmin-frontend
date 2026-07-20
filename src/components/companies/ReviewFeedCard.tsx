@@ -32,7 +32,7 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
   const applyLabel = review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} 면접` : null;
 
   return (
-    <article className="relative border border-[#e5e9ef] bg-white p-4">
+    <article className="relative border border-border bg-white p-4">
       {href ? <Link href={href} aria-label={`${review.companyName} 후기 보기`} className="absolute inset-0 z-10" /> : null}
       <div className="flex items-center justify-between gap-2">
         <p className="truncate text-[13px] font-medium text-[#596373]">{review.companyName}</p>

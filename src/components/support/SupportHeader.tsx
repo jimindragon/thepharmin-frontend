@@ -9,7 +9,7 @@ import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
-import { businessCompanyManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
+import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
@@ -55,12 +55,12 @@ function SupportBusinessAccountMenu() {
       {open ? (
         <div
           role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-[#e5e9ef] bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
             <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
-              {businessCompanyManager.department} · {businessCompanyManager.position}
+              {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
             </p>
           </div>
           <div className="h-px bg-[#edf1f5]" />

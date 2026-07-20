@@ -10,12 +10,14 @@ import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import {
   candidateStatusClass,
+  candidateStatusDotClass,
   candidateStatusLabel,
   headhuntingCandidates,
   headhuntingJobCategoryLabel,
   headhuntingJobSubcategoryLabel,
   headhuntingRequests,
   headhuntingStatusClass,
+  headhuntingStatusDotClass,
   headhuntingStatusLabel,
   type HeadhuntingCandidateStatus,
   type HeadhuntingRequestStatus,
@@ -219,10 +221,10 @@ export function BusinessHeadhuntingManageClient() {
           </div>
 
           {/* 테이블 */}
-          <div className="mt-3 border border-[#dfe4ea] bg-white">
+          <div className="mt-3 border border-border bg-white">
             <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
               <div className="min-w-[800px]">
-                <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] gap-3 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>포지션</span>
                   <span>직무 분야</span>
                   <span>진행 상태</span>
@@ -251,13 +253,18 @@ export function BusinessHeadhuntingManageClient() {
                           {headhuntingJobCategoryLabel(request.jobCategoryId)} ·{" "}
                           {headhuntingJobSubcategoryLabel(request.jobCategoryId, request.jobSubcategoryId)}
                         </span>
-                        <span
-                          className={clsx(
-                            "inline-flex w-fit items-center text-[12px] font-medium",
-                            headhuntingStatusClass(request.status),
-                          )}
-                        >
-                          {headhuntingStatusLabel(request.status)}
+                        <span className="inline-flex w-fit items-center gap-[8px]">
+                          <span
+                            className={`h-[8px] w-[8px] rounded-full shrink-0 ${headhuntingStatusDotClass(request.status)}`}
+                          />
+                          <span
+                            className={clsx(
+                              "text-[12px] font-medium",
+                              headhuntingStatusClass(request.status),
+                            )}
+                          >
+                            {headhuntingStatusLabel(request.status)}
+                          </span>
                         </span>
                         <span className="font-normal text-[#303946]">{request.headcount}명</span>
                         <span className="font-normal text-[#303946]">
@@ -311,7 +318,7 @@ export function BusinessHeadhuntingManageClient() {
           </p>
 
           {/* 상태 탭 */}
-          <div className="mt-4 flex items-center overflow-x-auto border-b border-[#e5e9ef]">
+          <div className="mt-4 flex items-center overflow-x-auto border-b border-border">
             {selectedRequestId && (
               <button
                 type="button"
@@ -357,10 +364,10 @@ export function BusinessHeadhuntingManageClient() {
           </div>
 
           {/* 테이블 카드 */}
-          <div className="mt-3 border border-[#dfe4ea] bg-white">
+          <div className="mt-3 border border-border bg-white">
             <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
               <div className="min-w-[840px]">
-                <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_96px] gap-3 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_96px] gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>후보자 · 주요 경력</span>
                   <span>매칭 포지션</span>
                   <span>적합도</span>
@@ -402,13 +409,18 @@ export function BusinessHeadhuntingManageClient() {
                           </p>
                         </div>
                         {/* 진행 상태 */}
-                        <span
-                          className={clsx(
-                            "inline-flex w-fit items-center text-[12px] font-medium",
-                            candidateStatusClass(candidate.status),
-                          )}
-                        >
-                          {candidateStatusLabel(candidate.status)}
+                        <span className="inline-flex w-fit items-center gap-[8px]">
+                          <span
+                            className={`h-[8px] w-[8px] rounded-full shrink-0 ${candidateStatusDotClass(candidate.status)}`}
+                          />
+                          <span
+                            className={clsx(
+                              "text-[12px] font-medium",
+                              candidateStatusClass(candidate.status),
+                            )}
+                          >
+                            {candidateStatusLabel(candidate.status)}
+                          </span>
                         </span>
                         {/* 추천일 */}
                         <span className="text-[12px] font-normal text-[#8a94a3]">

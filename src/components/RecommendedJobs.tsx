@@ -78,7 +78,7 @@ export function JobNoticePopover() {
       {open ? (
         <div
           role="dialog"
-          className="dropdown-panel absolute left-1/2 top-[calc(100%+8px)] z-30 flex w-[240px] max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col items-center gap-3 border border-[#e5e9ef] bg-white p-4 text-center shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute left-1/2 top-[calc(100%+8px)] z-30 flex w-[240px] max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col items-center gap-3 border border-border bg-white p-4 text-center shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           <p className="text-[14px] font-bold text-[#17202c]">공고 노출 효과를 높여보세요</p>
           <p className="break-keep text-[12px] font-normal leading-[1.6] text-[#687383]">기업회원 전용 노출 상품과 요금제를 확인할 수 있습니다.</p>

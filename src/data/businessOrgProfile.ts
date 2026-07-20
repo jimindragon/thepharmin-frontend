@@ -63,6 +63,7 @@ export const initialPharmacyOrgProfile: PharmacyOrgProfile = {
   businessNumber: "123-45-67890",
   pharmacyName: "은행약국",
   representativeName: "정*래",
+  // 가입 폼 입력값 아님 — 운영팀 승인 처리 시 시스템이 부여하는 값(목업)
   approvedAt: "2025.12.28",
   pharmacistLicenseNumber: "제 12***호",
   institutionCode: "31*****9",
@@ -188,6 +189,7 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   businessNumber: "124-82-*****",
   institutionName: "분당서울대학교병원",
   representativeName: "송정한",
+  // 가입 폼 입력값 아님 — 운영팀 승인 처리 시 시스템이 부여하는 값(목업)
   approvedAt: "2025.12.30",
   institutionCode: "31*****2",
   businessLicenseFile: { name: "사업자등록증명원.pdf", status: "approved" },
@@ -222,22 +224,22 @@ export const initialHospitalOrgProfile: HospitalOrgProfile = {
   },
 };
 
-/** 병원 §5(담당자 정보) 편집 state 초기값. businessCompanyManager(구 정적 상수)와 동일한 값을 그대로 옮겨
+/** 병원 §5(담당자 정보) 편집 state 초기값. initialIndustryOrgManager와 동일한 값을 그대로 옮겨
  * 편집 가능한 OrgManager state로 승격한다 — 문구·이름은 임의로 바꾸지 않는다. */
 export const initialHospitalOrgManager: OrgManager = {
   managerName: "이길동",
-  department: "마케팅팀",
+  department: "채용담당팀",
   position: "채용 담당자",
   email: "manager@thepharmanews.net",
   phone: "010-1234-5678",
   accountId: "biz-thepharma-news",
 };
 
-/** 약국 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 businessCompanyManager
+/** 약국 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 initialIndustryOrgManager
  * 값을 그대로 옮긴다 — 문구·이름은 임의로 바꾸지 않는다. */
 export const initialPharmacyOrgManager: OrgManager = {
   managerName: "이길동",
-  department: "마케팅팀",
+  department: "채용담당팀",
   position: "채용 담당자",
   email: "manager@thepharmanews.net",
   phone: "010-1234-5678",
@@ -319,6 +321,7 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
   businessNumber: "224-82-*****",
   institutionName: "한국과학기술연구원(KIST)",
   representativeName: "이길동",
+  // 가입 폼 입력값 아님 — 운영팀 승인 처리 시 시스템이 부여하는 값(목업)
   approvedAt: "2025.12.30",
   businessLicenseFile: { name: "사업자등록증명원.pdf", status: "approved" },
   // 가입 후 연구기관정보 관리 페이지에서 채우는 상세값 — 신규 가입 직후엔 비어 있어야 함
@@ -346,11 +349,11 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
   },
 };
 
-/** 연구 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 businessCompanyManager
+/** 연구 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 initialIndustryOrgManager
  * 값을 그대로 옮긴다 — 문구·이름은 임의로 바꾸지 않는다. */
 export const initialResearchOrgManager: OrgManager = {
   managerName: "이길동",
-  department: "마케팅팀",
+  department: "채용담당팀",
   position: "채용 담당자",
   email: "manager@thepharmanews.net",
   phone: "010-1234-5678",

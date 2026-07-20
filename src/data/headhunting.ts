@@ -120,6 +120,14 @@ export function headhuntingStatusClass(status: HeadhuntingRequestStatus) {
   return "text-status-warning";
 }
 
+export function headhuntingStatusDotClass(status: HeadhuntingRequestStatus) {
+  if (status === "consulting") return "bg-status-neutral-dot";
+  if (status === "sourcing") return "bg-status-positive-dot";
+  if (status === "interviewing") return "bg-status-positive-dot";
+  if (status === "completed") return "bg-status-neutral-dot";
+  return "bg-status-warning-dot";
+}
+
 export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
   if (status === "recommended") return "추천됨";
   if (status === "interview_proposed") return "면접 제안";
@@ -136,4 +144,13 @@ export function candidateStatusClass(status: HeadhuntingCandidateStatus) {
   if (status === "offer") return "text-status-warning";
   if (status === "hired") return "text-status-positive";
   return "text-[#596373]";
+}
+
+export function candidateStatusDotClass(status: HeadhuntingCandidateStatus) {
+  if (status === "recommended") return "bg-status-neutral-dot";
+  if (status === "interview_proposed") return "bg-status-positive-dot";
+  if (status === "interview_scheduled") return "bg-status-positive-dot";
+  if (status === "offer") return "bg-status-warning-dot";
+  if (status === "hired") return "bg-status-positive-dot";
+  return "bg-status-neutral-dot";
 }

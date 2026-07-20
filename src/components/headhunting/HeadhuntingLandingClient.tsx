@@ -177,7 +177,7 @@ export function HeadhuntingLandingClient() {
         {/* ── 히어로 카드 ── */}
         <RevealSection className="mt-8">
           <div
-            className="grid grid-cols-[1fr_420px] overflow-hidden border border-[#e5e9ef] bg-white
+            className="grid grid-cols-[1fr_420px] overflow-hidden border border-border bg-white
               transition-shadow duration-300 hover:shadow-[0_14px_36px_-22px_rgba(17,19,18,0.25)]
               max-[880px]:grid-cols-1"
           >
@@ -209,7 +209,7 @@ export function HeadhuntingLandingClient() {
                 {RESUME_STATE !== "public" && (
                   <Link
                     href="/mypage/offers"
-                    className="inline-flex h-12 items-center border border-[#cfd8e3] bg-white px-6
+                    className="inline-flex h-12 items-center border border-border bg-white px-6
                       text-[14px] font-medium text-[#303946] transition-colors
                       hover:border-[#111111] hover:bg-[#f7f8fa]"
                   >
@@ -245,7 +245,7 @@ export function HeadhuntingLandingClient() {
             {steps.map((item) => (
               <div
                 key={item.step}
-                className="relative border border-[#e5e9ef] bg-white p-6 transition-all duration-200
+                className="relative border border-border bg-white p-6 transition-all duration-200
                   hover:-translate-y-[3px] hover:border-[#d8dce2] hover:shadow-[0_14px_34px_-22px_rgba(17,19,18,0.28)]"
               >
                 <span
@@ -280,7 +280,7 @@ export function HeadhuntingLandingClient() {
               return (
                 <div
                   key={offer.badgeLabel}
-                  className="border border-[#e5e9ef] bg-white p-7 transition-all duration-200
+                  className="border border-border bg-white p-7 transition-all duration-200
                     hover:-translate-y-[3px] hover:border-[#d8dce2] hover:shadow-[0_14px_34px_-22px_rgba(17,19,18,0.28)]"
                 >
                   <span
@@ -339,7 +339,7 @@ export function HeadhuntingLandingClient() {
         {/* ── 기업 보조 배너 ── */}
         <RevealSection className="mt-5">
           <div
-            className="flex flex-wrap items-center justify-between gap-4 border border-[#e5e9ef] bg-white
+            className="flex flex-wrap items-center justify-between gap-4 border border-border bg-white
               px-7 py-5 max-[560px]:flex-col max-[560px]:items-start max-[560px]:gap-3"
           >
             <div>

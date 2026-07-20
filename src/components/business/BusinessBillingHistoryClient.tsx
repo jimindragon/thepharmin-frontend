@@ -79,7 +79,7 @@ export function BusinessBillingHistoryClient() {
         {/* 필터 바 */}
         <div className="mt-6 flex items-center justify-between gap-4 max-[640px]:flex-col max-[640px]:items-start">
           {/* 상태 탭 */}
-          <div className="flex items-center overflow-x-auto border-b border-[#e5e9ef]">
+          <div className="flex items-center overflow-x-auto border-b border-border">
             {STATUS_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -129,12 +129,12 @@ export function BusinessBillingHistoryClient() {
         </div>
 
         {/* 테이블 영역 */}
-        <div className="mt-3 border border-[#dfe4ea] bg-white">
+        <div className="mt-3 border border-border bg-white">
           {hasRecords ? (
             <div className="overflow-x-auto">
               <div className="min-w-[950px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-border px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>결제일</span>
                   <span>상품 / 공고</span>
                   <span>결제수단</span>
@@ -218,7 +218,7 @@ export function BusinessBillingHistoryClient() {
                 </div>
 
                 {/* 합계 행 */}
-                <div className="border-t border-[#e5e9ef] px-5 py-4 text-right">
+                <div className="border-t border-border px-5 py-4 text-right">
                   <span className="text-[13px] font-normal text-[#8a94a3]">
                     조회 기간 결제 합계 (결제완료 기준)
                   </span>

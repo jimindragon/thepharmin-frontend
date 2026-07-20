@@ -63,7 +63,7 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           };
 
   return (
-    <article className="flex h-full min-h-[160px] flex-col items-center justify-center gap-4 border border-[#e5e9ef] bg-white p-4 text-center">
+    <article className="flex h-full min-h-[160px] flex-col items-center justify-center gap-4 border border-border bg-white p-4 text-center">
       <div>
         {copy.label ? (
           <>

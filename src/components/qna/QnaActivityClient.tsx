@@ -159,7 +159,7 @@ export function QnaActivityClient() {
           <ActivityTabControl tabs={tabs} value={activeTab} onChange={setActiveTab} />
         </div>
 
-        <section className="mt-5 border border-[#e5e9ef] bg-white p-5">
+        <section className="mt-5 border border-border bg-white p-5">
           {activeTab === "scraps" ? (
             scrapEntries.length ? (
               <div className="divide-y divide-[#edf1f5]">

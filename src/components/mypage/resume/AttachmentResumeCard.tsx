@@ -19,7 +19,7 @@ export function AttachmentResumeCard({
   onToggleProposal: (enabled: boolean) => void;
 }) {
   return (
-    <article className="flex flex-wrap items-center justify-between gap-4 border border-[#dfe4ea] bg-white p-6 max-[640px]:p-5">
+    <article className="flex flex-wrap items-center justify-between gap-4 border border-border bg-white p-6 max-[640px]:p-5">
       <div className="flex min-w-0 items-center gap-4">
         <span className="grid h-12 w-12 shrink-0 place-items-center border border-[#e5e9ef] bg-[#f7f8fa] text-[#596373]">
           <FileText size={20} />

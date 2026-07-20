@@ -27,7 +27,7 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7] px-11 py-16 max-[760px]:px-5 max-[760px]:py-10">
-      <div className="mx-auto max-w-[560px] border border-[#dfe4ea] bg-white p-12 text-center max-[560px]:p-7">
+      <div className="mx-auto max-w-[560px] border border-border bg-white p-12 text-center max-[560px]:p-7">
         <span className="mx-auto grid h-14 w-14 place-items-center bg-[#111111] text-white">
           <Check size={26} />
         </span>

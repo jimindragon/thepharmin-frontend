@@ -18,6 +18,7 @@ import {
   applicantJobPostings,
   applicants,
   applicantStageClass,
+  applicantStageDotClass,
   applicantStageLabel,
   STAGE_TABS,
   type Applicant,
@@ -264,7 +265,7 @@ export function BusinessApplicantsClient() {
         </div>
 
         {/* 단계 탭 */}
-        <div className="mt-4 flex items-center overflow-x-auto border-b border-[#e5e9ef]">
+        <div className="mt-4 flex items-center overflow-x-auto border-b border-border">
           {STAGE_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -293,12 +294,12 @@ export function BusinessApplicantsClient() {
         </div>
 
         {/* 지원자 목록 */}
-        <div className="mt-3 border border-[#dfe4ea] bg-white">
+        <div className="mt-3 border border-border bg-white">
           {/* 테이블 */}
           <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
             <div className="min-w-[900px]">
               {/* 헤더 행 */}
-              <div className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_164px_104px_104px_152px] items-center gap-3 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+              <div className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_164px_104px_104px_152px] items-center gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
                 <input
                   type="checkbox"
                   checked={allChecked}
@@ -373,13 +374,18 @@ export function BusinessApplicantsClient() {
                       </div>
 
                       {/* 현재 단계 */}
-                      <span
-                        className={clsx(
-                          "inline-flex w-fit items-center text-[12px] font-medium",
-                          applicantStageClass(applicant.stage),
-                        )}
-                      >
-                        {applicantStageLabel(applicant.stage)}
+                      <span className="inline-flex w-fit items-center gap-[8px]">
+                        <span
+                          className={`h-[8px] w-[8px] rounded-full shrink-0 ${applicantStageDotClass(applicant.stage)}`}
+                        />
+                        <span
+                          className={clsx(
+                            "text-[12px] font-medium",
+                            applicantStageClass(applicant.stage),
+                          )}
+                        >
+                          {applicantStageLabel(applicant.stage)}
+                        </span>
                       </span>
 
                       {/* 지원일 */}

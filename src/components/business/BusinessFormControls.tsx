@@ -199,7 +199,7 @@ export function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-[132px] border border-[#dfe4ea] bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
+    <section id={id} className="scroll-mt-[132px] border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
@@ -213,7 +213,7 @@ export function SectionCard({
                   "whitespace-nowrap rounded-full border px-3 py-1.5 text-[12px] font-medium",
                   status === "완료" && "border-[#d7dde5] bg-[#f4f5f6] text-[#252d39]",
                   status === "작성 중" && "border-[#d7dde5] bg-white text-[#5f6876]",
-                  status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-danger",
+                  status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-status-error",
                   status === "선택 사항" && "border-[#d7dde5] bg-[#f8f9fa] text-[#7a8493]",
                 )}
               >

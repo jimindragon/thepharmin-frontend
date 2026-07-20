@@ -56,7 +56,7 @@ export function BusinessJobsClient() {
         </div>
 
         {/* 상태 탭 */}
-        <div className="mt-6 flex items-center overflow-x-auto border-b border-[#e5e9ef]">
+        <div className="mt-6 flex items-center overflow-x-auto border-b border-border">
           {STATUS_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -86,12 +86,12 @@ export function BusinessJobsClient() {
         </div>
 
         {/* 테이블 */}
-        <div className="mt-3 border border-[#dfe4ea] bg-white">
+        <div className="mt-3 border border-border bg-white">
           {hasJobs ? (
             <div className="overflow-x-auto">
               <div className="min-w-[900px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-border px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>공고</span>
                   <span>상태</span>
                   <span>지원자</span>
@@ -132,17 +132,29 @@ export function BusinessJobsClient() {
                         </div>
 
                         {/* 상태 */}
-                        <span
-                          className={clsx(
-                            "inline-flex w-fit items-center text-[12px] font-medium",
-                            isClosed
-                              ? "text-[#8a94a3]"
-                              : isPending
-                                ? "text-status-warning"
-                                : "text-status-positive",
-                          )}
-                        >
-                          {isClosed ? "마감" : isPending ? "검토 대기" : "게시 중"}
+                        <span className="inline-flex w-fit items-center gap-[8px]">
+                          <span
+                            className={clsx(
+                              "h-[8px] w-[8px] rounded-full shrink-0",
+                              isClosed
+                                ? "bg-status-neutral-dot"
+                                : isPending
+                                  ? "bg-status-warning-dot"
+                                  : "bg-status-positive-dot",
+                            )}
+                          />
+                          <span
+                            className={clsx(
+                              "text-[12px] font-medium",
+                              isClosed
+                                ? "text-[#8a94a3]"
+                                : isPending
+                                  ? "text-status-warning"
+                                  : "text-status-positive",
+                            )}
+                          >
+                            {isClosed ? "마감" : isPending ? "검토 대기" : "게시 중"}
+                          </span>
                         </span>
 
                         {/* 지원자 */}

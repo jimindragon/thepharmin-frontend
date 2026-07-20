@@ -167,7 +167,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
         <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">지원자 프로필</h1>
         <p className="mt-2 text-[13px] font-normal text-[#68717e]">지원자의 이력과 지원 현황을 확인합니다.</p>
 
-        <section className="mt-5 border border-[#dfe4ea] bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
+        <section className="mt-5 border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
           <div className="flex items-center gap-4">
             <span className="grid h-[52px] w-[52px] shrink-0 place-items-center rounded-full bg-[#f2f4f7] text-[18px] font-bold text-[#303946]">
               {applicant.name.charAt(0)}

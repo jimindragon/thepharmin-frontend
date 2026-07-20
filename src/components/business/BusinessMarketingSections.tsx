@@ -90,7 +90,7 @@ export function BusinessCard({
   return (
     <div
       className={clsx(
-        "border border-[#dfe4ea] bg-white",
+        "border border-border bg-white",
         padding === "lg" ? "p-7" : padding === "md" ? "p-6" : undefined,
         className,
       )}

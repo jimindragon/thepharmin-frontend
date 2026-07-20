@@ -173,7 +173,7 @@ function ToggleRow({
   ariaLabel: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 border border-[#dfe4ea] bg-white px-4 py-3">
+    <div className="flex items-start justify-between gap-4 border border-border bg-white px-4 py-3">
       <div>
         <p className="text-[13px] font-medium text-[#303946]">{title}</p>
         {description && <p className="mt-1 text-[11.5px] text-[#7b8491]">{description}</p>}
@@ -1002,7 +1002,7 @@ export function PharmacyJobPostingForm() {
         </SectionCard>
 
         {/* ── 하단 저장바 — space-y-5 스택의 마지막 자식 ── */}
-        <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-[#dfe4ea] bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
+        <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
             <p className="text-[12px] font-normal text-[#7b8491]">
               저장되지 않은 변경사항이 있습니다

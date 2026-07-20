@@ -28,6 +28,10 @@ const config: Config = {
         "status-error-subtle": "var(--status-error-subtle)",
         "status-error-border": "var(--status-error-border)",
         "status-urgent": "var(--status-urgent)",
+        "status-positive-dot": "var(--status-positive-dot)",
+        "status-warning-dot": "var(--status-warning-dot)",
+        "status-error-dot": "var(--status-error-dot)",
+        "status-neutral-dot": "var(--status-neutral-dot)",
       },
       backgroundImage: {
         "gradient-cta": "var(--gradient-cta)",

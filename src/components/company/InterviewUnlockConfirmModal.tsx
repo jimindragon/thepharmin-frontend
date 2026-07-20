@@ -19,7 +19,7 @@ export function InterviewUnlockConfirmModal({ credits, onConfirm, onCancel }: In
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-black/35 px-5" role="dialog" aria-modal="true" aria-label="면접 후기를 열람할까요?">
       <div className="w-full max-w-[400px] border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)]">
-        <div className="flex items-start justify-between gap-4 border-b border-[#e5e9ef] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
           <div className="flex items-start gap-3">
             <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center bg-[#f4f6f8] text-[#596373]">
               <Lock size={18} />
