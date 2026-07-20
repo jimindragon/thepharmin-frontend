@@ -52,13 +52,13 @@ const OFFER_TABS: Array<{ id: OfferTabFilter; label: string }> = [
 function OfferTypeBadge({ type }: { type: OfferType }) {
   if (type === "headhunting") {
     return (
-      <span className="inline-flex shrink-0 items-center border border-status-positive-border bg-status-positive-subtle px-2 py-0.5 text-[11px] font-medium text-status-positive">
+      <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-status-positive">
         헤드헌팅 제안
       </span>
     );
   }
   return (
-    <span className="inline-flex shrink-0 items-center border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-0.5 text-[11px] font-medium text-[#596373]">
+    <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-[#596373]">
       입사제안
     </span>
   );
@@ -67,13 +67,13 @@ function OfferTypeBadge({ type }: { type: OfferType }) {
 function OfferStatusBadge({ status }: { status: OfferStatus }) {
   if (status === "new") {
     return (
-      <span className="inline-flex h-5 shrink-0 items-center border border-[#9ecec9] bg-status-positive-subtle px-1.5 text-[11px] font-medium text-status-positive">
+      <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-status-positive">
         신규
       </span>
     );
   }
   return (
-    <span className="inline-flex h-5 shrink-0 items-center border border-[#c4cbd5] px-1.5 text-[11px] font-normal text-[#8a94a3]">
+    <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-[#8a94a3]">
       확인함
     </span>
   );

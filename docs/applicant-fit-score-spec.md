@@ -33,5 +33,5 @@
 
 ## 관련 파일
 - src/data/applicants.ts (Applicant.fitScore/fitMet/fitTotal)
-- src/data/headhunting.ts (Candidate.fitScore — fitMet/fitTotal 미보유, 추후 정렬)
+- src/data/headhunting.ts (Candidate.fitScore/fitMet/fitTotal)
 - src/components/business/BusinessApplicantsClient.tsx (FitScoreBar — 렌더링만)

@@ -29,7 +29,7 @@ const ALERTS: Array<{
     id: "al1",
     Icon: MessageSquare,
     title: "의학부 학술영업 담당자 (MSL) 입사 제안",
-    badge: { label: "신규", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
+    badge: { label: "신규", className: "text-status-positive" },
     desc: "한독 · 받은 날짜 2026.06.25 · 미열람",
     action: { label: "제안 확인", href: "/mypage/offers" },
     isNew: true,
@@ -38,7 +38,7 @@ const ALERTS: Array<{
     id: "al2",
     Icon: MessageSquare,
     title: "제약 R&D PM (대리~과장급) 헤드헌팅 제안",
-    badge: { label: "신규", className: "border-status-positive-border bg-status-positive-subtle text-status-positive" },
+    badge: { label: "신규", className: "text-status-positive" },
     desc: "더파마 헤드헌터 · 받은 날짜 2026.06.24 · 미열람",
     action: { label: "제안 확인", href: "/mypage/offers" },
     isNew: true,
@@ -47,7 +47,7 @@ const ALERTS: Array<{
     id: "al3",
     Icon: CalendarDays,
     title: "허가전략 담당자 · 면접",
-    badge: { label: "D-DAY", className: "border-status-error-border bg-status-error-subtle text-status-urgent" },
+    badge: { label: "D-DAY", className: "text-status-urgent" },
     desc: "셀트리온 · 오늘 면접 일정 · 사용 이력서: RA 직무용",
     action: { label: "일정 보기", href: "/mypage/applications" },
     isNew: false,
@@ -56,7 +56,7 @@ const ALERTS: Array<{
     id: "al4",
     Icon: FileText,
     title: "Regulatory Affairs Associate · 서류 발표",
-    badge: { label: "D-4", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
+    badge: { label: "D-4", className: "text-status-warning" },
     desc: "바이오넥스(주) · 07.03 발표 예정",
     action: { label: "지원 보기", href: "/mypage/applications" },
     isNew: false,
@@ -109,7 +109,7 @@ const UPCOMING_SCHEDULES = [
     time: "오늘",
     title: "허가전략 담당자 · 최종 면접",
     company: "셀트리온",
-    badge: { label: "면접 D-DAY", className: "border-status-error-border bg-status-error-subtle text-status-urgent" },
+    badge: { label: "면접 D-DAY", className: "text-status-urgent" },
   },
   {
     id: "sch2",
@@ -118,7 +118,7 @@ const UPCOMING_SCHEDULES = [
     time: "",
     title: "Regulatory Affairs Associate · 서류 발표",
     company: "바이오넥스(주)",
-    badge: { label: "발표 예정", className: "border-status-warning-border bg-status-warning-subtle text-status-warning" },
+    badge: { label: "발표 예정", className: "text-status-warning" },
   },
 ];
 
@@ -140,7 +140,7 @@ function AlertRow({ Icon, title, badge, desc, action, isNew }: (typeof ALERTS)[0
           <span className="text-[13px] font-semibold text-[#17202c]">{title}</span>
           <span
             className={clsx(
-              "inline-flex h-5 items-center border px-1.5 text-[11px] font-medium",
+              "inline-flex w-fit items-center text-[12px] font-medium",
               badge.className,
             )}
           >
@@ -182,7 +182,7 @@ function ScheduleRow({
         <div className="mt-2">
           <span
             className={clsx(
-              "inline-flex h-5 items-center border px-1.5 text-[11px] font-medium",
+              "inline-flex w-fit items-center text-[12px] font-medium",
               badge.className,
             )}
           >

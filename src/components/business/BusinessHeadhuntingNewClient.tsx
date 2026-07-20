@@ -1,23 +1,32 @@
 "use client";
 
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, ChevronDown, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FieldLabel, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
+import { industryJobCategoryOptions } from "@/config/jobFilters";
 import { businessCompanyManager } from "@/data/businessCompanyProfile";
 
 export function BusinessHeadhuntingNewClient() {
   const [positionTitle, setPositionTitle] = useState("");
-  const [jobCategory, setJobCategory] = useState("");
+  const [jobCategoryId, setJobCategoryId] = useState("");
+  const [jobSubcategoryId, setJobSubcategoryId] = useState("");
   const [headcount, setHeadcount] = useState("1");
   const [experienceCondition, setExperienceCondition] = useState("");
   const [requirements, setRequirements] = useState("");
   const [managerName, setManagerName] = useState(businessCompanyManager.managerName);
   const [submitted, setSubmitted] = useState(false);
 
-  const isValid = positionTitle.trim().length > 0 && jobCategory.trim().length > 0 && managerName.trim().length > 0;
+  const jobSubcategoryOptions =
+    industryJobCategoryOptions.find((category) => category.id === jobCategoryId)?.subcategories ?? [];
+
+  const isValid =
+    positionTitle.trim().length > 0 &&
+    jobCategoryId.trim().length > 0 &&
+    jobSubcategoryId.trim().length > 0 &&
+    managerName.trim().length > 0;
 
   if (submitted) {
     return (
@@ -64,7 +73,48 @@ export function BusinessHeadhuntingNewClient() {
               </div>
               <div className="space-y-2">
                 <FieldLabel required>직무 분야</FieldLabel>
-                <TextInput value={jobCategory} onChange={setJobCategory} placeholder="예: 임상·CRA, RA·허가, QA·QC" />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <select
+                      value={jobCategoryId}
+                      onChange={(event) => {
+                        setJobCategoryId(event.target.value);
+                        setJobSubcategoryId("");
+                      }}
+                      className="h-10 w-full appearance-none border border-[#cfd8e3] bg-white pl-3 pr-8 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111]"
+                    >
+                      <option value="">대분류 선택</option>
+                      {industryJobCategoryOptions.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={14}
+                      className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+                    />
+                  </div>
+                  <div className="relative">
+                    <select
+                      value={jobSubcategoryId}
+                      onChange={(event) => setJobSubcategoryId(event.target.value)}
+                      disabled={!jobCategoryId}
+                      className="h-10 w-full appearance-none border border-[#cfd8e3] bg-white pl-3 pr-8 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:bg-[#f5f6f7] disabled:text-[#b7bfc9]"
+                    >
+                      <option value="">소분류 선택</option>
+                      {jobSubcategoryOptions.map((subcategory) => (
+                        <option key={subcategory.id} value={subcategory.id}>
+                          {subcategory.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={14}
+                      className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
                 <FieldLabel required>채용 인원</FieldLabel>

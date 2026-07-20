@@ -7,10 +7,11 @@ import {
   Download,
   Search,
 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ApplicantRowMenu } from "@/components/business/ApplicantRowMenu";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { InfoTooltip } from "@/components/business/BusinessFormControls";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { StageMoveModal } from "@/components/business/StageMoveModal";
 import {
@@ -148,10 +149,6 @@ export function BusinessApplicantsClient() {
     updateApplicantStage(stageMoveTarget.id, stage);
   }
 
-  function handleReject(applicantId: string) {
-    updateApplicantStage(applicantId, "rejected");
-  }
-
   return (
     <BusinessCenterShell>
       <div>
@@ -208,107 +205,97 @@ export function BusinessApplicantsClient() {
           />
         </BusinessStatGrid>
 
-        {/* 지원자 목록 */}
-        <section className="mt-6 border border-[#dfe4ea] bg-white shadow-[var(--shadow)]">
-          <div className="px-6 pt-6 max-[760px]:px-4">
-            <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">
-              지원자 목록
-            </h2>
-            <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8491]">
-              공고를 선택해 지원자를 단계별로 관리하세요. 직무 적합도는 이력서 항목과 공고 요건의
-              일치도로 산정됩니다.
-            </p>
+        {/* 필터 행 */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 max-[640px]:flex-col max-[640px]:items-start">
+          <div className="relative">
+            <select
+              value={selectedPostingId}
+              onChange={(e) => handlePostingChange(e.target.value)}
+              className="h-10 appearance-none border border-[#cfd8e3] bg-white pl-3 pr-8 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] max-[640px]:w-full"
+            >
+              <option value="all">전체 공고</option>
+              {applicantJobPostings.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title} · {p.category}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+            />
           </div>
 
-          {/* 필터 행 */}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-6 max-[760px]:px-4">
+          <div className="flex items-center gap-2.5">
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a4adba]"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="지원자 이름·직무 검색"
+                className="h-10 w-[220px] border border-[#d8e0e8] bg-white pl-8 pr-3 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08] max-[640px]:w-full"
+              />
+            </div>
             <div className="relative">
               <select
-                value={selectedPostingId}
-                onChange={(e) => handlePostingChange(e.target.value)}
-                className="h-10 appearance-none border border-[#cfd8e3] bg-white pl-3 pr-8 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] max-[640px]:w-full"
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as SortOption);
+                  setPage(1);
+                }}
+                className="h-10 appearance-none border border-[#cfd8e3] bg-white pl-3 pr-7 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111]"
               >
-                <option value="all">전체 공고</option>
-                {applicantJobPostings.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title} · {p.category}
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label}
                   </option>
                 ))}
               </select>
               <ChevronDown
                 size={14}
-                className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#8a94a3]"
               />
             </div>
-
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a4adba]"
-                />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="지원자 이름·직무 검색"
-                  className="h-10 w-[220px] border border-[#d8e0e8] bg-white pl-8 pr-3 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08] max-[640px]:w-full"
-                />
-              </div>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => {
-                    setSortBy(e.target.value as SortOption);
-                    setPage(1);
-                  }}
-                  className="h-10 appearance-none border border-[#cfd8e3] bg-white pl-3 pr-7 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111]"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#8a94a3]"
-                />
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* 단계 탭 */}
-          <div className="mt-4 flex items-center overflow-x-auto border-b border-[#e5e9ef] px-6 max-[760px]:px-4">
-            {STAGE_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id)}
+        {/* 단계 탭 */}
+        <div className="mt-4 flex items-center overflow-x-auto border-b border-[#e5e9ef]">
+          {STAGE_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => handleTabChange(tab.id)}
+              className={clsx(
+                "relative flex h-11 shrink-0 items-center gap-1.5 px-4 text-[13px] font-medium transition",
+                stageTab === tab.id
+                  ? "text-[#111111] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#111111]"
+                  : "text-[#8a94a3] hover:text-[#303946]",
+              )}
+            >
+              {tab.label}
+              <span
                 className={clsx(
-                  "relative flex h-11 shrink-0 items-center gap-1.5 px-4 text-[13px] font-medium transition",
+                  "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
                   stageTab === tab.id
-                    ? "text-[#111111] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#111111]"
-                    : "text-[#8a94a3] hover:text-[#303946]",
+                    ? "bg-[#111111] text-white"
+                    : "bg-[#f0f1f3] text-[#8a94a3]",
                 )}
               >
-                {tab.label}
-                <span
-                  className={clsx(
-                    "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
-                    stageTab === tab.id
-                      ? "bg-[#111111] text-white"
-                      : "bg-[#f0f1f3] text-[#8a94a3]",
-                  )}
-                >
-                  {tabCounts[tab.id]}
-                </span>
-              </button>
-            ))}
-          </div>
+                {tabCounts[tab.id]}
+              </span>
+            </button>
+          ))}
+        </div>
 
+        {/* 지원자 목록 */}
+        <div className="mt-3 border border-[#dfe4ea] bg-white">
           {/* 테이블 */}
-          <div className="overflow-x-auto px-6 pb-2 pt-4 max-[760px]:px-4">
+          <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
             <div className="min-w-[900px]">
               {/* 헤더 행 */}
               <div className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_164px_104px_104px_152px] items-center gap-3 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
@@ -320,7 +307,10 @@ export function BusinessApplicantsClient() {
                 />
                 <span>지원자</span>
                 <span>핵심 경력</span>
-                <span>직무 적합도</span>
+                <span className="inline-flex items-center gap-1">
+                  직무 적합도
+                  <InfoTooltip text="이력서 항목과 공고 요건의 일치도로 산정됩니다." />
+                </span>
                 <span>현재 단계</span>
                 <span>지원일</span>
                 <span />
@@ -344,7 +334,12 @@ export function BusinessApplicantsClient() {
                       {/* 지원자 */}
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="font-medium text-[#17202c]">{applicant.name}</span>
+                          <Link
+                            href={`/business/applicants/${applicant.id}`}
+                            className="font-medium text-[#17202c] hover:underline"
+                          >
+                            {applicant.name}
+                          </Link>
                           {applicant.stage === "new" && (
                             <span className="text-[11px] font-semibold tracking-wide text-status-positive">
                               NEW
@@ -396,6 +391,12 @@ export function BusinessApplicantsClient() {
 
                       {/* 액션 */}
                       <div className="flex items-center justify-end gap-1.5">
+                        <Link
+                          href={`/business/applicants/${applicant.id}`}
+                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[12px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
+                        >
+                          프로필 보기
+                        </Link>
                         <button
                           type="button"
                           onClick={() => setStageMoveTarget(applicant)}
@@ -403,7 +404,6 @@ export function BusinessApplicantsClient() {
                         >
                           단계 이동
                         </button>
-                        <ApplicantRowMenu applicant={applicant} onReject={handleReject} />
                       </div>
                     </div>
                   ))}
@@ -453,7 +453,7 @@ export function BusinessApplicantsClient() {
               </div>
             </nav>
           )}
-        </section>
+        </div>
       </div>
 
       <StageMoveModal

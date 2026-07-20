@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 
-function SidebarLink({ label, href, badge, active }: { label: string; href: string; badge?: number; active: boolean }) {
+function SidebarLink({ label, href, active }: { label: string; href: string; active: boolean }) {
   return (
     <Link
       href={href}
@@ -20,7 +20,6 @@ function SidebarLink({ label, href, badge, active }: { label: string; href: stri
       )}
     >
       <span>{label}</span>
-      {badge ? <span className={clsx("text-[12px] font-normal", active ? "text-white/65" : "text-[#a0a9b7]")}>{badge}</span> : null}
     </Link>
   );
 }

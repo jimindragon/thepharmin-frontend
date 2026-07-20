@@ -56,8 +56,8 @@ function FitScoreBar({ score }: { score: number }) {
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="grid grid-cols-[120px_1fr] items-start gap-x-6 py-3 max-[560px]:grid-cols-1 max-[560px]:gap-x-0 max-[560px]:gap-y-1">
-      <span className="text-[12px] font-medium text-[#8a94a3]">{label}</span>
-      <span className="min-w-0 text-[14px] font-normal leading-relaxed text-[#2f3845]">{value}</span>
+      <span className="text-[13px] font-medium text-[#8a94a3]">{label}</span>
+      <span className="min-w-0 text-[15px] font-normal leading-relaxed text-[#2f3845]">{value}</span>
     </div>
   );
 }
@@ -75,7 +75,7 @@ function PanelField({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
       <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
-      <p className="mt-1 text-[13px] font-bold text-[#17202c]">{value}</p>
+      <p className="mt-1 text-[14px] font-bold text-[#17202c]">{value}</p>
     </div>
   );
 }
@@ -97,13 +97,13 @@ function StageStepper({ applicant }: { applicant: Applicant }) {
         return (
           <div key={id} className="flex gap-2.5">
             <div className="flex flex-col items-center">
-              <span className={`h-2 w-2 shrink-0 rounded-full border ${reached ? "border-[#111111] bg-[#111111]" : "border-[#c7cdd5] bg-white"}`} />
+              <span className={`h-1.5 w-1.5 shrink-0 rounded-full border ${reached ? "border-[#111111] bg-[#111111]" : "border-[#c7cdd5] bg-white"}`} />
               {!isLast ? <span className={`w-px flex-1 ${segmentFilled ? "bg-[#111111]" : "bg-[#dfe4ea]"}`} /> : null}
             </div>
-            <div className={isLast ? "pb-0.5" : "pb-4"}>
-              <p className={`text-[13px] ${reached ? "font-bold text-[#17202c]" : "font-normal text-[#a0a9b7]"}`}>{label}</p>
-              {index === 0 ? <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{applicant.appliedAt}</p> : null}
-              {index === currentIndex ? <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">현재 단계</p> : null}
+            <div className={`-mt-[3.25px] ${isLast ? "pb-0.5" : "pb-6"}`}>
+              <p className={`leading-none text-[13px] ${reached ? "font-bold text-[#17202c]" : "font-normal text-[#a0a9b7]"}`}>{label}</p>
+              {index === 0 ? <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">{applicant.appliedAt}</p> : null}
+              {index === currentIndex ? <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">현재 단계</p> : null}
             </div>
           </div>
         );
@@ -215,10 +215,12 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
                   {resume.careers.map((career) => (
                     <div key={career.id} className="py-4 first:pt-0">
                       <div className="flex items-baseline justify-between gap-3">
-                        <p className="text-[15px] font-bold text-[#17202c]">{career.company}</p>
+                        <div className="flex flex-wrap items-baseline gap-2">
+                          <p className="text-[15px] font-bold text-[#17202c]">{career.company}</p>
+                          <p className="text-[14px] font-medium text-[#596373]">{career.role}</p>
+                        </div>
                         <p className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{career.period}</p>
                       </div>
-                      <p className="mt-1 text-[13px] font-medium text-[#596373]">{career.role}</p>
                       {career.description ? <p className="mt-2 text-[13px] font-normal leading-relaxed text-[#3f4855]">{career.description}</p> : null}
                     </div>
                   ))}
@@ -239,16 +241,19 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
             ) : null}
 
             {resume ? (
-              <SectionCard title="학력">
-                <div className="divide-y divide-[#f0f2f5]">
-                  <DetailRow label="학교" value={resume.education.school || "-"} />
-                  <DetailRow label="학위" value={findLabel(educationOptions, resume.education.degreeId) ?? "-"} />
-                  <DetailRow label="전공" value={resume.education.major || "-"} />
+              <SectionCard title="기본 정보">
+                <div>
+                  <p className="text-[15px] font-bold text-[#17202c]">학력</p>
+                  <div className="mt-1 divide-y divide-[#f0f2f5]">
+                    <DetailRow label="학교" value={resume.education.school || "-"} />
+                    <DetailRow label="학위" value={findLabel(educationOptions, resume.education.degreeId) ?? "-"} />
+                    <DetailRow label="전공" value={resume.education.major || "-"} />
+                  </div>
                 </div>
 
                 {resume.certificates.length > 0 ? (
                   <div className="mt-6 border-t border-[#eef1f5] pt-5">
-                    <p className="text-[13px] font-bold text-[#17202c]">자격·면허</p>
+                    <p className="text-[15px] font-bold text-[#17202c]">자격·면허</p>
                     <div className="mt-1 divide-y divide-[#f0f2f5]">
                       {resume.certificates.map((certificate) => (
                         <DetailRow
@@ -263,7 +268,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
 
                 {resume.languages.length > 0 ? (
                   <div className="mt-6 border-t border-[#eef1f5] pt-5">
-                    <p className="text-[13px] font-bold text-[#17202c]">어학</p>
+                    <p className="text-[15px] font-bold text-[#17202c]">어학</p>
                     <div className="mt-1 divide-y divide-[#f0f2f5]">
                       {resume.languages.map((language) => (
                         <DetailRow key={language.id} label={language.name} value={language.level} />

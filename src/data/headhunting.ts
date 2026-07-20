@@ -1,9 +1,12 @@
+import { industryJobCategoryOptions } from "@/config/jobFilters";
+
 export type HeadhuntingRequestStatus = "consulting" | "sourcing" | "interviewing" | "completed" | "on_hold";
 
 export interface HeadhuntingRequest {
   id: string;
   positionTitle: string;
-  jobCategory: string;
+  jobCategoryId: string;
+  jobSubcategoryId: string;
   status: HeadhuntingRequestStatus;
   requestedAt: string;
   manager: string;
@@ -11,11 +14,21 @@ export interface HeadhuntingRequest {
   recommendedCandidateCount: number;
 }
 
+export function headhuntingJobCategoryLabel(jobCategoryId: string): string {
+  return industryJobCategoryOptions.find((category) => category.id === jobCategoryId)?.label ?? jobCategoryId;
+}
+
+export function headhuntingJobSubcategoryLabel(jobCategoryId: string, jobSubcategoryId: string): string {
+  const category = industryJobCategoryOptions.find((c) => c.id === jobCategoryId);
+  return category?.subcategories.find((sub) => sub.id === jobSubcategoryId)?.label ?? jobSubcategoryId;
+}
+
 export const headhuntingRequests: HeadhuntingRequest[] = [
   {
     id: "hh-1",
     positionTitle: "임상개발 PM (CRA 총괄)",
-    jobCategory: "임상·CRA",
+    jobCategoryId: "clinical",
+    jobSubcategoryId: "cra",
     status: "interviewing",
     requestedAt: "2026.05.20",
     manager: "이수진",
@@ -25,7 +38,8 @@ export const headhuntingRequests: HeadhuntingRequest[] = [
   {
     id: "hh-2",
     positionTitle: "RA 팀장급 (허가 전략)",
-    jobCategory: "RA·허가",
+    jobCategoryId: "regulatory",
+    jobSubcategoryId: "ra",
     status: "sourcing",
     requestedAt: "2026.06.02",
     manager: "박준혁",
@@ -35,7 +49,8 @@ export const headhuntingRequests: HeadhuntingRequest[] = [
   {
     id: "hh-3",
     positionTitle: "생산 QA 책임자",
-    jobCategory: "QA·QC",
+    jobCategoryId: "production-quality",
+    jobSubcategoryId: "qa",
     status: "consulting",
     requestedAt: "2026.06.15",
     manager: "이수진",
@@ -45,7 +60,8 @@ export const headhuntingRequests: HeadhuntingRequest[] = [
   {
     id: "hh-4",
     positionTitle: "PV 담당 시니어",
-    jobCategory: "PV·안전성",
+    jobCategoryId: "pharmacy-safety",
+    jobSubcategoryId: "pv-drug-safety",
     status: "completed",
     requestedAt: "2026.04.10",
     manager: "박준혁",
@@ -55,7 +71,8 @@ export const headhuntingRequests: HeadhuntingRequest[] = [
   {
     id: "hh-5",
     positionTitle: "R&D 신약개발 책임연구원",
-    jobCategory: "R&D",
+    jobCategoryId: "rd",
+    jobSubcategoryId: "new-drug",
     status: "on_hold",
     requestedAt: "2026.03.28",
     manager: "이수진",
@@ -72,17 +89,19 @@ export interface HeadhuntingCandidate {
   matchedRequestId: string;
   experienceSummary: string;
   fitScore: number;
+  fitMet: number;
+  fitTotal: number;
   status: HeadhuntingCandidateStatus;
   recommendedAt: string;
 }
 
 export const headhuntingCandidates: HeadhuntingCandidate[] = [
-  { id: "cand-1", code: "CAND-014", matchedRequestId: "hh-1", experienceSummary: "임상CRO 9년 · CRA 팀 리드 경력", fitScore: 90, status: "interview_scheduled", recommendedAt: "2026.06.10" },
-  { id: "cand-2", code: "CAND-021", matchedRequestId: "hh-1", experienceSummary: "글로벌 제약사 임상운영 7년", fitScore: 82, status: "interview_proposed", recommendedAt: "2026.06.12" },
-  { id: "cand-3", code: "CAND-030", matchedRequestId: "hh-1", experienceSummary: "바이오텍 임상개발 PM 6년", fitScore: 74, status: "recommended", recommendedAt: "2026.06.18" },
-  { id: "cand-4", code: "CAND-008", matchedRequestId: "hh-2", experienceSummary: "RA 11년 · 식약처 허가 다수 경험", fitScore: 88, status: "recommended", recommendedAt: "2026.06.05" },
-  { id: "cand-5", code: "CAND-009", matchedRequestId: "hh-2", experienceSummary: "글로벌 RA 8년 · 해외 허가 전문", fitScore: 85, status: "offer", recommendedAt: "2026.06.08" },
-  { id: "cand-6", code: "CAND-045", matchedRequestId: "hh-4", experienceSummary: "PV 시니어 10년", fitScore: 91, status: "hired", recommendedAt: "2026.04.22" },
+  { id: "cand-1", code: "CAND-014", matchedRequestId: "hh-1", experienceSummary: "임상CRO 9년 · CRA 팀 리드 경력", fitScore: 90, fitMet: 4, fitTotal: 5, status: "interview_scheduled", recommendedAt: "2026.06.10" },
+  { id: "cand-2", code: "CAND-021", matchedRequestId: "hh-1", experienceSummary: "글로벌 제약사 임상운영 7년", fitScore: 82, fitMet: 4, fitTotal: 5, status: "interview_proposed", recommendedAt: "2026.06.12" },
+  { id: "cand-3", code: "CAND-030", matchedRequestId: "hh-1", experienceSummary: "바이오텍 임상개발 PM 6년", fitScore: 74, fitMet: 3, fitTotal: 5, status: "recommended", recommendedAt: "2026.06.18" },
+  { id: "cand-4", code: "CAND-008", matchedRequestId: "hh-2", experienceSummary: "RA 11년 · 식약처 허가 다수 경험", fitScore: 88, fitMet: 4, fitTotal: 5, status: "recommended", recommendedAt: "2026.06.05" },
+  { id: "cand-5", code: "CAND-009", matchedRequestId: "hh-2", experienceSummary: "글로벌 RA 8년 · 해외 허가 전문", fitScore: 85, fitMet: 4, fitTotal: 5, status: "offer", recommendedAt: "2026.06.08" },
+  { id: "cand-6", code: "CAND-045", matchedRequestId: "hh-4", experienceSummary: "PV 시니어 10년", fitScore: 91, fitMet: 4, fitTotal: 5, status: "hired", recommendedAt: "2026.04.22" },
 ];
 
 export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
@@ -94,11 +113,11 @@ export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
 }
 
 export function headhuntingStatusClass(status: HeadhuntingRequestStatus) {
-  if (status === "consulting") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (status === "sourcing") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  if (status === "interviewing") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  if (status === "completed") return "border-[#cfd8e3] bg-[#f7f8fa] text-[#303946]";
-  return "border-status-warning-border bg-status-warning-subtle text-status-warning";
+  if (status === "consulting") return "text-[#596373]";
+  if (status === "sourcing") return "text-status-positive";
+  if (status === "interviewing") return "text-status-positive";
+  if (status === "completed") return "text-[#303946]";
+  return "text-status-warning";
 }
 
 export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
@@ -111,10 +130,10 @@ export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
 }
 
 export function candidateStatusClass(status: HeadhuntingCandidateStatus) {
-  if (status === "recommended") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (status === "interview_proposed") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  if (status === "interview_scheduled") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  if (status === "offer") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
-  if (status === "hired") return "border-[#111111] bg-[#111111] text-white";
-  return "border-[#ead8d3] bg-[#fffafa] text-[#a43f31]";
+  if (status === "recommended") return "text-[#596373]";
+  if (status === "interview_proposed") return "text-status-positive";
+  if (status === "interview_scheduled") return "text-status-positive";
+  if (status === "offer") return "text-status-warning";
+  if (status === "hired") return "text-status-positive";
+  return "text-[#596373]";
 }

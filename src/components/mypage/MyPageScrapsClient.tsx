@@ -215,7 +215,7 @@ export function MyPageScrapsClient() {
         관심 있는 채용공고와 기관을 모아 보고, 마감 전에 다시 확인하세요.
       </p>
 
-      <div className="mt-7 grid grid-cols-2 gap-0 overflow-hidden border border-[#e0e5eb] bg-white p-1.5 max-[560px]:grid-cols-1 max-[560px]:gap-1.5">
+      <div className="mt-7 flex items-center gap-6 border-b border-[#e5e9ef]">
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -226,18 +226,15 @@ export function MyPageScrapsClient() {
               aria-selected={active}
               onClick={() => setActiveTab(tab.id)}
               className={clsx(
-                "flex h-[48px] items-center justify-center gap-2 text-[15px] font-medium transition",
-                active ? "bg-[#1b1f25] text-white shadow-[0_10px_22px_rgba(17,17,17,0.16)]" : "bg-white text-[#4b535f] hover:bg-[#f6f7f8]",
+                "relative flex items-center gap-1.5 pb-3 text-[14px] font-medium transition-colors",
+                active
+                  ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
+                  : "text-[#8a94a3] hover:text-[#111111]",
               )}
             >
-              {tab.id === "jobs" ? <Bookmark size={16} strokeWidth={1.8} /> : <Building2 size={16} strokeWidth={1.8} />}
+              {tab.id === "jobs" ? <Bookmark size={15} strokeWidth={1.8} /> : <Building2 size={15} strokeWidth={1.8} />}
               <span>{tab.label}</span>
-              <span
-                className={clsx(
-                  "inline-flex min-w-[24px] items-center justify-center rounded-full px-1.5 py-[2px] text-[12px]",
-                  active ? "bg-white/18 text-white" : "bg-[#edf0f3] text-[#8a93a1]",
-                )}
-              >
+              <span className={clsx("text-[13px]", active ? "font-bold text-[#111111]" : "font-normal text-[#a0a9b7]")}>
                 {tab.count}
               </span>
             </button>

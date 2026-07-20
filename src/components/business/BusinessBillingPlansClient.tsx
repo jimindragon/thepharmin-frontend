@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
-import { SectionCard } from "@/components/business/BusinessFormControls";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { BoostModal } from "@/components/business/BoostModal";
 import {
@@ -112,26 +111,29 @@ export function BusinessBillingPlansClient() {
           />
         </BusinessStatGrid>
 
-        {/* 진행 중인 부스트 섹션 */}
-        <div className="mt-5">
-          <SectionCard title="진행 중인 부스트">
+        {/* 진행 중인 부스트 */}
+        <h2 className="mt-6 text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">
+          진행 중인 부스트
+        </h2>
+        <div className="mt-3 border border-[#dfe4ea] bg-white">
+          <div className="px-6 py-6">
             {hasBoosts ? (
               <div className="overflow-x-auto">
                 <div className="min-w-[700px]">
                   {/* 테이블 헤더 */}
-                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_auto] gap-4 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] gap-4 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
                     <span>공고</span>
                     <span>상태</span>
                     <span>기간</span>
                     <span>결제 금액</span>
-                    <span />
+                    <span aria-hidden="true" />
                   </div>
                   {/* 테이블 행 */}
                   <div className="divide-y divide-[#e5e9ef]">
                     {boosts.map((boost) => (
                       <div
                         key={boost.id}
-                        className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_auto] items-center gap-4 py-4 text-[13px]"
+                        className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] items-center gap-4 py-4 text-[13px]"
                       >
                         {/* 공고명 + 트랙 태그 */}
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -156,7 +158,7 @@ export function BusinessBillingPlansClient() {
                         <button
                           type="button"
                           onClick={() => openExtendModal(boost.jobId, boost.grade)}
-                          className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                          className="inline-flex h-8 items-center justify-center justify-self-end border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                         >
                           연장
                         </button>
@@ -180,7 +182,7 @@ export function BusinessBillingPlansClient() {
                 </Link>
               </div>
             )}
-          </SectionCard>
+          </div>
         </div>
 
         {/* 하단 안내 배너 */}
