@@ -38,7 +38,11 @@ function SidebarLink({ label, href, active, locked }: { label: string; href: str
 export function BusinessSidebar() {
   const pathname = usePathname();
   const orgVerificationStatus = useOrgVerificationStatus();
-  const isActive = (href: string) => pathname === href;
+  const allMenuHrefs = [businessCenterHomeItem.href, ...businessCenterMenuGroups.flatMap((group) => group.items.map((item) => item.href))];
+  const longestMatchingHref = allMenuHrefs
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .reduce<string | null>((longest, href) => (longest === null || href.length > longest.length ? href : longest), null);
+  const isActive = (href: string) => href === longestMatchingHref;
   const isLocked = (href: string) => orgVerificationStatus === "pending" && isApprovalGatedPath(href);
 
   return (
