@@ -8,6 +8,7 @@ import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BoostModal } from "@/components/business/BoostModal";
 import {
   filterJobPostings,
+  getClosingDday,
   jobPostings,
   jobTrackLabel,
   type JobPostingStatusFilter,
@@ -29,6 +30,13 @@ export function BusinessJobsClient() {
   const filtered = filterJobPostings(jobPostings, statusFilter);
   const hasJobs = filtered.length > 0;
 
+  const tabCounts: Record<JobPostingStatusFilter, number> = {
+    all: jobPostings.length,
+    pending: jobPostings.filter((p) => p.status === "pending").length,
+    active: jobPostings.filter((p) => p.status === "active").length,
+    closed: jobPostings.filter((p) => p.status === "closed").length,
+  };
+
   return (
     <BusinessCenterShell>
       <div>
@@ -37,7 +45,7 @@ export function BusinessJobsClient() {
           <PageBreadcrumb
             items={[
               { label: "기업센터", href: "/business/dashboard" },
-              { label: "채용 관리" },
+              { label: "채용관리" },
               { label: "공고 관리" },
             ]}
           />
@@ -48,21 +56,31 @@ export function BusinessJobsClient() {
         </div>
 
         {/* 상태 탭 */}
-        <div className="mt-6 flex">
+        <div className="mt-6 flex items-center overflow-x-auto border-b border-[#e5e9ef]">
           {STATUS_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setStatusFilter(tab.id)}
               className={clsx(
-                "h-10 border-y border-r px-4 text-[13px] font-medium transition first:border-l",
+                "relative flex h-11 shrink-0 items-center gap-1.5 px-4 text-[13px] font-medium transition",
                 statusFilter === tab.id
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#cfd8e3] bg-white text-[#4f5967] hover:border-[#111111] hover:text-[#111111]",
+                  ? "text-[#111111] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#111111]"
+                  : "text-[#8a94a3] hover:text-[#303946]",
               )}
               aria-pressed={statusFilter === tab.id}
             >
               {tab.label}
+              <span
+                className={clsx(
+                  "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
+                  statusFilter === tab.id
+                    ? "bg-[#111111] text-white"
+                    : "bg-[#f0f1f3] text-[#8a94a3]",
+                )}
+              >
+                {tabCounts[tab.id]}
+              </span>
             </button>
           ))}
         </div>
@@ -71,14 +89,14 @@ export function BusinessJobsClient() {
         <div className="mt-3 border border-[#dfe4ea] bg-white">
           {hasJobs ? (
             <div className="overflow-x-auto">
-              <div className="min-w-[680px]">
+              <div className="min-w-[900px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_80px_130px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>공고</span>
                   <span>상태</span>
                   <span>지원자</span>
-                  <span>부스트</span>
-                  <span></span>
+                  <span>등록일</span>
+                  <span>마감일</span>
                 </div>
 
                 {/* 테이블 행 */}
@@ -86,12 +104,15 @@ export function BusinessJobsClient() {
                   {filtered.map((posting) => {
                     const isClosed = posting.status === "closed";
                     const isPending = posting.status === "pending";
+                    const isActive = posting.status === "active";
                     const { boost } = posting;
+                    const dday =
+                      isActive && posting.closingDate ? getClosingDday(posting.closingDate) : null;
 
                     return (
                       <div
                         key={posting.id}
-                        className="grid grid-cols-[minmax(0,1fr)_80px_80px_80px_130px] items-center gap-4 px-5 py-4"
+                        className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] items-center gap-4 px-5 py-4"
                       >
                         {/* 공고 */}
                         <div className="min-w-0">
@@ -108,21 +129,17 @@ export function BusinessJobsClient() {
                               {jobTrackLabel(posting.track)}
                             </span>
                           </div>
-                          <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
-                            {posting.registeredAt} 등록 ·{" "}
-                            {posting.closingDate ? `${posting.closingDate} 마감` : "마감됨"}
-                          </p>
                         </div>
 
                         {/* 상태 */}
                         <span
                           className={clsx(
-                            "inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium",
+                            "inline-flex w-fit items-center text-[12px] font-medium",
                             isClosed
-                              ? "border-[#d8dee7] bg-[#f7f8fa] text-[#8a94a3]"
+                              ? "text-[#8a94a3]"
                               : isPending
-                                ? "border-status-warning-border bg-status-warning-subtle text-status-warning"
-                                : "border-status-positive-border bg-status-positive-subtle text-status-positive",
+                                ? "text-status-warning"
+                                : "text-status-positive",
                           )}
                         >
                           {isClosed ? "마감" : isPending ? "검토 대기" : "게시 중"}
@@ -142,19 +159,27 @@ export function BusinessJobsClient() {
                           </span>
                         )}
 
-                        {/* 부스트 */}
-                        {boost ? (
-                          <span
-                            className={clsx(
-                              "text-[13px] font-semibold",
-                              boost.isUrgent ? "text-status-urgent" : "text-status-positive",
-                            )}
-                          >
-                            D-{boost.daysLeft}
-                          </span>
-                        ) : (
-                          <span className="text-[13px] text-[#8a94a3]">—</span>
-                        )}
+                        {/* 등록일 */}
+                        <span className="text-[12px] font-normal text-[#8a94a3]">
+                          {posting.registeredAt}
+                        </span>
+
+                        {/* 마감일 */}
+                        <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                          <p className="text-[12px] font-normal text-[#8a94a3]">
+                            {posting.closingDate ?? "마감됨"}
+                          </p>
+                          {dday && (
+                            <span
+                              className={clsx(
+                                "text-[11px] font-semibold",
+                                dday.isUrgent ? "text-status-urgent" : "text-status-positive",
+                              )}
+                            >
+                              D-{dday.daysLeft}
+                            </span>
+                          )}
+                        </div>
 
                         {/* 액션 */}
                         <div className="flex justify-end">
@@ -164,14 +189,14 @@ export function BusinessJobsClient() {
                               disabled
                               title={EXTEND_DISABLED_TITLE}
                               aria-label={EXTEND_DISABLED_TITLE}
-                              className="inline-flex h-9 cursor-not-allowed items-center justify-center border border-[#e5e9ef] px-4 text-[13px] font-medium text-[#c0c8d2]"
+                              className="inline-flex h-9 w-[108px] cursor-not-allowed items-center justify-center border border-[#e5e9ef] px-4 text-[13px] font-medium text-[#c0c8d2]"
                             >
                               연장
                             </button>
                           ) : boost ? (
                             <Link
                               href="/business/billing/plans"
-                              className="inline-flex h-9 items-center justify-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                              className="inline-flex h-9 w-[108px] items-center justify-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                             >
                               연장
                             </Link>
@@ -179,7 +204,7 @@ export function BusinessJobsClient() {
                             <button
                               type="button"
                               onClick={() => setBoostModalJobId(posting.id)}
-                              className="inline-flex h-9 items-center justify-center gap-1 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946]"
+                              className="inline-flex h-9 w-[108px] items-center justify-center gap-1 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946]"
                             >
                               <span>↑</span>
                               <span>부스트</span>

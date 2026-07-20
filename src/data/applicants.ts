@@ -202,7 +202,7 @@ export const applicants: Applicant[] = [
     experienceYears: 4,
     location: "서울",
     skills: ["약동학", "PK/PD", "임상"],
-    fitScore: 88,
+    fitScore: 85,
     fitMet: 4,
     fitTotal: 5,
     stage: "screening",
@@ -218,7 +218,7 @@ export const applicants: Applicant[] = [
     experienceYears: 2,
     location: "서울",
     skills: ["임상약리", "통계"],
-    fitScore: 62,
+    fitScore: 60,
     fitMet: 3,
     fitTotal: 5,
     stage: "new",
@@ -238,10 +238,10 @@ export function applicantStageLabel(stage: ApplicantStage): string {
 }
 
 export function applicantStageClass(stage: ApplicantStage): string {
-  if (stage === "new") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  if (stage === "screening") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  if (stage === "first_interview") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
-  if (stage === "final_interview") return "border-status-warning-border bg-status-warning-subtle text-status-warning";
-  if (stage === "offer") return "border-[#dfe4ea] bg-[#f7f8fa] text-[#596373]";
-  return "border-[#cfd8e3] bg-[#f7f8fa] text-[#596373]";
+  if (stage === "new") return "text-[#596373]";
+  if (stage === "screening") return "text-status-positive";
+  if (stage === "first_interview") return "text-status-warning";
+  if (stage === "final_interview") return "text-status-warning";
+  if (stage === "offer") return "text-[#596373]";
+  return "text-[#596373]";
 }

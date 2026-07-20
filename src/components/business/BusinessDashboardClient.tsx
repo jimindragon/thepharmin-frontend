@@ -6,7 +6,7 @@ import { Info } from "lucide-react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
-import { jobPostings, jobTrackLabel } from "@/data/businessJobs";
+import { getClosingDday, jobPostings, jobTrackLabel } from "@/data/businessJobs";
 import { initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
@@ -17,14 +17,9 @@ const COMPANY_NAME = initialBusinessCompanyProfile.displayName;
 const activeJobs = jobPostings.filter((j) => j.status === "active");
 
 function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: boolean } {
-  if (job.boost) return { value: job.boost.daysLeft, isUrgent: job.boost.isUrgent };
   if (!job.closingDate) return { value: 0, isUrgent: false };
-  const [y, m, d] = job.closingDate.split(".");
-  const diff = Math.round(
-    (new Date(+y, +m - 1, +d).getTime() - new Date(2026, 5, 27).getTime()) /
-      86400000,
-  );
-  return { value: diff, isUrgent: diff <= 3 };
+  const { daysLeft, isUrgent } = getClosingDday(job.closingDate);
+  return { value: daysLeft, isUrgent };
 }
 
 // ─── dashboard-only mock data ─────────────────────────────────────────────────

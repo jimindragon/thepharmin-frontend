@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
@@ -46,13 +47,17 @@ export function ProfileHubClient() {
       <div className="flex items-start justify-between gap-4">
         {/* 오버라인 / 타이틀 / 설명 — 공고 등록 허브와 동일 폭 */}
         <div className="max-w-[620px]">
-          <p className="text-[11px] font-medium tracking-[0.14em] text-[#8a94a3]">
-            THE PHARMA · ORG PROFILE
-          </p>
-          <h1 className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#17202c]">
+          <PageBreadcrumb
+            items={[
+              { label: "기업센터", href: "/business/dashboard" },
+              { label: "기업관리" },
+              { label: "기업정보 관리" },
+            ]}
+          />
+          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
             기업 정보 관리
           </h1>
-          <p className="mt-1.5 text-[13px] text-[#68717e]">
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
             관리할 기업/기관 정보 트랙을 선택하세요.
           </p>
         </div>

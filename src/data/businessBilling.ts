@@ -7,6 +7,7 @@ export type BoostStatus = "active" | "ending_soon" | "ended";
 
 export interface ActiveBoost {
   id: string;
+  jobId: string;
   jobTitle: string;
   track: JobTrack;
   grade: BoostGrade;
@@ -48,6 +49,7 @@ export function boostTrackLabel(track: JobTrack): string {
 export const activeBoosts: ActiveBoost[] = [
   {
     id: "boost-1",
+    jobId: "job-3",
     jobTitle: "임상개발 PM 채용",
     track: "industry",
     grade: "standard",
@@ -59,6 +61,7 @@ export const activeBoosts: ActiveBoost[] = [
   },
   {
     id: "boost-2",
+    jobId: "job-2",
     jobTitle: "제제연구 선임연구원 모집",
     track: "research",
     grade: "standard",
@@ -83,15 +86,36 @@ export type PaymentMethod = "신용카드" | "계좌이체" | "간편결제";
 export type BillingPeriod = "1month" | "3months" | "6months" | "1year";
 export type PaymentStatusFilter = "all" | PaymentStatus;
 
+export interface BillingCardInfo {
+  issuer: string;
+  maskedNo: string; // "**** 1234"
+  installment: string; // "일시불" 등
+}
+
+export interface BillingServicePeriod {
+  from: string;
+  to: string;
+}
+
 export interface BillingRecord {
   id: string;
+  paymentNo: string; // "PAY-YYYYMMDD-NNNN"
   paidAt: string; // "YYYY.MM.DD"
+  paidAtTime: string; // "HH:MM"
   productName: string; // e.g. "부스트 4주"
   jobTitle: string;
   track: JobTrack;
   paymentMethod: PaymentMethod;
-  amountKrw: number;
+  amountKrw: number; // 공급가액(VAT 별도)
   status: PaymentStatus;
+  /** 신용카드 결제 건만 존재. */
+  cardInfo?: BillingCardInfo;
+  /** 부스트 노출은 공고 마감일을 초과하지 않음 (마감일 캡). */
+  servicePeriod: BillingServicePeriod;
+  /** 취소 건만 존재. */
+  canceledAt?: string;
+  /** 취소 건만 존재. */
+  refundMethod?: string;
 }
 
 export function paymentStatusLabel(status: PaymentStatus): string {
@@ -100,40 +124,52 @@ export function paymentStatusLabel(status: PaymentStatus): string {
 }
 
 export function paymentStatusClass(status: PaymentStatus): string {
-  if (status === "completed") return "border-status-positive-border bg-status-positive-subtle text-status-positive";
-  return "border-[#d8dee7] bg-[#f7f8fa] text-[#8a94a3]";
+  if (status === "completed") return "text-status-positive";
+  return "text-[#8a94a3]";
 }
 
 export const billingRecords: BillingRecord[] = [
   {
     id: "pay-1",
+    paymentNo: "PAY-20260626-0142",
     paidAt: "2026.06.26",
+    paidAtTime: "14:32",
     productName: "부스트 4주",
     jobTitle: "임상개발 PM 채용",
     track: "industry",
     paymentMethod: "신용카드",
-    amountKrw: 259000,
+    amountKrw: 700000,
     status: "completed",
+    cardInfo: { issuer: "신한카드", maskedNo: "**** 7743", installment: "일시불" },
+    servicePeriod: { from: "2026.06.26", to: "2026.07.21" },
   },
   {
     id: "pay-2",
+    paymentNo: "PAY-20260614-0089",
     paidAt: "2026.06.14",
+    paidAtTime: "10:05",
     productName: "부스트 2주",
     jobTitle: "제제연구 선임연구원 모집",
     track: "research",
     paymentMethod: "계좌이체",
-    amountKrw: 148000,
+    amountKrw: 490000,
     status: "completed",
+    servicePeriod: { from: "2026.06.14", to: "2026.07.28" },
   },
   {
     id: "pay-3",
+    paymentNo: "PAY-20260505-0031",
     paidAt: "2026.05.05",
+    paidAtTime: "19:47",
     productName: "부스트 1주",
     jobTitle: "QC 분석원 채용",
     track: "industry",
     paymentMethod: "간편결제",
-    amountKrw: 84000,
+    amountKrw: 350000,
     status: "cancelled",
+    servicePeriod: { from: "2026.05.05", to: "2026.05.12" },
+    canceledAt: "2026.05.07",
+    refundMethod: "간편결제 승인 취소",
   },
 ];
 

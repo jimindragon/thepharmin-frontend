@@ -3,6 +3,12 @@ import type { JobTrack } from "@/types/jobs";
 export type PricingCat = "industry" | "hospital" | "pharmacy";
 export type BoostGrade = "premium" | "featured" | "standard";
 
+export const BOOST_GRADE_LABEL: Record<BoostGrade, string> = {
+  premium: "PREMIUM",
+  featured: "FEATURED",
+  standard: "STANDARD",
+};
+
 export interface BoostPricePoint {
   weeks: 1 | 2 | 3 | 4;
   originalKrw: number;

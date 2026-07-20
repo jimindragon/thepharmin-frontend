@@ -1,10 +1,12 @@
 "use client";
 
 import clsx from "clsx";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { BillingDocumentModal } from "@/components/business/BillingDocumentModal";
 import {
   billingRecords,
   boostTrackLabel,
@@ -13,6 +15,7 @@ import {
   paymentStatusClass,
   paymentStatusLabel,
   type BillingPeriod,
+  type BillingRecord,
   type PaymentStatusFilter,
 } from "@/data/businessBilling";
 
@@ -33,13 +36,27 @@ function formatKrw(amount: number): string {
   return amount.toLocaleString("ko-KR") + "원";
 }
 
+/** 공급가액(VAT 별도) → 총 결제액(VAT 포함) */
+function toTotalKrw(supplyKrw: number): number {
+  return Math.round(supplyKrw * 1.1);
+}
+
 export function BusinessBillingHistoryClient() {
   const [statusFilter, setStatusFilter] = useState<PaymentStatusFilter>("all");
   const [period, setPeriod] = useState<BillingPeriod>("3months");
+  const [docModal, setDocModal] = useState<{ variant: "receipt" | "taxInvoice"; record: BillingRecord } | null>(null);
 
   const filtered = filterBillingRecords(billingRecords, period, statusFilter);
-  const completedTotal = calcCompletedTotal(filtered);
+  const completedSupplyTotal = calcCompletedTotal(filtered);
+  const completedTotal = toTotalKrw(completedSupplyTotal);
   const hasRecords = filtered.length > 0;
+
+  const periodScoped = filterBillingRecords(billingRecords, period, "all");
+  const tabCounts: Record<PaymentStatusFilter, number> = {
+    all: periodScoped.length,
+    completed: periodScoped.filter((r) => r.status === "completed").length,
+    cancelled: periodScoped.filter((r) => r.status === "cancelled").length,
+  };
 
   return (
     <BusinessCenterShell>
@@ -62,43 +79,52 @@ export function BusinessBillingHistoryClient() {
         {/* 필터 바 */}
         <div className="mt-6 flex items-center justify-between gap-4 max-[640px]:flex-col max-[640px]:items-start">
           {/* 상태 탭 */}
-          <div className="flex">
+          <div className="flex items-center overflow-x-auto border-b border-[#e5e9ef]">
             {STATUS_TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setStatusFilter(tab.id)}
                 className={clsx(
-                  "h-10 border-y border-r px-4 text-[13px] font-medium transition first:border-l",
+                  "relative flex h-11 shrink-0 items-center gap-1.5 px-4 text-[13px] font-medium transition",
                   statusFilter === tab.id
-                    ? "border-[#111111] bg-[#111111] text-white"
-                    : "border-[#cfd8e3] bg-white text-[#4f5967] hover:border-[#111111] hover:text-[#111111]",
+                    ? "text-[#111111] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#111111]"
+                    : "text-[#8a94a3] hover:text-[#303946]",
                 )}
                 aria-pressed={statusFilter === tab.id}
               >
                 {tab.label}
+                <span
+                  className={clsx(
+                    "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
+                    statusFilter === tab.id
+                      ? "bg-[#111111] text-white"
+                      : "bg-[#f0f1f3] text-[#8a94a3]",
+                  )}
+                >
+                  {tabCounts[tab.id]}
+                </span>
               </button>
             ))}
           </div>
 
           {/* 기간 필터 */}
-          <div className="flex">
-            {PERIOD_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setPeriod(opt.id)}
-                className={clsx(
-                  "h-10 border-y border-r px-4 text-[13px] transition first:border-l",
-                  period === opt.id
-                    ? "border-[#cfd8e3] font-bold text-[#111111]"
-                    : "border-[#cfd8e3] font-medium text-[#8a94a3] hover:text-[#111111]",
-                )}
-                aria-pressed={period === opt.id}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <div className="relative">
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as BillingPeriod)}
+              className="h-10 appearance-none border border-[#cfd8e3] bg-white pl-3 pr-8 text-[13px] font-medium text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111]"
+            >
+              {PERIOD_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+            />
           </div>
         </div>
 
@@ -106,15 +132,15 @@ export function BusinessBillingHistoryClient() {
         <div className="mt-3 border border-[#dfe4ea] bg-white">
           {hasRecords ? (
             <div className="overflow-x-auto">
-              <div className="min-w-[860px]">
+              <div className="min-w-[950px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_110px_80px_170px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-[#e5e9ef] px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
                   <span>결제일</span>
                   <span>상품 / 공고</span>
                   <span>결제수단</span>
                   <span>금액</span>
                   <span>상태</span>
-                  <span>증빙</span>
+                  <span aria-hidden="true" />
                 </div>
 
                 {/* 테이블 행 */}
@@ -124,7 +150,7 @@ export function BusinessBillingHistoryClient() {
                     return (
                       <div
                         key={record.id}
-                        className="grid grid-cols-[100px_minmax(0,1fr)_90px_110px_80px_170px] items-center gap-4 px-5 py-4"
+                        className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] items-center gap-4 px-5 py-4"
                       >
                         {/* 결제일 */}
                         <span className="text-[13px] font-normal text-[#8a94a3]">{record.paidAt}</span>
@@ -144,12 +170,19 @@ export function BusinessBillingHistoryClient() {
                         <span className="text-[13px] font-normal text-[#596373]">{record.paymentMethod}</span>
 
                         {/* 금액 */}
-                        <span className="text-[13px] font-semibold text-[#17202c]">{formatKrw(record.amountKrw)}</span>
+                        <div>
+                          <p className="text-[13px] font-semibold text-[#17202c]">
+                            {formatKrw(toTotalKrw(record.amountKrw))}
+                          </p>
+                          <p className="mt-0.5 whitespace-nowrap text-[11px] font-normal text-[#8a94a3]">
+                            공급가액 {formatKrw(record.amountKrw)} · VAT {formatKrw(toTotalKrw(record.amountKrw) - record.amountKrw)}
+                          </p>
+                        </div>
 
                         {/* 상태 뱃지 */}
                         <span
                           className={clsx(
-                            "inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium",
+                            "inline-flex w-fit items-center text-[12px] font-medium",
                             paymentStatusClass(record.status),
                           )}
                         >
@@ -157,10 +190,11 @@ export function BusinessBillingHistoryClient() {
                         </span>
 
                         {/* 증빙 버튼 */}
-                        <div className="flex gap-2">
+                        <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             disabled={isCancelled}
+                            onClick={() => setDocModal({ variant: "taxInvoice", record })}
                             className={clsx(
                               "inline-flex h-8 items-center justify-center border px-3 text-[12px] font-medium transition",
                               isCancelled
@@ -172,6 +206,7 @@ export function BusinessBillingHistoryClient() {
                           </button>
                           <button
                             type="button"
+                            onClick={() => setDocModal({ variant: "receipt", record })}
                             className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                           >
                             영수증
@@ -209,7 +244,7 @@ export function BusinessBillingHistoryClient() {
           <p className="text-[13px] font-semibold text-[#303946]">안내</p>
           <ul className="mt-2 space-y-1.5">
             {[
-              "표시 금액은 VAT 별도입니다. 세금계산서는 결제완료 건에 한해 발행할 수 있습니다.",
+              "표시 금액은 VAT 포함 결제액입니다. 세금계산서는 결제완료 건에 한해 발행할 수 있습니다.",
               "결제취소 건은 세금계산서가 발행되지 않으며, 환불 정책은 상품 이용 안내를 따릅니다.",
             ].map((text) => (
               <li key={text} className="flex gap-1.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">
@@ -233,6 +268,13 @@ export function BusinessBillingHistoryClient() {
           </ul>
         </div>
       </div>
+
+      <BillingDocumentModal
+        open={docModal !== null}
+        variant={docModal?.variant ?? "receipt"}
+        record={docModal?.record ?? null}
+        onClose={() => setDocModal(null)}
+      />
     </BusinessCenterShell>
   );
 }

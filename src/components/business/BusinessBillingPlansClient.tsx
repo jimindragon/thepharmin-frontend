@@ -16,6 +16,7 @@ import {
   boostStatusLabel,
   boostTrackLabel,
 } from "@/data/businessBilling";
+import { BOOST_GRADE_LABEL, type BoostGrade } from "@/data/boostPricing";
 
 function formatKrw(amount: number): string {
   return amount.toLocaleString("ko-KR") + "원";
@@ -44,36 +45,47 @@ const latestAppliedAt = billingRecords
 
 export function BusinessBillingPlansClient() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [extendTarget, setExtendTarget] = useState<{ jobId: string; grade: BoostGrade } | null>(null);
   const stats = billingStats;
   const boosts = activeBoosts;
   const hasBoosts = boosts.length > 0;
+
+  function openNewBoostModal() {
+    setExtendTarget(null);
+    setModalOpen(true);
+  }
+
+  function openExtendModal(jobId: string, grade: BoostGrade) {
+    setExtendTarget({ jobId, grade });
+    setModalOpen(true);
+  }
 
   return (
     <BusinessCenterShell>
       <div>
         {/* 헤더 */}
-        <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
-          <div>
-            <PageBreadcrumb
-              items={[
-                { label: "기업센터", href: "/business/dashboard" },
-                { label: "요금제/결제" },
-                { label: "요금제 관리" },
-              ]}
-            />
-            <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">요금제 관리</h1>
-            <p className="mt-2 text-[13px] font-normal text-[#68717e]">
-              진행 중인 부스트를 확인하고, 새 부스트를 적용하거나 연장할 수 있습니다.
-            </p>
+        <div>
+          <PageBreadcrumb
+            items={[
+              { label: "기업센터", href: "/business/dashboard" },
+              { label: "요금제/결제" },
+              { label: "요금제 관리" },
+            ]}
+          />
+          <div className="mt-5 flex items-center justify-between gap-5 max-[760px]:flex-col max-[760px]:items-start">
+            <h1 className="text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">요금제 관리</h1>
+            <button
+              type="button"
+              onClick={openNewBoostModal}
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a] max-[760px]:w-full"
+            >
+              <Plus size={15} />
+              새 부스트 적용하기
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a] max-[760px]:w-full"
-          >
-            <Plus size={15} />
-            새 부스트 적용하기
-          </button>
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+            진행 중인 부스트를 확인하고, 새 부스트를 적용하거나 연장할 수 있습니다.
+          </p>
         </div>
 
         {/* 통계 3분할 */}
@@ -105,9 +117,9 @@ export function BusinessBillingPlansClient() {
           <SectionCard title="진행 중인 부스트">
             {hasBoosts ? (
               <div className="overflow-x-auto">
-                <div className="min-w-[640px]">
+                <div className="min-w-[700px]">
                   {/* 테이블 헤더 */}
-                  <div className="grid grid-cols-[minmax(0,1fr)_120px_160px_90px_auto] gap-4 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_auto] gap-4 border-b border-[#e5e9ef] pb-3 text-[12px] font-medium text-[#8a94a3]">
                     <span>공고</span>
                     <span>상태</span>
                     <span>기간</span>
@@ -119,7 +131,7 @@ export function BusinessBillingPlansClient() {
                     {boosts.map((boost) => (
                       <div
                         key={boost.id}
-                        className="grid grid-cols-[minmax(0,1fr)_120px_160px_90px_auto] items-center gap-4 py-4 text-[13px]"
+                        className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_auto] items-center gap-4 py-4 text-[13px]"
                       >
                         {/* 공고명 + 트랙 태그 */}
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -133,8 +145,8 @@ export function BusinessBillingPlansClient() {
                           {boostStatusLabel(boost.status, boost.daysLeft)}
                         </span>
                         {/* 기간 */}
-                        <span className="text-[13px] font-normal text-[#596373]">
-                          {boost.durationWeeks}주 · ~{boost.endDate}
+                        <span className="whitespace-nowrap text-[13px] font-normal text-[#596373]">
+                          {BOOST_GRADE_LABEL[boost.grade]} · {boost.durationWeeks}주 · ~{boost.endDate}
                         </span>
                         {/* 결제 금액 */}
                         <span className="text-[13px] font-medium text-[#17202c]">
@@ -143,9 +155,10 @@ export function BusinessBillingPlansClient() {
                         {/* 액션 버튼 */}
                         <button
                           type="button"
+                          onClick={() => openExtendModal(boost.jobId, boost.grade)}
                           className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                         >
-                          {boost.status === "ending_soon" ? "연장" : "상세"}
+                          연장
                         </button>
                       </div>
                     ))}
@@ -179,15 +192,21 @@ export function BusinessBillingPlansClient() {
             </p>
           </div>
           <Link
-            href="/business/pricing"
-            className="shrink-0 text-[13px] font-medium text-status-positive transition hover:underline"
+            href="/business#pricing"
+            className="shrink-0 text-[13px] font-medium text-[#303946] transition hover:text-[#111111] hover:underline"
           >
             요금제 안내 보기 →
           </Link>
         </div>
       </div>
 
-      <BoostModal open={modalOpen} onClose={() => setModalOpen(false)} preselectedJobId={null} />
+      <BoostModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        preselectedJobId={null}
+        initialJobId={extendTarget?.jobId}
+        initialGrade={extendTarget?.grade}
+      />
     </BusinessCenterShell>
   );
 }

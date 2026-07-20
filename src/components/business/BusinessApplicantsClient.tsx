@@ -5,19 +5,22 @@ import {
   ChevronDown,
   ChevronRight,
   Download,
-  MoreHorizontal,
   Search,
 } from "lucide-react";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { ApplicantRowMenu } from "@/components/business/ApplicantRowMenu";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
+import { StageMoveModal } from "@/components/business/StageMoveModal";
 import {
   applicantJobPostings,
   applicants,
   applicantStageClass,
   applicantStageLabel,
   STAGE_TABS,
+  type Applicant,
+  type ApplicantStage,
   type ApplicantStageFilter,
 } from "@/data/applicants";
 
@@ -50,12 +53,14 @@ export function BusinessApplicantsClient() {
   const [sortBy, setSortBy] = useState<SortOption>("fit");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+  const [applicantList, setApplicantList] = useState<Applicant[]>(applicants);
+  const [stageMoveTarget, setStageMoveTarget] = useState<Applicant | null>(null);
 
   // Scoped applicants (by selected posting)
   const scopedApplicants =
     selectedPostingId === "all"
-      ? applicants
-      : applicants.filter((a) => a.postingId === selectedPostingId);
+      ? applicantList
+      : applicantList.filter((a) => a.postingId === selectedPostingId);
 
   // Stats
   const newCount = scopedApplicants.filter((a) => a.isNew).length;
@@ -130,6 +135,21 @@ export function BusinessApplicantsClient() {
   function handleSearch(value: string) {
     setSearchQuery(value);
     setPage(1);
+  }
+
+  function updateApplicantStage(applicantId: string, stage: ApplicantStage) {
+    setApplicantList((prev) =>
+      prev.map((a) => (a.id === applicantId ? { ...a, stage } : a)),
+    );
+  }
+
+  function handleStageMoveConfirm(stage: ApplicantStage) {
+    if (!stageMoveTarget) return;
+    updateApplicantStage(stageMoveTarget.id, stage);
+  }
+
+  function handleReject(applicantId: string) {
+    updateApplicantStage(applicantId, "rejected");
   }
 
   return (
@@ -325,8 +345,8 @@ export function BusinessApplicantsClient() {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <span className="font-medium text-[#17202c]">{applicant.name}</span>
-                          {applicant.isNew && (
-                            <span className="inline-flex h-[18px] items-center justify-center border border-status-positive-border bg-status-positive-subtle px-1.5 text-[10px] font-bold uppercase tracking-wide text-status-positive">
+                          {applicant.stage === "new" && (
+                            <span className="text-[11px] font-semibold tracking-wide text-status-positive">
                               NEW
                             </span>
                           )}
@@ -360,7 +380,7 @@ export function BusinessApplicantsClient() {
                       {/* 현재 단계 */}
                       <span
                         className={clsx(
-                          "inline-flex h-7 w-fit items-center justify-center border px-2 text-[11px] font-medium",
+                          "inline-flex w-fit items-center text-[12px] font-medium",
                           applicantStageClass(applicant.stage),
                         )}
                       >
@@ -372,32 +392,18 @@ export function BusinessApplicantsClient() {
                         <p className="text-[12px] font-normal text-[#303946]">
                           {applicant.appliedAt}
                         </p>
-                        <p className="mt-0.5 text-[11px] font-normal text-[#8a94a3]">
-                          {applicant.daysAgo}일 전 지원
-                        </p>
                       </div>
 
                       {/* 액션 */}
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
-                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                        >
-                          프로필
-                        </button>
-                        <button
-                          type="button"
+                          onClick={() => setStageMoveTarget(applicant)}
                           className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[12px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
                         >
                           단계 이동
                         </button>
-                        <button
-                          type="button"
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[#cfd8e3] text-[#8a94a3] transition hover:border-[#111111] hover:text-[#111111]"
-                          aria-label="더보기"
-                        >
-                          <MoreHorizontal size={14} />
-                        </button>
+                        <ApplicantRowMenu applicant={applicant} onReject={handleReject} />
                       </div>
                     </div>
                   ))}
@@ -449,6 +455,13 @@ export function BusinessApplicantsClient() {
           )}
         </section>
       </div>
+
+      <StageMoveModal
+        open={stageMoveTarget !== null}
+        applicant={stageMoveTarget}
+        onClose={() => setStageMoveTarget(null)}
+        onConfirm={handleStageMoveConfirm}
+      />
     </BusinessCenterShell>
   );
 }

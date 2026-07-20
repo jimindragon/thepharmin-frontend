@@ -37,9 +37,16 @@ interface BoostModalProps {
   onClose: () => void;
   /** jobPostings의 id. null이면 드롭다운 미선택 상태로 시작. */
   preselectedJobId?: string | null;
+  /** 주어지면 공고 선택 단계를 건너뛰고 해당 공고로 고정한다(연장 모드). */
+  initialJobId?: string;
+  /** 연장 모드에서 상품 선택 단계의 기본 선택 등급(변경 가능). */
+  initialGrade?: BoostGrade;
 }
 
-export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps) {
+export function BoostModal({ open, onClose, preselectedJobId, initialJobId, initialGrade }: BoostModalProps) {
+  const isExtendMode = !!initialJobId;
+  const stepOffset = isExtendMode ? 1 : 0;
+
   const [selectedJobId, setSelectedJobId] = useState<string>("");
   const [selectedGrade, setSelectedGrade] = useState<BoostGrade>("premium");
   const [selectedWeeks, setSelectedWeeks] = useState<1 | 2 | 3 | 4>(1);
@@ -49,12 +56,12 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
 
   useEffect(() => {
     if (open) {
-      setSelectedJobId(preselectedJobId ?? "");
-      setSelectedGrade("premium");
+      setSelectedJobId(initialJobId ?? preselectedJobId ?? "");
+      setSelectedGrade(initialGrade ?? "premium");
       setSelectedWeeks(1);
       setPaymentMethod("신용카드");
     }
-  }, [open, preselectedJobId]);
+  }, [open, preselectedJobId, initialJobId, initialGrade]);
 
   useEffect(() => {
     if (!open) return;
@@ -106,48 +113,55 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
         <div className="overflow-y-auto px-6 py-6">
           <div className="space-y-6">
             {/* ① 적용할 공고 */}
-            <div>
-              <div className="mb-3 flex items-center gap-2">
-                <StepBadge n={1} />
-                <span className="text-[14px] font-semibold text-[#17202c]">적용할 공고</span>
+            {!isExtendMode && (
+              <div>
+                <div className="mb-3 flex items-center gap-2">
+                  <StepBadge n={1} />
+                  <span className="text-[14px] font-semibold text-[#17202c]">적용할 공고</span>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedJobId}
+                    onChange={(e) => setSelectedJobId(e.target.value)}
+                    className={clsx(
+                      "w-full appearance-none border bg-white px-4 py-3.5 pr-10 text-[14px] transition focus:border-[#17A68C] focus:outline-none",
+                      selectedJobId
+                        ? "border-[#cfd8e3] text-[#17202c]"
+                        : "border-[#cfd8e3] text-[#a0aab6]",
+                    )}
+                  >
+                    <option value="" disabled>공고를 선택하세요</option>
+                    {activeJobs.map((job) => (
+                      <option key={job.id} value={job.id}>
+                        {job.title} ({jobTrackLabel(job.track)})
+                      </option>
+                    ))}
+                  </select>
+                  <svg
+                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
-              <div className="relative">
-                <select
-                  value={selectedJobId}
-                  onChange={(e) => setSelectedJobId(e.target.value)}
-                  className={clsx(
-                    "w-full appearance-none border bg-white px-4 py-3.5 pr-10 text-[14px] transition focus:border-[#17A68C] focus:outline-none",
-                    selectedJobId
-                      ? "border-[#cfd8e3] text-[#17202c]"
-                      : "border-[#cfd8e3] text-[#a0aab6]",
-                  )}
-                >
-                  <option value="" disabled>공고를 선택하세요</option>
-                  {activeJobs.map((job) => (
-                    <option key={job.id} value={job.id}>
-                      {job.title} ({jobTrackLabel(job.track)})
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8a94a3]"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
+            )}
 
             {/* ② 상품 선택 */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <StepBadge n={2} />
+                <StepBadge n={2 - stepOffset} />
                 <span className="text-[14px] font-semibold text-[#17202c]">상품 선택</span>
               </div>
+              {isExtendMode && (
+                <p className="mb-3 text-[13px] font-normal text-[#8a94a3]">
+                  현재 부스트 종료 다음 날부터 적용됩니다
+                </p>
+              )}
               <div className="space-y-2">
                 {GRADE_OPTIONS.map((g) => (
                   <label
@@ -176,7 +190,7 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
             {/* ③ 이용 기간 */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <StepBadge n={3} />
+                <StepBadge n={3 - stepOffset} />
                 <span className="text-[14px] font-semibold text-[#17202c]">이용 기간</span>
               </div>
               <div className="space-y-2">
@@ -231,7 +245,7 @@ export function BoostModal({ open, onClose, preselectedJobId }: BoostModalProps)
             {/* ④ 결제 수단 */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <StepBadge n={4} />
+                <StepBadge n={4 - stepOffset} />
                 <span className="text-[14px] font-semibold text-[#17202c]">결제 수단</span>
               </div>
               <div className="grid grid-cols-3">

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 
 const TRACKS = [
@@ -44,13 +45,17 @@ export function TrackSelectionClient() {
     <BusinessCenterShell>
       {/* 오버라인 / 타이틀 / 설명 — 기존 폭 유지 */}
       <div className="max-w-[620px]">
-        <p className="text-[11px] font-medium tracking-[0.14em] text-[#8a94a3]">
-          THE PHARMA · NEW POSTING
-        </p>
-        <h1 className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#17202c]">
+        <PageBreadcrumb
+          items={[
+            { label: "기업센터", href: "/business/dashboard" },
+            { label: "채용관리" },
+            { label: "공고 등록" },
+          ]}
+        />
+        <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
           공고 등록
         </h1>
-        <p className="mt-1.5 text-[13px] text-[#68717e]">
+        <p className="mt-2 text-[13px] font-normal text-[#68717e]">
           등록할 채용 트랙을 선택하세요. 어떤 트랙이든 등록은 무료입니다.
         </p>
       </div>
@@ -118,10 +123,10 @@ export function TrackSelectionClient() {
             </p>
           </div>
           <Link
-            href="/business/billing"
+            href="/business#pricing"
             className="shrink-0 text-[13px] font-medium text-[#303946] transition hover:text-[#111111] hover:underline"
           >
-            요금제·부스트 보기 →
+            요금제 안내 보기 →
           </Link>
         </div>
       </div>

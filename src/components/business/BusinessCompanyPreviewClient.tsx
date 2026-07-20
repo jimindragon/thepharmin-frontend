@@ -185,7 +185,7 @@ export function BusinessCompanyPreviewClient() {
         <PreviewControlBar track={track} missing={missing} />
         <div className="app-shell pt-6">
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "브랜드 페이지 미리보기" }]} />
-          <h1 className="mt-5 text-[28px] font-bold tracking-[-0.02em] text-[#17202c]">브랜드 페이지 미리보기</h1>
+          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">브랜드 페이지 미리보기</h1>
           <p className="mt-2 text-[13px] font-normal text-[#68717e]">구직자에게 노출되는 {trackLabel} 상세 페이지를 그대로 확인할 수 있는 읽기 전용 화면입니다.</p>
 
           {/* 미리보기 본문은 읽기 전용이다 — 관심 버튼·탭 이동·후기 더 보기 등 모든 링크/버튼 클릭을 inert로 막는다.

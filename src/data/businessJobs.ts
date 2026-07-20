@@ -3,10 +3,8 @@ import type { JobTrack } from "@/types/jobs";
 export type JobPostingStatus = "pending" | "active" | "closed";
 export type JobPostingStatusFilter = "all" | JobPostingStatus;
 
-export interface JobBoostInfo {
-  daysLeft: number;
-  isUrgent: boolean;
-}
+/** 목데이터의 D-day가 재현되는 기준일. */
+export const MOCK_TODAY = "2026.07.19";
 
 export interface JobPosting {
   id: string;
@@ -16,7 +14,20 @@ export interface JobPosting {
   closingDate: string | null;
   status: JobPostingStatus;
   applicantCount: number;
-  boost: JobBoostInfo | null;
+  boost: boolean;
+}
+
+function parseDotDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split(".").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/** closingDate와 MOCK_TODAY의 날짜 차이로 D-day를 파생 계산한다. */
+export function getClosingDday(closingDate: string): { daysLeft: number; isUrgent: boolean } {
+  const diff = Math.round(
+    (parseDotDate(closingDate).getTime() - parseDotDate(MOCK_TODAY).getTime()) / 86400000,
+  );
+  return { daysLeft: diff, isUrgent: diff <= 2 };
 }
 
 export function jobTrackLabel(track: JobTrack): string {
@@ -38,7 +49,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: "2026.08.16",
     status: "pending",
     applicantCount: 0,
-    boost: null,
+    boost: false,
   },
   {
     id: "job-1",
@@ -48,7 +59,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: "2026.07.20",
     status: "active",
     applicantCount: 7,
-    boost: null,
+    boost: false,
   },
   {
     id: "job-2",
@@ -58,7 +69,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: "2026.07.28",
     status: "active",
     applicantCount: 12,
-    boost: { daysLeft: 9, isUrgent: false },
+    boost: true,
   },
   {
     id: "job-3",
@@ -68,7 +79,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: "2026.07.21",
     status: "active",
     applicantCount: 4,
-    boost: { daysLeft: 2, isUrgent: true },
+    boost: true,
   },
   {
     id: "job-4",
@@ -78,7 +89,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: null,
     status: "closed",
     applicantCount: 23,
-    boost: null,
+    boost: false,
   },
   {
     id: "job-5",
@@ -88,7 +99,7 @@ export const jobPostings: JobPosting[] = [
     closingDate: "2026.08.10",
     status: "active",
     applicantCount: 3,
-    boost: null,
+    boost: false,
   },
 ];
 
