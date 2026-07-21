@@ -27,6 +27,7 @@ import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
+import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
 import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
 
@@ -619,11 +620,17 @@ export function RecruitmentCalendarClient() {
   const [interestConditionApplied, setInterestConditionApplied] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [moreJobs, setMoreJobs] = useState<{ dateLabel: string; jobs: CalendarJob[] } | null>(null);
+  const [emailAlertOn, setEmailAlertOn] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const guestMode = new URLSearchParams(window.location.search).get("guest") === "true";
     setIsLoggedIn(!guestMode);
+  }, []);
+
+  useEffect(() => {
+    const stored = getAllStoredJobPreferences();
+    setEmailAlertOn(Object.values(stored).some((preference) => preference?.emailAlertEnabled));
   }, []);
 
   const availableCalendarJobs = calendarJobs;
@@ -1130,7 +1137,16 @@ export function RecruitmentCalendarClient() {
                 bottomSlot={
                   <div className="flex items-center gap-2 border-t border-gray-200 pt-4 text-[13px] font-medium text-gray-500">
                     <MailCheck size={15} className="text-gray-700" />
-                    이메일 알림 사용 중
+                    {emailAlertOn ? (
+                      "이메일 알림 사용 중"
+                    ) : (
+                      <>
+                        이메일 알림 꺼짐
+                        <Link href={sharedRoutes.myPagePreferences} className="text-[13px] font-medium text-[#111111] hover:underline">
+                          알림 켜기
+                        </Link>
+                      </>
+                    )}
                   </div>
                 }
               />

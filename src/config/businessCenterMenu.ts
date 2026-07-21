@@ -44,6 +44,13 @@ export const businessCenterMenuGroups: BusinessCenterMenuGroup[] = [
       { label: "결제 내역", href: "/business/billing/history" },
     ],
   },
+  {
+    title: "계정",
+    items: [
+      { label: "알림", href: "/business/notifications" },
+      { label: "알림 설정", href: "/business/notifications/settings" },
+    ],
+  },
 ];
 
 /**

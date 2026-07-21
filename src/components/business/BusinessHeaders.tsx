@@ -1,12 +1,14 @@
 "use client";
 
 import clsx from "clsx";
-import { Bell, ChevronDown, Lock, Plus } from "lucide-react";
+import { ChevronDown, Lock, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LinkButton } from "@/components/ui/Button";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
+import { MOCK_BUSINESS_NOTIFICATIONS } from "@/data/notifications";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
@@ -192,10 +194,12 @@ export function BusinessHeader() {
                 >
                   개인 서비스
                 </Link>
-                <button type="button" className="relative grid h-9 w-9 place-items-center text-[#303946] hover:bg-[#f4f5f6]" aria-label="알림">
-                  <Bell size={18} />
-                  <span className="absolute right-2 top-2 h-2 w-2 bg-danger ring-2 ring-white" />
-                </button>
+                <NotificationBell
+                  notifications={MOCK_BUSINESS_NOTIFICATIONS}
+                  viewAllHref="/business/notifications"
+                  scope="business"
+                  size={18}
+                />
                 <BusinessAccountMenu />
               </div>
             </>

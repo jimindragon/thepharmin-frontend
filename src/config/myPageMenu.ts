@@ -17,6 +17,7 @@ export const myPageMenuGroups: MyPageMenuGroup[] = [
       { label: "지원 현황", href: "/mypage/applications", badge: 4 },
       { label: "받은 제안", href: "/mypage/offers", badge: 2 },
       { label: "후기 열람권", href: "/mypage/review-credits" },
+      { label: "알림", href: "/mypage/notifications" },
     ],
   },
   {
@@ -32,7 +33,7 @@ export const myPageMenuGroups: MyPageMenuGroup[] = [
     items: [
       { label: "이력서 관리", href: "/mypage/resume", badge: 3 },
       { label: "회원정보", href: "/mypage/account" },
-      { label: "알림 설정", href: "/mypage/notifications" },
+      { label: "알림 설정", href: "/mypage/notifications/settings" },
     ],
   },
 ];

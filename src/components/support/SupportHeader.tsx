@@ -1,15 +1,17 @@
 "use client";
 
 import clsx from "clsx";
-import { Bell, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AccountMenu } from "@/components/Header";
 import { headerNavItemClassName } from "@/components/headerNavStyles";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
 import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
+import { MOCK_BUSINESS_NOTIFICATIONS, MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
@@ -158,10 +160,11 @@ export function SupportHeader() {
           <div className="flex shrink-0 items-center gap-2.5 border-l border-white/15 pl-4 text-white/82 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
             {isLoggedIn ? (
               <>
-                <button className="relative grid h-9 w-9 place-items-center hover:bg-white/10" aria-label="알림">
-                  <Bell size={20} strokeWidth={2} />
-                  <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-[#050505]" />
-                </button>
+                <NotificationBell
+                  notifications={isBusinessMember ? MOCK_BUSINESS_NOTIFICATIONS : MOCK_PERSONAL_NOTIFICATIONS}
+                  viewAllHref={isBusinessMember ? "/business/notifications" : "/mypage/notifications"}
+                  scope={isBusinessMember ? "business" : "personal"}
+                />
                 {isBusinessMember ? <SupportBusinessAccountMenu /> : <AccountMenu />}
               </>
             ) : (

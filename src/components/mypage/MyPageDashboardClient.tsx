@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { CalendarDays, FileText, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
@@ -11,6 +12,7 @@ import { BusinessStatCard, BusinessStatGrid } from "@/components/business/Busine
 import { myPageUser } from "@/config/myPageMenu";
 import { calculateResumeCompletion, mockResumes, type BuiltResume } from "@/data/resumes";
 import type { ApplicationStage } from "@/data/mockApplications";
+import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 
 // ─── mock data ─────────────────────────────────────────────────────────────────
 
@@ -207,6 +209,12 @@ function ScheduleRow({
 export function MyPageDashboardClient() {
   const builtResumes = mockResumes.filter((r): r is BuiltResume => r.kind === "built");
   const incompleteResume = builtResumes.find((r) => calculateResumeCompletion(r) < 100);
+  const [emailAlertOn, setEmailAlertOn] = useState(false);
+
+  useEffect(() => {
+    const stored = getAllStoredJobPreferences();
+    setEmailAlertOn(Object.values(stored).some((preference) => preference?.emailAlertEnabled));
+  }, []);
 
   return (
     <MyPageShell>
@@ -424,7 +432,16 @@ export function MyPageDashboardClient() {
                 <p className="text-[13px] leading-[1.7] text-[#68717e]">
                   RA 외 2개 / 3~5년 · 서울·경기
                   <br />
-                  이메일 알림 사용 중
+                  {emailAlertOn ? (
+                    "이메일 알림 사용 중"
+                  ) : (
+                    <>
+                      이메일 알림 꺼짐{" "}
+                      <Link href="/mypage/preferences" className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]">
+                        알림 켜기
+                      </Link>
+                    </>
+                  )}
                 </p>
               </div>
             </section>
