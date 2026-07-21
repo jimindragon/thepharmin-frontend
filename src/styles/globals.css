@@ -24,7 +24,6 @@
        - #0F6E56 / #E4F4EE (HeadhuntingLandingClient) — 색조 다름(초록 계열), 유지
        - #00A896 (BusinessPricingClient 체크 아이콘) — 확연히 밝은 틸, 유지
        - #C0523B / #E2998A (BoostModal, 완료 페이지) — 밝기 7% 차, 유지
-       - #8A6D1F (ResumeCard 미완성) — 색조 다름(올리브), 유지
        - #E5D27B (PREMIUM 라벨 금색) — 마케팅 강조색, 상태 색 아님
        - logoColor(#B45309) — 렌더링에서 소비 안 함
   ──────────────────────────────────────────────────────────────────────────── */
@@ -34,9 +33,6 @@
   --status-positive: #00806E;
   --status-positive-subtle: #eafbf8;
   --status-positive-border: #bfe7e2;
-
-  /* 완료/성공 — 이력서 완성 등 최종 완료 상태 (진행 계열과 색조 다름, 분리) */
-  --status-complete: #1a8f5c;
 
   /* 대기·진행 상태(검토 대기/면접 진행/일정 대기 등) — 청색 계열.
      토큰명 warning은 참조처 9곳 호환을 위해 유지, 리네임은 백로그 */
@@ -60,8 +56,9 @@
   --status-error-dot: #E14B2D;
   --status-neutral-dot: #9ca3af;
 
-  --radius: 3px;
-  --shadow: 0 1px 0 rgba(18, 24, 30, 0.04);
+  /* radius-0·no-shadow 원칙 — var 참조 구문은 무해하므로 유지, 화면 터치 시 참조 자체를 점진 제거 */
+  --radius: 0;
+  --shadow: none;
   /* 콘텐츠 폭: 페이지 성격별 3단계. 거터(좌우 패딩)는 공통 */
   --width-wide: 1320px;
   --width-default: 1160px;
@@ -150,9 +147,7 @@ input:focus-visible {
 
 .surface {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
   background: var(--color-surface);
-  box-shadow: var(--shadow);
 }
 
 .subtle-button {

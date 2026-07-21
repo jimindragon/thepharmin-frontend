@@ -1,7 +1,5 @@
 "use client";
 
-import clsx from "clsx";
-import { CheckCircle2, PencilLine } from "lucide-react";
 import Link from "next/link";
 import { optionLabelMaps } from "@/config/jobFilters/index";
 import { calculateResumeCompletion, isResumeComplete, type BuiltResume } from "@/data/resumes";
@@ -34,21 +32,18 @@ export function ResumeCard({
             {resume.isPrimary ? (
               <span className="inline-flex h-[22px] items-center bg-[#111111] px-2 text-[11px] font-medium text-white">대표</span>
             ) : null}
-            <span
-              className={clsx(
-                "inline-flex h-[22px] items-center gap-1 px-2 text-[11px] font-medium",
-                complete ? "text-status-complete" : "text-[#8a6d1f]",
-              )}
-            >
-              {complete ? <CheckCircle2 size={13} /> : <PencilLine size={13} />}
-              {complete ? "작성완료" : "작성 중"}
+            <span className="inline-flex items-center gap-[8px]">
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-warning-dot"}`} />
+              <span className={`text-[11px] font-medium ${complete ? "text-status-positive" : "text-status-warning"}`}>
+                {complete ? "작성완료" : "작성 중"}
+              </span>
             </span>
           </div>
 
           {tagLabels.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {tagLabels.map((label) => (
-                <span key={label} className="border border-[#e5e9ef] bg-[#f7f8fa] px-2.5 py-1 text-[12px] font-medium text-[#596373]">
+                <span key={label} className="border border-border bg-[#f7f8fa] px-2.5 py-1 text-[12px] font-medium text-[#596373]">
                   {label}
                 </span>
               ))}

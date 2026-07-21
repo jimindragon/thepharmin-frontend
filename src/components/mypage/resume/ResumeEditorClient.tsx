@@ -3,10 +3,11 @@
 import clsx from "clsx";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { JobFilterPanel } from "@/components/SearchFilterPanel";
+import { ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
 import { FormRow, SectionCard } from "@/components/ui/FormSection";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
@@ -91,6 +92,23 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
   const router = useRouter();
   const [draft, setDraft] = useState<BuiltResume>(() => initialResume ?? createEmptyBuiltResume(uid("resume")));
   const [notice, setNotice] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (!previewOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPreviewOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [previewOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = previewOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [previewOpen]);
 
   const completion = calculateResumeCompletion(draft);
   const sections = getSectionCompletion(draft);
@@ -189,7 +207,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
   };
 
   const showPreview = () => {
-    setNotice("미리보기 화면은 준비 중입니다. 입력한 내용은 작성 완료 후 이력서 카드에서 바로 확인할 수 있어요.");
+    setPreviewOpen(true);
   };
 
   const completeResume = () => {
@@ -212,7 +230,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
       <p className="mt-2.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">대표 이력서로 지정하면 간편지원에 바로 첨부됩니다.</p>
 
       {notice ? (
-        <div className="mt-5 flex items-center justify-between gap-3 border border-[#dddddd] bg-brand-soft px-4 py-3 text-[13px] font-medium text-brand">
+        <div className="mt-5 flex items-center justify-between gap-3 border border-border bg-brand-soft px-4 py-3 text-[13px] font-medium text-brand">
           <span>{notice}</span>
           <button type="button" onClick={() => setNotice("")} aria-label="알림 닫기">
             <X size={16} />
@@ -220,7 +238,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
         </div>
       ) : null}
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] gap-5 max-[1180px]:grid-cols-1">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_260px] gap-5 max-[1180px]:grid-cols-1">
         <div className="min-w-0 space-y-5">
           <section className="surface px-7 py-6">
             <FormRow label="이력서 제목" required align="center">
@@ -378,7 +396,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               <div className="space-y-2.5">
                 {draft.certificates.length ? (
                   draft.certificates.map((certificate) => (
-                    <div key={certificate.id} className="flex flex-wrap items-center gap-2 border border-[#e5e9ef] bg-[#fbfcfd] p-3">
+                    <div key={certificate.id} className="flex flex-wrap items-center gap-2 border border-border bg-[#fbfcfd] p-3">
                       <input
                         value={certificate.name}
                         onChange={(event) => updateCertificate(certificate.id, { name: event.target.value })}
@@ -442,7 +460,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               <div className="space-y-3">
                 {draft.careers.length ? (
                   draft.careers.map((career) => (
-                    <div key={career.id} className="border border-[#e5e9ef] bg-[#fbfcfd] p-4">
+                    <div key={career.id} className="border border-border bg-[#fbfcfd] p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="grid flex-1 grid-cols-2 gap-2 max-[520px]:grid-cols-1">
                           <input
@@ -498,7 +516,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               <div className="space-y-2.5">
                 {draft.languages.length ? (
                   draft.languages.map((language) => (
-                    <div key={language.id} className="flex flex-wrap items-center gap-2 border border-[#e5e9ef] bg-[#fbfcfd] p-3">
+                    <div key={language.id} className="flex flex-wrap items-center gap-2 border border-border bg-[#fbfcfd] p-3">
                       <input
                         value={language.name}
                         onChange={(event) => updateLanguage(language.id, { name: event.target.value })}
@@ -554,9 +572,9 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
         </div>
 
         <aside className="sticky top-[84px] h-fit space-y-4 self-start max-[1180px]:static">
-          <section className="surface px-6 py-6">
+          <section className="surface px-5 py-5">
             <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#242b36]">작성 완료도</h2>
-            <div className="mt-4 border border-[#e0e6ee] bg-[#f8fafb] p-4">
+            <div className="mt-4 border border-border bg-[#f8fafb] p-4">
               <div className="flex items-end justify-between">
                 <p className="text-[24px] font-medium text-[#111827]">{completion}%</p>
                 <span className="text-[12px] font-medium text-[#5f6876]">{completion === 100 ? "작성 완료" : "작성 중"}</span>
@@ -585,7 +603,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               })}
             </ul>
 
-            <div className="mt-5 flex flex-col gap-2 border-t border-[#edf1f5] pt-5">
+            <div className="mt-5 flex flex-col gap-2 border-t border-border pt-5">
               <Button type="button" variant="primary" size="md" onClick={completeResume}>
                 작성 완료
               </Button>
@@ -599,6 +617,39 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
           </section>
         </aside>
       </div>
+
+      {previewOpen ? (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="이력서 미리보기"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setPreviewOpen(false);
+          }}
+        >
+          <div className="flex w-full max-w-[720px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:self-end">
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-4">
+              <div>
+                <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{draft.title || "제목 없는 이력서"}</h2>
+                <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">기업·헤드헌터에게 보이는 내용을 미리 확인합니다</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewOpen(false)}
+                aria-label="닫기"
+                className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto bg-[#f7f8fa] px-6 py-6">
+              <ResumeContentView content={draft} />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </MyPageShell>
   );
 }

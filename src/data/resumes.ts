@@ -52,6 +52,14 @@ export interface BuiltResume {
   selfIntroduction: string;
 }
 
+/** 이력서 "내용" 필드 서브셋. applicantResumes.ts의 ApplicantResume과 구조 1:1 —
+ * 읽기 전용 뷰(ResumeContentView)가 양쪽을 받을 수 있게 하는 공통 형태.
+ * 필드 변경 시 양쪽 정합 유지할 것 */
+export type ResumeContent = Pick<
+  BuiltResume,
+  "workPreference" | "education" | "certificates" | "jobSubcategoryIds" | "careers" | "languages" | "selfIntroduction"
+>;
+
 /** PDF 등 파일로 업로드한 첨부형 이력서. */
 export interface AttachmentResume {
   id: string;

@@ -5,8 +5,8 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 /**
- * 공고 등록 화면에서 쓰던 "번호 매겨진 섹션 카드 + 상태 배지" 패턴을
- * 마이페이지 폼(이력서 작성 등)에서도 그대로 재사용하기 위해 공유 위치로 옮겼다.
+ * 이력서 편집 전용. 공고 등록·기업 프로필은 BusinessFormControls의
+ * 동명 SectionCard(별개 구현)를 사용 — 혼동 주의.
  */
 export function SectionCard({
   title,
@@ -33,7 +33,7 @@ export function SectionCard({
     <section className="registration-section-card surface overflow-hidden">
       <div
         className={clsx(
-          "registration-section-header flex items-start justify-between gap-5 border-b border-[#e7ecf2] px-7 py-5",
+          "registration-section-header flex items-start justify-between gap-5 border-b border-border px-7 py-5",
           collapsible && "cursor-pointer select-none",
         )}
         onClick={collapsible ? () => setOpen((current) => !current) : undefined}
@@ -48,11 +48,11 @@ export function SectionCard({
         <div className="flex shrink-0 items-center gap-2.5">
           <span
             className={clsx(
-              "registration-status-pill mt-1 shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[12px] font-medium",
-              status === "완료" && "border-[#d7dde5] bg-[#f4f5f6] text-[#252d39]",
-              status === "작성 중" && "border-[#d7dde5] bg-white text-[#5f6876]",
+              "registration-status-pill mt-1 shrink-0 whitespace-nowrap border px-2.5 py-1 text-[12px] font-medium",
+              status === "완료" && "border-border bg-[#f4f5f6] text-[#252d39]",
+              status === "작성 중" && "border-border bg-white text-[#5f6876]",
               status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-status-error",
-              status === "선택 사항" && "border-[#d7dde5] bg-[#f8f9fa] text-[#7a8493]",
+              status === "선택 사항" && "border-border bg-[#f8f9fa] text-[#7a8493]",
             )}
           >
             {status}
@@ -92,7 +92,7 @@ export function FormRow({
   return (
     <div
       className={clsx(
-        "registration-form-row grid grid-cols-[150px_minmax(0,1fr)] items-start gap-6 border-b border-[#edf1f5] py-4 last:border-b-0 max-[760px]:grid-cols-1 max-[760px]:gap-2",
+        "registration-form-row grid grid-cols-[150px_minmax(0,1fr)] items-start gap-6 border-b border-border py-4 last:border-b-0 max-[760px]:grid-cols-1 max-[760px]:gap-2",
         align === "center" && "registration-form-row--control",
       )}
     >

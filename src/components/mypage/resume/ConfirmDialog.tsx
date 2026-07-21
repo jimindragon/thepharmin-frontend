@@ -20,7 +20,7 @@ export function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-black/35 px-5" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="w-full max-w-[400px] border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)]">
+      <div className="w-full max-w-[400px] border border-border bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)]">
         <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
           <div className="flex items-start gap-3">
             <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center bg-[#fdf2f0] text-danger">

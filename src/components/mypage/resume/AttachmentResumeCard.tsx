@@ -21,13 +21,13 @@ export function AttachmentResumeCard({
   return (
     <article className="flex flex-wrap items-center justify-between gap-4 border border-border bg-white p-6 max-[640px]:p-5">
       <div className="flex min-w-0 items-center gap-4">
-        <span className="grid h-12 w-12 shrink-0 place-items-center border border-[#e5e9ef] bg-[#f7f8fa] text-[#596373]">
+        <span className="grid h-12 w-12 shrink-0 place-items-center border border-border bg-[#f7f8fa] text-[#596373]">
           <FileText size={20} />
         </span>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="truncate text-[16px] font-bold tracking-[-0.01em] text-[#1c2128]">{resume.fileName}</h3>
-            <span className="inline-flex h-[22px] items-center border border-[#e5e9ef] bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">첨부형</span>
+            <span className="inline-flex h-[22px] items-center border border-border bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">첨부형</span>
             {resume.isPrimary ? <span className="inline-flex h-[22px] items-center bg-[#111111] px-2 text-[11px] font-medium text-white">대표</span> : null}
           </div>
           <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">

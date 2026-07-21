@@ -20,7 +20,6 @@ const config: Config = {
         "status-positive": "var(--status-positive)",
         "status-positive-subtle": "var(--status-positive-subtle)",
         "status-positive-border": "var(--status-positive-border)",
-        "status-complete": "var(--status-complete)",
         "status-warning": "var(--status-warning)",
         "status-warning-subtle": "var(--status-warning-subtle)",
         "status-warning-border": "var(--status-warning-border)",

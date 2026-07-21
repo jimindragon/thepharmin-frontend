@@ -187,14 +187,12 @@ export function SectionCard({
   id,
   title,
   description,
-  status,
   action,
   children,
 }: {
   id?: string;
   title: ReactNode;
   description?: string;
-  status?: string;
   action?: ReactNode;
   children: ReactNode;
 }) {
@@ -205,22 +203,9 @@ export function SectionCard({
           <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
           {description ? <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8491]">{description}</p> : null}
         </div>
-        {(status || action) ? (
+        {action ? (
           <div className="flex shrink-0 items-start gap-2 pt-0.5">
-            {status ? (
-              <span
-                className={clsx(
-                  "whitespace-nowrap rounded-full border px-3 py-1.5 text-[12px] font-medium",
-                  status === "완료" && "border-[#d7dde5] bg-[#f4f5f6] text-[#252d39]",
-                  status === "작성 중" && "border-[#d7dde5] bg-white text-[#5f6876]",
-                  status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-status-error",
-                  status === "선택 사항" && "border-[#d7dde5] bg-[#f8f9fa] text-[#7a8493]",
-                )}
-              >
-                {status}
-              </span>
-            ) : null}
-            {action ? <div>{action}</div> : null}
+            <div>{action}</div>
           </div>
         ) : null}
       </div>

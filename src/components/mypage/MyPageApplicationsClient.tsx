@@ -70,7 +70,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
           <p
             className={clsx(
               "inline-flex items-center gap-[8px] text-[15px] font-bold tracking-[-0.01em]",
-              application.isClosed && application.resultLabel ? "text-danger" : "text-[#111111]",
+              application.isClosed && application.resultLabel ? "text-status-error" : "text-[#111111]",
             )}
           >
             {application.isClosed && application.resultLabel ? (
