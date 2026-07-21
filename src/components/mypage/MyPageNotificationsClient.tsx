@@ -68,7 +68,7 @@ export function MyPageNotificationsClient() {
             onClick={() => markAllRead(sorted.map((notification) => notification.id))}
             className="shrink-0 text-[12px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]"
           >
-            모두 읽음
+            모두 읽음 처리
           </button>
         ) : null}
       </div>
@@ -87,14 +87,14 @@ export function MyPageNotificationsClient() {
                   key={notification.id}
                   href={notification.href}
                   onClick={() => markRead(notification.id)}
-                  className="group flex items-start gap-3 px-6 py-5"
+                  className={clsx("group flex items-start gap-3 px-6 py-5", !read && "bg-[#f7f8fa]")}
                 >
                   <span className={clsx("mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full", !read && "bg-danger")} aria-hidden="true" />
                   <div className="min-w-0 flex-1">
                     <p
                       className={clsx(
                         "text-[13px] text-[#17202c] transition-colors group-hover:text-[#111111]",
-                        !read && "font-medium",
+                        !read ? "font-semibold" : "font-normal",
                       )}
                     >
                       {notification.title}

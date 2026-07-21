@@ -23,6 +23,9 @@ export type BusinessNotificationType =
 
 export type NotificationChannel = "site" | "email" | "alimtalk";
 
+/** 대시보드 "지금 확인할 일" 등에서 알림을 종류별로 분류할 때 쓰는 선택 태그. */
+export type NotificationKind = "proposal" | "schedule" | "result" | "info";
+
 export interface Notification<T extends string = string> {
   id: string;
   type: T;
@@ -32,6 +35,7 @@ export interface Notification<T extends string = string> {
   read: boolean;
   href: string; // 클릭 시 이동 경로
   channels: NotificationChannel[]; // 이 알림이 발송된(될) 채널 기록
+  kind?: NotificationKind;
 }
 
 export type PersonalNotification = Notification<PersonalNotificationType>;

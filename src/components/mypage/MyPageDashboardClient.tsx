@@ -6,141 +6,189 @@ import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
-import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { myPageUser } from "@/config/myPageMenu";
 import { calculateResumeCompletion, mockResumes, type BuiltResume } from "@/data/resumes";
-import type { ApplicationStage } from "@/data/mockApplications";
+import {
+  applicationStages,
+  MYPAGE_MOCK_TODAY,
+  mockApplications,
+  type JobApplication,
+} from "@/data/mockApplications";
+import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
+import { useNotificationReadState } from "@/hooks/useNotificationReadState";
+import { formatDday, getDaysUntil, getDdayInfo, toMonthDay, type DdayTier } from "@/utils/dday";
 
 // ─── mock data ─────────────────────────────────────────────────────────────────
 
 const USER_NAME = myPageUser.name;
 
-const ALERTS: Array<{
+const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatKoreanDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split(".").map(Number);
+  const date = new Date(y, m - 1, d);
+  return `${y}년 ${m}월 ${d}일 ${WEEKDAY_LABELS[date.getDay()]}요일`;
+}
+
+const DDAY_BADGE_STYLE: Record<DdayTier, { className: string; dotClassName?: string }> = {
+  urgent: { className: "text-status-urgent" },
+  warning: { className: "text-status-warning" },
+  neutral: { className: "text-[#4f5967]" },
+};
+
+// 대시보드 "지원 현황" 컴팩트 행 상태 라벨: 단계별 고정 색상(면접=urgent, 서류발표=warning, 그 외=중립)
+function getCompactApplicationStatus(app: JobApplication): { label: string; className: string } {
+  if (!app.nextEventDate) {
+    return { label: app.statusLabel, className: "text-[#4f5967]" };
+  }
+  const dday = formatDday(getDaysUntil(app.nextEventDate, MYPAGE_MOCK_TODAY));
+  if (app.currentStage === "interview") {
+    return { label: `면접 ${dday}`, className: "text-status-urgent" };
+  }
+  if (app.currentStage === "screening") {
+    return { label: `서류 발표 ${dday}`, className: "text-status-warning" };
+  }
+  return { label: `마감 ${dday}`, className: "text-[#4f5967]" };
+}
+
+/**
+ * "지금 확인할 일"에 노출되는 임박 기준의 단일 출처 — 면접은 D-1 이내, 서류발표는 D-4 이내.
+ * "지금 확인할 일"은 이 조건을 그대로 쓰고, "다가오는 일정"(우측 레일)은 이 조건의 부정(!)을 써서
+ * 같은 이벤트가 두 섹션에 동시에 나타나지 않게 한다.
+ */
+function isApplicationEventImminent(app: JobApplication): boolean {
+  if (!app.nextEventDate) return false;
+  const daysLeft = getDaysUntil(app.nextEventDate, MYPAGE_MOCK_TODAY);
+  if (app.currentStage === "interview") return daysLeft >= 0 && daysLeft <= 1;
+  if (app.currentStage === "screening") return daysLeft >= 0 && daysLeft <= 4;
+  return false;
+}
+
+type UpcomingSchedule = {
+  id: string;
+  date: string;
+  title: string;
+  company: string;
+  badge: { ddayPrefix: string } | { label: string; className: string; dotClassName?: string };
+};
+
+// 다가오는 일정(우측 레일) — 내부 지원(면접·서류발표)만, 임박(=지금 확인할 일에 이미 노출됨)한 건 제외.
+function buildUpcomingSchedules(): UpcomingSchedule[] {
+  return mockApplications
+    .filter(
+      (app) =>
+        !app.isClosed &&
+        app.applyChannel !== "external" &&
+        app.nextEventDate &&
+        !isApplicationEventImminent(app),
+    )
+    .map((app) => ({
+      id: app.id,
+      date: app.nextEventDate as string,
+      title: app.currentStage === "interview" ? `${app.jobTitle} · 최종 면접` : `${app.jobTitle} · 서류 발표`,
+      company: app.company,
+      badge:
+        app.currentStage === "interview"
+          ? { ddayPrefix: "면접 " }
+          : { label: "발표 예정", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
+    }))
+    .sort((a, b) => getDaysUntil(a.date, MYPAGE_MOCK_TODAY) - getDaysUntil(b.date, MYPAGE_MOCK_TODAY));
+}
+
+// 요약 행 "예정 일정" — 중복 방지 필터 적용 전, 오늘 포함 이후 면접·발표 이벤트 전체 수
+const UPCOMING_EVENT_COUNT = mockApplications.filter(
+  (app) =>
+    !app.isClosed &&
+    app.applyChannel !== "external" &&
+    app.nextEventDate &&
+    getDaysUntil(app.nextEventDate, MYPAGE_MOCK_TODAY) >= 0,
+).length;
+
+function DashboardSummaryCell({ label, value, href }: { label: string; value: number; href: string }) {
+  return (
+    <Link href={href} className="block px-4 py-4 text-center transition hover:bg-[#f7f8fa]">
+      <p className="text-[13px] text-[#8a94a3]">{label}</p>
+      <p className="mt-1 text-[20px] font-bold text-[#17202c]">{value}</p>
+    </Link>
+  );
+}
+
+// ─── "지금 확인할 일" 파생 로직 ─────────────────────────────────────────────────
+
+type ChecklistRow = {
   id: string;
   Icon: LucideIcon;
   title: string;
-  badge: { label: string; className: string; dotClassName?: string };
-  desc: string;
-  action: { label: string; href: string };
-  isNew: boolean;
-}> = [
-  {
-    id: "al1",
-    Icon: MessageSquare,
-    title: "의학부 학술영업 담당자 (MSL) 입사 제안",
-    badge: { label: "신규", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
-    desc: "한독 · 받은 날짜 2026.06.25 · 미열람",
-    action: { label: "제안 확인", href: "/mypage/offers" },
-    isNew: true,
-  },
-  {
-    id: "al2",
-    Icon: MessageSquare,
-    title: "제약 R&D PM (대리~과장급) 헤드헌팅 제안",
-    badge: { label: "신규", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
-    desc: "더파마 헤드헌터 · 받은 날짜 2026.06.24 · 미열람",
-    action: { label: "제안 확인", href: "/mypage/offers" },
-    isNew: true,
-  },
-  {
-    id: "al3",
-    Icon: CalendarDays,
-    title: "허가전략 담당자 · 면접",
-    badge: { label: "D-DAY", className: "text-status-urgent" },
-    desc: "셀트리온 · 오늘 면접 일정 · 사용 이력서: RA 직무용",
-    action: { label: "일정 보기", href: "/mypage/applications" },
-    isNew: false,
-  },
-  {
-    id: "al4",
-    Icon: FileText,
-    title: "Regulatory Affairs Associate · 서류 발표",
-    badge: { label: "D-4", className: "text-status-warning" },
-    desc: "바이오넥스(주) · 07.03 발표 예정",
-    action: { label: "지원 보기", href: "/mypage/applications" },
-    isNew: false,
-  },
-];
+  meta: string;
+  ctaLabel: string;
+  href: string;
+  isNewBadge: boolean;
+  onNavigate?: () => void;
+};
 
-const DASHBOARD_APPLICATIONS: Array<{
-  id: string;
-  jobTitle: string;
-  company: string;
-  applyMethod: string;
-  statusLabel: string;
-  statusUrgent: boolean;
-  currentStage: ApplicationStage;
-}> = [
-  {
-    id: "dapp1",
-    jobTitle: "허가전략 담당자",
-    company: "셀트리온",
-    applyMethod: "간편지원",
-    statusLabel: "면접 D-DAY",
-    statusUrgent: true,
-    currentStage: "interview",
-  },
-  {
-    id: "dapp2",
-    jobTitle: "Regulatory Affairs Associate",
-    company: "바이오넥스(주)",
-    applyMethod: "간편지원",
-    statusLabel: "서류발표 D-4",
-    statusUrgent: false,
-    currentStage: "screening",
-  },
-  {
-    id: "dapp3",
-    jobTitle: "RA Specialist (제약·바이오 인허가 담당)",
-    company: "더팜인제약(주)",
-    applyMethod: "홈페이지 지원",
-    statusLabel: "외부 지원 · D-10",
-    statusUrgent: false,
-    currentStage: "applied",
-  },
-];
+// "지금 확인할 일"의 임박 일정 — isApplicationEventImminent를 만족하는 지원 건만
+function buildScheduleChecklist(): Array<ChecklistRow & { daysLeft: number }> {
+  return mockApplications
+    .filter((app) => !app.isClosed && isApplicationEventImminent(app))
+    .map((app) => {
+      const daysLeft = getDaysUntil(app.nextEventDate as string, MYPAGE_MOCK_TODAY);
+      if (app.currentStage === "interview") {
+        return {
+          id: `check-${app.id}`,
+          Icon: CalendarDays,
+          title: `${app.jobTitle} 면접이 ${daysLeft === 0 ? "오늘" : "내일"} 예정되어 있습니다`,
+          meta: app.company,
+          ctaLabel: "일정 보기",
+          href: "/mypage/applications",
+          isNewBadge: false,
+          daysLeft,
+        };
+      }
+      return {
+        id: `check-${app.id}`,
+        Icon: FileText,
+        title: `${app.jobTitle} 서류 발표가 D-${daysLeft} 남았습니다`,
+        meta: `${app.company} · ${toMonthDay(app.nextEventDate as string)} 발표 예정`,
+        ctaLabel: "지원 보기",
+        href: "/mypage/applications",
+        isNewBadge: false,
+        daysLeft,
+      };
+    })
+    .sort((a, b) => a.daysLeft - b.daysLeft);
+}
 
-const UPCOMING_SCHEDULES: Array<{
-  id: string;
-  day: string;
-  monthLabel: string;
-  time: string;
-  title: string;
-  company: string;
-  badge: { label: string; className: string; dotClassName?: string };
-}> = [
-  {
-    id: "sch1",
-    day: "28",
-    monthLabel: "6월 일",
-    time: "오늘",
-    title: "허가전략 담당자 · 최종 면접",
-    company: "셀트리온",
-    badge: { label: "면접 D-DAY", className: "text-status-urgent" },
-  },
-  {
-    id: "sch2",
-    day: "03",
-    monthLabel: "7월 금",
-    time: "",
-    title: "Regulatory Affairs Associate · 서류 발표",
-    company: "바이오넥스(주)",
-    badge: { label: "발표 예정", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
-  },
-];
+function formatScheduleDayParts(dateStr: string) {
+  const [y, m, d] = dateStr.split(".").map(Number);
+  const date = new Date(y, m - 1, d);
+  return {
+    day: String(d).padStart(2, "0"),
+    monthLabel: `${m}월 ${WEEKDAY_LABELS[date.getDay()]}`,
+    time: dateStr === MYPAGE_MOCK_TODAY ? "오늘" : "",
+  };
+}
+
+function resolveScheduleBadge(
+  badge: UpcomingSchedule["badge"],
+  date: string,
+): { label: string; className: string; dotClassName?: string } {
+  if ("ddayPrefix" in badge) {
+    const dday = getDdayInfo(date, MYPAGE_MOCK_TODAY);
+    return { label: `${badge.ddayPrefix}${dday.label}`, ...DDAY_BADGE_STYLE[dday.tier] };
+  }
+  return badge;
+}
 
 // ─── sub-components ────────────────────────────────────────────────────────────
 
-function AlertRow({ Icon, title, badge, desc, action, isNew }: (typeof ALERTS)[0]) {
+function ChecklistRowCell({ Icon, title, meta, ctaLabel, href, isNewBadge, onNavigate }: ChecklistRow) {
   return (
-    <div
-      className={clsx(
-        "flex items-start gap-3 px-5 py-4 max-[600px]:flex-wrap",
-        isNew && "bg-status-positive-subtle",
-      )}
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className="flex items-start gap-3 px-5 py-4 transition hover:bg-[#f7f8fa] max-[600px]:flex-wrap"
     >
       <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-[#e5e9ef] bg-[#f7f8fa]">
         <Icon className="h-[15px] w-[15px] text-[#596373]" />
@@ -148,35 +196,25 @@ function AlertRow({ Icon, title, badge, desc, action, isNew }: (typeof ALERTS)[0
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[13px] font-semibold text-[#17202c]">{title}</span>
-          <span className="inline-flex w-fit items-center gap-[8px]">
-            {badge.dotClassName ? (
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
-            ) : null}
-            <span className={clsx("text-[12px] font-medium", badge.className)}>
-              {badge.label}
+          {isNewBadge ? (
+            <span className="inline-flex w-fit items-center gap-[8px]">
+              <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-positive-dot" />
+              <span className="text-[12px] font-medium text-status-positive">신규</span>
             </span>
-          </span>
+          ) : null}
         </div>
-        <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{desc}</p>
+        <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{meta}</p>
       </div>
-      <Link
-        href={action.href}
-        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111] max-[600px]:ml-11"
-      >
-        {action.label}
-      </Link>
-    </div>
+      <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] max-[600px]:ml-11">
+        {ctaLabel}
+      </span>
+    </Link>
   );
 }
 
-function ScheduleRow({
-  day,
-  monthLabel,
-  time,
-  title,
-  company,
-  badge,
-}: (typeof UPCOMING_SCHEDULES)[0]) {
+function ScheduleRow({ date, title, company, badge: badgeInput }: UpcomingSchedule) {
+  const { day, monthLabel, time } = formatScheduleDayParts(date);
+  const badge = resolveScheduleBadge(badgeInput, date);
   return (
     <div className="flex items-start gap-4 px-5 py-4">
       <div className="w-12 shrink-0 text-center">
@@ -210,11 +248,56 @@ export function MyPageDashboardClient() {
   const builtResumes = mockResumes.filter((r): r is BuiltResume => r.kind === "built");
   const incompleteResume = builtResumes.find((r) => calculateResumeCompletion(r) < 100);
   const [emailAlertOn, setEmailAlertOn] = useState(false);
+  const [hasPreferences, setHasPreferences] = useState(false);
 
   useEffect(() => {
     const stored = getAllStoredJobPreferences();
+    setHasPreferences(Object.keys(stored).length > 0);
     setEmailAlertOn(Object.values(stored).some((preference) => preference?.emailAlertEnabled));
   }, []);
+
+  const { isRead, markRead } = useNotificationReadState("personal");
+
+  const unreadProposals = MOCK_PERSONAL_NOTIFICATIONS.filter(
+    (notification) => notification.kind === "proposal" && !isRead(notification.id),
+  ).sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
+
+  const proposalChecklist: ChecklistRow[] = unreadProposals.map((notification) => ({
+    id: notification.id,
+    Icon: MessageSquare,
+    title: notification.title,
+    meta: `받은 날짜 ${notification.createdAt.split(" ")[0]}`,
+    ctaLabel: "제안 확인",
+    href: notification.href,
+    isNewBadge: true,
+    onNavigate: () => markRead(notification.id),
+  }));
+
+  const checklistRows: ChecklistRow[] = [...buildScheduleChecklist(), ...proposalChecklist].slice(0, 4);
+  const upcomingSchedules = buildUpcomingSchedules();
+
+  // 지원 현황 — 진행 중(비종료) 건만, 다음 일정이 가까운 순으로. 외부 지원(일정 없음 취급)은 항상 마지막.
+  const inProgressApplications = mockApplications.filter((app) => !app.isClosed);
+  const dashboardApplications = [...inProgressApplications]
+    .sort((a, b) => {
+      const aExternal = a.applyChannel === "external";
+      const bExternal = b.applyChannel === "external";
+      if (aExternal !== bExternal) return aExternal ? 1 : -1;
+      if (a.nextEventDate && b.nextEventDate) {
+        return getDaysUntil(a.nextEventDate, MYPAGE_MOCK_TODAY) - getDaysUntil(b.nextEventDate, MYPAGE_MOCK_TODAY);
+      }
+      return 0;
+    })
+    .slice(0, 3);
+
+  const SUMMARY_STATS: Array<{ label: string; value: number; href: string }> = [
+    { label: "미확인 제안", value: unreadProposals.length, href: "/mypage/offers" },
+    { label: "진행 중 지원", value: inProgressApplications.length, href: "/mypage/applications" },
+    { label: "예정 일정", value: UPCOMING_EVENT_COUNT, href: "/calendar" },
+  ];
+
+  // 관심 조건 카드 — 조건 미설정 또는 이메일 알림 꺼짐일 때만 노출(정상 설정 시 사이드바 메뉴로 충분)
+  const showPreferencesCard = !hasPreferences || !emailAlertOn;
 
   return (
     <MyPageShell>
@@ -229,18 +312,11 @@ export function MyPageDashboardClient() {
                 안녕하세요,{" "}
                 <span className="text-gradient-cta">{USER_NAME}</span>님
                 <br />
-                오늘 확인할 알림이 있어요.
+                진행 중인 지원과 예정된 일정을 확인해 보세요.
               </h1>
-              <p className="mt-2 text-[13px] text-[#68717e]">
-                <span className="font-semibold text-[#17202c]">신규 제안 2건</span>
-                <span className="mx-1 text-[#c0c8d2]">·</span>
-                일정 2건{" "}
-                <span className="text-[#c0c8d2]">·</span>
-                {" "}진행 중 지원 3건
-              </p>
             </div>
             <div className="text-right">
-              <p className="text-[13px] text-[#8a94a3]">2026년 6월 28일 일요일</p>
+              <p className="text-[13px] text-[#8a94a3]">{formatKoreanDate(MYPAGE_MOCK_TODAY)}</p>
               <p className="mt-0.5 text-[13px] font-medium text-[#4f5967]">
                 제안 받기 켜짐 · 공개 이력서 1건
               </p>
@@ -248,67 +324,45 @@ export function MyPageDashboardClient() {
           </div>
         </div>
 
-        {/* 통계 4분할 — ① 카드1(받은 제안)에 브랜드 그라데이션 상단 강조 */}
-        <BusinessStatGrid cols={4}>
-          <div className="relative">
-            <BusinessStatCard
-              label="받은 제안"
-              value="2"
-              unit="건"
-              sub="신규 2건 · 미열람"
-            />
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-cta" />
-          </div>
-          <BusinessStatCard
-            label="진행 중 지원"
-            value="3"
-            unit="건"
-            subEmphasis="면접 D-DAY 1"
-            emphasisVariant="urgent"
-            sub="서류 1"
-          />
-          <BusinessStatCard
-            label="스크랩"
-            value="9"
-            unit="건"
-            sub="공고 5 · 기관 4 · 마감임박 1"
-          />
-          <BusinessStatCard
-            label="이력서"
-            value="3"
-            unit="건"
-            sub="대표 1 · 작성중 1 · 첨부 1"
-          />
-        </BusinessStatGrid>
+        {/* 요약 행 — 미확인 제안 / 진행 중 지원 / 예정 일정 (구분선+타이포, IndustryDividerStatCell과 동일 계열) */}
+        <div className="grid grid-cols-3 divide-x divide-[#e5e9ef] border border-border bg-white">
+          {SUMMARY_STATS.map((stat) => (
+            <DashboardSummaryCell key={stat.label} {...stat} />
+          ))}
+        </div>
 
         {/* 메인 2컬럼 레이아웃 */}
         <div className="grid grid-cols-[minmax(0,1fr)_300px] gap-4 max-[900px]:grid-cols-1">
 
-          {/* 좌측: 놓치지 마세요 + 지원 현황 */}
+          {/* 좌측: 지금 확인할 일 + 지원 현황 */}
           <div className="space-y-4">
 
-            {/* 놓치지 마세요 — ② 신규 제안 행(1·2)에만 mint 배경 강조 */}
+            {/* 지금 확인할 일 — 임박 일정(날짜 파생) + 미열람 제안(알림 읽음 상태 파생) */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">
-                  놓치지 마세요
-                  <span className="ml-2 text-status-positive">4</span>
+                  지금 확인할 일
+                  <span className="ml-2 text-status-positive">{checklistRows.length}</span>
                 </h2>
                 <Link
                   href="/mypage/notifications"
                   className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
-                  알림 설정 ›
+                  알림 전체 보기 ›
                 </Link>
               </div>
-              <div className="divide-y divide-[#e5e9ef]">
-                {ALERTS.map((alert) => (
-                  <AlertRow key={alert.id} {...alert} />
-                ))}
-              </div>
+              {checklistRows.length > 0 ? (
+                <div className="divide-y divide-[#e5e9ef]">
+                  {checklistRows.map((row) => (
+                    <ChecklistRowCell key={row.id} {...row} />
+                  ))}
+                </div>
+              ) : (
+                <p className="px-5 py-4 text-[13px] text-[#8a94a3]">지금 확인할 항목이 없습니다</p>
+              )}
             </section>
 
-            {/* 지원 현황 — ③ 지원 현황 페이지의 ApplicationStepper 재사용 */}
+            {/* 지원 현황 — 컴팩트 행(풀 스텝퍼는 /mypage/applications 전용) */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">지원 현황</h2>
@@ -320,27 +374,47 @@ export function MyPageDashboardClient() {
                 </Link>
               </div>
               <div className="divide-y divide-[#e5e9ef]">
-                {DASHBOARD_APPLICATIONS.map((app) => (
-                  <div key={app.id} className="px-5 py-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-[13px] font-semibold text-[#17202c]">{app.jobTitle}</p>
-                        <p className="mt-0.5 text-[12px] text-[#8a94a3]">
-                          {app.company} · {app.applyMethod}
-                        </p>
+                {dashboardApplications.map((app) => {
+                  const status = getCompactApplicationStatus(app);
+                  const stageLabel = applicationStages.find((s) => s.id === app.currentStage)?.label ?? app.currentStage;
+                  const isExternal = app.applyChannel === "external";
+                  const isDone = app.currentStage === "result";
+                  return (
+                    <div key={app.id} className="px-5 py-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="min-w-0 text-[13px] font-semibold text-[#17202c]">{app.jobTitle}</p>
+                        <p className={clsx("shrink-0 text-[13px] font-bold", status.className)}>{status.label}</p>
                       </div>
-                      <p
-                        className={clsx(
-                          "shrink-0 text-[13px] font-bold",
-                          app.statusUrgent ? "text-status-urgent" : "text-[#4f5967]",
-                        )}
-                      >
-                        {app.statusLabel}
+                      <p className="mt-0.5 text-[12px] text-[#8a94a3]">
+                        {app.company} · {app.applyChannelLabel}
                       </p>
+                      <div className="mt-2 flex items-center justify-between gap-3">
+                        <span className="inline-flex w-fit items-center gap-[8px]">
+                          <span
+                            className={clsx(
+                              "h-[8px] w-[8px] shrink-0 rounded-full",
+                              isDone ? "bg-status-positive-dot" : "bg-status-warning-dot",
+                            )}
+                          />
+                          <span
+                            className={clsx(
+                              "text-[12px] font-medium",
+                              isDone ? "text-status-positive" : "text-status-warning",
+                            )}
+                          >
+                            {stageLabel}
+                          </span>
+                        </span>
+                        <Link
+                          href={isExternal ? (app.jobHref ?? "/mypage/applications") : "/mypage/applications"}
+                          className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                        >
+                          {isExternal ? "공고 보기" : "지원 보기"}
+                        </Link>
+                      </div>
                     </div>
-                    <ApplicationStepper currentStage={app.currentStage} />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           </div>
@@ -348,61 +422,56 @@ export function MyPageDashboardClient() {
           {/* 우측: 다가오는 일정 + 내 이력서 + 관심 조건 */}
           <div className="space-y-4">
 
-            {/* 다가오는 일정 */}
+            {/* 다가오는 일정 — 지금 확인할 일과 중복되지 않는(임박하지 않은) 내부 지원 일정만 */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <h2 className="text-[14px] font-bold text-[#17202c]">다가오는 일정</h2>
-                <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
-              </div>
-              <div className="divide-y divide-[#e5e9ef]">
-                {UPCOMING_SCHEDULES.map((item) => (
-                  <ScheduleRow key={item.id} {...item} />
-                ))}
-              </div>
-            </section>
-
-            {/* 내 이력서 */}
-            <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">내 이력서</h2>
                 <Link
-                  href="/mypage/resume"
+                  href="/calendar"
                   className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
-                  전체 보기 ›
+                  캘린더 ›
                 </Link>
               </div>
-              <div className="divide-y divide-[#e5e9ef]">
-                {builtResumes.map((resume) => {
-                  const completion = calculateResumeCompletion(resume);
-                  return (
-                    <div key={resume.id} className="px-5 py-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex min-w-0 items-center gap-2">
-                          <span className="truncate text-[13px] font-semibold text-[#17202c]">
-                            {resume.title}
-                          </span>
-                          {resume.isPrimary && (
-                            <span className="shrink-0 bg-[#111111] px-1.5 py-0.5 text-[10px] font-medium text-white">
-                              대표
-                            </span>
-                          )}
-                        </div>
-                        <span className="shrink-0 text-[12px] font-semibold text-[#4f5967]">
-                          {completion}%
-                        </span>
-                      </div>
-                      <div className="mt-2.5 h-1.5 overflow-hidden bg-[#edf0f3]">
-                        <span
-                          className="block h-full bg-[#111111]"
-                          style={{ width: `${completion}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {incompleteResume ? (
+              {upcomingSchedules.length > 0 ? (
+                <div className="divide-y divide-[#e5e9ef]">
+                  {upcomingSchedules.map((item) => (
+                    <ScheduleRow key={item.id} {...item} />
+                  ))}
+                </div>
+              ) : (
+                <p className="px-5 py-4 text-[13px] text-[#8a94a3]">예정된 일정이 없습니다</p>
+              )}
+            </section>
+
+            {/* 내 이력서 — 작성 중(완성도 100% 미만) 이력서가 있을 때만 노출 */}
+            {incompleteResume ? (
+              <section className="border border-border bg-white">
+                <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                  <h2 className="text-[14px] font-bold text-[#17202c]">내 이력서</h2>
+                  <Link
+                    href="/mypage/resume"
+                    className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  >
+                    전체 보기 ›
+                  </Link>
+                </div>
+                <div className="px-5 py-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-[13px] font-semibold text-[#17202c]">
+                      {incompleteResume.title}
+                    </span>
+                    <span className="shrink-0 text-[12px] font-semibold text-[#4f5967]">
+                      {calculateResumeCompletion(incompleteResume)}%
+                    </span>
+                  </div>
+                  <div className="mt-2.5 h-1.5 overflow-hidden bg-[#edf0f3]">
+                    <span
+                      className="block h-full bg-[#111111]"
+                      style={{ width: `${calculateResumeCompletion(incompleteResume)}%` }}
+                    />
+                  </div>
+                </div>
                 <div className="border-t border-border px-5 py-4">
                   <p className="text-[12px] leading-[1.6] text-[#68717e]">
                     {incompleteResume.title}을 완성하면 해당 직무 공고에 간편지원이 가능해요.
@@ -414,37 +483,43 @@ export function MyPageDashboardClient() {
                     이어 작성하기 →
                   </Link>
                 </div>
-              ) : null}
-            </section>
+              </section>
+            ) : null}
 
-            {/* 관심 조건 */}
-            <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">관심 조건</h2>
-                <Link
-                  href="/mypage/preferences"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
-                >
-                  수정 ›
-                </Link>
-              </div>
-              <div className="px-5 py-4">
-                <p className="text-[13px] leading-[1.7] text-[#68717e]">
-                  RA 외 2개 / 3~5년 · 서울·경기
-                  <br />
-                  {emailAlertOn ? (
-                    "이메일 알림 사용 중"
-                  ) : (
-                    <>
+            {/* 관심 조건 — 미설정이거나 이메일 알림이 꺼져 있을 때만 노출 */}
+            {showPreferencesCard ? (
+              <section className="border border-border bg-white">
+                <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                  <h2 className="text-[14px] font-bold text-[#17202c]">관심 조건</h2>
+                  <Link
+                    href="/mypage/preferences"
+                    className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  >
+                    수정 ›
+                  </Link>
+                </div>
+                <div className="px-5 py-4">
+                  {hasPreferences ? (
+                    <p className="text-[13px] leading-[1.7] text-[#68717e]">
+                      RA 외 2개 / 3~5년 · 서울·경기
+                      <br />
                       이메일 알림 꺼짐{" "}
                       <Link href="/mypage/preferences" className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]">
                         알림 켜기
                       </Link>
-                    </>
+                    </p>
+                  ) : (
+                    <p className="text-[13px] leading-[1.7] text-[#68717e]">
+                      아직 설정한 관심 조건이 없습니다.
+                      <br />
+                      <Link href="/mypage/preferences" className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]">
+                        관심 조건 설정 ›
+                      </Link>
+                    </p>
                   )}
-                </p>
-              </div>
-            </section>
+                </div>
+              </section>
+            ) : null}
           </div>
         </div>
       </div>

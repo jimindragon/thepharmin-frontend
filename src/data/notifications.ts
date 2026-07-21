@@ -23,6 +23,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: true,
     href: "/mypage/applications",
     channels: ["site", "email", "alimtalk"],
+    kind: "info",
   },
   {
     id: "pn-2",
@@ -33,6 +34,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: false,
     href: "/mypage/applications",
     channels: ["site", "email", "alimtalk"],
+    kind: "schedule",
   },
   {
     id: "pn-3",
@@ -43,6 +45,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: true,
     href: "/mypage/applications",
     channels: ["site", "email"],
+    kind: "info",
   },
   {
     id: "pn-4",
@@ -53,6 +56,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: true,
     href: "/mypage/applications",
     channels: ["site", "email"],
+    kind: "result",
   },
   {
     id: "pn-5",
@@ -63,6 +67,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: false,
     href: "/mypage/offers",
     channels: ["site", "email", "alimtalk"],
+    kind: "proposal",
   },
   {
     id: "pn-6",
@@ -73,6 +78,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: false,
     href: "/jobs/yuhan-ra-regulatory-strategy",
     channels: ["site", "email"],
+    kind: "info",
   },
   {
     id: "pn-7",
@@ -83,6 +89,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: true,
     href: "/mypage/scraps",
     channels: ["site", "email"],
+    kind: "info",
   },
   {
     id: "pn-8",
@@ -93,6 +100,18 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     read: true,
     href: "/mypage/review-credits",
     channels: ["site"],
+    kind: "info",
+  },
+  {
+    id: "pn-9",
+    type: "offer_received",
+    title: "제약 R&D PM (대리~과장급) 헤드헌팅 제안이 도착했습니다",
+    body: "더파마 헤드헌터 · 받은 날짜 2026.07.15 · 미열람",
+    createdAt: "2026.07.15 09:00",
+    read: false,
+    href: "/mypage/offers",
+    channels: ["site", "email", "alimtalk"],
+    kind: "proposal",
   },
 ];
 
@@ -106,6 +125,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: false,
     href: "/business/applicants",
     channels: ["site", "email"],
+    kind: "info",
   },
   {
     id: "bn-2",
@@ -116,6 +136,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/jobs",
     channels: ["site", "email"],
+    kind: "schedule",
   },
   {
     id: "bn-3",
@@ -126,6 +147,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/jobs",
     channels: ["site", "email"],
+    kind: "result",
   },
   {
     id: "bn-4",
@@ -136,6 +158,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: false,
     href: "/business/billing/plans",
     channels: ["site", "email"],
+    kind: "schedule",
   },
   {
     id: "bn-5",
@@ -146,6 +169,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/billing/history",
     channels: ["site", "email", "alimtalk"],
+    kind: "result",
   },
   {
     id: "bn-6",
@@ -156,6 +180,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/billing/history",
     channels: ["site", "email", "alimtalk"],
+    kind: "result",
   },
   {
     id: "bn-7",
@@ -166,6 +191,7 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/headhunting/manage",
     channels: ["site", "email"],
+    kind: "info",
   },
   {
     id: "bn-8",
@@ -176,5 +202,6 @@ export const MOCK_BUSINESS_NOTIFICATIONS: BusinessNotification[] = [
     read: true,
     href: "/business/applicants",
     channels: ["site", "email"],
+    kind: "result",
   },
 ];
