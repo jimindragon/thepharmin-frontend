@@ -1,5 +1,6 @@
 import type { JobTrack } from "@/types/jobs";
 import type { BoostGrade } from "@/data/boostPricing";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 
 // ── 요금제 관리 (부스트 현황) ──────────────────────────────────────────────
 
@@ -184,7 +185,7 @@ export function filterBillingRecords(
   period: BillingPeriod,
   statusFilter: PaymentStatusFilter,
 ): BillingRecord[] {
-  const now = new Date();
+  const now = MOCK_TODAY_DATE;
   const cutoff = new Date(now);
   if (period === "1month") cutoff.setMonth(cutoff.getMonth() - 1);
   else if (period === "3months") cutoff.setMonth(cutoff.getMonth() - 3);

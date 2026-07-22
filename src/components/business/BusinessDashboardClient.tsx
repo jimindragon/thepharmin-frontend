@@ -6,9 +6,10 @@ import { Info } from "lucide-react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
-import { getClosingDday, jobPostings, jobTrackLabel } from "@/data/businessJobs";
+import { getClosingDday, jobPostings, jobTrackLabel, MOCK_TODAY } from "@/data/businessJobs";
 import { LOGIN_COMPANY } from "@/data/businessCompanyProfile";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
+import { formatKoreanDate } from "@/utils/dday";
 
 // ─── derived from existing mock data ──────────────────────────────────────────
 
@@ -214,7 +215,7 @@ export function BusinessDashboardClient() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[13px] text-[#8a94a3]">2026년 6월 27일 금요일</p>
+            <p className="text-[13px] text-[#8a94a3]">{formatKoreanDate(MOCK_TODAY)}</p>
           </div>
           </div>
         </div>

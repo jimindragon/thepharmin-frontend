@@ -1,6 +1,7 @@
 import { companies, companyReviews } from "@/data/companies";
 import { companyProfiles } from "@/data/companyProfiles";
 import { jobs } from "@/data/jobs";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import type { Job, JobTrack } from "@/types/jobs";
 
 export type IndustryGroup = "pharma_bio" | "cro_cdmo";
@@ -112,7 +113,7 @@ function normalizeCompanyName(name: string) {
 
 /** "채용중" 판정 — 마감일이 지난 공고는 제외한다. 상시채용(closingStatus: "always"/deadlineType: "untilHired")과
  * 마감일 정보가 없는 공고는 계속 채용중으로 취급한다. job-detail/shared.tsx의 deadlineLabel()과 동일한 마감 판정 규칙이다 */
-export function isJobActive(job: Job, referenceDate: Date = new Date()) {
+export function isJobActive(job: Job, referenceDate: Date = MOCK_TODAY_DATE) {
   if (job.isClosed) return false;
   if (job.deadlineType === "untilHired" || job.closingStatus === "always") return true;
   if (!job.deadline) return true;

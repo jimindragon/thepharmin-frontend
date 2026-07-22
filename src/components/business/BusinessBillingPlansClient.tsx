@@ -16,6 +16,7 @@ import {
   boostTrackLabel,
 } from "@/data/businessBilling";
 import { BOOST_GRADE_LABEL, type BoostGrade } from "@/data/boostPricing";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 
 function formatKrw(amount: number): string {
   return amount.toLocaleString("ko-KR") + "원";
@@ -29,7 +30,7 @@ const mostUrgentDays = urgentBoosts.length > 0
   : null;
 
 const thisYM = (() => {
-  const d = new Date();
+  const d = MOCK_TODAY_DATE;
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
 })();
 const monthlyPaymentCount = billingRecords.filter(

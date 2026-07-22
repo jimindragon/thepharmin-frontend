@@ -18,6 +18,7 @@ import { jobs } from "@/data/jobs";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
+import { formatJobDeadlineLabel } from "@/utils/dday";
 
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const trackCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
@@ -199,7 +200,7 @@ function HomeRecommendationCard({
               {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
             </span>
           </div>
-          <strong className="text-[13px] font-medium text-danger">{job.deadlineLabel.replace("마감 ", "")}</strong>
+          <strong className="text-[13px] font-medium text-danger">{formatJobDeadlineLabel(job)}</strong>
         </div>
       </div>
     </article>

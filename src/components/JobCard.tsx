@@ -10,6 +10,7 @@ import { formatHospitalSalary } from "@/utils/salary";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { getCompanyDetailHref } from "@/components/job-detail/shared";
 import { hasJobDetail } from "@/data/jobDetailIndex";
+import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
 
 interface JobCardProps {
   job: Job;
@@ -26,10 +27,8 @@ interface JobCardProps {
  * 페이지별로 다른 변형을 만들지 말고 이 컴포넌트를 확장할 것.
  */
 export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, showHourlyBadge }: JobCardProps) {
-  const danger = job.closingStatus === "today" || job.deadlineOrder <= 7;
-  const always = job.closingStatus === "always";
-  const deadlineText =
-    job.closingStatus === "today" ? "오늘 마감" : always ? "상시채용" : job.deadlineLabel.replace("마감 ", "");
+  const danger = isJobDeadlineUrgent(job);
+  const deadlineText = formatJobDeadlineLabel(job);
   const applyLabel = job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원";
   const easyApply = job.applyMethod === "간편 지원";
   const companyDetailHref = getCompanyDetailHref(job.companyId);

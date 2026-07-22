@@ -15,13 +15,14 @@ import { THEME_META } from "@/data/taxonomy";
 import type { ThemeMeta } from "@/data/taxonomy";
 import type { Job, SortOption, ThemeId } from "@/types/jobs";
 import type { Company } from "@/types/jobs";
+import { compareJobsByDeadline } from "@/utils/dday";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
     if (sortOption === "최신순") return b.dateOrder - a.dateOrder;
-    if (sortOption === "마감임박순") return a.deadlineOrder - b.deadlineOrder;
+    if (sortOption === "마감임박순") return compareJobsByDeadline(a, b);
     return Number(b.isRecommended) - Number(a.isRecommended) || b.dateOrder - a.dateOrder;
   });
 }

@@ -49,6 +49,7 @@ import {
   type PharmacyJobDetail,
 } from "@/data/pharmacyJobDetails";
 import { getSimilarJobs } from "@/data/similarJobs";
+import type { Job } from "@/types/jobs";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -61,7 +62,11 @@ const PHARMACY_HERO_IMAGES = [
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
+/**
+ * jobRecord: jobs.ts의 실제 Job 레코드. 마감 표시(ApplyCard)만 이 값을 파생 소스로 쓴다 — PharmacyJobDetail 자체의 job(동명이지만 별도 타입)과 혼동 주의.
+ * optional인 이유: /pharmacy-preview(기업센터 미리보기)는 jobs.ts에 아직 등록되지 않은 초안을 렌더링할 수 있어 조인 대상이 없을 수 있다.
+ */
+export function PharmacyJobDetailV2({ data, jobRecord }: { data: PharmacyJobDetail; jobRecord?: Job }) {
   const { job, org } = data;
 
   // 검증용 mock 로그인 토글 — 실제 세션 연결은 추후 처리
@@ -370,7 +375,7 @@ export function PharmacyJobDetailV2({ data }: { data: PharmacyJobDetail }) {
               className="sticky self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden"
             >
               <ApplyCard
-                deadlineLabel={job.deadlineLabel}
+                job={jobRecord}
                 method={job.apply.method as ApplyMethodId}
                 target={job.apply.email}
                 notice={job.apply.notice}

@@ -1,6 +1,7 @@
 import { companyExampleImages, companyLogos } from "@/config/companyImages";
 import { jobs } from "@/data/jobs";
 import type { RecommendedJob } from "@/types/jobs";
+import { formatJobDeadlineLabel } from "@/utils/dday";
 
 // slug → 광고 등급 매핑 (데이터에 없는 공고는 노출하지 않음)
 const tierMap: Record<string, "premium" | "featured" | "standard"> = {
@@ -70,7 +71,7 @@ export const recommendedJobs: RecommendedJob[] = orderedSlugs.flatMap<Recommende
     title: job.title,
     condition: `${job.career} · ${job.education} · ${job.location}`,
     tags: job.coreKeywords ?? [],
-    dDay: job.deadlineLabel.replace("마감 ", ""),
+    dDay: formatJobDeadlineLabel(job),
     applyMethod: job.applyMethod,
     image: job.coverImage ?? job.coverImageUrl ?? companyExampleImages.workspace,
     track: job.track,

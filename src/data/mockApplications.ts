@@ -1,21 +1,22 @@
 import { formatDday, getDaysUntil, toMonthDay } from "@/utils/dday";
+import { MOCK_TODAY } from "@/config/mockToday";
 
 export type ApplicationStage = "applied" | "screening" | "interview" | "result";
 
 /**
  * 마이페이지 목데이터의 오늘 날짜 기준일.
- * 기업센터 businessJobs.ts의 MOCK_TODAY와 동일 기준일 — 변경 시 양쪽 함께 갱신할 것.
+ * src/config/mockToday.ts의 값을 재수출한다(기업센터 businessJobs.ts의 MOCK_TODAY와 동일 원천).
  */
-export const MYPAGE_MOCK_TODAY = "2026.07.19";
+export const MYPAGE_MOCK_TODAY = MOCK_TODAY;
 
 /**
  * 마이페이지 전역(대시보드 요약 행 · 지금 확인할 일 · 지원 현황)이 공유하는 실제 이벤트 날짜.
  * 이 파일의 mockApplications 항목들과 대시보드의 파생 UI가 모두 이 상수를 참조해
  * 날짜가 이중으로 하드코딩되지 않도록 한다.
  */
-export const INTERVIEW_DATE = "2026.07.19"; // 허가전략 담당자(셀트리온) 면접일 — MYPAGE_MOCK_TODAY와 동일
-export const RA_ASSOCIATE_ANNOUNCE_DATE = "2026.07.23"; // Regulatory Affairs Associate(바이오넥스) 서류발표 예정일
-export const RA_SPECIALIST_DEADLINE_DATE = "2026.07.29"; // RA Specialist(더팜인제약) 공고 마감일
+export const INTERVIEW_DATE = "2026.07.20"; // 풀타임 근무약사님을 모십니다(현대약국) 면접일 — MYPAGE_MOCK_TODAY 기준 D-1
+export const ANNOUNCE_DATE = "2026.07.23"; // 오전 파트약사 모집(성애병원) 서류발표 예정일
+export const YUHAN_DEADLINE_DATE = "2026.08.09"; // RA 허가전략 담당 경력직 채용(유한양행) 공고 마감일 — jobs.ts id 130 deadline과 동일
 
 export interface JobApplication {
   id: string;
@@ -50,26 +51,27 @@ export const applicationStages: { id: ApplicationStage; label: string }[] = [
 export const mockApplications: JobApplication[] = [
   {
     id: "app-1",
-    jobTitle: "Regulatory Affairs Associate",
-    jobHref: "/jobs/regulatory-affairs-associate",
-    company: "바이오넥스(주)",
+    jobTitle: "오전 파트약사 모집",
+    jobHref: "/jobs/sungae-hospital-morning-parttime-pharmacist",
+    company: "성애병원",
     applyChannel: "quick",
     applyChannelLabel: "간편지원",
-    resumeUsed: "RA 직무용",
+    resumeUsed: "경력기술서_2026.pdf",
     appliedDate: "06.19",
     isClosed: false,
     currentStage: "screening",
-    statusLabel: `서류발표 ${formatDday(getDaysUntil(RA_ASSOCIATE_ANNOUNCE_DATE, MYPAGE_MOCK_TODAY))}`,
-    expectedDate: toMonthDay(RA_ASSOCIATE_ANNOUNCE_DATE),
-    nextEventDate: RA_ASSOCIATE_ANNOUNCE_DATE,
+    statusLabel: `서류발표 ${formatDday(getDaysUntil(ANNOUNCE_DATE, MYPAGE_MOCK_TODAY))}`,
+    expectedDate: toMonthDay(ANNOUNCE_DATE),
+    nextEventDate: ANNOUNCE_DATE,
   },
   {
     id: "app-2",
-    jobTitle: "허가전략 담당자",
-    company: "셀트리온",
+    jobTitle: "풀타임 근무약사님을 모십니다",
+    jobHref: "/jobs/hyundai-pharmacy-fulltime-pharmacist",
+    company: "현대약국",
     applyChannel: "quick",
     applyChannelLabel: "간편지원",
-    resumeUsed: "RA 직무용",
+    resumeUsed: "경력기술서_2026.pdf",
     appliedDate: "06.05",
     isClosed: false,
     currentStage: "interview",
@@ -79,25 +81,25 @@ export const mockApplications: JobApplication[] = [
   },
   {
     id: "app-3",
-    jobTitle: "RA Specialist (제약·바이오 인허가 담당)",
-    jobHref: "/jobs/ra-specialist",
-    company: "더팜인제약(주)",
+    jobTitle: "RA 허가전략 담당 경력직 채용",
+    jobHref: "/jobs/yuhan-ra-regulatory-strategy",
+    company: "(주)유한양행",
     applyChannel: "external",
     applyChannelLabel: "홈페이지 지원",
     appliedDate: "06.16",
-    deadlineDate: toMonthDay(RA_SPECIALIST_DEADLINE_DATE),
+    deadlineDate: toMonthDay(YUHAN_DEADLINE_DATE),
     isClosed: false,
     currentStage: "applied",
-    statusLabel: formatDday(getDaysUntil(RA_SPECIALIST_DEADLINE_DATE, MYPAGE_MOCK_TODAY)),
-    nextEventDate: RA_SPECIALIST_DEADLINE_DATE,
+    statusLabel: formatDday(getDaysUntil(YUHAN_DEADLINE_DATE, MYPAGE_MOCK_TODAY)),
+    nextEventDate: YUHAN_DEADLINE_DATE,
   },
   {
     id: "app-4",
-    jobTitle: "QA Manager",
-    jobHref: "/jobs/qa-manager",
-    company: "퀄리티웍스(주)",
-    applyChannel: "quick",
-    applyChannelLabel: "간편지원",
+    jobTitle: "바이오공정 직무지원 5급 정규사원 채용",
+    jobHref: "/jobs/samsungbio-bioprocess",
+    company: "삼성바이오로직스",
+    applyChannel: "external",
+    applyChannelLabel: "홈페이지 지원",
     resumeUsed: "RA 직무용",
     appliedDate: "05.22",
     isClosed: true,

@@ -15,13 +15,14 @@ import { jobs } from "@/data/jobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
+import { compareJobsByDeadline } from "@/utils/dday";
 
 const PAGE_SIZE = 6;
 
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
     if (sortOption === "최신순") return b.dateOrder - a.dateOrder;
-    if (sortOption === "마감임박순") return a.deadlineOrder - b.deadlineOrder;
+    if (sortOption === "마감임박순") return compareJobsByDeadline(a, b);
     if (sortOption === "시급 높은순") {
       const aMax = a.salaryDetail?.hourlyComputed?.max ?? a.salaryDetail?.hourlyComputed?.min ?? 0;
       const bMax = b.salaryDetail?.hourlyComputed?.max ?? b.salaryDetail?.hourlyComputed?.min ?? 0;

@@ -27,9 +27,12 @@ import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
-import type { FilterOption, JobCategoryOption, JobTrack } from "@/types/jobs";
+import type { FilterOption, Job, JobCategoryOption, JobTrack } from "@/types/jobs";
+import { jobs } from "@/data/jobs";
+import { hasJobDetail } from "@/data/jobDetailIndex";
 
 type CalendarTab = "all" | "saved" | "applied";
 type CalendarAvailableTrack = JobTrack;
@@ -51,11 +54,14 @@ type CalendarFilterDefinition =
   | { id: "job"; label: string; kind: "job"; categories: JobCategoryOption[] }
   | { id: Exclude<CalendarFilterId, "job">; label: string; kind: "options"; selection: "single" | "multiple"; options: FilterOption[] };
 
-const TODAY = new Date(2026, 5, 21);
-const DEFAULT_YEAR = 2026;
-const DEFAULT_MONTH = 5;
+const TODAY = MOCK_TODAY_DATE;
+const DEFAULT_YEAR = MOCK_TODAY_DATE.getFullYear();
+const DEFAULT_MONTH = MOCK_TODAY_DATE.getMonth();
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const ALL_JOB_CATEGORY_ID = "__all";
+
+/** jobId로 jobs.ts 원본 레코드를 조인하기 위한 조회 맵. 캘린더 필터가 실제 taxonomy 필드를 읽을 때 사용한다. */
+const jobsById = new Map(jobs.map((job) => [job.id, job]));
 
 const tabs: Array<{ id: CalendarTab; label: string }> = [
   { id: "all", label: "전체 공고" },
@@ -210,98 +216,78 @@ function toggleArrayItem(items: string[], id: string) {
   return items.includes(id) ? items.filter((item) => item !== id) : [...items, id];
 }
 
-function deriveIndustryJobFacet(job: CalendarJob) {
-  const directMap: Record<string, { categoryIds: string[]; subcategoryIds: string[] }> = {
-    ra: { categoryIds: ["regulatory"], subcategoryIds: ["ra", "regulatory-strategy"] },
-    "qa-qc": { categoryIds: ["production-quality"], subcategoryIds: ["qa", "qc"] },
-    clinical: { categoryIds: ["clinical"], subcategoryIds: ["clinical-ops", "crc"] },
-    rnd: { categoryIds: ["rd"], subcategoryIds: ["new-drug"] },
-    manufacturing: { categoryIds: ["production-quality"], subcategoryIds: ["manufacturing"] },
-    pv: { categoryIds: ["pharmacy-safety"], subcategoryIds: ["pv-drug-safety"] },
-    "sales-marketing": { categoryIds: ["sales-marketing"], subcategoryIds: ["marketing-pm", "sales-planning"] },
-  };
-
-  return directMap[job.jobCategoryId] ?? { categoryIds: [], subcategoryIds: [] };
+/** useJobFilters.ts의 동명 유틸과 동일한 구간 겹침 판정(경력 필터용). 별도 모듈로 뺄 만큼 크지 않아 이 파일에 둔다. */
+function rangeOverlaps(jobMin: number, jobMax: number | null, selectedMin: number | null, selectedMax: number | null) {
+  if (selectedMin === null && selectedMax === null) return true;
+  const actualJobMax = jobMax ?? Number.POSITIVE_INFINITY;
+  const actualSelectedMax = selectedMax ?? Number.POSITIVE_INFINITY;
+  const actualSelectedMin = selectedMin ?? 0;
+  return jobMin <= actualSelectedMax && actualJobMax >= actualSelectedMin;
 }
 
-function deriveCompanyTypeIds(job: CalendarJob) {
-  const name = job.companyName;
-  if (name.includes("바이오") || name.includes("셀트리온") || name.includes("녹십자")) return ["biotech"];
-  if (name.includes("센서")) return ["medical-device"];
-  if (name.includes("CRO")) return ["cro"];
-  return ["pharma"];
+function matchesExperience(job: Job, experienceId: string) {
+  const option = experienceOptions.find((candidate) => candidate.id === experienceId);
+  if (!option) return true;
+  return rangeOverlaps(job.experienceMin, job.experienceMax, option.min, option.max);
 }
 
-function deriveExperienceId(job: CalendarJob) {
-  const title = `${job.title} ${job.role}`;
-  if (title.includes("PM") || title.includes("Manager") || title.includes("관리")) return "5-10";
-  if (title.includes("QC") || title.includes("QA") || title.includes("MSL")) return "3-5";
-  if (title.includes("신입")) return "new";
-  return "3-5";
+function categoryIdsForSubcategories(categories: JobCategoryOption[], subcategoryIds: string[]) {
+  return Array.from(
+    new Set(
+      subcategoryIds
+        .map((subcategoryId) => categoryIdForSubcategory(categories, subcategoryId))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
 }
 
-function deriveResearchFacet(job: CalendarJob) {
-  const categoryId = categoryIdForSubcategory(researchJobCategoryOptions, job.jobCategoryId);
-  const institutionTypeIds =
-    job.companyName.includes("의대") || job.companyName.includes("학교")
-      ? ["university_lab"]
-      : job.companyName.includes("병원")
-        ? ["hospital_research_institute"]
-        : ["national_research_agency", "nonprofit_research_foundation"];
+function jobMatchesCalendarFilters(calendarJob: CalendarJob, filters: CalendarFilterState) {
+  const job = calendarJob.jobId ? jobsById.get(calendarJob.jobId) : undefined;
 
-  return {
-    categoryIds: categoryId ? [categoryId] : [],
-    subcategoryIds: [job.jobCategoryId],
-    institutionTypeIds,
-  };
-}
-
-function deriveHospitalTypeIds(job: CalendarJob) {
-  if (job.companyName.includes("서울대병원") || job.companyName.includes("아산병원")) return ["tertiary"];
-  return ["hospital"];
-}
-
-function derivePharmacyFeatureIds(job: CalendarJob) {
-  if (job.companyName.includes("온누리") || job.companyName.includes("그린")) return ["prescription_focused"];
-  return ["otc_focused"];
-}
-
-function jobMatchesCalendarFilters(job: CalendarJob, filters: CalendarFilterState) {
-  if (job.track === "industry") {
-    const jobFacet = deriveIndustryJobFacet(job);
+  if (calendarJob.track === "industry") {
+    const subcategoryIds = job?.jobSubcategoryIds ?? [];
+    const categoryIds = categoryIdsForSubcategories(industryJobCategoryOptions, subcategoryIds);
     const hasJobFilter = filters.jobCategoryIds.length > 0 || filters.jobSubcategoryIds.length > 0;
     const jobMatched =
       !hasJobFilter ||
-      filters.jobCategoryIds.some((id) => jobFacet.categoryIds.includes(id)) ||
-      filters.jobSubcategoryIds.some((id) => jobFacet.subcategoryIds.includes(id));
+      filters.jobCategoryIds.some((id) => categoryIds.includes(id)) ||
+      filters.jobSubcategoryIds.some((id) => subcategoryIds.includes(id));
     const companyMatched =
-      filters.companyTypeIds.length === 0 || filters.companyTypeIds.some((id) => deriveCompanyTypeIds(job).includes(id));
-    const experienceMatched = !filters.experienceId || filters.experienceId === deriveExperienceId(job);
+      filters.companyTypeIds.length === 0 || (job ? filters.companyTypeIds.includes(job.companyTypeId) : false);
+    const experienceMatched = !filters.experienceId || (job ? matchesExperience(job, filters.experienceId) : false);
     return jobMatched && companyMatched && experienceMatched;
   }
 
-  if (job.track === "research") {
-    const jobFacet = deriveResearchFacet(job);
+  if (calendarJob.track === "research") {
+    const subcategoryIds = job?.jobSubcategoryIds ?? [];
+    const categoryIds = categoryIdsForSubcategories(researchJobCategoryOptions, subcategoryIds);
     const hasJobFilter = filters.jobCategoryIds.length > 0 || filters.jobSubcategoryIds.length > 0;
     const jobMatched =
       !hasJobFilter ||
-      filters.jobCategoryIds.some((id) => jobFacet.categoryIds.includes(id)) ||
-      filters.jobSubcategoryIds.some((id) => jobFacet.subcategoryIds.includes(id));
+      filters.jobCategoryIds.some((id) => categoryIds.includes(id)) ||
+      filters.jobSubcategoryIds.some((id) => subcategoryIds.includes(id));
     const institutionMatched =
-      filters.institutionTypeIds.length === 0 || filters.institutionTypeIds.some((id) => jobFacet.institutionTypeIds.includes(id));
-    const experienceMatched = !filters.experienceId || filters.experienceId === deriveExperienceId(job);
+      filters.institutionTypeIds.length === 0 || (job ? filters.institutionTypeIds.includes(job.organizationType) : false);
+    const experienceMatched = !filters.experienceId || (job ? matchesExperience(job, filters.experienceId) : false);
     return jobMatched && institutionMatched && experienceMatched;
   }
 
-  if (job.track === "hospital") {
-    return filters.hospitalTypeIds.length === 0 || filters.hospitalTypeIds.some((id) => deriveHospitalTypeIds(job).includes(id));
+  if (calendarJob.track === "hospital") {
+    return filters.hospitalTypeIds.length === 0 || (job?.hospitalTypeId ? filters.hospitalTypeIds.includes(job.hospitalTypeId) : false);
   }
 
-  if (job.track === "pharmacy") {
-    return filters.pharmacyFeatureIds.length === 0 || filters.pharmacyFeatureIds.some((id) => derivePharmacyFeatureIds(job).includes(id));
+  if (calendarJob.track === "pharmacy") {
+    return filters.pharmacyFeatureIds.length === 0 || (job?.pharmacyFeatureIds ? filters.pharmacyFeatureIds.includes(job.pharmacyFeatureIds) : false);
   }
 
   return false;
+}
+
+/** V2 상세가 등록되지 않은 slug는 상세 페이지 대신 해당 트랙 검색으로 폴백한다. calendar.ts의 href 데이터 자체는 건드리지 않는다. */
+function resolveJobHref(job: CalendarJob) {
+  const slug = job.href.startsWith("/jobs/") ? job.href.slice("/jobs/".length) : undefined;
+  if (slug && hasJobDetail(slug)) return job.href;
+  return `/jobs?track=${job.track}`;
 }
 
 function CalendarOptionChip({
@@ -476,7 +462,7 @@ function CalendarJobChip({ job }: { job: CalendarJob }) {
 
   return (
     <Link
-      href={job.href}
+      href={resolveJobHref(job)}
       className={`group block w-full max-w-full min-w-0 overflow-hidden border px-2 py-1.5 text-left transition hover:border-[#111111] ${
         job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#edf0f3] bg-white hover:bg-[#fbfbfb]"
       }`}
@@ -588,7 +574,7 @@ function MoreJobsModal({
           {jobs.map((job) => (
             <Link
               key={job.id}
-              href={job.href}
+              href={resolveJobHref(job)}
               className={`flex min-w-0 items-center justify-between gap-4 border p-3 transition hover:border-[#111111] ${
                 job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#e4e8ee] bg-white"
               }`}
@@ -673,7 +659,15 @@ export function RecruitmentCalendarClient() {
   }, [filteredJobs]);
 
   const days = useMemo(() => buildMonthDays(visibleMonth.getFullYear(), visibleMonth.getMonth()), [visibleMonth]);
-  const appliedJobsAll = useMemo(() => availableCalendarJobs.filter((job) => job.isApplied), [availableCalendarJobs]);
+  const appliedJobsAll = useMemo(() => {
+    const seen = new Set<string>();
+    return availableCalendarJobs.filter((job) => job.isApplied).filter((job) => {
+      const key = postingKey(job);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [availableCalendarJobs]);
   const appliedJobsCount = appliedJobsAll.length;
   const appliedJobs = useMemo(() => appliedJobsAll.slice(0, 3), [appliedJobsAll]);
 

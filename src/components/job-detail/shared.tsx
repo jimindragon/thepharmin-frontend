@@ -9,6 +9,7 @@ import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
 import type { FormattedContent, Job, JobTrack } from "@/types/jobs";
+import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
 
 /**
  * 공고 상세 페이지(산업/약국 등 트랙 공용)에서 재사용하는 패널·타이포그래피·저장 상태 유틸.
@@ -344,13 +345,17 @@ const APPLY_GATED_MESSAGES: Partial<Record<ApplyMethodId, string>> = {
  * 저장/공유는 JobDetailActionRow(히어로)로 옮겨졌으므로 이 카드는 순수 지원 CTA만 담당한다.
  */
 export function ApplyCard({
-  deadlineLabel,
+  job,
   method,
   target,
   notice,
   isLoggedIn,
 }: {
-  deadlineLabel: string;
+  /**
+   * 마감 표시(라벨·긴급색)는 이 jobs.ts 레코드에서 formatJobDeadlineLabel/isJobDeadlineUrgent로 파생한다.
+   * jobs.ts에 조인할 레코드가 없는 미리보기 등 예외 경로를 위해 optional — 없으면 마감 표시를 생략한다.
+   */
+  job?: Job;
   method: ApplyMethodId;
   target: string;
   notice?: string;
@@ -358,11 +363,15 @@ export function ApplyCard({
 }) {
   const gatedLabel = APPLY_GATED_LABELS[method];
   const gatedMessage = APPLY_GATED_MESSAGES[method];
+  const deadlineLabel = job ? formatJobDeadlineLabel(job) : null;
+  const urgent = job ? isJobDeadlineUrgent(job) : false;
 
   return (
     <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
       <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
-      <h2 className="mt-2 text-[30px] font-bold text-brand">{deadlineLabel}</h2>
+      {deadlineLabel ? (
+        <h2 className={clsx("mt-2 text-[30px] font-bold", urgent ? "text-danger" : "text-brand")}>{deadlineLabel}</h2>
+      ) : null}
       <p className="mt-2 text-[13px] font-medium text-[#8993a1]">{APPLY_METHOD_LABELS[method]}</p>
 
       <button

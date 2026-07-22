@@ -1,10 +1,11 @@
 import type { JobTrack } from "@/types/jobs";
+import { MOCK_TODAY } from "@/config/mockToday";
 
 export type JobPostingStatus = "pending" | "active" | "closed";
 export type JobPostingStatusFilter = "all" | JobPostingStatus;
 
-/** 목데이터의 D-day가 재현되는 기준일. */
-export const MOCK_TODAY = "2026.07.19";
+/** 목데이터의 D-day가 재현되는 기준일. src/config/mockToday.ts의 값을 재수출한다. */
+export { MOCK_TODAY };
 
 export interface JobPosting {
   id: string;
@@ -45,9 +46,9 @@ export const jobPostings: JobPosting[] = [
     id: "job-6",
     title: "RA Specialist (제약·바이오 인허가 담당)",
     track: "industry",
-    registeredAt: "2026.07.17",
-    closingDate: "2026.08.16",
-    status: "pending",
+    registeredAt: "2026.06.05",
+    closingDate: "2026.07.03",
+    status: "closed",
     applicantCount: 0,
     boost: false,
   },

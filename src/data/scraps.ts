@@ -31,9 +31,9 @@ function fallbackHref(name: string, type: ScrapedOrganizationType) {
 /**
  * 마이페이지 스크랩 화면이 사용하는 목업 데이터.
  * 실제 백엔드 연동 전까지는 이 배열을 초기 상태로 쓰고, 이후에는 API 응답으로 교체하면 된다.
- * 상세 페이지 이동을 시연할 수 있도록 slug가 있는 공고(101, 102, 106, 108, 307)로만 구성했다.
+ * 상세 페이지 이동을 시연할 수 있도록 V2 상세가 등록된 공고(130, 121, 307, 309, 413)로만 구성했다.
  */
-export const scrapedJobIds: number[] = [101, 102, 106, 108, 307];
+export const scrapedJobIds: number[] = [130, 121, 307, 309, 413];
 
 export const scrapedOrganizations: ScrapedOrganization[] = [
   {

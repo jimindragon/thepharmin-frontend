@@ -18,19 +18,19 @@ import {
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { useNotificationReadState } from "@/hooks/useNotificationReadState";
-import { formatDday, getDaysUntil, getDdayInfo, toMonthDay, type DdayTier } from "@/utils/dday";
+import {
+  formatDday,
+  formatKoreanDate,
+  getDaysUntil,
+  getDdayInfo,
+  toMonthDay,
+  WEEKDAY_LABELS,
+  type DdayTier,
+} from "@/utils/dday";
 
 // ─── mock data ─────────────────────────────────────────────────────────────────
 
 const USER_NAME = myPageUser.name;
-
-const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
-
-function formatKoreanDate(dateStr: string): string {
-  const [y, m, d] = dateStr.split(".").map(Number);
-  const date = new Date(y, m - 1, d);
-  return `${y}년 ${m}월 ${d}일 ${WEEKDAY_LABELS[date.getDay()]}요일`;
-}
 
 const DDAY_BADGE_STYLE: Record<DdayTier, { className: string; dotClassName?: string }> = {
   urgent: { className: "text-status-urgent" },

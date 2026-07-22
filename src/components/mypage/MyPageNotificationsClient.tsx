@@ -87,7 +87,10 @@ export function MyPageNotificationsClient() {
                   key={notification.id}
                   href={notification.href}
                   onClick={() => markRead(notification.id)}
-                  className={clsx("group flex items-start gap-3 px-6 py-5", !read && "bg-[#f7f8fa]")}
+                  className={clsx(
+                    "group flex items-start gap-3 border-l-2 px-6 py-5",
+                    !read ? "border-l-[#111111]" : "border-l-transparent",
+                  )}
                 >
                   <span className={clsx("mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full", !read && "bg-danger")} aria-hidden="true" />
                   <div className="min-w-0 flex-1">

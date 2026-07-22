@@ -59,7 +59,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       <>
         <Header />
         <RecentJobRecorder jobId={job.id} />
-        <HospitalJobDetailV2 data={hospitalDetailV2} />
+        <HospitalJobDetailV2 data={hospitalDetailV2} jobRecord={job} />
       </>
     );
   }
@@ -74,7 +74,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       <>
         <Header />
         <RecentJobRecorder jobId={job.id} />
-        <PharmacyJobDetailV2 data={pharmacyDetailV2} />
+        <PharmacyJobDetailV2 data={pharmacyDetailV2} jobRecord={job} />
       </>
     );
   }
@@ -89,7 +89,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       <>
         <Header />
         <RecentJobRecorder jobId={job.id} />
-        <ResearchJobDetailV2 data={researchDetailV2} />
+        <ResearchJobDetailV2 data={researchDetailV2} jobRecord={job} />
       </>
     );
   }
@@ -103,7 +103,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     <>
       <Header />
       <RecentJobRecorder jobId={job.id} />
-      <IndustryJobDetailClient data={industryDetail} />
+      <IndustryJobDetailClient data={industryDetail} jobRecord={job} />
     </>
   );
 }
