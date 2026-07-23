@@ -28,9 +28,10 @@ export function BusinessNotificationSettingsClient() {
             ]}
           />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">알림 설정</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">알림을 받을 항목과 방식을 설정할 수 있습니다.</p>
-          <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">
+          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
             사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
+            <br />
+            결제 완료·취소 등 주요 안내는 카카오톡으로도 발송됩니다.
           </p>
         </div>
 
@@ -54,10 +55,6 @@ export function BusinessNotificationSettingsClient() {
             </div>
           ))}
         </div>
-
-        <p className="mt-4 text-[12px] leading-[1.6] text-[#8a94a3]">
-          결제 완료·취소 등 주요 안내는 카카오톡으로도 발송됩니다.
-        </p>
       </div>
     </BusinessCenterShell>
   );

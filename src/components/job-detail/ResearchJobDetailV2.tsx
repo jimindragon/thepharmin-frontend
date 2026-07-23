@@ -130,6 +130,7 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
                   <JobDetailActionRow
                     orgName={org.institutionName}
+                    companyId={data.companyId}
                     showLogo
                     logoUrl={org.logoUrl}
                     saved={saved}

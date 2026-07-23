@@ -342,7 +342,6 @@ export interface Job {
   address?: string;
   salary: string;
   deadline?: string;
-  deadlineLabel: string;
   deadlineDate: string;
   closingStatus: ClosingStatus;
   applyMethod: ApplyMethod;
@@ -411,7 +410,6 @@ export interface Job {
   isRecommended?: boolean;
   isClosed?: boolean;
   dateOrder: number;
-  deadlineOrder: number;
 
   /** 약국 등 salary 문자열만으로 표현하기 어려운 공고에서 사용하는 정규화된 급여 상세 */
   salaryDetail?: SalaryDetail;

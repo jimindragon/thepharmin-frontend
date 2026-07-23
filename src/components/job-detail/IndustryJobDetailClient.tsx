@@ -123,6 +123,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
                   <JobDetailActionRow
                     orgName={org.name}
+                    companyId={data.companyId}
                     showLogo
                     logoUrl={org.logoUrl}
                     saved={saved}

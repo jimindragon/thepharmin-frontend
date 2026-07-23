@@ -53,14 +53,13 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
       <img src={profile.coverImage} alt={`${profile.name} 기업 이미지`} className="absolute inset-0 h-full w-full object-cover opacity-42" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,14,0.92)_0%,rgba(3,10,14,0.75)_48%,rgba(3,10,14,0.38)_100%)]" />
       <div className="relative z-10 px-8 py-8 max-[720px]:px-5 max-[720px]:py-6">
-        {/* premiumLabel 배지는 STEP 3a-2에서 제거 — Hero는 "식별"(로고·기관명·한줄소개·액션) 역할로 한정한다 */}
+        {/* 인증·프리미엄 배지는 변별력 없어 제거됨(공고 등록 자체가 사업자 인증 전제) — Hero는 "식별"(로고·기관명·한줄소개·액션) 역할로 한정한다 */}
         <div className="flex items-end justify-between gap-6 max-[820px]:items-start max-[820px]:flex-col">
           <div className="flex min-w-0 items-center gap-6 max-[640px]:items-start max-[640px]:gap-4">
             <div className="grid h-[118px] w-[118px] shrink-0 place-items-center border border-white/24 bg-white text-center text-[16px] font-medium leading-tight text-[#17212c] shadow-[0_18px_42px_rgba(0,0,0,0.22)] max-[640px]:h-[92px] max-[640px]:w-[92px] max-[640px]:text-[13px]">
               {profile.logoImage ? <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" /> : profile.logoText}
             </div>
             <div className="min-w-0">
-              {/* verified 배지는 STEP 3a에서 전면 제거 — 배지 부여 기준이 없고 공고 등록 자체가 사업자 인증을 전제해 변별력이 없다 */}
               <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
               <p className="mt-3 text-[15px] font-normal text-white/86 max-[640px]:text-[13px]">{profile.tagline}</p>
               {/* 배지는 무채색 절제 스타일 통일(STEP 3a-2) — 반투명 흰 보더 + 흰 텍스트, 강조용 채움색 없음 */}

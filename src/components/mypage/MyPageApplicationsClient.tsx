@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { Button, LinkButton } from "@/components/ui/Button";
+import { companyLogos } from "@/config/companyImages";
 import { sharedRoutes } from "@/config/routes";
 import { mockApplications, type JobApplication } from "@/data/mockApplications";
 
@@ -33,40 +35,49 @@ function ApplicationCard({ application }: { application: JobApplication }) {
   const statusDetail = getStatusDetail(application);
   const statusText = application.isClosed && application.resultLabel ? application.resultLabel : application.statusLabel;
 
-  return (
-    <article className="border border-border bg-white p-6 max-[640px]:p-5">
-      <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
-        {/* 좌측: 공고 정보 + 진행 단계 */}
-        <div className="min-w-0 flex-1 basis-[260px]">
-          <p className="text-[13px] font-normal text-[#68717e]">{application.company}</p>
-          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
-            {application.jobHref ? (
-              <Link href={application.jobHref} className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline">
-                {application.jobTitle}
-              </Link>
-            ) : (
-              <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
-            )}
-            <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
-              {application.applyChannelLabel}
-            </span>
-          </div>
-          <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">
-            {application.resumeUsed ? `사용 이력서: ${application.resumeUsed} · ` : ""}
-            {`지원 ${application.appliedDate}`}
-            {isQuick && application.deadlineDate ? ` · 마감 ${application.deadlineDate}` : ""}
-            {!isQuick ? " · 외부 지원 · 전형 상태는 기업에서 관리됩니다" : ""}
-          </p>
+  const metaItems: { label?: string; value: string }[] = [
+    { value: application.company },
+    application.resumeUsed ? { label: "사용 이력서", value: application.resumeUsed } : null,
+    { label: "지원", value: application.appliedDate },
+    !isQuick ? { value: "외부 지원" } : null,
+  ].filter((item): item is { label?: string; value: string } => item !== null);
 
-          {isQuick ? (
-            <div className="mt-4 w-full max-w-[620px]">
-              <ApplicationStepper currentStage={application.currentStage} />
+  return (
+    <article className="border border-border bg-white">
+      {/* 상단 층: 공고 정보 + 상태 */}
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4 px-6 pt-6 pb-4 max-[640px]:px-5">
+        {/* 좌측: 로고 + 공고 정보 */}
+        <div className="flex min-w-0 flex-1 basis-[260px] items-center gap-4">
+          <EntityLogo name={application.company} logoUrl={companyLogos[application.company]} size={48} />
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              {application.jobHref ? (
+                <Link href={application.jobHref} className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline">
+                  {application.jobTitle}
+                </Link>
+              ) : (
+                <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
+              )}
+              <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
+                {application.applyChannelLabel}
+              </span>
             </div>
-          ) : null}
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+              {metaItems.map((item, index) => (
+                <span key={index} className="flex items-center gap-x-3">
+                  {index > 0 ? <span aria-hidden="true" className="h-3 w-px bg-[#e5e7eb]" /> : null}
+                  <span className="flex items-center gap-x-1.5">
+                    {item.label ? <span className="whitespace-nowrap text-[13px] text-[#9ca3af]">{item.label}</span> : null}
+                    <span className="whitespace-nowrap text-[13px] text-[#4b5563]">{item.value}</span>
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* 우측: 상태 + 액션 */}
-        <div className="ml-auto flex shrink-0 flex-col items-end gap-2">
+        {/* 우측: 상태 */}
+        <div className="flex shrink-0 flex-col items-end gap-2">
           <p
             className={clsx(
               "inline-flex items-center gap-[8px] text-[15px] font-bold tracking-[-0.01em]",
@@ -79,18 +90,34 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             {statusText}
           </p>
           {statusDetail ? <p className="text-[12px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
-          <div className="mt-1 flex justify-end gap-2">
-            {!isQuick ? (
-              <Button type="button" variant="secondary" size="sm">
-                결과 직접 입력
-              </Button>
-            ) : null}
-            {application.jobHref ? (
-              <LinkButton href={application.jobHref} variant="secondary" size="sm">
-                공고 보기
-              </LinkButton>
-            ) : null}
+        </div>
+      </div>
+
+      {/* 하단 층: 진행 상태 + 액션 */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#eef1f4] px-6 pt-4 pb-5 max-[640px]:px-5">
+        {isQuick ? (
+          <div className="max-w-[520px] min-w-[280px] flex-1">
+            <ApplicationStepper currentStage={application.currentStage} />
           </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-neutral-dot" />
+            <span className="text-[13px] text-[#6b7280]">
+              {application.isClosed ? "전형이 종료되었습니다" : "전형 상태는 기업에서 관리됩니다"}
+            </span>
+          </div>
+        )}
+        <div className="flex justify-end gap-2">
+          {!isQuick ? (
+            <Button type="button" variant="secondary" size="sm">
+              결과 직접 입력
+            </Button>
+          ) : null}
+          {application.jobHref ? (
+            <LinkButton href={application.jobHref} variant="secondary" size="sm">
+              공고 보기
+            </LinkButton>
+          ) : null}
         </div>
       </div>
     </article>

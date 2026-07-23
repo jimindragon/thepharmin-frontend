@@ -116,7 +116,6 @@ export interface HospitalJobPosting {
     phone: string;
     notice: string;
   };
-  deadlineLabel: string;
   isRolling: boolean;
 }
 
@@ -207,7 +206,6 @@ export const osanHospitalJobDetail: HospitalJobDetail = {
       phone: "",
       notice: "이력서와 약사 면허증 사본을 이메일로 보내 주세요. 당직 가능 요일을 함께 기재해 주세요.",
     },
-    deadlineLabel: "채용 시 마감",
     isRolling: true,
   },
 
@@ -290,7 +288,6 @@ export const armedForcesSeoulDistrictHospitalJobDetail: HospitalJobDetail = {
       phone: "",
       notice: "이력서와 경력증명서를 이메일로 제출해 주세요. 서류 검토 후 순차 안내드립니다.",
     },
-    deadlineLabel: "2026년 8월 14일 마감",
     isRolling: false,
   },
 
@@ -374,7 +371,6 @@ export const nationalFireHospitalJobDetail: HospitalJobDetail = {
       phone: "",
       notice: "채용 공고문을 확인한 후 병원 홈페이지 채용 페이지에서 접수해 주세요.",
     },
-    deadlineLabel: "2026년 7월 31일 마감",
     isRolling: false,
   },
 
@@ -449,7 +445,6 @@ export const sungaeHospitalJobDetail: HospitalJobDetail = {
       phone: "",
       notice: "간편지원으로 접수해 주세요.",
     },
-    deadlineLabel: "채용 시 마감",
     isRolling: true,
   },
 

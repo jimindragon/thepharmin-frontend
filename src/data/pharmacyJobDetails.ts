@@ -108,7 +108,6 @@ export interface PharmacyJobPosting {
     phone: string;       // 전화 지원 시 사용. 없으면 ""
     notice: string;
   };
-  deadlineLabel: string;
   isRolling: boolean;
 
   additionalNotes?: string;
@@ -217,7 +216,6 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
       phone: "",
       notice: "이메일 지원을 우선 확인합니다. 경력과 근무 가능 요일을 함께 남겨 주세요.",
     },
-    deadlineLabel: "채용 시 마감",
     isRolling: true,
   },
 
@@ -305,7 +303,6 @@ export const hyundaiPharmacyJobDetail: PharmacyJobDetail = {
       phone: "",
       notice: "간편지원으로 접수해 주세요. 경력과 근무 가능 요일을 함께 남겨 주세요.",
     },
-    deadlineLabel: "채용시 마감",
     isRolling: true,
   },
 
@@ -388,7 +385,6 @@ export const hwagokGibeumPharmacyJobDetail: PharmacyJobDetail = {
       phone: "",
       notice: "간편지원으로 접수해 주세요. 졸업년도와 경력사항을 함께 남겨 주세요.",
     },
-    deadlineLabel: "채용시 마감",
     isRolling: true,
   },
 
@@ -474,7 +470,6 @@ export const buldangCentralPharmacyJobDetail: PharmacyJobDetail = {
       phone: "",
       notice: "간편지원으로 접수해 주세요. 간단한 이력을 문자로 남겨 주시면 연락드립니다.",
     },
-    deadlineLabel: "채용시 마감",
     isRolling: true,
 
     additionalNotes:

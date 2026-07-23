@@ -111,7 +111,6 @@ export interface ResearchJobPosting {
     phone: string;
     notice: string;
   };
-  deadlineLabel: string;
   isRolling: boolean;
 }
 
@@ -208,7 +207,6 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
       phone: "",
       notice: "이력서(연구 실적 목록 포함)와 영문 자기소개서를 이메일로 제출해 주세요.",
     },
-    deadlineLabel: "채용 시 마감",
     isRolling: true,
   },
 
@@ -288,7 +286,6 @@ export const kistNeurophysiologyInternJobDetail: ResearchJobDetail = {
       phone: "",
       notice: "이력서와 재학증명서를 이메일로 제출해 주세요.",
     },
-    deadlineLabel: "2026년 7월 30일 마감",
     isRolling: false,
   },
 
@@ -367,7 +364,6 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
       phone: "",
       notice: "이력서와 학위증명서를 이메일로 제출해 주세요.",
     },
-    deadlineLabel: "채용 시 마감",
     isRolling: true,
   },
 

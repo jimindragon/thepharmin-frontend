@@ -75,6 +75,7 @@ export function toMonthDay(dateStr: string): string {
 export function getJobDaysLeft(job: Job): number | null {
   if (job.closingStatus === "always") return null;
 
+  // 구조화 deadline이 권위 있는 값이고, deadlineDate 텍스트 파싱은 그게 비어 있을 때만 쓰는 방어선이다(3-c 백필 이후 정상 경로에서는 거의 안 탄다).
   const deadlineDate = job.deadline ? parseIsoDate(job.deadline) : parseDeadlineDateText(job.deadlineDate);
   if (!deadlineDate) return null;
 
@@ -94,6 +95,12 @@ export function formatJobDeadlineLabel(job: Job): string {
   if (job.closingStatus === "today" || daysLeft === 0) return "오늘 마감";
   if (daysLeft < 0) return "마감";
   return `D-${daysLeft}`;
+}
+
+/** 추천순 등 정렬에서 만료 공고를 후순위로 보낼 때 쓰는 판정. getJobDaysLeft가 음수(이미 마감)면 만료, 상시·null이면 만료 아님. */
+export function isJobExpired(job: Job): boolean {
+  const daysLeft = getJobDaysLeft(job);
+  return daysLeft !== null && daysLeft < 0;
 }
 
 /** JobCard의 긴급(빨강) 표시 조건: 오늘 마감이거나 마감 7일 이내(이미 지난 건 제외). 기존 `deadlineOrder <= 7` 조건과 동일한 의미를 실제 날짜로 재현한다. */

@@ -415,9 +415,13 @@ export function ApplyCard({
  * showLogo=false인 트랙(약국)은 로고 자리를 만들지 않고 기업명부터 시작한다.
  * 모바일(≤560px)에서는 로고+기업명 행 아래로 관심기업 버튼이 full-width로 내려가고,
  * 저장·공유는 기존 모바일 하단바가 담당하므로 여기서는 숨긴다.
+ * companyId가 있으면 로고+기업명을 /companies/{companyId}로 감싼다 — 프로필 존재 여부와 무관하게
+ * 항상 링크(하단 CompanyCtaButtons "기업 정보 더보기"와 동일한 무조건부 링크 관례). companyId가 없는
+ * 공고(비공개 기업, 연구 트랙 free-text 기관 등)는 기존처럼 비링크 텍스트로 둔다.
  */
 export function JobDetailActionRow({
   orgName,
+  companyId,
   showLogo,
   logoUrl,
   saved,
@@ -427,6 +431,7 @@ export function JobDetailActionRow({
   onShare,
 }: {
   orgName: string;
+  companyId?: string | null;
   showLogo: boolean;
   logoUrl?: string;
   saved: boolean;
@@ -435,13 +440,24 @@ export function JobDetailActionRow({
   onToggleInterest: () => void;
   onShare: () => void;
 }) {
+  const companyContent = (
+    <>
+      {showLogo ? <CompanyLogo name={orgName} logoText="" logoUrl={logoUrl} size="sm" /> : null}
+      <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
+    </>
+  );
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-3 max-[560px]:w-full max-[560px]:flex-col max-[560px]:items-start">
-        <div className="flex items-center gap-3">
-          {showLogo ? <CompanyLogo name={orgName} logoText="" logoUrl={logoUrl} size="sm" /> : null}
-          <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
-        </div>
+        {companyId ? (
+          <Link href={`/companies/${companyId}`} className="group flex items-center gap-3">
+            {showLogo ? <CompanyLogo name={orgName} logoText="" logoUrl={logoUrl} size="sm" /> : null}
+            <p className="text-[15px] font-normal text-[#667181] group-hover:text-brand">{orgName}</p>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3">{companyContent}</div>
+        )}
 
         <button
           type="button"

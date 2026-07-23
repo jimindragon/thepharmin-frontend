@@ -1,14 +1,23 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
+import { Button } from "@/components/ui/Button";
 
 type OfferType = "job" | "headhunting";
-type OfferStatus = "new" | "read";
+type OfferStatus = "new" | "read" | "accepted" | "declined";
 type OfferTabFilter = "all" | "job" | "headhunting";
+type PanelStep = "message" | "acceptDone" | "declineDone";
+type ContactMethod = "phone" | "email" | "sms" | "any";
+type ContactTime = "morning" | "afternoon" | "evening" | "anytime";
+type DeclineReason = "no_plan" | "role_mismatch" | "conditions_mismatch" | "not_interested" | "no_reason";
+type ResponseModalState = { offerId: string; mode: "accept" | "decline" };
+type ResponseModalConfirmPayload =
+  | { mode: "accept"; method: ContactMethod; time: ContactTime }
+  | { mode: "decline"; reason: DeclineReason | null };
 
 interface Offer {
   id: string;
@@ -49,41 +58,244 @@ const OFFER_TABS: Array<{ id: OfferTabFilter; label: string }> = [
   { id: "headhunting", label: "헤드헌팅 제안" },
 ];
 
+const CONTACT_METHOD_OPTIONS: Array<{ id: ContactMethod; label: string }> = [
+  { id: "phone", label: "전화" },
+  { id: "email", label: "이메일" },
+  { id: "sms", label: "문자" },
+  { id: "any", label: "연락 방법 무관" },
+];
+
+const CONTACT_TIME_OPTIONS: Array<{ id: ContactTime; label: string }> = [
+  { id: "morning", label: "오전" },
+  { id: "afternoon", label: "오후" },
+  { id: "evening", label: "저녁" },
+  { id: "anytime", label: "언제든 가능" },
+];
+
+const DECLINE_REASON_OPTIONS: Array<{ id: DeclineReason; label: string }> = [
+  { id: "no_plan", label: "현재 이직 계획이 없어요" },
+  { id: "role_mismatch", label: "직무가 맞지 않아요" },
+  { id: "conditions_mismatch", label: "근무 조건이 맞지 않아요" },
+  { id: "not_interested", label: "기업에 관심이 없어요" },
+  { id: "no_reason", label: "사유를 전달하지 않을게요" },
+];
+
+function labelOf<T extends string>(options: Array<{ id: T; label: string }>, id: T): string {
+  return options.find((option) => option.id === id)?.label ?? id;
+}
+
 function OfferTypeBadge({ type }: { type: OfferType }) {
-  if (type === "headhunting") {
-    return (
-      <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-status-positive">
-        헤드헌팅 제안
-      </span>
-    );
-  }
   return (
-    <span className="inline-flex w-fit shrink-0 items-center text-[12px] font-medium text-[#596373]">
-      입사제안
+    <span className="flex w-[96px] shrink-0 items-center text-[13px] font-medium text-[#596373]">
+      {type === "headhunting" ? "헤드헌팅 제안" : "입사제안"}
     </span>
   );
 }
 
+const OFFER_STATUS_CONFIG: Record<OfferStatus, { dot: string; text: string; label: string }> = {
+  new: { dot: "bg-status-positive-dot", text: "text-status-positive", label: "신규" },
+  read: { dot: "bg-status-neutral-dot", text: "text-[#6b7280]", label: "확인함" },
+  accepted: { dot: "bg-status-positive-dot", text: "text-status-positive", label: "수락함" },
+  declined: { dot: "bg-status-neutral-dot", text: "text-[#6b7280]", label: "거절함" },
+};
+
 function OfferStatusBadge({ status }: { status: OfferStatus }) {
-  if (status === "new") {
-    return (
-      <span className="inline-flex w-fit shrink-0 items-center gap-[8px]">
-        <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-positive-dot" />
-        <span className="text-[12px] font-medium text-status-positive">신규</span>
-      </span>
-    );
-  }
+  const { dot, text, label } = OFFER_STATUS_CONFIG[status];
   return (
     <span className="inline-flex w-fit shrink-0 items-center gap-[8px]">
-      <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-neutral-dot" />
-      <span className="text-[12px] font-medium text-[#8a94a3]">확인함</span>
+      <span className={clsx("h-[8px] w-[8px] rounded-full shrink-0", dot)} />
+      <span className={clsx("text-[12px] font-medium", text)}>{label}</span>
     </span>
+  );
+}
+
+/** 응답 흐름의 단일선택 칩 — 기존 폼 칩(직각, 선택 시 border-[#111111] bg-[#f7f8fa]) 관례를 따른다. */
+function OfferChip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={clsx(
+        "h-9 border px-3 text-[12px] font-medium transition",
+        selected ? "border-[#111111] bg-[#f7f8fa] text-[#111111]" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
+      )}
+      aria-pressed={selected}
+    >
+      {label}
+    </button>
+  );
+}
+
+/** 접힌 행의 메타 행과 동일한 라벨/값 문법 — 응답 완료 화면에서 선택 내역을 재표시할 때 재사용. */
+function MetaRow({ items }: { items: Array<{ label: string; value: string }> }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {items.map((item, index) => (
+        <span key={index} className="flex items-center gap-x-3">
+          {index > 0 ? <span aria-hidden="true" className="h-3 w-px bg-[#e5e7eb]" /> : null}
+          <span className="flex items-center gap-x-1.5">
+            <span className="whitespace-nowrap text-[13px] text-[#9ca3af]">{item.label}</span>
+            <span className="whitespace-nowrap text-[13px] text-[#4b5563]">{item.value}</span>
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 응답(수락/거절) 모달 — 공용 모달 셸이 없어(src/components/ui/ 확인 완료) business/StageMoveModal.tsx의
+ * 구조·스타일 관례(오버레이, 헤더+닫기 버튼, 각진 모서리, 스크롤 락, Esc/오버레이 클릭 닫기)를 참고해
+ * 이 파일 안에 로컬로 작성. cross-import 없이 personal 영역 안에서만 재사용.
+ */
+function OfferResponseModal({
+  mode,
+  onClose,
+  onConfirm,
+}: {
+  mode: "accept" | "decline";
+  onClose: () => void;
+  onConfirm: (payload: ResponseModalConfirmPayload) => void;
+}) {
+  const [method, setMethod] = useState<ContactMethod | null>(null);
+  const [time, setTime] = useState<ContactTime | null>(null);
+  const [reason, setReason] = useState<DeclineReason | null>(null);
+  const isAccept = mode === "accept";
+  const canConfirm = isAccept ? Boolean(method && time) : true;
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  function handleConfirm() {
+    if (isAccept) {
+      if (!method || !time) return;
+      onConfirm({ mode: "accept", method, time });
+    } else {
+      onConfirm({ mode: "decline", reason });
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label={isAccept ? "제안 수락" : "제안 거절"}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="flex w-full max-w-[440px] flex-col border border-border bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
+        {/* 헤더 */}
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
+          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{isAccept ? "제안 수락" : "제안 거절"}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="닫기"
+            className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* 스크롤 영역 */}
+        <div className="overflow-y-auto px-6 py-5">
+          <p className="text-[13.5px] font-normal leading-relaxed text-[#6b7280]">
+            {isAccept
+              ? "수락하시면 담당자가 등록된 연락처로 연락드립니다. 제안 수락은 지원이나 입사 확정을 의미하지 않습니다."
+              : "거절 의사만 기업에 전달되며, 선택하신 사유는 전달되지 않습니다."}
+          </p>
+
+          {isAccept ? (
+            <>
+              <div className="mt-5">
+                <p className="text-[14px] font-medium text-[#303946]">연락 방법</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {CONTACT_METHOD_OPTIONS.map((option) => (
+                    <OfferChip
+                      key={option.id}
+                      label={option.label}
+                      selected={method === option.id}
+                      onClick={() => setMethod(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5">
+                <p className="text-[14px] font-medium text-[#303946]">연락 가능 시간</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {CONTACT_TIME_OPTIONS.map((option) => (
+                    <OfferChip
+                      key={option.id}
+                      label={option.label}
+                      selected={time === option.id}
+                      onClick={() => setTime(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mt-5">
+              <p className="text-[14px] font-medium text-[#303946]">거절 사유 (선택)</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {DECLINE_REASON_OPTIONS.map((option) => (
+                  <OfferChip
+                    key={option.id}
+                    label={option.label}
+                    selected={reason === option.id}
+                    onClick={() => setReason((prev) => (prev === option.id ? null : option.id))}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 푸터 */}
+        <div className="flex shrink-0 justify-end gap-2 px-6 py-4">
+          <Button type="button" size="sm" variant="secondary" onClick={onClose}>
+            취소
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            disabled={!canConfirm}
+            onClick={handleConfirm}
+            style={!canConfirm ? { background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" } : undefined}
+          >
+            {isAccept ? "수락 확정" : "거절 확정"}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export function MyPageOffersClient() {
   const [activeTab, setActiveTab] = useState<OfferTabFilter>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  /** 런타임 상태 — 새로고침 시 초기화되는 목업 관례. mockOffers의 초기 status는 건드리지 않는다. */
+  const [offerStatuses, setOfferStatuses] = useState<Record<string, OfferStatus>>(() =>
+    Object.fromEntries(mockOffers.map((offer) => [offer.id, offer.status])),
+  );
+  const [panelStep, setPanelStep] = useState<PanelStep>("message");
+  const [acceptSelections, setAcceptSelections] = useState<Record<string, { method: ContactMethod; time: ContactTime }>>({});
+  const [activeModal, setActiveModal] = useState<ResponseModalState | null>(null);
 
   const tabCounts: Record<OfferTabFilter, number> = {
     all: mockOffers.length,
@@ -94,7 +306,28 @@ export function MyPageOffersClient() {
   const filtered = activeTab === "all" ? mockOffers : mockOffers.filter((o) => o.type === activeTab);
 
   function toggleExpand(id: string) {
-    setExpandedId((current) => (current === id ? null : id));
+    const opening = expandedId !== id;
+    setExpandedId(opening ? id : null);
+    setActiveModal(null);
+    if (opening) {
+      setOfferStatuses((prev) => (prev[id] === "new" ? { ...prev, [id]: "read" } : prev));
+      const current = offerStatuses[id];
+      setPanelStep(current === "accepted" ? "acceptDone" : current === "declined" ? "declineDone" : "message");
+    }
+  }
+
+  function handleModalConfirm(payload: ResponseModalConfirmPayload) {
+    if (!activeModal) return;
+    const { offerId } = activeModal;
+    if (payload.mode === "accept") {
+      setOfferStatuses((prev) => ({ ...prev, [offerId]: "accepted" }));
+      setAcceptSelections((prev) => ({ ...prev, [offerId]: { method: payload.method, time: payload.time } }));
+      setPanelStep("acceptDone");
+    } else {
+      setOfferStatuses((prev) => ({ ...prev, [offerId]: "declined" }));
+      setPanelStep("declineDone");
+    }
+    setActiveModal(null);
   }
 
   return (
@@ -150,24 +383,32 @@ export function MyPageOffersClient() {
           filtered.map((offer) => (
             <article key={offer.id} className="border border-border bg-white">
               {/* 행 */}
-              <div className="flex items-center gap-4 p-6 max-[600px]:flex-wrap max-[600px]:gap-2.5 max-[640px]:p-5">
-                {/* 좌: 뱃지 + 포지션 + 발신자 */}
-                <div className="flex min-w-0 flex-1 items-start gap-3">
-                  <div className="mt-0.5">
-                    <OfferTypeBadge type={offer.type} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
-                      {offer.positionTitle}
-                    </p>
-                    <p className="mt-1 text-[13px] font-normal leading-[1.6] text-[#68717e]">
-                      {offer.sender} · 받은 날짜 {offer.receivedAt}
-                    </p>
+              <div className="flex items-center gap-4 px-6 py-5 max-[600px]:flex-wrap max-[600px]:gap-2.5 max-[640px]:px-5">
+                {/* 좌측 앵커: 유형 라벨 + 세로 헤어라인 (포지션명과 상단 정렬) */}
+                <div className="flex shrink-0 items-start gap-4 self-start max-[600px]:w-full">
+                  <OfferTypeBadge type={offer.type} />
+                  <span aria-hidden="true" className="h-8 w-px shrink-0 bg-[#eef1f4]" />
+                </div>
+                {/* 포지션명 + 메타 행 */}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
+                    {offer.positionTitle}
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    {[{ value: offer.sender }, { label: "받은 날짜", value: offer.receivedAt }].map((item, index) => (
+                      <span key={index} className="flex items-center gap-x-3">
+                        {index > 0 ? <span aria-hidden="true" className="h-3 w-px bg-[#e5e7eb]" /> : null}
+                        <span className="flex items-center gap-x-1.5">
+                          {item.label ? <span className="whitespace-nowrap text-[13px] text-[#9ca3af]">{item.label}</span> : null}
+                          <span className="whitespace-nowrap text-[13px] text-[#4b5563]">{item.value}</span>
+                        </span>
+                      </span>
+                    ))}
                   </div>
                 </div>
                 {/* 우: 상태 + 버튼 */}
-                <div className="flex shrink-0 items-center gap-3">
-                  <OfferStatusBadge status={offer.status} />
+                <div className="flex shrink-0 items-center gap-3 max-[600px]:self-start">
+                  <OfferStatusBadge status={offerStatuses[offer.id]} />
                   <button
                     type="button"
                     onClick={() => toggleExpand(offer.id)}
@@ -186,46 +427,63 @@ export function MyPageOffersClient() {
 
               {/* 상세 펼침 */}
               {expandedId === offer.id && (
-                <div className="border-t border-[#edf1f5] bg-[#f7f8fa] px-6 py-5 max-[640px]:px-5">
-                  <p className="text-[12px] font-medium text-[#a0a9b7]">
-                    {offer.receivedAt} · {offer.sender}
-                  </p>
-                  <p className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-[#17202c]">
-                    {offer.positionTitle}
-                  </p>
-                  <div className="mt-4 whitespace-pre-line text-[13px] font-normal leading-[1.8] tracking-[-0.005em] text-[#4f5967]">
-                    {offer.message}
-                  </div>
-                  {/* 비활성 액션 영역 */}
-                  <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
-                    <button
-                      type="button"
-                      disabled
-                      aria-disabled="true"
-                      className="inline-flex h-8 cursor-not-allowed items-center border border-[#d8dde5] bg-[#f0f2f4] px-4 text-[12px] font-medium text-[#b0b8c3]"
-                    >
-                      수락
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      aria-disabled="true"
-                      className="inline-flex h-8 cursor-not-allowed items-center border border-[#d8dde5] px-4 text-[12px] font-medium text-[#b0b8c3]"
-                    >
-                      거절
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      aria-disabled="true"
-                      className="inline-flex h-8 cursor-not-allowed items-center border border-[#d8dde5] px-4 text-[12px] font-medium text-[#b0b8c3]"
-                    >
-                      보류
-                    </button>
-                    <span className="text-[12px] font-normal text-[#a4adba]">
-                      응답 기능은 추후 제공될 예정입니다.
-                    </span>
-                  </div>
+                <div className="border-t border-[#edf1f5] py-5 pl-[153px] pr-6 max-[640px]:px-5">
+                  {panelStep === "message" && (
+                    <>
+                      <div className="max-w-[720px] whitespace-pre-line text-[15px] font-normal leading-relaxed tracking-[-0.005em] text-[#4f5967]">
+                        {offer.message}
+                      </div>
+                      <div className="mt-5 flex justify-end gap-2 border-t border-[#edf1f5] pt-4">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="primary"
+                          onClick={() => setActiveModal({ offerId: offer.id, mode: "accept" })}
+                        >
+                          제안 수락하기
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => setActiveModal({ offerId: offer.id, mode: "decline" })}
+                        >
+                          제안 거절하기
+                        </Button>
+                      </div>
+                    </>
+                  )}
+
+                  {panelStep === "acceptDone" && (
+                    <div className="max-w-[720px]">
+                      <p className="text-[15px] font-semibold tracking-[-0.01em] text-[#17202c]">제안을 수락했습니다</p>
+                      <p className="mt-2 text-[14px] font-normal leading-relaxed text-[#4f5967]">
+                        {offer.sender} 담당자가 선택하신 방법으로 영업일 기준 1~2일 이내 연락드릴 예정입니다.
+                      </p>
+                      <p className="mt-2 text-[12px] font-normal text-[#9ca3af]">
+                        제안 수락은 지원이나 입사 확정을 의미하지 않습니다.
+                      </p>
+                      {acceptSelections[offer.id] ? (
+                        <div className="mt-4">
+                          <MetaRow
+                            items={[
+                              { label: "연락 방법", value: labelOf(CONTACT_METHOD_OPTIONS, acceptSelections[offer.id].method) },
+                              { label: "연락 가능 시간", value: labelOf(CONTACT_TIME_OPTIONS, acceptSelections[offer.id].time) },
+                            ]}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {panelStep === "declineDone" && (
+                    <div className="max-w-[720px]">
+                      <p className="text-[15px] font-semibold tracking-[-0.01em] text-[#17202c]">제안을 거절했습니다</p>
+                      <p className="mt-2 text-[14px] font-normal leading-relaxed text-[#4f5967]">
+                        기업에는 거절 의사만 전달됩니다.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </article>
@@ -239,6 +497,10 @@ export function MyPageOffersClient() {
           </div>
         )}
       </div>
+
+      {activeModal ? (
+        <OfferResponseModal mode={activeModal.mode} onClose={() => setActiveModal(null)} onConfirm={handleModalConfirm} />
+      ) : null}
     </MyPageShell>
   );
 }

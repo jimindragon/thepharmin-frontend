@@ -21,8 +21,6 @@ import type { Company } from "@/types/jobs";
  * 않게 한다 — 값을 못 찾으면 각 컴포넌트가 이미 가진 "데이터 없음" 폴백(예: CompanyHero의 tags 폴백)으로 자연히 빠진다.
  */
 
-const PREVIEW_VERIFIED_LABEL = "운영팀 확인 기업";
-const PREVIEW_PREMIUM_LABEL = "프리미엄 기업";
 
 function employeeCountLabel(range: CompanyProfileMaster["employeeCount"]) {
   return employeeCountOptions.find((option) => option.id === range)?.label ?? "-";
@@ -54,8 +52,6 @@ export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmi
     name: profile.name,
     logoText: profile.name.slice(0, 2),
     logoImage: profile.logoUrl ?? undefined,
-    verifiedLabel: PREVIEW_VERIFIED_LABEL,
-    premiumLabel: PREVIEW_PREMIUM_LABEL,
     tagline: profile.shortIntro,
     tags: [typeLabel, profile.foundedYear ? `설립 ${profile.foundedYear}년` : null, employeeCountLabel(profile.employeeCount)].filter(
       (value): value is string => Boolean(value),
@@ -121,8 +117,6 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     name: org.institutionName,
     logoText: org.institutionName,
     logoImage: org.logoUrl ?? undefined,
-    verifiedLabel: PREVIEW_VERIFIED_LABEL,
-    premiumLabel: PREVIEW_PREMIUM_LABEL,
     tagline: org.shortIntro,
     tags: [typeLabel, region, org.bedCount ? `병상 ${org.bedCount}` : null].filter((value): value is string => Boolean(value)),
     coverImage: org.coverImageUrl ?? companyExampleImages.hero,
@@ -188,8 +182,6 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
     name: org.pharmacyName,
     logoText: org.pharmacyName,
     logoImage: org.logoUrl ?? undefined,
-    verifiedLabel: PREVIEW_VERIFIED_LABEL,
-    premiumLabel: PREVIEW_PREMIUM_LABEL,
     tagline: org.shortIntro,
     tags: [typeLabel, region].filter((value): value is string => Boolean(value)),
     coverImage: companyExampleImages.hero,

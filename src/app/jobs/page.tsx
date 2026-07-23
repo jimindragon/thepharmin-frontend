@@ -18,7 +18,7 @@ import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
-import { compareJobsByDeadline } from "@/utils/dday";
+import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
@@ -30,7 +30,11 @@ function sortJobs(items: Job[], sortOption: SortOption) {
       return compareJobsByDeadline(a, b);
     }
 
-    return Number(b.isRecommended) - Number(a.isRecommended) || b.dateOrder - a.dateOrder;
+    return (
+      Number(b.isRecommended) - Number(a.isRecommended) ||
+      Number(isJobExpired(a)) - Number(isJobExpired(b)) ||
+      b.dateOrder - a.dateOrder
+    );
   });
 }
 

@@ -145,6 +145,7 @@ export function PharmacyJobDetailV2({ data, jobRecord }: { data: PharmacyJobDeta
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
                   <JobDetailActionRow
                     orgName={org.pharmacyName}
+                    companyId={data.companyId}
                     showLogo={false}
                     saved={saved}
                     onToggleSave={() => setSaved((v) => !v)}

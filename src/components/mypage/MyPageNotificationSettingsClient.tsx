@@ -29,10 +29,9 @@ export function MyPageNotificationSettingsClient() {
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림 설정</h1>
       <p className="mt-2.5 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
-        알림을 받을 항목과 방식을 설정할 수 있습니다.
-      </p>
-      <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">
         사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
+        <br />
+        면접 확정·최종 결과·제안 수신 등 주요 알림은 카카오톡으로도 발송됩니다.
       </p>
 
       <div className="mt-7 divide-y divide-[#e5e9ef] border border-border bg-white">
@@ -57,10 +56,6 @@ export function MyPageNotificationSettingsClient() {
           </div>
         ))}
       </div>
-
-      <p className="mt-4 text-[12px] leading-[1.6] text-[#8a94a3]">
-        면접 확정, 최종 결과, 제안 수신 등 주요 알림은 카카오톡으로도 발송됩니다.
-      </p>
     </MyPageShell>
   );
 }

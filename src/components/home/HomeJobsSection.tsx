@@ -15,7 +15,7 @@ import { jobs } from "@/data/jobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
-import { compareJobsByDeadline } from "@/utils/dday";
+import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
 const PAGE_SIZE = 6;
 
@@ -28,7 +28,11 @@ function sortJobs(items: Job[], sortOption: SortOption) {
       const bMax = b.salaryDetail?.hourlyComputed?.max ?? b.salaryDetail?.hourlyComputed?.min ?? 0;
       return bMax - aMax;
     }
-    return Number(b.isRecommended) - Number(a.isRecommended) || b.dateOrder - a.dateOrder;
+    return (
+      Number(b.isRecommended) - Number(a.isRecommended) ||
+      Number(isJobExpired(a)) - Number(isJobExpired(b)) ||
+      b.dateOrder - a.dateOrder
+    );
   });
 }
 

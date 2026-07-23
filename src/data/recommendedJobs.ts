@@ -8,15 +8,15 @@ const tierMap: Record<string, "premium" | "featured" | "standard"> = {
   "samsungbio-bioprocess": "premium",
   "gsk-oncology-msl":      "premium",
   "roche-cmc-qa":          "premium",
-  "otsuka-mi-pv":          "featured",
+  "yuhan-ra-regulatory-strategy": "featured",
   "celltrionph-ra":        "featured",
-  "lgchem-mfg-pharmacist": "featured",
-  "aju-clinical-pm":       "featured",
+  "medicoa-senior-cra":    "featured",
+  "celltrionph-bd":        "featured",
   "bukwang-bd-lead":       "standard",
   "yuyu-ma-formulation":   "standard",
   "cellbion-qaqc":         "standard",
-  "dentium-device-ra":     "standard",
-  "samsung-pharma-qc":     "standard",
+  "celltrionph-clinical":  "standard",
+  "gsk-vaccine-msl-cvmd":  "standard",
 
   // 약국 트랙: PREMIUM/FEATURED 광고 수요가 없어 STANDARD만 사용
   "eunhaeng-pharmacy-part-time-pharmacist":        "standard",
@@ -26,32 +26,32 @@ const tierMap: Record<string, "premium" | "featured" | "standard"> = {
   "buldang-central-pharmacy-fulltime":             "standard",
 
   // 연구 트랙: 기관유형별 대표 공고 STANDARD 노출
-  "snuh-neurology-data-researcher":                      "standard",
-  "kist-neurochannel-postdoc":                           "standard",
+  "kist-neurophysiology-intern":                         "standard",
+  "amc-colorectal-surgery-researcher":                   "standard",
   "kbri-dementia-postdoc":                               "standard",
   "unt-brain-organoid-postdoc":                          "standard",
   "kangwon-univ-natural-product-postdoc":                "standard",
 
   // 병원 트랙: 근무형태·기관종류 다양성 기준 STANDARD 노출
-  "hanbit-hospital-multi-dept-pharmacist":             "standard",
+  "osan-korea-hospital-contract-sunday-oncall-pharmacist": "standard",
   "nsmc-clinical-specialist-pharmacist":               "standard",
   "national-firefighters-hospital-pharmacy-staff":     "standard",
-  "muju-county-care-hospital-twice-weekly-pharmacist": "standard",
+  "jeil-orthopedic-hospital-parttime-pharmacist":      "standard",
   "sungae-hospital-morning-parttime-pharmacist":       "standard",
 };
 
 // 노출 순서: premium 3 → featured 4 → standard 5
 const orderedSlugs = [
   "samsungbio-bioprocess", "gsk-oncology-msl",      "roche-cmc-qa",
-  "otsuka-mi-pv",          "celltrionph-ra",         "lgchem-mfg-pharmacist", "aju-clinical-pm",
-  "bukwang-bd-lead",       "yuyu-ma-formulation",    "cellbion-qaqc",         "dentium-device-ra", "samsung-pharma-qc",
+  "yuhan-ra-regulatory-strategy", "celltrionph-ra",  "medicoa-senior-cra", "celltrionph-bd",
+  "bukwang-bd-lead",       "yuyu-ma-formulation",    "cellbion-qaqc",         "celltrionph-clinical", "gsk-vaccine-msl-cvmd",
   "eunhaeng-pharmacy-part-time-pharmacist", "hyundai-pharmacy-fulltime-pharmacist",
   "hwagok-gibeum-pharmacy-short-term-pharmacist", "yeongdong-365-pharmacy-wed-parttime",
   "buldang-central-pharmacy-fulltime",
-  "snuh-neurology-data-researcher", "kist-neurochannel-postdoc", "kbri-dementia-postdoc",
+  "kist-neurophysiology-intern", "amc-colorectal-surgery-researcher", "kbri-dementia-postdoc",
   "unt-brain-organoid-postdoc", "kangwon-univ-natural-product-postdoc",
-  "hanbit-hospital-multi-dept-pharmacist", "nsmc-clinical-specialist-pharmacist", "national-firefighters-hospital-pharmacy-staff",
-  "muju-county-care-hospital-twice-weekly-pharmacist", "sungae-hospital-morning-parttime-pharmacist",
+  "osan-korea-hospital-contract-sunday-oncall-pharmacist", "nsmc-clinical-specialist-pharmacist", "national-firefighters-hospital-pharmacy-staff",
+  "jeil-orthopedic-hospital-parttime-pharmacist", "sungae-hospital-morning-parttime-pharmacist",
 ] as const;
 
 const jobsBySlug = new Map(

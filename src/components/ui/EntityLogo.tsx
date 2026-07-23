@@ -19,7 +19,7 @@ export function EntityLogo({
 
   return (
     <div
-      className={`grid shrink-0 place-items-center overflow-hidden rounded-[6px] border border-[#e5e9ef] bg-[#f7f8fa] ${className ?? ""}`}
+      className={`grid shrink-0 place-items-center overflow-hidden border border-border bg-white ${className ?? ""}`}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
