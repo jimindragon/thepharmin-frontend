@@ -30,6 +30,7 @@ import { mockUserPreferences } from "@/data/mockUserPreferences";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
+import { addMonths, buildMonthDays, dateKey } from "@/utils/monthGrid";
 import type { FilterOption, Job, JobCategoryOption, JobTrack } from "@/types/jobs";
 import { jobs } from "@/data/jobs";
 import { hasJobDetail } from "@/data/jobDetailIndex";
@@ -121,30 +122,6 @@ const calendarFilterDefinitions: Record<CalendarAvailableTrack, CalendarFilterDe
     { id: "pharmacyFeature", label: "약국 특성", kind: "options", selection: "multiple", options: pharmacyFeatureOptions },
   ],
 };
-
-function dateKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function addMonths(date: Date, amount: number) {
-  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
-}
-
-function buildMonthDays(year: number, month: number) {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const start = new Date(year, month, 1 - firstDay.getDay());
-  const end = new Date(year, month + 1, lastDay.getDay() === 6 ? 0 : 6 - lastDay.getDay());
-  const days: Date[] = [];
-  const cursor = new Date(start);
-
-  while (cursor <= end) {
-    days.push(new Date(cursor));
-    cursor.setDate(cursor.getDate() + 1);
-  }
-
-  return days;
-}
 
 function jobMatchesTab(job: CalendarJob, activeTab: CalendarTab) {
   if (activeTab === "saved") return job.isBookmarked;

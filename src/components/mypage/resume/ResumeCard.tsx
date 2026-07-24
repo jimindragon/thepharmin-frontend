@@ -5,6 +5,8 @@ import { optionLabelMaps } from "@/config/jobFilters/index";
 import { calculateResumeCompletion, isResumeComplete, type BuiltResume } from "@/data/resumes";
 import { ResumeActionsMenu } from "@/components/mypage/resume/ResumeActionsMenu";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { JobTagChip } from "@/components/shared/JobTagChip";
+import { ResumePrimaryBadge } from "@/components/shared/ResumePrimaryBadge";
 
 export function ResumeCard({
   resume,
@@ -29,9 +31,7 @@ export function ResumeCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-[17px] font-bold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
-            {resume.isPrimary ? (
-              <span className="inline-flex h-[22px] items-center bg-[#111111] px-2 text-[11px] font-medium text-white">대표</span>
-            ) : null}
+            {resume.isPrimary ? <ResumePrimaryBadge /> : null}
             <span className="inline-flex items-center gap-[8px]">
               <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-warning-dot"}`} />
               <span className={`text-[11px] font-medium ${complete ? "text-status-positive" : "text-status-warning"}`}>
@@ -43,9 +43,7 @@ export function ResumeCard({
           {tagLabels.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {tagLabels.map((label) => (
-                <span key={label} className="border border-border bg-[#f7f8fa] px-2.5 py-1 text-[12px] font-medium text-[#596373]">
-                  {label}
-                </span>
+                <JobTagChip key={label}>{label}</JobTagChip>
               ))}
             </div>
           ) : (

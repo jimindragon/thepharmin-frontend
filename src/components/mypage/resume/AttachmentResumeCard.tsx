@@ -4,6 +4,7 @@ import { FileText } from "lucide-react";
 import type { AttachmentResume } from "@/data/resumes";
 import { ResumeActionsMenu } from "@/components/mypage/resume/ResumeActionsMenu";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { ResumePrimaryBadge } from "@/components/shared/ResumePrimaryBadge";
 
 export function AttachmentResumeCard({
   resume,
@@ -28,7 +29,7 @@ export function AttachmentResumeCard({
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="truncate text-[16px] font-bold tracking-[-0.01em] text-[#1c2128]">{resume.fileName}</h3>
             <span className="inline-flex h-[22px] items-center border border-border bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">첨부형</span>
-            {resume.isPrimary ? <span className="inline-flex h-[22px] items-center bg-[#111111] px-2 text-[11px] font-medium text-white">대표</span> : null}
+            {resume.isPrimary ? <ResumePrimaryBadge /> : null}
           </div>
           <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">
             업로드 {resume.updatedAt.replaceAll("-", ".")}

@@ -42,9 +42,11 @@ function writeStoredIds(scope: NotificationScope, ids: Set<string>) {
  */
 export function useNotificationReadState(scope: NotificationScope) {
   const [readIds, setReadIds] = useState<Set<string>>(() => getDefaultReadIds(scope));
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     setReadIds(readStoredIds(scope) ?? getDefaultReadIds(scope));
+    setIsLoaded(true);
 
     const onChange = (event: Event) => {
       const detail = (event as CustomEvent<{ scope: NotificationScope }>).detail;
@@ -83,5 +85,5 @@ export function useNotificationReadState(scope: NotificationScope) {
 
   const isRead = useCallback((id: string) => readIds.has(id), [readIds]);
 
-  return { readIds, markRead, markAllRead, isRead };
+  return { readIds, markRead, markAllRead, isRead, isLoaded };
 }
