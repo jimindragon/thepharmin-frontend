@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DetailPill } from "@/components/shared/DetailPill";
 import { optionLabelMaps } from "@/config/jobFilters/index";
 import { jobTrackLabels } from "@/config/jobTracks";
 import type { ResumeContent } from "@/data/resumes";
@@ -39,14 +40,6 @@ function PanelField({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function Pill({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center border border-[#dfe4ea] bg-[#f7f8fa] px-3.5 py-1.5 text-[13px] font-medium text-[#596373]">
-      {children}
-    </span>
-  );
-}
-
 export function ResumeContentView({ content }: { content: ResumeContent }) {
   const trackLabel = jobTrackLabels[content.workPreference.track];
 
@@ -84,7 +77,7 @@ export function ResumeContentView({ content }: { content: ResumeContent }) {
         {content.jobSubcategoryIds.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {content.jobSubcategoryIds.map((id) => (
-              <Pill key={id}>{optionLabelMaps.jobSubcategory.get(id) ?? id}</Pill>
+              <DetailPill key={id}>{optionLabelMaps.jobSubcategory.get(id) ?? id}</DetailPill>
             ))}
           </div>
         ) : (

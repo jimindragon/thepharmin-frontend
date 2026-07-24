@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { DetailPill } from "@/components/shared/DetailPill";
+import { JobTagChip } from "@/components/shared/JobTagChip";
 import {
   applicantJobPostings,
   applicantStageClass,
@@ -112,20 +114,6 @@ function StageStepper({ applicant }: { applicant: Applicant }) {
   );
 }
 
-function Pill({ children, size = "sm" }: { children: ReactNode; size?: "sm" | "md" }) {
-  return (
-    <span
-      className={
-        size === "md"
-          ? "inline-flex items-center border border-[#dfe4ea] bg-[#f7f8fa] px-3.5 py-1.5 text-[13px] font-medium text-[#596373]"
-          : "inline-flex items-center border border-[#dfe4ea] bg-[#f7f8fa] px-2.5 py-1 text-[12px] font-medium text-[#596373]"
-      }
-    >
-      {children}
-    </span>
-  );
-}
-
 export function BusinessApplicantDetailClient({ applicant }: { applicant: Applicant }) {
   const resume = getApplicantResume(applicant.id);
   const posting = applicantJobPostings.find((item) => item.id === applicant.postingId);
@@ -183,9 +171,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
           {profilePills.length > 0 ? (
             <div className="mt-4 flex flex-wrap gap-2">
               {profilePills.map((pill, index) => (
-                <Pill key={index} size="md">
-                  {pill}
-                </Pill>
+                <DetailPill key={index}>{pill}</DetailPill>
               ))}
             </div>
           ) : null}
@@ -195,7 +181,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
               <HeaderCell label="지원 공고">
                 <span className="inline-flex flex-wrap items-center gap-2">
                   <span>{posting?.title ?? "-"}</span>
-                  {posting ? <Pill>{posting.category}</Pill> : null}
+                  {posting ? <JobTagChip>{posting.category}</JobTagChip> : null}
                 </span>
               </HeaderCell>
               <HeaderCell label="지원일">{applicant.appliedAt}</HeaderCell>
@@ -232,9 +218,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
               <SectionCard title="전문 직무">
                 <div className="flex flex-wrap gap-2">
                   {subcategoryLabels.map((label, index) => (
-                    <Pill key={`${label}-${index}`} size="md">
-                      {label}
-                    </Pill>
+                    <DetailPill key={`${label}-${index}`}>{label}</DetailPill>
                   ))}
                 </div>
               </SectionCard>

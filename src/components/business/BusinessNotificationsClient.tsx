@@ -11,19 +11,21 @@ import { useNotificationReadState } from "@/hooks/useNotificationReadState";
 type TabId = "all" | "unread";
 
 export function BusinessNotificationsClient() {
-  const { markRead, markAllRead, isRead } = useNotificationReadState("business");
+  const { markRead, markAllRead, isRead, isLoaded } = useNotificationReadState("business");
   const [activeTab, setActiveTab] = useState<TabId>("all");
 
   const sorted = [...MOCK_BUSINESS_NOTIFICATIONS].sort((a, b) =>
     a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0,
   );
   const unreadCount = sorted.filter((notification) => !isRead(notification.id)).length;
-  const hasUnread = unreadCount > 0;
-  const visible = activeTab === "unread" ? sorted.filter((notification) => !isRead(notification.id)) : sorted;
+  // 읽음 상태 로드 전에는 미읽음 표현을 숨긴다 — mock 기본값 기준 깜빡임 방지. 목록 구조는 로드 전에도 그대로 렌더.
+  const hasUnread = isLoaded && unreadCount > 0;
+  // 미읽음 탭 목록은 로드 후 채운다(한 프레임 지연 수용, 대시보드와 동일 트레이드오프). 전체 탭은 항상 렌더.
+  const visible = activeTab === "unread" ? (isLoaded ? sorted.filter((notification) => !isRead(notification.id)) : []) : sorted;
 
-  const tabs: { id: TabId; label: string; count: number }[] = [
-    { id: "all", label: "전체", count: sorted.length },
-    { id: "unread", label: "미읽음", count: unreadCount },
+  const tabs: { id: TabId; label: string; count: number; countReady: boolean }[] = [
+    { id: "all", label: "전체", count: sorted.length, countReady: true },
+    { id: "unread", label: "미읽음", count: unreadCount, countReady: isLoaded },
   ];
 
   return (
@@ -59,14 +61,16 @@ export function BusinessNotificationsClient() {
                 aria-pressed={activeTab === tab.id}
               >
                 {tab.label}
-                <span
-                  className={clsx(
-                    "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
-                    activeTab === tab.id ? "bg-[#111111] text-white" : "bg-[#f0f1f3] text-[#8a94a3]",
-                  )}
-                >
-                  {tab.count}
-                </span>
+                {tab.countReady ? (
+                  <span
+                    className={clsx(
+                      "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
+                      activeTab === tab.id ? "bg-[#111111] text-white" : "bg-[#f0f1f3] text-[#8a94a3]",
+                    )}
+                  >
+                    {tab.count}
+                  </span>
+                ) : null}
               </button>
             ))}
           </div>
@@ -90,7 +94,7 @@ export function BusinessNotificationsClient() {
           ) : (
             <div className="divide-y divide-[#e5e9ef]">
               {visible.map((notification) => {
-                const read = isRead(notification.id);
+                const read = !isLoaded || isRead(notification.id);
                 return (
                   <Link
                     key={notification.id}

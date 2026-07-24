@@ -18,10 +18,11 @@ const MAX_VISIBLE = 5;
 
 export function NotificationBell({ notifications, viewAllHref, scope, size = 20 }: NotificationBellProps) {
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
-  const { markRead, markAllRead, isRead } = useNotificationReadState(scope);
+  const { markRead, markAllRead, isRead, isLoaded } = useNotificationReadState(scope);
 
   const unreadCount = notifications.filter((notification) => !isRead(notification.id)).length;
-  const hasUnread = unreadCount > 0;
+  // 읽음 상태 로드 전에는 미읽음 표현(dot·카운트·강조)을 숨긴다 — mock 기본값 기준 깜빡임 방지.
+  const hasUnread = isLoaded && unreadCount > 0;
   const isCompact = size < 20;
 
   const visible = [...notifications]
@@ -60,7 +61,7 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20 
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-baseline gap-2">
               <p className="text-[14px] font-bold text-[#17202c]">알림</p>
-              <span className="text-[12px] text-[#8a94a3]">미읽음 {unreadCount}</span>
+              {isLoaded ? <span className="text-[12px] text-[#8a94a3]">미읽음 {unreadCount}</span> : null}
             </div>
             {hasUnread ? (
               <button
@@ -79,7 +80,7 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20 
           ) : (
             <div className="max-h-[420px] divide-y divide-[#edf1f5] overflow-y-auto">
               {visible.map((notification) => {
-                const read = isRead(notification.id);
+                const read = !isLoaded || isRead(notification.id);
                 return (
                   <Link
                     key={notification.id}

@@ -9,7 +9,7 @@ import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { JobFilterPanel } from "@/components/SearchFilterPanel";
 import { ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
-import { FormRow, SectionCard } from "@/components/ui/FormSection";
+import { FormRow, ResumeSectionCard } from "@/components/ui/FormSection";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   educationOptions,
@@ -273,7 +273,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
           </section>
 
           <div id="resume-section-workPreference">
-            <SectionCard
+            <ResumeSectionCard
               index={1}
               title="희망 근무조건"
               description="채용 추천과 간편지원에 활용되는 기본 조건입니다."
@@ -351,11 +351,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   ))}
                 </SelectShell>
               </FormRow>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-education">
-            <SectionCard index={2} title="학력" status={sections.education ? "완료" : "필수 입력 필요"}>
+            <ResumeSectionCard index={2} title="학력" status={sections.education ? "완료" : "필수 입력 필요"}>
               <FormRow label="학교" required align="center">
                 <input
                   value={draft.education.school}
@@ -388,11 +388,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 />
               </FormRow>
               <p className="mt-3 text-[12px] font-normal text-[#8a94a3]">학위·전공은 제약·바이오 공고 매칭에 우선 반영됩니다.</p>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-certificates">
-            <SectionCard index={3} title="자격·면허" status={sections.certificates ? "완료" : "선택 사항"}>
+            <ResumeSectionCard index={3} title="자격·면허" status={sections.certificates ? "완료" : "선택 사항"}>
               <div className="space-y-2.5">
                 {draft.certificates.length ? (
                   draft.certificates.map((certificate) => (
@@ -433,11 +433,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   자격·면허 추가
                 </button>
               </div>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-jobSubcategory">
-            <SectionCard
+            <ResumeSectionCard
               index={4}
               title="전문 직무"
               description="공고 필터와 같은 직무 분류에서 선택합니다. 하나의 분류 체계를 필터·이력서·관심 조건에서 공유합니다."
@@ -452,11 +452,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 onToggleJobSubcategory={toggleJobSubcategory}
               />
               <p className="mt-3 text-[12px] font-normal leading-[1.6] text-[#8a94a3]">선택한 직무는 공고 추천·간편지원 매칭에 사용됩니다.</p>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-careers">
-            <SectionCard index={5} title="경력" collapsible defaultOpen={draft.careers.length > 0} status={sections.careers ? "완료" : "선택 사항"}>
+            <ResumeSectionCard index={5} title="경력" collapsible defaultOpen={draft.careers.length > 0} status={sections.careers ? "완료" : "선택 사항"}>
               <div className="space-y-3">
                 {draft.careers.length ? (
                   draft.careers.map((career) => (
@@ -508,11 +508,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   경력 추가
                 </button>
               </div>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-languages">
-            <SectionCard index={6} title="어학" collapsible defaultOpen={draft.languages.length > 0} status={sections.languages ? "완료" : "선택 사항"}>
+            <ResumeSectionCard index={6} title="어학" collapsible defaultOpen={draft.languages.length > 0} status={sections.languages ? "완료" : "선택 사항"}>
               <div className="space-y-2.5">
                 {draft.languages.length ? (
                   draft.languages.map((language) => (
@@ -547,11 +547,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   어학 추가
                 </button>
               </div>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
 
           <div id="resume-section-selfIntroduction">
-            <SectionCard
+            <ResumeSectionCard
               index={7}
               title="자기소개"
               collapsible
@@ -567,7 +567,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 className="w-full resize-y border border-[#dce4ec] px-3.5 py-3 text-[14px] font-normal leading-[1.7] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
               />
               <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{draft.selfIntroduction.length} / 1000</p>
-            </SectionCard>
+            </ResumeSectionCard>
           </div>
         </div>
 

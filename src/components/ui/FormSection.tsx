@@ -6,9 +6,9 @@ import { useState, type ReactNode } from "react";
 
 /**
  * 이력서 편집 전용. 공고 등록·기업 프로필은 BusinessFormControls의
- * 동명 SectionCard(별개 구현)를 사용 — 혼동 주의.
+ * SectionCard(별개 구현)를 사용 — 그쪽과 구분하려고 이름을 분리했다.
  */
-export function SectionCard({
+export function ResumeSectionCard({
   title,
   description,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -69,7 +69,7 @@ export function SectionCard({
   );
 }
 
-export function FieldLabel({ children, required }: { children: ReactNode; required?: boolean }) {
+export function ResumeFieldLabel({ children, required }: { children: ReactNode; required?: boolean }) {
   return (
     <label className="registration-field-label block text-[15px] font-medium text-[#2d3644]">
       {children}
@@ -96,7 +96,7 @@ export function FormRow({
         align === "center" && "registration-form-row--control",
       )}
     >
-      <FieldLabel required={required}>{label}</FieldLabel>
+      <ResumeFieldLabel required={required}>{label}</ResumeFieldLabel>
       <div className="min-w-0">{children}</div>
     </div>
   );
