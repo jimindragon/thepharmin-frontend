@@ -1,10 +1,11 @@
 "use client";
 
-import { AlertCircle, ExternalLink, Image as ImageIcon, Info, Plus, X } from "lucide-react";
+import { AlertCircle, ExternalLink, Image as ImageIcon, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { FieldLabel, FormActionButton, PROFILE_TEXT_FIELD_WIDTH, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { getPharmacyTypeLabel, pharmacyTypeLabels } from "@/config/companyTypes";
 import { readSignupPharmacyFeatureId, readSignupPharmacyType } from "@/config/businessSignup";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -320,10 +321,9 @@ export function PharmacyOrgProfileClient() {
               </div>
               <div className="flex-1 pt-0.5">
                 <FieldLabel>로고</FieldLabel>
-                <p className="mt-1.5 flex items-center gap-1 text-[12px] font-normal leading-[1.55] text-[#9aa3af]">
-                  <Info size={12} className="shrink-0" aria-hidden />
-                  등록하지 않으실 경우, 첫 두 글자로 로고가 자동생성됩니다.
-                </p>
+                <div className="mt-1.5">
+                  <InlineInfoHint>등록하지 않으실 경우, 첫 두 글자로 로고가 자동생성됩니다.</InlineInfoHint>
+                </div>
                 <p className="mt-1.5 text-[12px] font-normal leading-[1.55] text-[#7b8491]">
                   공고 카드와 기관 목록에 표시됩니다.
                   <br />

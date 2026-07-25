@@ -1,4 +1,6 @@
 import { companyExampleImages } from "@/config/companyImages";
+import { jobTrackLabels } from "@/config/jobTracks";
+import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
 
 export type HomeTrackFilter = "all" | JobTrack;
@@ -7,25 +9,27 @@ export function trackToJobTrack(track: HomeTrackFilter): JobTrack {
   return track === "all" ? "industry" : track;
 }
 
-export const homeHeroSlides: Array<{
+export interface HomeHeroSlide {
   id: number;
+  kind: "track" | "company";
   track: HomeTrackFilter;
   title: string;
+  subtitle: string;
   tags: string[];
-  positionCount: string;
-  deadline: string;
   href: string;
   image: string;
   imageAlt: string;
   imagePosition?: string;
-}> = [
+}
+
+export const homeHeroSlides: HomeHeroSlide[] = [
   {
     id: 1,
+    kind: "track",
     track: "research",
-    title: "바이오 원천기술 R&D, 박사후연구원·연구원 모집",
-    tags: ["신약", "유전자치료", "바이오신소재"],
-    positionCount: "18개 포지션 보기",
-    deadline: "채용 마감 D-10",
+    title: "새로운 발견이 시작되는 연구 현장",
+    subtitle: "대학·병원·출연연의 연구 인재 채용",
+    tags: ["박사후연구원·포닥", "연구원", "임상시험 운영"],
     href: "/jobs/research",
     image: "/images/home/hero-research-biology.jpg",
     imageAlt: "DNA 이중나선 구조 시각화",
@@ -33,11 +37,11 @@ export const homeHeroSlides: Array<{
   },
   {
     id: 2,
+    kind: "track",
     track: "industry",
-    title: "세계 1위 CDMO와 함께 성장할 경력직·전문직 채용",
-    tags: ["공정개발", "QA·QC", "생산기술", "RA"],
-    positionCount: "28개 포지션 보기",
-    deadline: "채용 마감 D-12",
+    title: "제약·바이오 산업을 움직이는 사람들",
+    subtitle: "허가·임상부터 생산·품질까지, 전문직 채용",
+    tags: ["RA", "CRA", "QA", "MSL"],
     href: "/jobs/industry",
     image: "/images/home/hero-industry-factory.jpg",
     imageAlt: "제약·바이오 생산 플랜트 전경",
@@ -45,11 +49,11 @@ export const homeHeroSlides: Array<{
   },
   {
     id: 3,
+    kind: "track",
     track: "hospital",
-    title: "상급종합병원 약제부, 임상약학 전문 인력 채용",
-    tags: ["병원약사", "임상약사", "임상시험"],
-    positionCount: "8개 포지션 보기",
-    deadline: "채용 마감 D-8",
+    title: "의료 현장에서 이어가는 약사의 전문성",
+    subtitle: "공공·종합병원 약제부의 인재 채용",
+    tags: ["입원·조제 약사", "임상·전문약사", "약무행정"],
     href: "/jobs/hospital",
     image: "/images/home/hero-hospital.jpg",
     imageAlt: "종합병원 로비 전경",
@@ -57,11 +61,11 @@ export const homeHeroSlides: Array<{
   },
   {
     id: 4,
+    kind: "track",
     track: "pharmacy",
-    title: "전국 거점 약국에서 근무·관리약사를 찾습니다",
-    tags: ["근무약사", "관리약사", "파트타임"],
-    positionCount: "34개 포지션 보기",
-    deadline: "상시 채용",
+    title: "좋은 약국에서 시작하는 더 나은 커리어",
+    subtitle: "문전 약국부터 로컬 약국까지, 근무약사 채용",
+    tags: ["문전 약국", "로컬 약국", "대형 약국"],
     href: "/jobs/pharmacy",
     image: "/images/home/hero-pharmacy.jpg",
     imageAlt: "약국 내부, 안내 자료를 살펴보는 모습",
@@ -69,71 +73,76 @@ export const homeHeroSlides: Array<{
   },
 ];
 
+/**
+ * CTA 라벨용 트랙별 전체 공고 수. 마감 여부로 거르지 않아 /jobs/{track} 목록 총계와 일치한다.
+ * job.track은 deriveJobTrack으로 파생된 값이므로 트랙 판정을 다시 하지 않고 그대로 센다.
+ */
+function countJobsByTrack(track: JobTrack): number {
+  return jobs.filter((job) => job.track === track).length;
+}
+
+/** 히어로 CTA 라벨. "{트랙명} 공고 {N}건 보기" 형식으로 실제 공고 수에서 파생한다. */
+export function getHeroSlideCtaLabel(slide: HomeHeroSlide): string {
+  const track = trackToJobTrack(slide.track);
+  return `${jobTrackLabels[track]} 공고 ${countJobsByTrack(track)}건 보기`;
+}
+
+// id는 companies.ts 실존 id만 사용한다 — 카드 링크(/companies/{id})·로고(companyLogos[name])·채용중 공고 수가
+// 전부 이 id/name을 단일 소스(companies.ts·companyProfiles.ts·jobs.ts)에서 파생하므로, 실존하지 않는 id는 dead end가 된다.
+// name은 companyLogos 키와 완전 일치해야 로고가 뜬다(예: KIST는 "한국과학기술연구원(KIST)" 표기라야 매칭). 약국 2곳은 로고 키가 없어 텍스트 폴백이 정상.
 export const premiumCompanies: Array<{
   id: string;
   name: string;
   lines: string[];
   track: HomeTrackFilter;
-  logoText: string;
-  logoTone?: "dark" | "light" | "plus";
 }> = [
   {
     id: "yuhan",
     name: "유한양행",
     lines: ["국내 신약개발 선도", "R&D·RA 경력직 채용"],
     track: "industry",
-    logoText: "YH",
   },
   {
     id: "samsung-biologics",
     name: "삼성바이오로직스",
     lines: ["세계 1위 CDMO", "경력직·전문직 채용"],
     track: "industry",
-    logoText: "SB",
   },
   {
-    id: "celltrion",
-    name: "셀트리온",
-    lines: ["글로벌 바이오시밀러 리더", "생산·QA·RA 채용"],
+    id: "celltrion-pharm",
+    name: "셀트리온제약",
+    lines: ["셀트리온 그룹 케미컬 부문", "RA·임상 채용"],
     track: "industry",
-    logoText: "CT",
   },
   {
-    id: "kbsi",
-    name: "한국기초과학지원연구원",
-    lines: ["첨단 연구장비·분석 전문", "연구·행정 인력 채용"],
+    id: "kist",
+    name: "한국과학기술연구원(KIST)",
+    lines: ["정부출연 융합연구기관", "학생연구원(인턴) 모집"],
     track: "research",
-    logoText: "KBSI",
   },
   {
-    id: "kribb",
-    name: "한국생명공학연구원",
-    lines: ["바이오 원천기술 R&D", "박사후연구원 모집"],
-    track: "research",
-    logoText: "KRIBB",
-  },
-  {
-    id: "snuh",
-    name: "서울대학교병원",
-    lines: ["병원약사·임상약학", "전문 인력 채용"],
+    id: "sungae-hospital",
+    name: "성애병원",
+    lines: ["다양한 진료과 종합병원", "파트약사 모집"],
     track: "hospital",
-    logoText: "SNUH",
   },
   {
-    id: "onnuri",
-    name: "온누리약국 네트워크",
-    lines: ["전국 가맹약국", "근무·관리약사 채용"],
-    track: "pharmacy",
-    logoText: "+",
-    logoTone: "plus",
+    id: "national-fire-hospital",
+    name: "국립소방병원",
+    lines: ["소방·재난 공공병원", "약무직 신규 채용"],
+    track: "hospital",
   },
   {
-    id: "kpa",
-    name: "대한약사회 파트너약국",
-    lines: ["지역 거점 약국", "근무약사 상시 채용"],
+    id: "eunhaeng-pharmacy",
+    name: "은행약국",
+    lines: ["의원층 처방 중심 약국", "파트타임 약사 채용"],
     track: "pharmacy",
-    logoText: "+",
-    logoTone: "plus",
+  },
+  {
+    id: "hyundai-pharmacy",
+    name: "현대약국",
+    lines: ["100평 대형 문전약국", "풀타임 근무약사 채용"],
+    track: "pharmacy",
   },
 ];
 

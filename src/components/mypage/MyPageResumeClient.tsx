@@ -1,12 +1,13 @@
 "use client";
 
-import { Info, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentResumeCard } from "@/components/mypage/resume/AttachmentResumeCard";
 import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { ResumeCard } from "@/components/mypage/resume/ResumeCard";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { LinkButton } from "@/components/ui/Button";
 import { mockResumes, type ResumeItem } from "@/data/resumes";
 
@@ -76,13 +77,14 @@ export function MyPageResumeClient() {
         </LinkButton>
       </div>
 
-      <div className="mt-7 flex items-start gap-2.5 border border-[#e5e9ef] bg-[#f7f8fa] px-4 py-3.5">
-        <Info size={16} className="mt-0.5 shrink-0 text-[#8a94a3]" />
-        <p className="text-[13px] font-normal leading-[1.7] text-[#68717e]">
-          <strong className="font-medium text-[#3d4653]">대표 이력서</strong>는 간편지원 시 기본으로 첨부됩니다.{" "}
-          <strong className="font-medium text-[#3d4653]">제안 받기</strong>를 켜면 헤드헌팅·기업 담당자에게 해당 이력서가 공개되어 포지션 제안을 받을 수
-          있습니다.
-        </p>
+      <div className="mt-7">
+        <InfoNoticeBox>
+          <p className="text-[13px] font-normal leading-[1.7] text-[#68717e]">
+            <strong className="font-medium text-[#3d4653]">대표 이력서</strong>는 간편지원 시 기본으로 첨부됩니다.{" "}
+            <strong className="font-medium text-[#3d4653]">제안 받기</strong>를 켜면 헤드헌팅·기업 담당자에게 해당 이력서가 공개되어 포지션 제안을 받을 수
+            있습니다.
+          </p>
+        </InfoNoticeBox>
       </div>
 
       <div className="mt-6 flex flex-col gap-3">

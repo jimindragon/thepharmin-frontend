@@ -1,8 +1,8 @@
 "use client";
 
-import { Info } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
@@ -98,10 +98,7 @@ function PharmacyVerificationStep({
             />
           </div>
         </div>
-        <div className="flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-          <Info size={15} className="mt-0.5 shrink-0 text-[#7b8491]" />
-          약사면허번호와 요양기관번호는 인증 확인용으로만 사용되며 공개되지 않습니다.
-        </div>
+        <InfoNoticeBox>약사면허번호와 요양기관번호는 인증 확인용으로만 사용되며 공개되지 않습니다.</InfoNoticeBox>
 
         <div className="space-y-2">
           <FieldLabel required>약사면허증</FieldLabel>

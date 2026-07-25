@@ -4,7 +4,8 @@ import { ExternalLink, Image as ImageIcon, Plus, Trash2, X } from "lucide-react"
 import Link from "next/link";
 import { useRef, useState, type ChangeEvent } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { FieldLabel, FormActionButton, InfoTooltip, PROFILE_TEXT_FIELD_WIDTH, SectionCard, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { FieldLabel, FormActionButton, PROFILE_TEXT_FIELD_WIDTH, SectionCard, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { researchInstitutionTypeOptions, researchStaffScaleOptions } from "@/config/jobFilters/researchFilters";
 import { researchFieldCategoryOptions } from "@/config/researchFields";
 import { type FileStatus, type OrgManager } from "@/data/businessCompanyProfile";

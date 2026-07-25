@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, ArrowUpRight, Info } from "lucide-react";
+import { AlertCircle, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
@@ -9,6 +9,7 @@ import { AttachmentUploader, type AttachmentItem } from "@/components/business/A
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { getRecommendedKeywords } from "@/config/coreKeywords";
 import {
@@ -78,15 +79,6 @@ function FieldError({ message }: { message?: string }) {
       <AlertCircle size={12} aria-hidden />
       {message}
     </p>
-  );
-}
-
-function InlineNote({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2 border border-[#dfe4ea] bg-[#f7f8fa] px-3.5 py-2.5 text-[12px] text-[#6b7280]">
-      <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
-      <span>{children}</span>
-    </div>
   );
 }
 
@@ -720,12 +712,12 @@ export function IndustryJobPostingForm() {
           {applyMethod === "quick" ? (
             <div className="mb-5">
               <div className="mb-4">
-                <InlineNote>
+                <InfoNoticeBox>
                   <span className="mb-1 block font-semibold text-[#2f3845]">더파마에서 바로 지원받기</span>
                   <span className="block text-[#6b7280]">
                     별도 채용페이지나 이메일 이동 없이, 지원자가 더파마 프로필과 이력서로 바로 지원할 수 있습니다. 접수 내역은 기업 센터에서 관리됩니다.
                   </span>
-                </InlineNote>
+                </InfoNoticeBox>
               </div>
               <div className="max-w-sm" ref={setRef("deadline")}>
                 <FieldLabel htmlFor="i-deadline" className="block mb-1.5" required={!rollingToggle}>
@@ -800,9 +792,9 @@ export function IndustryJobPostingForm() {
           </div>
 
           <div className="mt-4">
-            <InlineNote>
-              검색과 추천 품질을 위해 주요업무 · 자격요건 · 근무조건은 텍스트로 입력해 주세요.
-            </InlineNote>
+            <InfoNoticeBox>
+              검색과 추천 품질을 위해 주요 업무 · 자격요건 · 근무조건은 텍스트로 입력해 주세요.
+            </InfoNoticeBox>
           </div>
         </SectionCard>
 

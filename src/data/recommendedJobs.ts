@@ -1,7 +1,8 @@
-import { companyExampleImages, companyLogos } from "@/config/companyImages";
+import { companyLogos } from "@/config/companyImages";
 import { jobs } from "@/data/jobs";
 import type { RecommendedJob } from "@/types/jobs";
 import { formatJobDeadlineLabel } from "@/utils/dday";
+import { getIndustryJobCoverImage } from "@/utils/industryImage";
 
 // slug → 광고 등급 매핑 (데이터에 없는 공고는 노출하지 않음)
 const tierMap: Record<string, "premium" | "featured" | "standard"> = {
@@ -73,7 +74,7 @@ export const recommendedJobs: RecommendedJob[] = orderedSlugs.flatMap<Recommende
     tags: job.coreKeywords ?? [],
     dDay: formatJobDeadlineLabel(job),
     applyMethod: job.applyMethod,
-    image: job.coverImage ?? job.coverImageUrl ?? companyExampleImages.workspace,
+    image: job.coverImage ?? job.coverImageUrl ?? getIndustryJobCoverImage(slug),
     track: job.track,
     postingSource: job.postingSource,
     adTier: tierMap[slug],

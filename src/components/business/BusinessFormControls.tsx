@@ -78,25 +78,6 @@ export function ToggleChip({
   );
 }
 
-/** 필드 라벨 옆에 붙이는 ⓘ 설명 툴팁. hover/focus 시 설명 노출 — 병원 트랙 등에서 사용 예정 */
-export function InfoTooltip({ text }: { text: string }) {
-  return (
-    <span className="group relative inline-flex">
-      <span
-        tabIndex={0}
-        role="button"
-        aria-label={text}
-        className="inline-flex h-4 w-4 cursor-help select-none items-center justify-center text-[12px] font-normal leading-none text-[#9aa3af] outline-none transition hover:text-[#4f5967] focus-visible:text-[#4f5967]"
-      >
-        ⓘ
-      </span>
-      <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[240px] -translate-x-1/2 border border-[#17202c] bg-[#17202c] px-3 py-2 text-[11.5px] font-normal leading-[1.5] text-white opacity-0 shadow-[0_8px_20px_rgba(17,24,39,0.18)] transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
-        {text}
-      </span>
-    </span>
-  );
-}
-
 export function FieldLabel({
   children,
   required = false,

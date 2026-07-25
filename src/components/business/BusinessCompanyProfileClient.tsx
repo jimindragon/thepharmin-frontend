@@ -10,7 +10,8 @@ import {
 import Link from "next/link";
 import { useRef, useState, type ChangeEvent } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { FieldLabel, FormActionButton, InfoTooltip, PROFILE_TEXT_FIELD_WIDTH, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { FieldLabel, FormActionButton, PROFILE_TEXT_FIELD_WIDTH, SectionCard, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import {
   businessFieldOptions,
   companyTypeOptions,

@@ -40,6 +40,7 @@ import {
   SummaryStatGrid,
   useStickySidebarTop,
 } from "@/components/job-detail/shared";
+import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import type { IndustryJobDetail } from "@/data/industryJobDetails";
 import { getIndustryNews, hasDirectCompanyNews } from "@/data/industryNews";
 import { getSimilarJobs } from "@/data/similarJobs";
@@ -397,12 +398,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   }
                 >
                   {hasDirectNews ? null : (
-                    <div className="flex items-start gap-1.5">
-                      <Info size={14} className="mt-0.5 shrink-0 text-[#8993a1]" />
-                      <p className="text-[13px] font-normal leading-[1.6] text-[#8993a1]">
-                        아직 이 기업과 직접 관련된 기사가 없습니다. 관련된 제약·바이오 산업 뉴스를 확인해 보세요.
-                      </p>
-                    </div>
+                    <InlineInfoHint>아직 이 기업과 직접 관련된 기사가 없습니다. 관련된 제약·바이오 산업 뉴스를 확인해 보세요.</InlineInfoHint>
                   )}
 
                   <div className={clsx("grid grid-cols-2 gap-4 max-[720px]:grid-cols-1", !hasDirectNews && "mt-5")}>

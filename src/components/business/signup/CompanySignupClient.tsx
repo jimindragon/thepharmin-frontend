@@ -1,8 +1,8 @@
 "use client";
 
-import { Info } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
@@ -118,9 +118,8 @@ function OrgVerificationStep({
             accept=".pdf,.jpg,.jpeg,.png"
             onFileSelected={(name) => onChange("businessLicenseFileName", name)}
           />
-          <div className="mt-1 flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-            <Info size={15} className="mt-0.5 shrink-0 text-[#7b8491]" />
-            제출한 정보는 운영팀 검토 후 승인됩니다.
+          <div className="mt-1">
+            <InfoNoticeBox>제출한 정보는 운영팀 검토 후 승인됩니다.</InfoNoticeBox>
           </div>
         </div>
       </div>

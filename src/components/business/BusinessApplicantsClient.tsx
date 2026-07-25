@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
-import { InfoTooltip } from "@/components/business/BusinessFormControls";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { StageMoveModal } from "@/components/business/StageMoveModal";
 import {
@@ -310,7 +310,7 @@ export function BusinessApplicantsClient() {
                 <span>핵심 경력</span>
                 <span className="inline-flex items-center gap-1">
                   직무 적합도
-                  <InfoTooltip text="이력서 항목과 공고 요건의 일치도로 산정됩니다." />
+                  <InfoTooltip text="이력서 항목과 공고 요건의 일치도로 산정됩니다." placement="bottom" />
                 </span>
                 <span>현재 단계</span>
                 <span>지원일</span>

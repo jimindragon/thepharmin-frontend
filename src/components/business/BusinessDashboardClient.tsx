@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import clsx from "clsx";
-import { Info } from "lucide-react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { getClosingDday, jobPostings, jobTrackLabel, MOCK_TODAY } from "@/data/businessJobs";
 import { LOGIN_COMPANY } from "@/data/businessCompanyProfile";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
@@ -221,13 +221,10 @@ export function BusinessDashboardClient() {
         </div>
 
         {orgVerificationStatus === "pending" ? (
-          <div className="flex gap-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3 text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-            <Info size={15} className="mt-0.5 shrink-0 text-[#7b8491]" />
-            <div>
-              <p className="font-semibold text-[#17202c]">기업 인증 검토 중입니다</p>
-              <p className="mt-0.5">제출하신 사업자등록증명원을 운영팀이 검토하고 있습니다. 승인이 완료되면 공고 등록 등 주요 기능을 이용할 수 있습니다.</p>
-            </div>
-          </div>
+          <InfoNoticeBox>
+            <p className="font-semibold text-[#17202c]">기업 인증 검토 중입니다</p>
+            <p className="mt-0.5">제출하신 사업자등록증명원을 운영팀이 검토하고 있습니다. 승인이 완료되면 공고 등록 등 주요 기능을 이용할 수 있습니다.</p>
+          </InfoNoticeBox>
         ) : null}
 
         {/* 통계 4분할 */}

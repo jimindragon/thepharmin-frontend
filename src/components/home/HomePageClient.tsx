@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Bookmark } from "lucide-react";
+import { ArrowRight, Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Header } from "@/components/Header";
@@ -35,8 +35,6 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>업계를 이끄는 기업</h2>
         <div className="flex items-center gap-3">
-          {/* 기업정보 홈 페이지가 아직 없어 연결을 비워둔다 — 추가되면 그 페이지로 다시 연결한다 */}
-          <span className="cursor-default text-[13px] font-medium text-[#aaaaaa]">전체보기 ›</span>
           <div className="hidden md:block">
             <CarouselControl
               onPrev={scrollPrev}
@@ -60,7 +58,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
               <div
                 key={company.id}
                 data-carousel-item
-                className="premium-company-card relative z-0 flex min-h-[264px] w-[300px] shrink-0 flex-col border-r border-[#dddddd] px-7 py-[34px] transition-colors duration-[180ms] last:border-r-0"
+                className="premium-company-card relative z-0 flex min-h-[240px] w-[300px] shrink-0 flex-col border-r border-[#dddddd] px-7 py-[28px] transition-colors duration-[180ms] last:border-r-0"
               >
                 <Link href={`/companies/${company.id}`} className="absolute inset-0 z-10">
                   <span className="sr-only">{company.name} 기업정보 보기</span>
@@ -76,7 +74,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                 <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f]")}>{company.name}</h3>
                 {/* min-h로 한 줄 캡션도 두 줄 높이를 차지 — 풋터 구분선 시작 위치를 카드마다 통일한다 */}
                 <p className="mt-2 line-clamp-2 min-h-[42px] text-[13px] font-normal leading-[1.6] text-[#777777]">{description}</p>
-                <div className="mt-8 border-t border-[#ececec] pt-3">
+                <div className="mt-6 border-t border-[#ececec] pt-3">
                   <Link
                     href={`/companies/${company.id}/jobs`}
                     className="relative z-20 flex items-center justify-between"
@@ -99,7 +97,10 @@ function RecruiterSolutionBanner() {
     <section className="mt-6 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
       <Link href="/business" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
         <p className="text-[14px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
-        <span className="text-[13px] font-medium text-[#111111] hover:underline">더파마 리크루트 채용 솔루션 알아보기 ›</span>
+        <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white">
+          채용 솔루션 알아보기
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+        </span>
       </Link>
     </section>
   );
