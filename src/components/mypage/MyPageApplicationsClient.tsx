@@ -58,7 +58,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
               ) : (
                 <p className="truncate text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{application.jobTitle}</p>
               )}
-              <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[11px] font-medium text-[#596373]">
+              <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
                 {application.applyChannelLabel}
               </span>
             </div>
@@ -80,7 +80,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
         <div className="flex shrink-0 flex-col items-end gap-2">
           <p
             className={clsx(
-              "inline-flex items-center gap-[8px] text-[15px] font-bold tracking-[-0.01em]",
+              "inline-flex items-center gap-[8px] text-[15px] font-semibold tracking-[-0.01em]",
               application.isClosed && application.resultLabel ? "text-status-error" : "text-[#111111]",
             )}
           >
@@ -89,7 +89,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             ) : null}
             {statusText}
           </p>
-          {statusDetail ? <p className="text-[12px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
+          {statusDetail ? <p className="text-[13px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export function MyPageApplicationsClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "지원 현황" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원 현황</h1>
-      <p className="mt-2.5 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         지원완료부터 최종 결과까지 진행 상황을 확인합니다. 간편지원은 전형 단계를 실시간으로, 외부 지원은 기업이 관리하는 일정 기준으로 보여드립니다.
       </p>
 
@@ -164,7 +164,7 @@ export function MyPageApplicationsClient() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={clsx(
-              "relative flex items-center gap-1.5 pb-3 text-[14px] font-medium transition-colors",
+              "relative flex items-center gap-1.5 pb-3 text-[15px] font-medium transition-colors",
               activeTab === tab.id
                 ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                 : "text-[#8a94a3] hover:text-[#111111]",
@@ -183,7 +183,7 @@ export function MyPageApplicationsClient() {
           visibleApplications.map((application) => <ApplicationCard key={application.id} application={application} />)
         ) : (
           <div className="border border-border bg-white p-10 text-center">
-            <p className="text-[14px] font-medium text-[#303946]">해당하는 지원 내역이 없습니다.</p>
+            <p className="text-[15px] font-medium text-[#303946]">해당하는 지원 내역이 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">관심 있는 공고에 지원하면 이곳에서 진행 상황을 확인할 수 있습니다.</p>
           </div>
         )}

@@ -14,11 +14,11 @@ import {
   Factory,
   FileText,
   GraduationCap,
-  Heart,
   Info,
   Layers,
   ListChecks,
   Newspaper,
+  Share2,
   Users,
   Wallet,
 } from "lucide-react";
@@ -58,6 +58,9 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
   const [saved, setSaved] = useState(false);
   const [interested, setInterested] = useState(false);
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
+
+  /** 히어로(768px 이상)와 모바일 하단바(767px 이하)가 공유하는 공유 액션. 실제 공유 로직은 아직 없다. */
+  const handleShare = () => {};
 
   const heroImage = getIndustryJobCoverImage(data.slug);
 
@@ -131,7 +134,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     onToggleSave={() => setSaved((v) => !v)}
                     interested={interested}
                     onToggleInterest={() => setInterested((v) => !v)}
-                    onShare={() => {}}
+                    onShare={handleShare}
                   />
                   <p className="mt-3 text-[15px] font-normal text-[#667181]">{heroSubline}</p>
                   <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
@@ -316,7 +319,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
 
               {/* 기업 정보 */}
               <IconSectionShell id="company" icon={Building2} title="기업 정보">
-                {/* A. 기업 요약 + 관심기업 */}
+                {/* A. 기업 요약 + 관심 기업 저장 */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
                     <CompanyLogo name={org.name} logoText="" logoUrl={org.logoUrl} size="lg" />
@@ -329,11 +332,11 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     </div>
                   </div>
                   <ActionIconButton
-                    label="관심기업 저장"
+                    label="관심 기업으로 저장"
                     onClick={() => setInterested((v) => !v)}
                     active={interested}
                   >
-                    <Heart size={17} fill={interested ? "currentColor" : "none"} />
+                    <Bookmark size={17} fill={interested ? "currentColor" : "none"} />
                   </ActionIconButton>
                 </div>
 
@@ -487,7 +490,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white px-4 py-3 shadow-[0_-8px_20px_rgba(20,32,46,0.08)] md:hidden">
-        <div className="mx-auto grid max-w-[560px] grid-cols-[92px_1fr] gap-2">
+        <div className="mx-auto grid max-w-[560px] grid-cols-[92px_48px_1fr] gap-2">
           <button
             type="button"
             onClick={() => setSaved((v) => !v)}
@@ -497,7 +500,15 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
             )}
           >
             <Bookmark size={17} fill={saved ? "currentColor" : "none"} />
-            저장
+            스크랩
+          </button>
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label="공고 공유"
+            className="flex h-12 items-center justify-center border border-border bg-white text-[#4f5a66]"
+          >
+            <Share2 size={17} />
           </button>
           <button type="button" className="flex h-12 items-center justify-center gap-2 bg-brand text-[14px] font-medium text-white">
             지원하기

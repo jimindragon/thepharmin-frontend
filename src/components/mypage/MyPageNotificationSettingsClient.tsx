@@ -28,7 +28,7 @@ export function MyPageNotificationSettingsClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "알림 설정" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림 설정</h1>
-      <p className="mt-2.5 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
         <br />
         면접 확정·최종 결과·제안 수신 등 주요 알림은 카카오톡으로도 발송됩니다.
@@ -39,13 +39,13 @@ export function MyPageNotificationSettingsClient() {
           <div key={group.id} className="px-6 py-5">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-[14px] font-semibold text-[#17202c]">{group.label}</p>
+                <p className="text-[16px] font-semibold text-[#17202c]">{group.label}</p>
                 <p className="mt-1 text-[13px] leading-[1.6] text-[#68717e]">{group.description}</p>
               </div>
               {group.id === "preference" ? (
                 <div className="flex shrink-0 flex-col items-end gap-1.5">
                   <p className="text-[13px] font-medium text-[#303946]">{preferenceTrackCount}개 트랙에서 사용 중</p>
-                  <Link href="/mypage/preferences" className="text-[12px] font-medium text-[#111111] hover:underline">
+                  <Link href="/mypage/preferences" className="text-[13px] font-medium text-[#111111] underline underline-offset-2">
                     관심 조건에서 관리
                   </Link>
                 </div>

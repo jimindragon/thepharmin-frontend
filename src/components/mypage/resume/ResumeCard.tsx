@@ -30,11 +30,11 @@ export function ResumeCard({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-[17px] font-bold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
+            <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
             {resume.isPrimary ? <ResumePrimaryBadge /> : null}
             <span className="inline-flex items-center gap-[8px]">
               <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-warning-dot"}`} />
-              <span className={`text-[11px] font-medium ${complete ? "text-status-positive" : "text-status-warning"}`}>
+              <span className={`text-[13px] font-medium ${complete ? "text-status-positive" : "text-status-warning"}`}>
                 {complete ? "작성완료" : "작성 중"}
               </span>
             </span>
@@ -47,13 +47,13 @@ export function ResumeCard({
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-[12px] font-normal text-[#a0a9b7]">직무 태그가 아직 없습니다.</p>
+            <p className="mt-3 text-[13px] font-normal text-[#a0a9b7]">직무 태그가 아직 없습니다.</p>
           )}
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2.5">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-[#8a94a3]">제안 받기</span>
+            <span className="text-[13px] font-medium text-[#8a94a3]">제안 받기</span>
             <ToggleSwitch label={`${resume.title} 제안 받기`} checked={resume.proposalEnabled} onChange={onToggleProposal} />
           </div>
           <div className="flex items-center gap-2">
@@ -78,10 +78,10 @@ export function ResumeCard({
         <div className="h-1.5 max-w-[260px] flex-1 overflow-hidden bg-[#edf0f3]">
           <span className="block h-full bg-[#111111]" style={{ width: `${completion}%` }} />
         </div>
-        <span className="shrink-0 text-[12px] font-medium text-[#596373]">{completion}%</span>
+        <span className="shrink-0 text-[13px] font-medium text-[#596373]">{completion}%</span>
       </div>
 
-      <p className="mt-3 text-[12px] font-normal text-[#8a94a3]">
+      <p className="mt-3 text-[13px] font-normal text-[#8a94a3]">
         최종 수정 {resume.updatedAt.replaceAll("-", ".")}
         <span className="px-1.5 text-[#d3d9e1]">·</span>
         {complete ? "간편지원 가능" : "작성을 완료하면 간편지원에 사용할 수 있어요"}

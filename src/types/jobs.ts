@@ -301,20 +301,6 @@ export interface ResearchLab {
   address?: string;
 }
 
-export type OverseasSupportType = "항공료" | "이주비" | "자녀학비" | "비자스폰서";
-
-/** 연구직 급여. 연봉/월급 구간과 면접 후 협의를 모두 지원하고, 연구비·과제 지원 정보는 급여와 별도로 관리한다. */
-export interface ResearchSalaryInfo {
-  kind: "연봉" | "월급" | "협의";
-  /** kind가 "연봉"이면 연 기준 만원, "월급"이면 월 기준 만원 */
-  min?: number;
-  /** kind가 "연봉"이면 연 기준 만원, "월급"이면 월 기준 만원 */
-  max?: number;
-  note?: string;
-  funding?: string[];
-  overseasSupport?: OverseasSupportType[];
-}
-
 /** "테마별 채용관" 후보군을 가리키는 메타데이터 태그. 저장만 하고, 테마별 채용관 자체는 아직 없다(THEME_LABELS 참고). */
 export type ThemeId = "T1" | "T2" | "T3" | "T4" | "T5" | "T6" | "T7" | "T8" | "T9";
 

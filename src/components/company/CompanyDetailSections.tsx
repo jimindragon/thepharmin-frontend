@@ -3,13 +3,13 @@ import Link from "next/link";
 import { type ReactNode } from "react";
 import {
   BedDouble,
+  Bookmark,
   BriefcaseBusiness,
   Building2,
   Calendar,
   ChevronRight,
   ExternalLink,
   Factory,
-  Heart,
   Landmark,
   MapPin,
   MessageSquareText,
@@ -394,8 +394,8 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
         <CompanyJobsGrid jobs={activeJobs} />
       ) : (
         <EmptyState
-          message="현재 채용중인 공고가 없습니다. 관심기업으로 등록하면 새 공고가 올라올 때 알려드릴게요."
-          cta={<button className="h-10 border border-[#111111] px-4 text-[13px] font-medium text-[#111111]">관심기업 등록</button>}
+          message="현재 채용중인 공고가 없습니다. 관심 기업으로 저장해두면 새 공고가 올라올 때 알려드릴게요."
+          cta={<button className="h-10 border border-[#111111] px-4 text-[13px] font-medium text-[#111111]">관심 기업으로 저장</button>}
         />
       )}
     </SectionShell>
@@ -784,11 +784,12 @@ function reviewSummaryLabel(companyId: string) {
 }
 
 /** [companyId] 개요 탭 사이드바 — 4트랙 공통 단일 카드(STEP 6: 기존 "기관 핵심 정보"+"채용·후기" 2카드를 통합).
- * 정보 3행(관심 기관/채용중 공고/후기) 아래 버튼 2개(채용공고 보기/후기 보기)만 남기고, 두 카드에 중복 표시되던
+ * 정보 3행(관심 등록 수/채용중 공고/후기) 아래 버튼 2개(채용공고 보기/후기 보기)만 남기고, 두 카드에 중복 표시되던
  * "채용중인 공고 N건" 문구는 제거했다 — 위 정보 행에 이미 동일한 값이 있다. */
 function CompanyCoreInfoCard({ profile }: { profile: CompanyProfile }) {
   const infoItems = [
-    { label: "관심 기관", value: profile.sidebar.interestedCount, icon: Heart },
+    // interestedCount는 "내가 저장했는지"가 아니라 이 기관을 관심 등록한 사람 수(집계값)다 — /companies 목록의 "관심순" 정렬도 같은 값을 쓴다.
+    { label: "관심 등록 수", value: profile.sidebar.interestedCount, icon: Bookmark },
     { label: "채용중 공고", value: `${getActiveJobCount(profile.id)}건`, icon: BriefcaseBusiness },
     { label: "후기", value: reviewSummaryLabel(profile.id), icon: MessageSquareText },
   ];

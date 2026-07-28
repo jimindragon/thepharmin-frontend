@@ -201,7 +201,7 @@ export function MyPagePreferencesClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "관심 조건 설정" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">관심 조건 설정</h1>
-      <p className="mt-2.5 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         관심 있는 채용 조건을 분야별로 미리 저장해두면, 해당 분야 공고 목록에서 조건에 맞는 공고를 더 빠르게 확인할 수 있습니다.
       </p>
 
@@ -264,7 +264,7 @@ export function MyPagePreferencesClient() {
             <button
               type="button"
               onClick={handleResetAll}
-              className="inline-flex h-8 items-center gap-1.5 text-[12px] font-medium text-[#8a94a3] transition-colors hover:text-[#111111]"
+              className="inline-flex h-8 items-center gap-1.5 text-[13px] font-medium text-[#8a94a3] transition-colors hover:text-[#111111]"
             >
               <RotateCcw size={13} />
               전체 초기화
@@ -277,7 +277,7 @@ export function MyPagePreferencesClient() {
       <section className="mt-8 border border-border bg-white p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-[16px] font-bold tracking-[-0.02em] text-[#17202c]">이메일 알림</h2>
+            <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">이메일 알림</h2>
             <p className="mt-1.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">
               이 분야의 관심 조건과 일치하는 신규 공고를 이메일로 받아보세요.
             </p>
@@ -302,7 +302,7 @@ export function MyPagePreferencesClient() {
                 type="button"
                 onClick={() => updateDraft((current) => ({ ...current, emailFrequency: option.id }))}
                 className={clsx(
-                  "min-h-[32px] border px-3.5 py-1.5 text-[12px] font-medium transition-colors",
+                  "min-h-[32px] border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
                   draft.emailFrequency === option.id
                     ? "border-brand bg-[var(--color-brand-soft)] text-brand"
                     : "border-[#dfe4ea] bg-white text-[#424b57] hover:border-brand hover:text-brand",

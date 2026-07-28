@@ -60,16 +60,16 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20 
         >
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-baseline gap-2">
-              <p className="text-[14px] font-bold text-[#17202c]">알림</p>
-              {isLoaded ? <span className="text-[12px] text-[#8a94a3]">미읽음 {unreadCount}</span> : null}
+              <p className="text-[15px] font-semibold text-[#17202c]">알림</p>
+              {isLoaded ? <span className="text-[13px] text-[#8a94a3]">미읽음 {unreadCount}</span> : null}
             </div>
             {hasUnread ? (
               <button
                 type="button"
                 onClick={() => markAllRead(notifications.map((notification) => notification.id))}
-                className="text-[12px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]"
+                className="text-[13px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]"
               >
-                모두 읽음
+                모두 읽음 처리
               </button>
             ) : null}
           </div>
@@ -92,20 +92,20 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20 
                     className="group flex items-start gap-2.5 px-4 py-3"
                   >
                     <span
-                      className={clsx("mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full", !read && "bg-danger")}
+                      className={clsx("mt-[7.5px] h-[8px] w-[8px] shrink-0 rounded-full", !read && "bg-danger")}
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
                       <p
                         className={clsx(
-                          "text-[13px] text-[#17202c] transition-colors group-hover:text-[#111111]",
-                          !read && "font-medium",
+                          "text-[14px] text-[#17202c] transition-colors group-hover:text-[#111111]",
+                          !read ? "font-semibold" : "font-medium",
                         )}
                       >
                         {notification.title}
                       </p>
-                      <p className="mt-0.5 line-clamp-2 text-[12px] leading-[1.5] text-[#68717e]">{notification.body}</p>
-                      <p className="mt-1 text-[11px] text-[#a0a9b7]">{notification.createdAt}</p>
+                      <p className="mt-0.5 line-clamp-2 text-[13px] leading-[1.5] text-[#68717e]">{notification.body}</p>
+                      <p className="mt-1 text-[12px] text-[#a0a9b7]">{notification.createdAt}</p>
                     </div>
                   </Link>
                 );

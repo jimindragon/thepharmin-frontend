@@ -1,4 +1,4 @@
-import type { JobWorkShift, PayType, ResearchSalaryInfo, SalaryDetail, SalaryRange } from "@/types/jobs";
+import type { JobWorkShift, PayType, SalaryDetail, SalaryRange } from "@/types/jobs";
 
 /**
  * 원 단위 숫자를 화면 표시용 문자열로 변환한다.
@@ -54,15 +54,6 @@ export function formatSalaryDetail(detail: SalaryDetail): FormattedSalary {
   };
 }
 
-function formatManwonRange(min?: number, max?: number) {
-  if (min != null && max != null && min !== max) {
-    return `${min.toLocaleString("ko-KR")}만~${max.toLocaleString("ko-KR")}만원`;
-  }
-
-  const single = min ?? max;
-  return single != null ? `${single.toLocaleString("ko-KR")}만원` : undefined;
-}
-
 /** 시급 환산 결과의 신뢰 수준 */
 export type HourlyStatus =
   | "exact"       // 이미 시급 — 그대로 사용
@@ -79,6 +70,38 @@ export interface HourlyResult {
   weekday?: number;
   /** kind=시급인 경우 주말 세후 시급 */
   weekend?: number;
+}
+
+/**
+ * 시급 환산이 가능한 급여 종류.
+ * SalaryDetail.kind("면접후결정")와 공고 등록 폼의 SalaryKind("면접 후 결정")는 리터럴이 서로 달라
+ * 직접 공유할 수 없다. 환산 계산에 실제로 필요한 4종만 따로 정의해 양쪽이 이 타입으로 좁혀 넘긴다.
+ */
+export type HourlyConvertibleKind = "시급" | "일급" | "월급" | "연봉";
+
+/** 월 환산 계수 — 1개월 평균 주수 */
+const WEEKS_PER_MONTH = 4.345;
+/** 연 환산 계수 — 1년 주수 */
+const WEEKS_PER_YEAR = 52;
+
+/**
+ * 급여 금액을 시급(원 단위)으로 환산하는 순수 계산 함수. 환산식과 계수는 여기에만 존재한다.
+ * 문자열 파싱과 만원→원 단위 변환은 호출부 책임이므로 amount에는 원 단위 숫자만 넘긴다.
+ *
+ * @param kind 급여 종류
+ * @param amount 원 단위 금액
+ * @param hours 일급이면 1일 근무시간, 월급·연봉이면 주당 근무시간. 시급은 불필요
+ * @returns 환산 시급(원 단위). 환산 불가면 null
+ */
+export function hourlyFromAmount(kind: HourlyConvertibleKind, amount: number, hours?: number): number | null {
+  if (kind === "시급") return amount;
+  if (hours == null || hours <= 0) return null;
+
+  if (kind === "일급") return Math.round(amount / hours);
+  if (kind === "월급") return Math.round(amount / (hours * WEEKS_PER_MONTH));
+  if (kind === "연봉") return Math.round(amount / (hours * WEEKS_PER_YEAR));
+
+  return null;
 }
 
 /**
@@ -110,51 +133,21 @@ export function convertToHourly(salary: SalaryDetail, _shifts?: JobWorkShift[]):
   if (salary.kind === "월급") {
     return {
       status: "estimated",
-      min: salary.min != null ? Math.round(salary.min / (wh * 4.345)) : undefined,
-      max: salary.max != null ? Math.round(salary.max / (wh * 4.345)) : undefined,
+      min: salary.min != null ? (hourlyFromAmount("월급", salary.min, wh) ?? undefined) : undefined,
+      max: salary.max != null ? (hourlyFromAmount("월급", salary.max, wh) ?? undefined) : undefined,
     };
   }
 
   if (salary.kind === "연봉") {
     return {
       status: "estimated",
-      min: salary.min != null ? Math.round(salary.min / (wh * 52)) : undefined,
-      max: salary.max != null ? Math.round(salary.max / (wh * 52)) : undefined,
+      min: salary.min != null ? (hourlyFromAmount("연봉", salary.min, wh) ?? undefined) : undefined,
+      max: salary.max != null ? (hourlyFromAmount("연봉", salary.max, wh) ?? undefined) : undefined,
     };
   }
 
   // 일급: 1일 근무시간을 shifts 자유 텍스트에서 신뢰성 있게 추출 불가 → 환산 생략
   return { status: "unavailable" };
-}
-
-/**
- * 연구직 급여(만원 단위로 저장된 연봉 구간 또는 면접 후 협의)를 화면 표시용 문자열로 변환한다.
- * 연구비·과제 지원 정보(funding)는 급여와 별도 정보이므로 이 함수에서는 다루지 않는다.
- */
-export function formatResearchSalaryInfo(info: ResearchSalaryInfo): FormattedSalary {
-  if (info.kind === "협의") {
-    return { primary: "면접 시 협의", note: info.note };
-  }
-
-  if (info.kind === "월급") {
-    const monthlyRange = formatManwonRange(info.min, info.max);
-    const annualMin = info.min != null ? info.min * 12 : undefined;
-    const annualMax = info.max != null ? info.max * 12 : undefined;
-    const annualRange = formatManwonRange(annualMin, annualMax);
-
-    return {
-      primary: annualRange ? `연봉 ${annualRange}` : "연봉 협의",
-      diff: monthlyRange ? `월급 ${monthlyRange} 기준 환산` : undefined,
-      note: info.note,
-    };
-  }
-
-  const range = formatManwonRange(info.min, info.max);
-
-  return {
-    primary: range ? `연봉 ${range}` : "연봉 협의",
-    note: info.note,
-  };
 }
 
 const HOSPITAL_PAY_TYPE_LABELS: Record<PayType, string> = {

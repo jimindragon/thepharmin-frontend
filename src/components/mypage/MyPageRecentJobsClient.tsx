@@ -25,7 +25,7 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <div className="border border-border bg-white p-10 text-center">
-      <p className="text-[14px] font-medium text-[#303946]">{title}</p>
+      <p className="text-[15px] font-medium text-[#303946]">{title}</p>
       <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
       <LinkButton href="/jobs" variant="secondary" size="sm" className="mt-5">
         공고 둘러보기
@@ -64,7 +64,7 @@ function TrackFilterTabs({
             {option.label}
             <span
               className={clsx(
-                "inline-flex min-w-[20px] items-center justify-center rounded-full px-1.5 py-[1px] text-[11px]",
+                "inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-[1px] text-[12px] font-medium",
                 active ? "bg-white/20 text-white" : "bg-white text-[#8a93a1]",
               )}
             >
@@ -140,7 +140,7 @@ export function MyPageRecentJobsClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "최근 본 공고" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">최근 본 공고</h1>
-      <p className="mt-2.5 max-w-[640px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 max-w-[640px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         최근 확인한 공고를 다시 볼 수 있습니다.
       </p>
 

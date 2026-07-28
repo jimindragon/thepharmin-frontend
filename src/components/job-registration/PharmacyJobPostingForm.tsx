@@ -16,7 +16,7 @@ import { educationOptions, employmentTypeOptions, experienceOptions } from "@/co
 import { pharmacyJobCategoryOptions, pharmacyWorkTypeOptions } from "@/config/jobFilters/pharmacyFilters";
 import { initialPharmacyOrgProfile } from "@/data/businessOrgProfile";
 import type { JobCategoryOption } from "@/types/jobs";
-import { formatWon } from "@/utils/salary";
+import { formatWon, hourlyFromAmount } from "@/utils/salary";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -407,18 +407,17 @@ export function PharmacyJobPostingForm() {
     if (checked) setAddress(initialPharmacyOrgProfile.address);
   }
 
-  // 확정 급여 1건 기준 시급 환산 — legacy convertToHourly(범위형)를 단일값으로 단순화한 로컬 계산
+  // 확정 급여 1건 기준 시급 환산 — 환산식과 계수는 salary.ts의 hourlyFromAmount를 convertToHourly와 공유하고,
+  // 여기서는 폼 입력값(문자열·만원 단위)을 원 단위 숫자로 정규화하는 책임만 진다
   function estimateHourly(): number | null {
     const amount = parseInt(salaryAmount.replace(/,/g, ""), 10);
     if (!salaryAmount.trim() || isNaN(amount)) return null;
     const won = salaryKind === "월급" || salaryKind === "연봉" ? amount * 10000 : amount;
-    if (salaryKind === "시급") return won;
+    if (salaryKind === "시급") return hourlyFromAmount("시급", won);
     const hours = parseInt(salaryHours, 10);
     if (!salaryHours.trim() || isNaN(hours) || hours <= 0) return null;
-    if (salaryKind === "일급") return Math.round(won / hours);
-    if (salaryKind === "월급") return Math.round(won / (hours * 4.345));
-    if (salaryKind === "연봉") return Math.round(won / (hours * 52));
-    return null;
+    if (salaryKind === "면접 후 결정") return null;
+    return hourlyFromAmount(salaryKind, won, hours);
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────

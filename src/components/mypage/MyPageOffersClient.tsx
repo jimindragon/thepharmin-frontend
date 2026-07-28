@@ -54,7 +54,7 @@ const mockOffers: Offer[] = [
 
 const OFFER_TABS: Array<{ id: OfferTabFilter; label: string }> = [
   { id: "all", label: "전체" },
-  { id: "job", label: "입사제안" },
+  { id: "job", label: "입사 제안" },
   { id: "headhunting", label: "헤드헌팅 제안" },
 ];
 
@@ -86,8 +86,8 @@ function labelOf<T extends string>(options: Array<{ id: T; label: string }>, id:
 
 function OfferTypeBadge({ type }: { type: OfferType }) {
   return (
-    <span className="flex w-[96px] shrink-0 items-center text-[13px] font-medium text-[#596373]">
-      {type === "headhunting" ? "헤드헌팅 제안" : "입사제안"}
+    <span className="flex w-[96px] shrink-0 items-center text-[15px] font-medium text-[#596373]">
+      {type === "headhunting" ? "헤드헌팅 제안" : "입사 제안"}
     </span>
   );
 }
@@ -104,7 +104,7 @@ function OfferStatusBadge({ status }: { status: OfferStatus }) {
   return (
     <span className="inline-flex w-fit shrink-0 items-center gap-[8px]">
       <span className={clsx("h-[8px] w-[8px] rounded-full shrink-0", dot)} />
-      <span className={clsx("text-[12px] font-medium", text)}>{label}</span>
+      <span className={clsx("text-[13px] font-medium", text)}>{label}</span>
     </span>
   );
 }
@@ -116,7 +116,7 @@ function OfferChip({ label, selected, onClick }: { label: string; selected: bool
       type="button"
       onClick={onClick}
       className={clsx(
-        "h-9 border px-3 text-[12px] font-medium transition",
+        "h-9 border px-3 text-[13px] font-medium transition",
         selected ? "border-[#111111] bg-[#f7f8fa] text-[#111111]" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
       )}
       aria-pressed={selected}
@@ -213,7 +213,7 @@ function OfferResponseModal({
 
         {/* 스크롤 영역 */}
         <div className="overflow-y-auto px-6 py-5">
-          <p className="text-[13.5px] font-normal leading-relaxed text-[#6b7280]">
+          <p className="text-[13px] font-normal leading-relaxed text-[#6b7280]">
             {isAccept
               ? "수락하시면 담당자가 등록된 연락처로 연락드립니다. 제안 수락은 지원이나 입사 확정을 의미하지 않습니다."
               : "거절 의사만 기업에 전달되며, 선택하신 사유는 전달되지 않습니다."}
@@ -222,7 +222,7 @@ function OfferResponseModal({
           {isAccept ? (
             <>
               <div className="mt-5">
-                <p className="text-[14px] font-medium text-[#303946]">연락 방법</p>
+                <p className="text-[15px] font-medium text-[#303946]">연락 방법</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {CONTACT_METHOD_OPTIONS.map((option) => (
                     <OfferChip
@@ -235,7 +235,7 @@ function OfferResponseModal({
                 </div>
               </div>
               <div className="mt-5">
-                <p className="text-[14px] font-medium text-[#303946]">연락 가능 시간</p>
+                <p className="text-[15px] font-medium text-[#303946]">연락 가능 시간</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {CONTACT_TIME_OPTIONS.map((option) => (
                     <OfferChip
@@ -250,7 +250,7 @@ function OfferResponseModal({
             </>
           ) : (
             <div className="mt-5">
-              <p className="text-[14px] font-medium text-[#303946]">거절 사유 (선택)</p>
+              <p className="text-[15px] font-medium text-[#303946]">거절 사유 (선택)</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {DECLINE_REASON_OPTIONS.map((option) => (
                   <OfferChip
@@ -335,17 +335,17 @@ export function MyPageOffersClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "받은 제안" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">받은 제안</h1>
-      <p className="mt-2.5 max-w-[560px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 max-w-[560px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         받은 입사 제안과 헤드헌팅 제안을 한곳에서 확인할 수 있습니다.
       </p>
 
       {/* 상단 상태 칩 */}
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <span className="inline-flex h-6 items-center gap-1.5 border border-status-positive-border bg-status-positive-subtle px-2.5 text-[11px] font-medium text-status-positive">
+        <span className="inline-flex h-7 items-center gap-1.5 border border-status-positive-border bg-status-positive-subtle px-2.5 text-[13px] font-medium text-status-positive">
           <span className="h-1.5 w-1.5 rounded-full bg-status-positive" />
           제안 받기 켜짐
         </span>
-        <span className="inline-flex h-6 items-center border border-[#e0e4ea] bg-[#f7f8fa] px-2.5 text-[11px] font-medium text-[#68717e]">
+        <span className="inline-flex h-7 items-center border border-[#e0e4ea] bg-[#f7f8fa] px-2.5 text-[13px] font-medium text-[#68717e]">
           이력서 1건 공개 중
         </span>
       </div>
@@ -358,7 +358,7 @@ export function MyPageOffersClient() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={clsx(
-              "relative flex items-center gap-1.5 pb-3 text-[14px] font-medium transition-colors",
+              "relative flex items-center gap-1.5 pb-3 text-[15px] font-medium transition-colors",
               activeTab === tab.id
                 ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                 : "text-[#8a94a3] hover:text-[#111111]",
@@ -384,10 +384,10 @@ export function MyPageOffersClient() {
             <article key={offer.id} className="border border-border bg-white">
               {/* 행 */}
               <div className="flex items-center gap-4 px-6 py-5 max-[600px]:flex-wrap max-[600px]:gap-2.5 max-[640px]:px-5">
-                {/* 좌측 앵커: 유형 라벨 + 세로 헤어라인 (포지션명과 상단 정렬) */}
-                <div className="flex shrink-0 items-start gap-4 self-start max-[600px]:w-full">
+                {/* 좌측 앵커: 유형 라벨 + 세로 헤어라인 (헤어라인은 행 높이만큼, 라벨은 그 안에서 세로 가운데) */}
+                <div className="flex shrink-0 items-stretch gap-4 self-stretch max-[600px]:w-full">
                   <OfferTypeBadge type={offer.type} />
-                  <span aria-hidden="true" className="h-8 w-px shrink-0 bg-[#eef1f4]" />
+                  <span aria-hidden="true" className="w-px shrink-0 self-stretch bg-[#eef1f4]" />
                 </div>
                 {/* 포지션명 + 메타 행 */}
                 <div className="min-w-0 flex-1">
@@ -413,7 +413,7 @@ export function MyPageOffersClient() {
                     type="button"
                     onClick={() => toggleExpand(offer.id)}
                     className={clsx(
-                      "inline-flex h-8 items-center gap-1 border px-3 text-[12px] font-medium transition",
+                      "inline-flex h-8 items-center gap-1 border px-3 text-[13px] font-medium transition",
                       expandedId === offer.id
                         ? "border-[#303946] text-[#303946]"
                         : "border-[#cfd8e3] text-[#596373] hover:border-[#303946] hover:text-[#303946]",
@@ -426,6 +426,7 @@ export function MyPageOffersClient() {
               </div>
 
               {/* 상세 펼침 */}
+              {/* pl-[153px]는 px-6(24) + 유형 라벨 w-[96px] + gap-4(16) + 헤어라인(1) + gap-4(16)의 합 — 포지션명 왼쪽 끝과 맞추는 값이므로 w-[96px]를 바꾸면 이 값도 함께 고친다. */}
               {expandedId === offer.id && (
                 <div className="border-t border-[#edf1f5] py-5 pl-[153px] pr-6 max-[640px]:px-5">
                   {panelStep === "message" && (
@@ -457,7 +458,7 @@ export function MyPageOffersClient() {
                   {panelStep === "acceptDone" && (
                     <div className="max-w-[720px]">
                       <p className="text-[15px] font-semibold tracking-[-0.01em] text-[#17202c]">제안을 수락했습니다</p>
-                      <p className="mt-2 text-[14px] font-normal leading-relaxed text-[#4f5967]">
+                      <p className="mt-2 text-[15px] font-normal leading-relaxed text-[#4f5967]">
                         {offer.sender} 담당자가 선택하신 방법으로 영업일 기준 1~2일 이내 연락드릴 예정입니다.
                       </p>
                       <p className="mt-2 text-[12px] font-normal text-[#9ca3af]">
@@ -479,7 +480,7 @@ export function MyPageOffersClient() {
                   {panelStep === "declineDone" && (
                     <div className="max-w-[720px]">
                       <p className="text-[15px] font-semibold tracking-[-0.01em] text-[#17202c]">제안을 거절했습니다</p>
-                      <p className="mt-2 text-[14px] font-normal leading-relaxed text-[#4f5967]">
+                      <p className="mt-2 text-[15px] font-normal leading-relaxed text-[#4f5967]">
                         기업에는 거절 의사만 전달됩니다.
                       </p>
                     </div>
@@ -490,7 +491,7 @@ export function MyPageOffersClient() {
           ))
         ) : (
           <div className="border border-border bg-white p-10 text-center">
-            <p className="text-[14px] font-medium text-[#303946]">해당하는 제안이 없습니다.</p>
+            <p className="text-[15px] font-medium text-[#303946]">해당하는 제안이 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
               이력서를 공개하면 기업과 헤드헌터가 포지션을 제안할 수 있습니다.
             </p>

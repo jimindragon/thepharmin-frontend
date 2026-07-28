@@ -16,8 +16,6 @@ interface JobCardProps {
   job: Job;
   isBookmarked: boolean;
   onToggleBookmark: (jobId: number) => void;
-  /** 스크랩 화면처럼 보조기술 라벨이 "스크랩"이라는 의미를 가져야 할 때 사용. 시각적 표시는 동일하다. */
-  isScrapContext?: boolean;
   /** 약국 시급 필터가 활성화된 상태에서 환산 시급이 조건을 충족할 때 표시하는 배지. */
   showHourlyBadge?: boolean;
 }
@@ -26,7 +24,7 @@ interface JobCardProps {
  * 가로형 일반 공고 카드. 홈/트랙별 목록/검색·둘러보기/스크랩 화면이 모두 이 컴포넌트 하나를 공유한다.
  * 페이지별로 다른 변형을 만들지 말고 이 컴포넌트를 확장할 것.
  */
-export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, showHourlyBadge }: JobCardProps) {
+export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }: JobCardProps) {
   const danger = isJobDeadlineUrgent(job);
   const deadlineText = formatJobDeadlineLabel(job);
   const applyLabel = job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원";
@@ -56,8 +54,9 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
 
       {/* 2컬럼: [로고] [세로선] [정보] — items-stretch(기본)로 세로선이 카드 전체 높이에 걸림 */}
       <div className="flex">
-        {/* 로고 컬럼 */}
-        <div className="flex w-[130px] shrink-0 items-center justify-center px-5">
+        {/* 로고 컬럼 — ≤480px에서는 숨긴다. 회사명이 바로 옆에 텍스트로 중복 표시되므로
+            정보 칸 폭을 확보하는 쪽이 우선 */}
+        <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[640px]:w-[96px] max-[640px]:px-3 max-[480px]:hidden">
           {showLogoImage ? (
             <img
               src={logoUrl}
@@ -70,13 +69,14 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
           )}
         </div>
 
-        {/* 세로 구분선 */}
-        <div className="w-px shrink-0 self-stretch bg-[#eeeeee]" />
+        {/* 세로 구분선 — 로고 칸과 함께 사라진다 */}
+        <div className="w-px shrink-0 self-stretch bg-[#eeeeee] max-[480px]:hidden" />
 
         {/* 정보 컬럼 */}
-        <div className="flex min-w-0 flex-1 px-[22px] py-4">
+        {/* ≤640px: flex-wrap + 메인 basis-full → 우측 side가 둘째 줄로 내려간다 */}
+        <div className="flex min-w-0 flex-1 px-[22px] py-4 max-[640px]:flex-wrap max-[480px]:px-4">
           {/* 정보 메인 */}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 max-[640px]:basis-full">
             {companyDetailHref ? (
               <Link
                 href={companyDetailHref}
@@ -89,32 +89,42 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
               <p className="truncate text-[13px] font-medium text-[#5b6472]">{job.company}</p>
             )}
 
-            <div className="mt-1.5 flex min-w-0 items-center gap-2">
+            {/* ≤640px에서 제목이 두 줄이 되므로 배지를 첫 줄에 붙인다 */}
+            <div className="mt-1.5 flex min-w-0 items-center gap-2 max-[640px]:items-start">
               {job.postingSource === "headhunting" ? (
                 <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-medium text-[#535c68]">
                   헤드헌팅
                 </span>
               ) : null}
-              <h3 className="truncate text-[16px] font-bold text-[#242b36]">{job.title}</h3>
+              {/* truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
+                  겹치지 않게 브레이크포인트로 완전히 분리한다 */}
+              <h3 className="text-[16px] font-bold text-[#242b36] min-[641px]:truncate max-[640px]:line-clamp-2">
+                {job.title}
+              </h3>
             </div>
 
-            <p className="mt-1.5 truncate text-[12px] font-normal text-[#737d8a]">
+            {/* truncate 없음 — 좁은 폭에서는 잘리는 대신 여러 줄로 감긴다 */}
+            <p className="mt-1.5 text-[12px] font-normal text-[#737d8a]">
               {job.career}
-              <span className="px-2 text-[#c2c8d1]">·</span>
+              <span className="px-1.5 text-[#c2c8d1]">·</span>
               {job.education}
-              <span className="px-2 text-[#c2c8d1]">·</span>
+              <span className="px-1.5 text-[#c2c8d1]">·</span>
               {job.employmentType}
-              <span className="px-2 text-[#c2c8d1]">·</span>
+              <span className="px-1.5 text-[#c2c8d1]">·</span>
               {job.location}
-              <span className="px-2 text-[#c2c8d1]">|</span>
+              <span className="px-1.5 text-[#c2c8d1]">|</span>
               {job.track === "hospital" ? formatHospitalSalary(job.salaryRange, job.salaryNote) : job.salary}
             </p>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {(job.coreKeywords ?? []).slice(0, 5).map((tag) => (
+              {/* slice(0, 5)는 그대로 두고, ≤480px에서는 3번째부터 CSS로 숨겨 2개만 보인다 */}
+              {(job.coreKeywords ?? []).slice(0, 5).map((tag, index) => (
                 <span
                   key={tag}
-                  className="rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]"
+                  className={clsx(
+                    "rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]",
+                    index >= 2 && "max-[480px]:hidden",
+                  )}
                 >
                   {tag}
                 </span>
@@ -126,7 +136,9 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
           </div>
 
           {/* 우측 side: 북마크(상단) + D-day·지원방법(mt-auto 바닥 고정) */}
-          <div className="ml-3 flex shrink-0 flex-col items-end">
+          {/* ≤640px: 둘째 줄에서 가로 한 줄로. flex-row-reverse라 DOM 순서(북마크→D-day)가
+              시각적으로 [D-day·지원방법 … 북마크]로 뒤집힌다. ml-3 → mt-3으로 교체 */}
+          <div className="ml-3 flex shrink-0 flex-col items-end max-[640px]:ml-0 max-[640px]:mt-3 max-[640px]:w-full max-[640px]:flex-row-reverse max-[640px]:items-center max-[640px]:justify-between">
             <button
               type="button"
               onClick={(event) => {
@@ -134,7 +146,10 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
                 onToggleBookmark(job.id);
               }}
               className={clsx(
-                "relative z-20 grid h-10 w-10 place-items-center rounded-[var(--radius)] transition-colors",
+                // -mr-[13px]: 40px 버튼 안에서 21px 아이콘이 중앙정렬(9.5px) + 획 안쪽 여백(3.63px)
+                // = 13.13px 만큼 그림이 안쪽에 그려진다. 누르는 영역 40px은 그대로 두고 상자만 밀어
+                // 아이콘 획 끝을 아래 D-day·배지의 오른쪽 정렬선에 맞춘다.
+                "relative z-20 -mr-[13px] grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius)] transition-colors",
                 isBookmarked ? "text-brand" : "text-[#a0a9b7] hover:bg-[#f4f7f9] hover:text-brand",
               )}
               aria-label={`${job.title} ${isBookmarked ? "스크랩 해제" : "스크랩"}`}
@@ -142,13 +157,13 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, isScrapContext, s
               <Bookmark size={21} strokeWidth={1.7} fill={isBookmarked ? "currentColor" : "none"} />
             </button>
 
-            <div className="mt-auto text-right">
-              <strong className={clsx("block text-[15px] font-bold leading-none", danger ? "text-danger" : "text-brand")}>
+            <div className="mt-auto text-right max-[640px]:mt-0 max-[640px]:flex max-[640px]:items-center max-[640px]:gap-2 max-[640px]:text-left">
+              <strong className={clsx("block whitespace-nowrap text-[15px] font-bold leading-none", danger ? "text-danger" : "text-brand")}>
                 {deadlineText}
               </strong>
               <span
                 className={clsx(
-                  "mt-2.5 inline-flex h-[24px] cursor-default items-center rounded-[var(--radius)] px-2 text-[11px] font-medium",
+                  "mt-2.5 inline-flex h-[24px] shrink-0 cursor-default items-center whitespace-nowrap rounded-[var(--radius)] px-2 text-[11px] font-medium max-[640px]:mt-0",
                   easyApply ? "bg-brand text-white" : "border border-[#d9e1e8] bg-white text-[#596373]",
                 )}
               >

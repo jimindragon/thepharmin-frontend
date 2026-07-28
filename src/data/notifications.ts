@@ -68,6 +68,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     href: "/mypage/offers",
     channels: ["site", "email", "alimtalk"],
     kind: "proposal",
+    subjectLabel: "한국로슈 의학부 학술영업 담당자(MSL)",
   },
   {
     id: "pn-6",
@@ -112,6 +113,7 @@ export const MOCK_PERSONAL_NOTIFICATIONS: PersonalNotification[] = [
     href: "/mypage/offers",
     channels: ["site", "email", "alimtalk"],
     kind: "proposal",
+    subjectLabel: "제약 R&D PM (대리~과장급)",
   },
 ];
 

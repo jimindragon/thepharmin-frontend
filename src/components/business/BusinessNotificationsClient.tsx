@@ -41,7 +41,7 @@ export function BusinessNotificationsClient() {
             ]}
           />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">알림</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">받은 알림을 확인하고 관련 페이지로 이동할 수 있습니다.</p>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">받은 알림을 확인하고 관련 페이지로 이동할 수 있습니다.</p>
         </div>
 
         {/* 탭 */}
@@ -64,7 +64,7 @@ export function BusinessNotificationsClient() {
                 {tab.countReady ? (
                   <span
                     className={clsx(
-                      "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-semibold",
+                      "inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full px-1 text-[13px] font-medium",
                       activeTab === tab.id ? "bg-[#111111] text-white" : "bg-[#f0f1f3] text-[#8a94a3]",
                     )}
                   >
@@ -78,9 +78,9 @@ export function BusinessNotificationsClient() {
             <button
               type="button"
               onClick={() => markAllRead(sorted.map((notification) => notification.id))}
-              className="shrink-0 text-[12px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]"
+              className="shrink-0 text-[13px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]"
             >
-              모두 읽음
+              모두 읽음 처리
             </button>
           ) : null}
         </div>
@@ -92,7 +92,8 @@ export function BusinessNotificationsClient() {
               {activeTab === "unread" ? "미읽은 알림이 없습니다." : "새로운 알림이 없습니다."}
             </p>
           ) : (
-            <div className="divide-y divide-[#e5e9ef]">
+            <div>
+              {/* 구분선은 divide-* 대신 행별 border-top으로 둔다 — divide 색상 유틸은 border-color 전체를 덮어써서 좌측 악센트 바를 먹는다. */}
               {visible.map((notification) => {
                 const read = !isLoaded || isRead(notification.id);
                 return (
@@ -100,23 +101,26 @@ export function BusinessNotificationsClient() {
                     key={notification.id}
                     href={notification.href}
                     onClick={() => markRead(notification.id)}
-                    className="group flex items-start gap-3 px-6 py-5"
+                    className={clsx(
+                      "group flex items-start gap-3 border-l-2 border-t border-t-[#e5e9ef] px-6 py-5 first:border-t-0",
+                      !read ? "border-l-[#111111]" : "border-l-transparent",
+                    )}
                   >
                     <span
-                      className={clsx("mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full", !read && "bg-danger")}
+                      className={clsx("mt-[9px] h-[8px] w-[8px] shrink-0 rounded-full", !read && "bg-danger")}
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
                       <p
                         className={clsx(
-                          "text-[13px] text-[#17202c] transition-colors group-hover:text-[#111111]",
-                          !read && "font-medium",
+                          "text-[16px] text-[#17202c] transition-colors group-hover:text-[#111111]",
+                          !read ? "font-semibold" : "font-medium",
                         )}
                       >
                         {notification.title}
                       </p>
-                      <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{notification.body}</p>
-                      <p className="mt-1 text-[11px] text-[#a0a9b7]">{notification.createdAt}</p>
+                      <p className="mt-0.5 text-[13px] leading-[1.5] text-[#68717e]">{notification.body}</p>
+                      <p className="mt-1 text-[12px] text-[#a0a9b7]">{notification.createdAt}</p>
                     </div>
                   </Link>
                 );

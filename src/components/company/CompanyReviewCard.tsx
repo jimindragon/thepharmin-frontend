@@ -146,6 +146,7 @@ export function CompanyReviewCard({
               type="button"
               onClick={() => setSaved((prev) => !prev)}
               aria-pressed={saved}
+              aria-label={saved ? "후기 스크랩 해제" : "후기 스크랩"}
               className={clsx("inline-flex items-center gap-1 font-normal transition", saved ? "text-[#111111]" : "text-[#596373] hover:text-[#111111]")}
             >
               <Bookmark size={16} className={saved ? "fill-current" : undefined} />

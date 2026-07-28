@@ -67,7 +67,7 @@ export function MyPageResumeClient() {
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">이력서 관리</h1>
-          <p className="mt-2.5 max-w-[560px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+          <p className="mt-2.5 max-w-[560px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
             직무별로 이력서를 따로 관리하고, 대표 이력서를 간편지원에 바로 첨부합니다.
           </p>
         </div>
@@ -112,7 +112,7 @@ export function MyPageResumeClient() {
           )
         ) : (
           <div className="border border-border bg-white p-10 text-center">
-            <p className="text-[14px] font-medium text-[#303946]">등록된 이력서가 없습니다.</p>
+            <p className="text-[15px] font-medium text-[#303946]">등록된 이력서가 없습니다.</p>
             <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">새 이력서를 작성하면 간편지원과 포지션 제안에 활용할 수 있어요.</p>
             <LinkButton href="/mypage/resume/new" variant="secondary" size="sm" className="mt-4">
               <Plus size={15} />

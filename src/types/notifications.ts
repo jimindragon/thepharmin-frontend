@@ -36,6 +36,12 @@ export interface Notification<T extends string = string> {
   href: string; // 클릭 시 이동 경로
   channels: NotificationChannel[]; // 이 알림이 발송된(될) 채널 기록
   kind?: NotificationKind;
+  /**
+   * 알림 대상(공고·직무명)만 담은 짧은 라벨 — title에서 이벤트 문구를 뺀 앞부분.
+   * 대시보드 "지금 확인할 일"처럼 제목 줄에 문장이 아닌 대상만 보여야 하는 곳에서 쓴다.
+   * 알림 목록·헤더 벨은 계속 title을 그대로 읽는다.
+   */
+  subjectLabel?: string;
 }
 
 export type PersonalNotification = Notification<PersonalNotificationType>;

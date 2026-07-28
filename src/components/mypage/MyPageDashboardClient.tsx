@@ -110,9 +110,9 @@ function buildScheduleChecklist(): Array<ChecklistRow & { daysLeft: number }> {
         return {
           id: `check-${app.id}`,
           Icon: CalendarDays,
-          title: `${app.jobTitle} 면접이 ${daysLeft === 0 ? "오늘" : "내일"} 예정되어 있습니다`,
-          meta: app.company,
-          ctaLabel: "일정 보기",
+          title: app.jobTitle,
+          meta: `면접 ${daysLeft === 0 ? "오늘" : "내일"} · ${app.company}`,
+          ctaLabel: "지원 현황",
           href: "/mypage/applications",
           isNewBadge: false,
           daysLeft,
@@ -121,9 +121,9 @@ function buildScheduleChecklist(): Array<ChecklistRow & { daysLeft: number }> {
       return {
         id: `check-${app.id}`,
         Icon: FileText,
-        title: `${app.jobTitle} 서류 발표가 D-${daysLeft} 남았습니다`,
-        meta: `${app.company} · ${toMonthDay(app.nextEventDate as string)} 발표 예정`,
-        ctaLabel: "지원 보기",
+        title: app.jobTitle,
+        meta: `서류 발표 D-${daysLeft} · ${app.company} · ${toMonthDay(app.nextEventDate as string)}`,
+        ctaLabel: "지원 현황",
         href: "/mypage/applications",
         isNewBadge: false,
         daysLeft,
@@ -166,17 +166,19 @@ function ChecklistRowCell({ Icon, title, meta, ctaLabel, href, isNewBadge, onNav
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[13px] font-semibold text-[#17202c]">{title}</span>
+          <span className="text-[16px] font-semibold text-[#17202c]">{title}</span>
+        </div>
+        <div className="mt-0.5 flex flex-wrap items-center gap-[12px]">
           {isNewBadge ? (
             <span className="inline-flex w-fit items-center gap-[8px]">
               <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-positive-dot" />
-              <span className="text-[12px] font-medium text-status-positive">신규</span>
+              <span className="text-[13px] font-medium text-status-positive">신규</span>
             </span>
           ) : null}
+          <p className="text-[13px] leading-[1.5] text-[#68717e]">{meta}</p>
         </div>
-        <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{meta}</p>
       </div>
-      <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] max-[600px]:ml-11">
+      <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] max-[600px]:ml-11">
         {ctaLabel}
       </span>
     </Link>
@@ -189,27 +191,27 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
   return (
     <div className="flex items-start gap-4 px-5 py-4">
       <div className="w-12 shrink-0 text-center">
-        <p className="text-[22px] font-black leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
-        <p className="mt-1 text-[11px] text-[#8a94a3]">{monthLabel}</p>
+        <p className="text-[24px] font-black leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
+        <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
         {time ? (
-          <p className="mt-1 text-[12px] font-semibold text-status-urgent">{time}</p>
+          <p className="mt-1 text-[13px] font-semibold text-status-urgent">{time}</p>
         ) : null}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-semibold text-[#17202c]">{eventLabel}</p>
-        <p className="mt-0.5 text-[13px] text-[#8a94a3]">{jobTitle} · {company}</p>
+        <p className="text-[17px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
+        <p className="mt-1.5 text-[15px] text-[#8a94a3]">{jobTitle} · {company}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           <span className="inline-flex w-fit items-center gap-[8px]">
             {badge.dotClassName ? (
               <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
             ) : null}
-            <span className={clsx("text-[12px] font-medium", badge.className)}>
+            <span className={clsx("text-[13px] font-medium", badge.className)}>
               {badge.label}
             </span>
           </span>
           <Link
             href="/mypage/applications"
-            className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+            className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
           >
             지원 보기
           </Link>
@@ -241,9 +243,9 @@ export function MyPageDashboardClient() {
   const proposalChecklist: ChecklistRow[] = unreadProposals.map((notification) => ({
     id: notification.id,
     Icon: MessageSquare,
-    title: notification.title,
+    title: notification.subjectLabel ?? notification.title,
     meta: `받은 날짜 ${notification.createdAt.split(" ")[0]}`,
-    ctaLabel: "제안 보기",
+    ctaLabel: "받은 제안",
     href: notification.href,
     isNewBadge: true,
     onNavigate: () => markRead(notification.id),
@@ -261,7 +263,7 @@ export function MyPageDashboardClient() {
           <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "대시보드" }]} />
           <div className="mt-5 flex flex-wrap items-start justify-between gap-y-3">
             <div>
-              <h1 className="text-[26px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[22px]">
+              <h1 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[24px]">
                 안녕하세요,{" "}
                 <span className="text-gradient-cta">{USER_NAME}</span>님
                 <br />
@@ -286,13 +288,13 @@ export function MyPageDashboardClient() {
             {/* 지금 확인할 일 — 임박 일정(날짜 파생) + 미열람 제안(알림 읽음 상태 파생) */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">
+                <h2 className="text-[17px] font-bold text-[#17202c]">
                   지금 확인할 일
                   <span className="ml-2 text-status-positive">{checklistRows.length}</span>
                 </h2>
                 <Link
                   href="/mypage/notifications"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
                   알림 전체 보기 ›
                 </Link>
@@ -311,10 +313,10 @@ export function MyPageDashboardClient() {
             {/* 내 이력서 — 작성형 이력서 전체를 행으로 상시 표시(첨부형 pdf 제외) */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">내 이력서</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">내 이력서</h2>
                 <Link
                   href="/mypage/resume"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
                   전체 보기 ›
                 </Link>
@@ -330,7 +332,7 @@ export function MyPageDashboardClient() {
                     <div key={resume.id} className="grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-5 py-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="truncate text-[13px] font-semibold text-[#17202c]">{resume.title}</span>
+                          <span className="truncate text-[16px] font-semibold text-[#17202c]">{resume.title}</span>
                           {resume.isPrimary ? <ResumePrimaryBadge /> : null}
                         </div>
                         {tagLabels.length > 0 ? (
@@ -349,7 +351,7 @@ export function MyPageDashboardClient() {
                           />
                           <span
                             className={clsx(
-                              "text-[12px] font-medium",
+                              "text-[13px] font-medium",
                               isComplete ? "text-status-positive" : "text-status-warning",
                             )}
                           >
@@ -359,7 +361,7 @@ export function MyPageDashboardClient() {
                       </div>
                       <Link
                         href="/mypage/resume"
-                        className="inline-flex h-8 w-full items-center justify-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                        className="inline-flex h-8 w-full items-center justify-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                       >
                         {isComplete ? "보기" : "이어 작성하기"}
                       </Link>
@@ -372,29 +374,29 @@ export function MyPageDashboardClient() {
             {/* 관심 조건 — 설정 여부에 따라 요약/설정 유도, 상시 표시 */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">관심 조건</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">관심 조건</h2>
                 <Link
                   href="/mypage/preferences"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
                   수정 ›
                 </Link>
               </div>
               <div className="px-5 py-4">
                 {hasPreferences ? (
-                  <p className="text-[13px] leading-[1.7] text-[#68717e]">
+                  <p className="text-[15px] leading-[1.7] text-[#68717e]">
                     RA 외 2개 / 3~5년 · 서울·경기
                     <br />
                     이메일 알림 꺼짐{" "}
-                    <Link href="/mypage/preferences" className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]">
+                    <Link href="/mypage/preferences" className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]">
                       알림 켜기
                     </Link>
                   </p>
                 ) : (
-                  <p className="text-[13px] leading-[1.7] text-[#68717e]">
+                  <p className="text-[15px] leading-[1.7] text-[#68717e]">
                     아직 설정한 관심 조건이 없습니다.
                     <br />
-                    <Link href="/mypage/preferences" className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]">
+                    <Link href="/mypage/preferences" className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]">
                       관심 조건 설정 ›
                     </Link>
                   </p>
@@ -412,10 +414,10 @@ export function MyPageDashboardClient() {
             {/* 다가오는 일정 — 예정 일정 전체(내부·외부, 면접·서류발표·마감) */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">다가오는 일정</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">다가오는 일정</h2>
                 <Link
                   href="/calendar"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                  className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]"
                 >
                   캘린더 ›
                 </Link>

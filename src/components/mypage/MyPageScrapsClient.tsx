@@ -31,7 +31,7 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <div className="border border-border bg-white p-10 text-center">
-      <p className="text-[14px] font-medium text-[#303946]">{title}</p>
+      <p className="text-[15px] font-medium text-[#303946]">{title}</p>
       <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
     </div>
   );
@@ -67,7 +67,7 @@ function TrackFilterTabs({
             {option.label}
             <span
               className={clsx(
-                "inline-flex min-w-[20px] items-center justify-center rounded-full px-1.5 py-[1px] text-[11px]",
+                "inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-[1px] text-[12px] font-medium",
                 active ? "bg-white/20 text-white" : "bg-white text-[#8a93a1]",
               )}
             >
@@ -98,15 +98,15 @@ function emptyJobCopy(filter: TrackFilter) {
 function emptyOrganizationCopy(filter: TrackFilter) {
   if (filter === "all") {
     return {
-      title: "스크랩한 기관이 없습니다.",
-      description: "관심 있는 기업, 연구기관, 병원, 약국을 스크랩해두면 새 공고가 올라왔을 때 이곳에서 한눈에 확인할 수 있어요.",
+      title: "관심 등록한 기업·기관이 없습니다.",
+      description: "관심 있는 기업, 연구기관, 병원, 약국을 저장해두면 새 공고가 올라왔을 때 이곳에서 한눈에 확인할 수 있어요.",
     };
   }
 
   const label = trackFilterOptions.find((option) => option.id === filter)?.label ?? "";
   return {
-    title: `${label} 분야에 스크랩한 기관이 없습니다.`,
-    description: "다른 분야를 선택하거나, 관심 있는 기관을 스크랩해보세요.",
+    title: `${label} 분야에 관심 등록한 곳이 없습니다.`,
+    description: "다른 분야를 선택하거나, 관심 있는 기업·기관을 저장해보세요.",
   };
 }
 
@@ -164,7 +164,7 @@ export function MyPageScrapsClient() {
 
   const tabs: { id: ScrapTab; label: string; count: number }[] = [
     { id: "jobs", label: "스크랩한 공고", count: jobIds.length },
-    { id: "organizations", label: "스크랩한 기관", count: orgIds.length },
+    { id: "organizations", label: "관심 기업·기관", count: orgIds.length },
   ];
 
   const removeJob = (jobId: number) => {
@@ -211,7 +211,7 @@ export function MyPageScrapsClient() {
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "스크랩" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">스크랩</h1>
-      <p className="mt-2.5 max-w-[640px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
+      <p className="mt-2.5 max-w-[640px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         관심 있는 채용공고와 기관을 모아 보고, 마감 전에 다시 확인하세요.
       </p>
 
@@ -226,7 +226,7 @@ export function MyPageScrapsClient() {
               aria-selected={active}
               onClick={() => setActiveTab(tab.id)}
               className={clsx(
-                "relative flex items-center gap-1.5 pb-3 text-[14px] font-medium transition-colors",
+                "relative flex items-center gap-1.5 pb-3 text-[15px] font-medium transition-colors",
                 active
                   ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                   : "text-[#8a94a3] hover:text-[#111111]",
@@ -249,7 +249,7 @@ export function MyPageScrapsClient() {
             {visibleJobs.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {visibleJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isBookmarked onToggleBookmark={() => removeJob(job.id)} isScrapContext />
+                  <JobCard key={job.id} job={job} isBookmarked onToggleBookmark={() => removeJob(job.id)} />
                 ))}
               </div>
             ) : (
@@ -274,9 +274,10 @@ export function MyPageScrapsClient() {
         </>
       )}
 
+      {/* 공고는 "스크랩", 기관은 "관심" — 등록 지점(/companies 히어로 "관심 기업으로 저장")과 말을 맞춘다 */}
       {pendingRemoval ? (
         <ScrapUndoToast
-          message={`${pendingRemoval.label} 스크랩을 해제했습니다.`}
+          message={`${pendingRemoval.label} ${pendingRemoval.type === "organization" ? "관심" : "스크랩"}을 해제했습니다.`}
           onUndo={undoRemoval}
           onDismiss={() => setPendingRemoval(null)}
         />

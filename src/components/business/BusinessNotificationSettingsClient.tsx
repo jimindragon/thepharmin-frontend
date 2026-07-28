@@ -28,7 +28,7 @@ export function BusinessNotificationSettingsClient() {
             ]}
           />
           <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">알림 설정</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
             <br />
             결제 완료·취소 등 주요 안내는 카카오톡으로도 발송됩니다.
@@ -40,11 +40,11 @@ export function BusinessNotificationSettingsClient() {
             <div key={group.id} className="px-6 py-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[14px] font-semibold text-[#17202c]">{group.label}</p>
+                  <p className="text-[16px] font-semibold text-[#17202c]">{group.label}</p>
                   <p className="mt-1 text-[13px] leading-[1.6] text-[#68717e]">{group.description}</p>
                 </div>
                 {group.locked ? (
-                  <span className="shrink-0 text-[13px] font-semibold text-[#303946]">항상 발송</span>
+                  <span className="shrink-0 text-[13px] font-medium text-[#303946]">항상 발송</span>
                 ) : (
                   <ToggleSwitch checked={Boolean(emailEnabled[group.id])} onChange={() => toggle(group.id)} label={group.label} />
                 )}

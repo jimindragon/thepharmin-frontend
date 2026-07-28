@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Bookmark, Share2 } from "lucide-react";
 import { companies } from "@/data/companies";
 import { getCompanyTrack, regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
@@ -31,7 +31,7 @@ function institutionHeroBadges(profile: CompanyProfile): string[] | null {
   return badges;
 }
 
-/** 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심기업 버튼). [companyId]/layout.tsx가 모든 탭 페이지에서 공유한다 */
+/** 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심 기업 저장 버튼). [companyId]/layout.tsx가 모든 탭 페이지에서 공유한다 */
 export function CompanyHero({ profile }: { profile: CompanyProfile }) {
   const [interested, setInterested] = useState(false);
   const [shared, setShared] = useState(false);
@@ -82,8 +82,8 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
               className="inline-flex h-11 items-center justify-center gap-2 border border-white/85 bg-white px-4 text-[13px] font-medium text-[#17212c] transition hover:bg-[#f4f4f4] max-[640px]:flex-1"
               aria-pressed={interested}
             >
-              <Heart size={16} fill={interested ? "#111111" : "none"} />
-              관심기업
+              <Bookmark size={16} fill={interested ? "currentColor" : "none"} />
+              관심 기업으로 저장
             </button>
             <button
               type="button"

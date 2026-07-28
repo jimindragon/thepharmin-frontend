@@ -22,7 +22,7 @@ const scheduleDateKeys = new Set(
 );
 
 // 스크랩 공고 마감일(적색 점) — scrapedJobIds를 jobs와 조인해 파싱 가능한 ISO deadline만 사용한다.
-// "채용시 마감" 같은 텍스트 마감(파싱 불가)은 점을 찍지 않는다.
+// "채용 시 마감" 같은 텍스트 마감(파싱 불가)은 점을 찍지 않는다.
 const scrapDeadlineKeys = new Set(
   jobs
     .filter((job) => scrapedJobIds.includes(job.id) && job.deadline)
@@ -40,12 +40,12 @@ export function DashboardMiniCalendar() {
   return (
     <section className="border border-border bg-white">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
-        <h2 className="text-[14px] font-bold text-[#17202c]">
+        <h2 className="text-[17px] font-bold text-[#17202c]">
           {TODAY_YEAR}년 {TODAY_MONTH_1}월
         </h2>
         <Link
           href="/calendar"
-          className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+          className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]"
         >
           전체 캘린더 보기 ›
         </Link>
@@ -58,7 +58,7 @@ export function DashboardMiniCalendar() {
             <div
               key={label}
               className={clsx(
-                "py-1 text-center text-[11px] font-medium",
+                "py-1 text-center text-[12px] font-medium",
                 index === 0 ? "text-[#e95544]" : index === 6 ? "text-[#337ddf]" : "text-[#8a94a3]",
               )}
             >
@@ -80,7 +80,7 @@ export function DashboardMiniCalendar() {
               <div key={key} className="flex flex-col items-center py-1">
                 <span
                   className={clsx(
-                    "grid h-6 w-6 place-items-center rounded-full text-[12px] font-medium",
+                    "grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium",
                     isToday
                       ? "bg-[#1b1f25] text-white"
                       : !inCurrentMonth

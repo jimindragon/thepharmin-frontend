@@ -8,7 +8,7 @@ export function MyPageMockPage({ title, description }: { title: string; descript
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: title }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
-      <p className="mt-2.5 max-w-[560px] text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{description}</p>
+      <p className="mt-2.5 max-w-[560px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{description}</p>
 
       <section className="mt-8 border border-border bg-white p-10 text-center">
         <Eyebrow align="center">준비 중</Eyebrow>

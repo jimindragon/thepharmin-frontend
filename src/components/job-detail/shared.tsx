@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, ChevronRight, Heart, Layers, Lock, MapPin, Share2, type LucideIcon } from "lucide-react";
+import { Bookmark, ChevronRight, Layers, Lock, MapPin, Share2, type LucideIcon } from "lucide-react";
 import { JobCard } from "@/components/JobCard";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
@@ -407,13 +407,13 @@ export function ApplyCard({
   );
 }
 
-// ── 히어로 액션 로우 (로고+기업명+관심기업 / 저장+공유) ─────────────────────────────
+// ── 히어로 액션 로우 (로고+기업명+관심 기업 저장 / 저장+공유) ─────────────────────────────
 
 /**
  * 히어로 텍스트 영역 상단에 얹는 기업 정보 + 액션 묶음.
- * 왼쪽: [로고]+기업명+관심기업(기업 단위 액션), 오른쪽: 저장·공유(공고 단위 액션).
+ * 왼쪽: [로고]+기업명+관심 기업 저장(기업 단위 액션), 오른쪽: 저장·공유(공고 단위 액션).
  * showLogo=false인 트랙(약국)은 로고 자리를 만들지 않고 기업명부터 시작한다.
- * 모바일(≤560px)에서는 로고+기업명 행 아래로 관심기업 버튼이 full-width로 내려가고,
+ * 모바일(≤560px)에서는 로고+기업명 행 아래로 관심 기업 저장 버튼이 full-width로 내려가고,
  * 저장·공유는 기존 모바일 하단바가 담당하므로 여기서는 숨긴다.
  * companyId가 있으면 로고+기업명을 /companies/{companyId}로 감싼다 — 프로필 존재 여부와 무관하게
  * 항상 링크(하단 CompanyCtaButtons "기업 정보 더보기"와 동일한 무조건부 링크 관례). companyId가 없는
@@ -467,13 +467,16 @@ export function JobDetailActionRow({
             interested ? "border-brand text-brand" : "border-[#dfe5ec] text-[#596373] hover:border-brand hover:text-brand",
           )}
         >
-          <Heart size={14} fill={interested ? "currentColor" : "none"} />
-          {interested ? "관심 기업 등록됨" : "관심 기업 등록"}
+          <Bookmark size={14} fill={interested ? "currentColor" : "none"} />
+          {interested ? "관심 기업 저장됨" : "관심 기업으로 저장"}
         </button>
       </div>
 
-      <div className="flex shrink-0 gap-2 max-[560px]:hidden">
-        <ActionIconButton label={saved ? "공고 저장 해제" : "공고 저장"} onClick={onToggleSave} active={saved}>
+      {/* 공고 단위 액션(저장·공유)은 768px부터 여기, 767px 이하는 모바일 하단바가 통째로 담당한다 —
+          두 곳에 동시에 보이는 구간이 없다. 왼쪽 기업 버튼과 아이콘(Bookmark)이 같지만, 기업 버튼은
+          텍스트가 있고 이쪽은 아이콘 전용이라 형태로 구분된다. */}
+      <div className="flex shrink-0 items-center gap-2 max-[767px]:hidden">
+        <ActionIconButton label={saved ? "공고 스크랩 해제" : "공고 스크랩"} onClick={onToggleSave} active={saved}>
           <Bookmark size={17} fill={saved ? "currentColor" : "none"} />
         </ActionIconButton>
         <ActionIconButton label="공고 공유" onClick={onShare}>

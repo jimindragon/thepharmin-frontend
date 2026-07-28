@@ -25,7 +25,7 @@ export function ScrapUndoToast({
         <button
           type="button"
           onClick={onUndo}
-          className="shrink-0 whitespace-nowrap border border-white/25 px-3 py-1.5 text-[12px] font-semibold text-white hover:border-white/60"
+          className="shrink-0 whitespace-nowrap border border-white/25 px-3 py-1.5 text-[13px] font-medium text-white hover:border-white/60"
         >
           되돌리기
         </button>
