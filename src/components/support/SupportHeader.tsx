@@ -139,7 +139,7 @@ export function SupportHeader() {
           {supportNavItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
-              <Link key={item.href} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+              <Link key={item.href} href={item.href} className={headerNavItemClassName(isActive)}>
                 {item.label}
               </Link>
             );

@@ -54,16 +54,16 @@ export function ProfileHubClient() {
               { label: "기업정보 관리" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
             기업 정보 관리
           </h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             관리할 기업/기관 정보 트랙을 선택하세요.
           </p>
         </div>
 
         {/* 개발용 배지 — 실서비스에서는 계정 트랙 분기로 대체될 예정인 검토용 임시 허브임을 표시 */}
-        <span className="mt-1 inline-flex h-5 shrink-0 items-center rounded-full border border-[#dfe4ea] bg-[#f5f6f7] px-2 text-[10.5px] font-medium text-[#9aa3af]">
+        <span className="mt-1 inline-flex h-5 shrink-0 items-center rounded-full border border-[#dfe4ea] bg-[#f5f6f7] px-2 text-[13px] font-medium text-[#9aa3af]">
           개발용
         </span>
       </div>
@@ -77,9 +77,6 @@ export function ProfileHubClient() {
             onClick={() => router.push(track.href)}
             className="track-card"
           >
-            {/* 상단 그라데이션 라인 (hover/focus 시 scaleX 0→1) */}
-            <div className="track-card-line" />
-
             {/* 이미지 16:10 */}
             <div className="relative aspect-[16/10] overflow-hidden">
               <Image
@@ -93,8 +90,8 @@ export function ProfileHubClient() {
 
             {/* 트랙명 + 설명 */}
             <div className="px-3 py-3">
-              <p className="text-[14px] font-semibold text-[#17202c]">{track.label}</p>
-              <p className="mt-0.5 text-[12px] text-[#8a94a3]">{track.description}</p>
+              <p className="text-[16px] font-semibold text-[#17202c]">{track.label}</p>
+              <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">{track.description}</p>
             </div>
 
             {/* 우하단 화살표 — hover/focus 시 표시 */}
@@ -122,13 +119,13 @@ export function ProfileHubClient() {
         <div className="mt-3 flex gap-2">
           <Link
             href="/business/dashboard?orgStatus=pending"
-            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
+            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
           >
             검토 중 상태로 보기
           </Link>
           <Link
             href="/business/dashboard?orgStatus=approved"
-            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
+            className="inline-flex h-9 items-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]"
           >
             승인 완료 상태로 보기
           </Link>

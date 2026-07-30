@@ -103,10 +103,10 @@ function CompleteContent() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h1 className="mt-5 text-[28px] font-black tracking-[-0.025em] text-[#17202c]">
+        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
           공고가 등록되었습니다
         </h1>
-        <p className="mt-2 text-[14px] font-normal leading-[1.7] text-[#68717e]">
+        <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
           등록한 공고는 채용공고 목록에 무료로 노출됩니다.
         </p>
         <span className="mt-4 inline-flex h-7 w-fit items-center justify-center border border-status-warning-border bg-status-warning-subtle px-2 text-[11px] font-medium text-status-warning">
@@ -124,7 +124,7 @@ function CompleteContent() {
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{title}</span>
+                <span className="text-[16px] font-semibold tracking-[-0.01em] text-[#17202c]">{title}</span>
                 <span className="shrink-0 border border-[#d3d9e1] bg-white px-2 py-0.5 text-[12px] font-medium text-[#596373]">
                   {trackLabel}
                 </span>
@@ -157,7 +157,7 @@ function CompleteContent() {
         {/* 부스트 유도 카드 */}
         <div className="surface mt-6 px-8 py-6 max-[480px]:px-5">
           <p className="text-[12px] font-medium uppercase tracking-[0.06em] text-[#8a9ab0]">선택 사항</p>
-          <h2 className="mt-1.5 text-[20px] font-black tracking-[-0.02em] text-[#17202c]">
+          <h2 className="mt-1.5 text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
             공고 노출을 더 높여볼까요?
           </h2>
           <p className="mt-2 text-[13px] font-normal leading-[1.7] text-[#68717e]">
@@ -173,13 +173,13 @@ function CompleteContent() {
                 <div key={g.id} className="flex items-start justify-between gap-4 py-5">
                   <div className="min-w-0">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a9ab0]">{g.name}</p>
-                    <p className="mt-1 text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">{g.location}</p>
+                    <p className="mt-1 text-[16px] font-semibold tracking-[-0.01em] text-[#17202c]">{g.location}</p>
                     <p className="mt-1 text-[13px] font-normal text-[#8a9ab0]">{desc}</p>
                   </div>
                   {amount !== null && (
                     <div className="shrink-0 text-right">
                       <p className="text-[11px] font-normal text-[#8a9ab0]">1주 기준</p>
-                      <p className="mt-1 text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">{formatKrw(amount)}~</p>
+                      <p className="mt-1 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">{formatKrw(amount)}~</p>
                     </div>
                   )}
                 </div>

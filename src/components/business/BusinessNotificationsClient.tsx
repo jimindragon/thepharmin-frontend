@@ -40,7 +40,7 @@ export function BusinessNotificationsClient() {
               { label: "알림" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">알림</h1>
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림</h1>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">받은 알림을 확인하고 관련 페이지로 이동할 수 있습니다.</p>
         </div>
 
@@ -93,7 +93,7 @@ export function BusinessNotificationsClient() {
             </p>
           ) : (
             <div>
-              {/* 구분선은 divide-* 대신 행별 border-top으로 둔다 — divide 색상 유틸은 border-color 전체를 덮어써서 좌측 악센트 바를 먹는다. */}
+              {/* 구분선은 divide-* 대신 행별 border-top으로 둔다 — 행마다 border 색을 따로 지정하는 편이 divide 색상 유틸보다 다루기 쉽다. */}
               {visible.map((notification) => {
                 const read = !isLoaded || isRead(notification.id);
                 return (
@@ -101,10 +101,7 @@ export function BusinessNotificationsClient() {
                     key={notification.id}
                     href={notification.href}
                     onClick={() => markRead(notification.id)}
-                    className={clsx(
-                      "group flex items-start gap-3 border-l-2 border-t border-t-[#e5e9ef] px-6 py-5 first:border-t-0",
-                      !read ? "border-l-[#111111]" : "border-l-transparent",
-                    )}
+                    className="group flex items-start gap-3 border-t border-t-[#e5e9ef] px-6 py-5 first:border-t-0"
                   >
                     <span
                       className={clsx("mt-[9px] h-[8px] w-[8px] shrink-0 rounded-full", !read && "bg-danger")}

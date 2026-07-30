@@ -24,7 +24,7 @@ export function SignupStepShell({
         <section className="mt-8 border border-border bg-white p-10 max-[560px]:p-6">
           <Eyebrow>기업회원 가입</Eyebrow>
           <h1 className="mt-3 text-[28px] font-bold tracking-[-0.02em] text-[#17202c]">{title}</h1>
-          <p className="mt-3 text-[14px] font-normal leading-[1.7] text-[#68717e]">{subtitle}</p>
+          <p className="mt-3 text-[15px] font-normal leading-[1.7] text-[#68717e]">{subtitle}</p>
           <div className="mt-8">{children}</div>
         </section>
       </div>

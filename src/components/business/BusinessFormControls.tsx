@@ -63,7 +63,7 @@ export function ToggleChip({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "relative h-9 border px-3 text-[12px] font-medium transition",
+        "relative h-9 border px-3 text-[13px] font-medium transition",
         selected ? "border-[#111111] bg-[#f7f8fa] text-[#111111]" : "border-[#d8e0e8] bg-white text-[#4f5967] hover:border-[#111111]",
         auto && "border-dashed",
         disabled && "cursor-not-allowed",
@@ -72,7 +72,7 @@ export function ToggleChip({
     >
       {label}
       {auto ? (
-        <span className="absolute -right-1.5 -top-2 bg-[#111111] px-1 py-0.5 text-[9px] font-medium leading-none text-white">자동</span>
+        <span className="absolute -right-1.5 -top-2 bg-[#111111] px-1 py-0.5 text-[11px] font-medium leading-none text-white">자동</span>
       ) : null}
     </button>
   );
@@ -126,7 +126,9 @@ export function TextInput({
         placeholder={placeholder}
         onChange={(event) => onChange?.(event.target.value)}
         className={clsx(
-          "h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8",
+          // leading-tight — 한 줄 입력이라 줄간격이 필요 없다. 브라우저 기본(1.65)에 맡기면
+          // 15px에서 h-11 상하 여유가 한쪽 8.6px밖에 남지 않는다. textarea에는 쓰지 말 것.
+          "h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[15px] font-normal leading-tight text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8",
           (disabled || readOnly) && "bg-[#f5f6f7] text-[#7d8796]",
         )}
       />
@@ -155,7 +157,7 @@ export function FormActionButton({
       disabled={disabled}
       className={clsx(
         CONTROL_HEIGHT,
-        "inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:text-[#b7bfc9]",
+        "inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:text-[#b7bfc9]",
         className,
       )}
     >
@@ -181,8 +183,8 @@ export function SectionCard({
     <section id={id} className="scroll-mt-[132px] border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
-          {description ? <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8491]">{description}</p> : null}
+          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
+          {description ? <p className="mt-2 text-[15px] font-normal leading-[1.65] text-[#7b8491]">{description}</p> : null}
         </div>
         {action ? (
           <div className="flex shrink-0 items-start gap-2 pt-0.5">

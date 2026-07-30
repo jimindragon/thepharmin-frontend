@@ -41,10 +41,10 @@ export function LockedContent({
 }: LockedContentProps) {
   const ctaClassName =
     ctaVariant === "gradient"
-      ? "mt-1 inline-flex h-9 items-center px-4 text-[12px] font-medium text-white transition hover:brightness-110 active:brightness-90"
+      ? "mt-1 inline-flex h-9 items-center px-4 text-[13px] font-medium text-white transition hover:brightness-110 active:brightness-90"
       : ctaVariant === "solid"
-        ? "mt-1 inline-flex h-9 items-center bg-[#111111] px-4 text-[12px] font-medium text-white transition hover:bg-[#2a2a2a]"
-        : "mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[12px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white";
+        ? "mt-1 inline-flex h-9 items-center bg-[#111111] px-4 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
+        : "mt-1 inline-flex h-9 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white";
   const ctaStyle =
     ctaVariant === "gradient" ? { backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" } : undefined;
 
@@ -52,7 +52,15 @@ export function LockedContent({
     <div
       role="region"
       aria-label="잠긴 콘텐츠"
-      className={clsx("relative overflow-hidden border border-border bg-white", roomy && "min-h-[210px]", className)}
+      className={clsx(
+        "relative overflow-hidden border border-border bg-white",
+        // roomy의 min-h-[210px]는 "하한"으로만 쓴다 — 콘텐츠 층을 흐름(static)에 두고 컨테이너가 flex로 세로
+        // 중앙 정렬하므로, 글씨가 커져 내부 높이가 208px(=210 − 보더 2)를 넘기면 컨테이너가 함께 늘어난다.
+        // 예전에는 콘텐츠가 absolute inset-0이라 210px에 갇혀 위아래가 잘렸다. roomy=false 경로는 원래부터
+        // 흐름 기반이었어서 이제 두 변형이 같은 구조(배경만 absolute, 콘텐츠는 흐름)를 공유한다.
+        roomy && "flex min-h-[210px] flex-col justify-center",
+        className,
+      )}
     >
       <div
         aria-hidden="true"
@@ -72,13 +80,13 @@ export function LockedContent({
       />
       <div
         className={clsx(
-          "z-10 flex flex-col items-center px-4 text-center",
-          roomy ? "absolute inset-0 justify-center gap-2.5" : "relative gap-2 pb-5 pt-9",
+          "relative z-10 flex flex-col items-center px-4 text-center",
+          roomy ? "gap-2.5" : "gap-2 pb-5 pt-9",
         )}
       >
         <Lock size={17} className="text-[#8a95a5]" aria-hidden="true" />
-        <p className="max-w-[260px] text-[13px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
-        {secondaryMessage ? <p className="max-w-[260px] text-[11.5px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
+        <p className="max-w-[260px] text-[15px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
+        {secondaryMessage ? <p className="max-w-[260px] text-[12px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
         {ctaHref ? (
           <Link href={ctaHref} className={ctaClassName} style={ctaStyle}>
             {ctaLabel}

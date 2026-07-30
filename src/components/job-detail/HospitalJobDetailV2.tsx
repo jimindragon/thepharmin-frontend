@@ -141,7 +141,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                     onShare={handleShare}
                   />
                   <p className="mt-3 text-[15px] font-normal text-[#667181]">{heroMeta}</p>
-                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
+                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px]">
                     {job.title}
                   </h1>
                   <p className="mt-4 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">
@@ -186,14 +186,14 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
               <IconSectionShell id="qualifications" icon={BadgeCheck} title="자격 요건 및 우대사항">
                 <div className="space-y-7">
                   <div>
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">필수 요건</h3>
+                    <h3 className="text-[17px] font-bold text-[#2f3845]">필수 요건</h3>
                     <div className="mt-3">
                       <FormattedContentView content={{ format: "bullet", items: job.requirements }} />
                     </div>
                   </div>
                   {hasPreferred ? (
                     <div>
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">우대사항</h3>
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">우대사항</h3>
                       <div className="mt-3">
                         <FormattedContentView content={{ format: "bullet", items: job.preferred as string[] }} />
                       </div>
@@ -207,32 +207,32 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                 <div className="space-y-7">
                   {hasShiftType ? (
                     <div>
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무 형태</h3>
-                      <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">근무 형태</h3>
+                      <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                         {shiftTypeLabel}
                       </p>
                     </div>
                   ) : null}
                   {hasBenefits ? (
                     <div className={clsx(hasShiftType && "border-t border-[#edf1f4] pt-6")}>
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">복리후생</h3>
-                      <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">복리후생</h3>
+                      <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                         {job.benefitIds!.map((id) => hospitalBenefitLabelMap[id] ?? id).join(" · ")}
                       </p>
                     </div>
                   ) : null}
                   {hasWorkConditionDetail ? (
                     <div className={clsx((hasShiftType || hasBenefits) && "border-t border-[#edf1f4] pt-6")}>
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무조건 상세</h3>
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">근무조건 상세</h3>
                       <div className="mt-3">
                         <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail as string] }} />
                       </div>
                     </div>
                   ) : null}
                   <div className={clsx((hasShiftType || hasBenefits || hasWorkConditionDetail) && "border-t border-[#edf1f4] pt-6")}>
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
+                    <h3 className="text-[17px] font-bold text-[#2f3845]">근무지역</h3>
                     <div className="mt-3 space-y-4">
-                      <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{job.address}</p>
+                      <p className="text-[15px] font-normal leading-[1.75] text-[#3f4855]">{job.address}</p>
                       <MapPlaceholder address={job.address} orgName={org.hospitalName} />
                     </div>
                   </div>
@@ -263,8 +263,8 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                 </div>
                 {hasPharmacyEnvironmentDescription ? (
                   <div className="mt-6 border-t border-[#f0f2f5] pt-6">
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">약제부 근무 환경</h3>
-                    <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                    <h3 className="text-[17px] font-bold text-[#2f3845]">약제부 근무 환경</h3>
+                    <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                       {org.pharmacyEnvironmentDescription}
                     </p>
                   </div>
@@ -277,7 +277,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                   <div className="space-y-7">
                     {hasHiringProcess ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">전형절차</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">전형절차</h3>
                         <div className="mt-3">
                           <HiringProcessSteps steps={job.hiringProcess} />
                         </div>
@@ -285,8 +285,8 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                     ) : null}
                     {hasRequiredDocuments ? (
                       <div className={clsx(hasHiringProcess && "border-t border-[#edf1f4] pt-6")}>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">제출서류</h3>
-                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">제출서류</h3>
+                        <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                           {job.requiredDocuments!.join(" · ")}
                         </p>
                       </div>
@@ -301,7 +301,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                   <div className="space-y-7">
                     {hasDetailImages ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">상세 이미지</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">상세 이미지</h3>
                         <div className="mt-3 space-y-3">
                           {job.detailImages!.map((url) => (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -312,7 +312,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                     ) : null}
                     {hasAttachments ? (
                       <div className={clsx(hasDetailImages && "border-t border-[#edf1f4] pt-6")}>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">첨부파일</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">첨부파일</h3>
                         <div className="mt-3 space-y-2">
                           {job.attachments!.map((file) => (
                             <a
@@ -344,7 +344,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
                   <CompanyLogo name={org.hospitalName} logoText="" logoUrl={org.logoUrl} size="lg" />
                   <div>
                     <p className="text-[17px] font-bold text-[#1f2733]">{org.hospitalName}</p>
-                    <p className="mt-2 text-[16px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>
+                    <p className="mt-2 text-[15px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>
                     {org.fullIntro ? (
                       <p className="mt-3 text-[14px] font-normal leading-relaxed text-[#3f4855]">{org.fullIntro}</p>
                     ) : null}

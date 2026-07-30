@@ -21,7 +21,7 @@ const MAX_KEYWORDS = 8;
 /** 기관 특징 최대 개수 — 병원/약국(HospitalOrgProfileClient/PharmacyOrgProfileClient)과 동일 */
 const MAX_FEATURES = 6;
 /** 로고·상단 대표 이미지 "이미지 변경/등록" 버튼 전용 — 산업/병원/약국과 동일 스타일 복제 */
-const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[11.5px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
+const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
 /** 텍스트 버튼(삭제 등) — 산업/병원/약국과 동일 스타일 복제 */
 const TEXT_BUTTON = "text-[12px] font-medium text-[#8a94a3] underline-offset-2 hover:text-[#111111] hover:underline";
 
@@ -142,7 +142,7 @@ export function ResearchOrgProfileClient() {
 
   const saveProfile = () => {
     setSaved(true);
-    window.setTimeout(() => setSaved(false), 2200);
+    window.setTimeout(() => setSaved(false), 2400);
   };
 
   return (
@@ -156,8 +156,8 @@ export function ResearchOrgProfileClient() {
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "연구기관 정보 관리" }]} />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">연구기관 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">채용공고와 연구기관 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">연구기관 정보 관리</h1>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">채용공고와 연구기관 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
           <span className="inline-flex h-11 items-center justify-center gap-2 border border-[#e2e8ef] bg-[#f7f8fa] px-4 text-[13px] font-medium text-[#a4adba] cursor-not-allowed max-[760px]:flex-1">
@@ -176,7 +176,7 @@ export function ResearchOrgProfileClient() {
               <InfoTooltip text="인증 정보는 승인 상태와 인증 배지에 사용됩니다. 변경이 필요한 경우 변경 요청을 보내주시면 운영팀 검토 후 반영됩니다." />
             </span>
           }
-          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기관 인증 완료</span>}
+          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[13px] font-medium text-[#303946]">기관 인증 완료</span>}
         >
           <div className="grid grid-cols-4 border border-border max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
@@ -186,13 +186,13 @@ export function ResearchOrgProfileClient() {
               ["사업자등록증명원", statusLabel(profile.businessLicenseFile.status)],
             ].map(([label, value]) => (
               <div key={label} className="border-r border-border px-4 py-4 last:border-r-0 max-[900px]:border-b">
-                <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
+                <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
                 <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
               </div>
             ))}
           </div>
           <div className="mt-4">
-            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
+            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#303946] hover:border-[#111111]">
               기관 정보 변경 요청
               <ExternalLink size={13} />
             </Link>
@@ -250,7 +250,7 @@ export function ResearchOrgProfileClient() {
                 ))}
               </div>
               {profile.institutionType === "" ? (
-                <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관 유형을 선택해 주세요. 연구 분류와 검색에 사용됩니다.</p>
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관 유형을 선택해 주세요. 연구 분류와 검색에 사용됩니다.</p>
               ) : null}
             </div>
 
@@ -261,7 +261,7 @@ export function ResearchOrgProfileClient() {
               <div className="space-y-4">
                 {researchFieldCategoryOptions.map((category) => (
                   <div key={category.id} className="space-y-2">
-                    <p className="text-[11.5px] font-medium text-[#8a94a3]">{category.label}</p>
+                    <p className="text-[12px] font-medium text-[#8a94a3]">{category.label}</p>
                     <div className="flex flex-wrap gap-2">
                       {category.subcategories.map((sub) => (
                         <ToggleChip
@@ -275,7 +275,7 @@ export function ResearchOrgProfileClient() {
                   </div>
                 ))}
               </div>
-              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
+              <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
             </div>
 
             <div className="space-y-2">
@@ -291,7 +291,7 @@ export function ResearchOrgProfileClient() {
                 ))}
               </div>
               {profile.staffScale === "" ? (
-                <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">인력 규모를 선택해 주세요. 선택하지 않아도 저장할 수 있습니다.</p>
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">인력 규모를 선택해 주세요. 선택하지 않아도 저장할 수 있습니다.</p>
               ) : null}
             </div>
 
@@ -305,7 +305,7 @@ export function ResearchOrgProfileClient() {
                 className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
               />
               <div className="flex justify-end">
-                <span className="text-[11px] font-medium text-[#8a94a3]">{profile.equipmentInfra.length} / 2000</span>
+                <span className="text-[12px] font-normal text-[#8a94a3]">{profile.equipmentInfra.length} / 2000</span>
               </div>
             </div>
 
@@ -319,7 +319,7 @@ export function ResearchOrgProfileClient() {
                 className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
               />
               <div className="flex justify-end">
-                <span className="text-[11px] font-medium text-[#8a94a3]">{profile.achievements.length} / 2000</span>
+                <span className="text-[12px] font-normal text-[#8a94a3]">{profile.achievements.length} / 2000</span>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@ export function ResearchOrgProfileClient() {
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between gap-3">
               <FieldLabel required>한 줄 소개</FieldLabel>
-              <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
+              <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
             </div>
             <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="예: 신약 타깃 발굴부터 중개연구까지 수행하는 연구기관" />
           </div>
@@ -392,8 +392,8 @@ export function ResearchOrgProfileClient() {
             <div className="mt-3 space-y-2.5">
               {profile.features.length > 0 ? (
                 <div className="grid grid-cols-[1fr_2fr_44px] items-end gap-x-3 gap-y-1.5 max-[560px]:hidden">
-                  <p className="text-[11px] font-medium text-[#8a94a3]">제목</p>
-                  <p className="text-[11px] font-medium text-[#8a94a3]">내용</p>
+                  <p className="text-[12px] font-medium text-[#8a94a3]">제목</p>
+                  <p className="text-[12px] font-medium text-[#8a94a3]">내용</p>
                   <div aria-hidden />
                 </div>
               ) : null}
@@ -432,7 +432,7 @@ export function ResearchOrgProfileClient() {
                 </FormActionButton>
               </div>
             ) : null}
-            <p className="mt-2 text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관 상세 페이지에 표시됩니다. 최대 6개</p>
+            <p className="mt-2 text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관 상세 페이지에 표시됩니다. 최대 6개</p>
           </div>
 
           <div className="mt-6 space-y-2">
@@ -445,7 +445,7 @@ export function ResearchOrgProfileClient() {
                     type="button"
                     onClick={() => removeKeyword(keyword)}
                     aria-label={`${keyword} 키워드 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white"
+                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[13px] font-medium text-white"
                   >
                     {keyword}
                     <X size={12} className="opacity-70" aria-hidden />
@@ -473,9 +473,9 @@ export function ResearchOrgProfileClient() {
               </FormActionButton>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
+              <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
               {profile.keywords.length > 0 ? (
-                <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
+                <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
               ) : null}
             </div>
           </div>
@@ -524,7 +524,7 @@ export function ResearchOrgProfileClient() {
           <div className="my-6 border-t border-[#f0f2f5]" />
 
           <div>
-            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
+            <h3 className="text-[16px] font-semibold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
             <div className="mt-3 space-y-2.5">
               <label className="flex items-center gap-2 text-[13px] font-medium text-[#3c4654]">
                 <input

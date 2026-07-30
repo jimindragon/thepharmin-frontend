@@ -118,21 +118,25 @@ function TaskRow({
     <div className="flex items-start gap-3 px-5 py-4 max-[600px]:flex-wrap">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[15px] font-semibold text-[#17202c]">{title}</span>
-          <span className="inline-flex items-center gap-[8px]">
+          <span className="text-[16px] font-semibold text-[#17202c]">{title}</span>
+        </div>
+        {/* 배지는 제목 줄이 아니라 메타 줄에 둔다 — 제목이 길어져도 배지가 밀려 내려가지 않는다
+            (개인 대시보드 ChecklistRowCell과 같은 배치) */}
+        <div className="mt-0.5 flex flex-wrap items-center gap-[12px]">
+          <span className="inline-flex w-fit items-center gap-[8px]">
             {badge.dotClassName ? (
               <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
             ) : null}
-            <span className={clsx("text-[12px] font-medium", badge.className)}>
+            <span className={clsx("text-[13px] font-medium", badge.className)}>
               {badge.label}
             </span>
           </span>
+          <p className="text-[13px] leading-[1.5] text-[#68717e]">{desc}</p>
         </div>
-        <p className="mt-0.5 text-[12px] leading-[1.5] text-[#68717e]">{desc}</p>
       </div>
       <Link
         href={action.href}
-        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111] max-[600px]:ml-11"
+        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111] max-[600px]:ml-11"
       >
         {action.label}
       </Link>
@@ -152,7 +156,7 @@ function InterviewRow({
   return (
     <div className="flex items-start gap-4 px-5 py-4">
       <div className="w-12 shrink-0 text-center">
-        <p className="text-[22px] font-black leading-none tracking-[-0.02em] text-[#17202c]">
+        <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">
           {day}
         </p>
         <p className="mt-1 text-[11px] text-[#8a94a3]">{monthLabel}</p>
@@ -198,7 +202,7 @@ export function BusinessDashboardClient() {
           />
           <div className="mt-5 flex flex-wrap items-start justify-between gap-y-3">
           <div>
-            <h1 className="text-[26px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[22px]">
+            <h1 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[24px]">
               안녕하세요,{" "}
               <span className="text-gradient-cta">{COMPANY_NAME}</span>님
               <br />
@@ -265,7 +269,7 @@ export function BusinessDashboardClient() {
             {/* 처리할 항목 */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">
+                <h2 className="text-[17px] font-bold text-[#17202c]">
                   처리할 항목
                   <span className="ml-2 text-status-positive">5</span>
                 </h2>
@@ -286,7 +290,7 @@ export function BusinessDashboardClient() {
             {/* 공고별 지원 현황 */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">공고별 지원 현황</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">공고별 지원 현황</h2>
                 <Link
                   href="/business/jobs"
                   className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
@@ -344,7 +348,7 @@ export function BusinessDashboardClient() {
             {/* 다가오는 면접 */}
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">다가오는 면접</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">다가오는 면접</h2>
                 <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
               </div>
               <div className="divide-y divide-[#e5e9ef]">
@@ -357,7 +361,7 @@ export function BusinessDashboardClient() {
             {/* 최근 활동 */}
             <section className="border border-border bg-white">
               <div className="border-b border-border px-5 py-4">
-                <h2 className="text-[14px] font-bold text-[#17202c]">최근 활동</h2>
+                <h2 className="text-[17px] font-bold text-[#17202c]">최근 활동</h2>
               </div>
               <div className="divide-y divide-[#e5e9ef]">
                 {RECENT_ACTIVITIES.map((act) => (

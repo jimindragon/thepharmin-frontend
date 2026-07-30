@@ -7,6 +7,7 @@ import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
+import { HINT, IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
@@ -111,7 +112,7 @@ function ChipGroup({
           );
         })}
       </div>
-      {hint && <p className="mt-2 text-[11.5px] text-[#a0a9b7]">{hint}</p>}
+      {hint && <p className="mt-2 text-[12px] text-[#a0a9b7]">{hint}</p>}
     </div>
   );
 }
@@ -169,7 +170,7 @@ function ToggleRow({
     <div className="flex items-start justify-between gap-4 border border-border bg-white px-4 py-3">
       <div>
         <p className="text-[13px] font-medium text-[#303946]">{title}</p>
-        {description && <p className="mt-1 text-[11.5px] text-[#7b8491]">{description}</p>}
+        {description && <p className="mt-1 text-[12px] text-[#7b8491]">{description}</p>}
       </div>
       <ToggleSwitch checked={checked} onChange={onChange} label={ariaLabel} />
     </div>
@@ -237,7 +238,7 @@ function TwoTierPicker({
           ))}
         </div>
         <div className="p-4">
-          <p className="mb-3 text-[12.5px] font-semibold text-[#4f5967]">
+          <p className="mb-3 text-[13px] font-semibold text-[#4f5967]">
             {activeCategory?.label} · 세부 항목
           </p>
           <div role="group" aria-label={detailAriaLabel} className="flex flex-wrap gap-2">
@@ -261,7 +262,7 @@ function TwoTierPicker({
         </div>
       </div>
       {selected.size > 0 && (
-        <p className="mt-2 text-[11.5px] text-[#7b8491]">
+        <p className="mt-2 text-[12px] text-[#7b8491]">
           선택됨: {Array.from(selected).map((id) => labelById.get(id) ?? id).join(", ")}
         </p>
       )}
@@ -272,11 +273,6 @@ function TwoTierPicker({
 
 // ── Style constants ────────────────────────────────────────────────────────────
 
-const IN =
-  "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
-const SEL = `${IN} appearance-none pr-8`;
-const TA = `${IN} h-auto resize-y py-2.5 leading-relaxed`;
-const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 

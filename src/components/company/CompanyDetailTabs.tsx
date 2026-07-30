@@ -31,8 +31,15 @@ export function CompanyDetailTabs({ companyId, profile }: { companyId: string; p
 
   const rootHref = `/companies/${companyId}`;
 
+  // nav는 w-fit으로 탭 총폭(최대 5개, ~473px)만큼만 차지하되 max-w-full로 부모(app-shell) 폭에 갇힌다 —
+  // max-w-full 없이 w-fit만 두면 좁은 화면(390px 등)에서 nav가 부모를 넘어 문서 전체에 가로 스크롤이 생겼다.
+  // 넘치는 분량은 nav 내부에서만 가로 스크롤한다(overflow-hidden은 overflow-x-auto와 서로 덮어써 제거했다).
   return (
-    <nav className="mt-6 flex h-11 w-fit overflow-x-auto overflow-hidden border border-border bg-white" role="tablist" aria-label="기업 정보 메뉴">
+    <nav
+      className="mt-6 flex h-11 w-fit max-w-full overflow-x-auto overflow-y-hidden border border-border bg-white"
+      role="tablist"
+      aria-label="기업 정보 메뉴"
+    >
       {tabs.map((tab) => {
         // 기업 개요 탭(루트 href)은 정확 일치만 활성으로 본다 — 하위 경로 매칭을 적용하면 모든 하위 페이지에서 항상 활성이 되어버린다.
         // 그 외 탭은 목록 페이지(/interviews)뿐 아니라 하위 경로(/interviews/new 등)에서도 활성으로 본다.

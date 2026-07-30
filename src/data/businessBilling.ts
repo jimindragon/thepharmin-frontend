@@ -32,8 +32,8 @@ export function boostStatusLabel(status: BoostStatus, daysLeft: number): string 
 }
 
 export function boostStatusClass(status: BoostStatus): string {
-  if (status === "ending_soon") return "text-status-urgent font-semibold";
-  if (status === "active") return "text-status-positive font-semibold";
+  if (status === "ending_soon") return "text-status-urgent font-medium";
+  if (status === "active") return "text-status-positive font-medium";
   return "text-[#8a94a3]";
 }
 

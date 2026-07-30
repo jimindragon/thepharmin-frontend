@@ -27,7 +27,7 @@ export function BusinessNotificationSettingsClient() {
               { label: "알림 설정" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">알림 설정</h1>
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림 설정</h1>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
             <br />

@@ -22,7 +22,7 @@ export function InterviewsFeedClient({ items, isLoggedIn }: InterviewsFeedClient
 
   return (
     <section className="mt-8">
-      <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">전체 면접 후기</h2>
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#111111]">전체 면접 후기</h2>
 
       {items.length ? (
         <div className="mt-5 grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
@@ -44,7 +44,7 @@ export function InterviewsFeedClient({ items, isLoggedIn }: InterviewsFeedClient
         </div>
       ) : (
         <div className="mt-5 flex h-[160px] flex-col items-center justify-center gap-1.5 border border-[#e5e9ef] bg-[#fbfcfd] text-center">
-          <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 면접 후기가 없습니다.</p>
+          <p className="text-[15px] font-medium text-[#303946]">아직 등록된 면접 후기가 없습니다.</p>
         </div>
       )}
       {notice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{notice}</p> : null}

@@ -146,7 +146,7 @@ export function FormattedContentView({ content, fallback }: { content?: Formatte
 
   if (normalized.format === "paragraph") {
     return (
-      <div className="space-y-3 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+      <div className="space-y-3 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
         {normalized.items.map((item) => (
           <p key={item}>{item}</p>
         ))}
@@ -231,7 +231,7 @@ export function IconSectionShell({
   return (
     <section id={id} className="scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 text-[26px] font-bold tracking-[-0.02em] text-[#242b36]">
+        <h2 className="flex items-center gap-2 text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">
           <Icon size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
           {title}
         </h2>
@@ -283,7 +283,7 @@ export function MapPlaceholder({ address, orgName }: { address: string; orgName:
       <div className="relative z-10 border border-[#d7dde5] bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
         <MapPin className="mx-auto text-[#6b7280]" size={20} aria-hidden />
         <p className="mt-1 text-[13px] font-bold text-[#2f3845]">{orgName}</p>
-        <p className="mt-0.5 text-[11.5px] font-normal text-[#8993a1]">{address}</p>
+        <p className="mt-0.5 text-[12px] font-normal text-[#8993a1]">{address}</p>
       </div>
     </div>
   );
@@ -293,8 +293,8 @@ export function MapPlaceholder({ address, orgName }: { address: string; orgName:
 export function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[120px_1fr] items-start gap-x-6 py-3 max-[560px]:grid-cols-1 max-[560px]:gap-x-0 max-[560px]:gap-y-1">
-      <span className="text-[13px] font-medium text-[#8993a1]">{label}</span>
-      <span className="min-w-0 text-left text-[14px] font-normal leading-relaxed text-[#2f3845]">
+      <span className="text-[14px] font-medium text-[#8993a1]">{label}</span>
+      <span className="min-w-0 text-left text-[15px] font-normal leading-relaxed text-[#2f3845]">
         {value}
       </span>
     </div>
@@ -370,14 +370,14 @@ export function ApplyCard({
     <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
       <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
       {deadlineLabel ? (
-        <h2 className={clsx("mt-2 text-[30px] font-bold", urgent ? "text-danger" : "text-brand")}>{deadlineLabel}</h2>
+        <h2 className={clsx("mt-2 text-[24px] font-bold", urgent ? "text-danger" : "text-brand")}>{deadlineLabel}</h2>
       ) : null}
       <p className="mt-2 text-[13px] font-medium text-[#8993a1]">{APPLY_METHOD_LABELS[method]}</p>
 
       <button
         type="button"
         onClick={method === "homepage" ? () => window.open(target, "_blank", "noopener,noreferrer") : undefined}
-        className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-brand text-[15px] font-medium text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
+        className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-brand text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
       >
         {APPLY_BUTTON_LABELS[method]}
       </button>
@@ -497,19 +497,19 @@ export function CompanyCtaButtons({ companyId, detailLabel = "기업 정보 더�
     <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
       <Link
         href={`/companies/${companyId}`}
-        className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
+        className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[13px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
       >
         {detailLabel}
       </Link>
       <Link
         href={`/companies/${companyId}/reviews`}
-        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
+        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[13px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
       >
         기업 리뷰 보기
       </Link>
       <Link
         href={`/companies/${companyId}/interviews`}
-        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
+        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[13px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
       >
         면접 후기 보기
       </Link>
@@ -554,7 +554,7 @@ export function SimilarJobsSection({ jobs, track }: { jobs: Job[]; track: JobTra
   return (
     <section className="border border-border bg-white px-7 py-6 max-[720px]:px-5">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 text-[26px] font-bold tracking-[-0.02em] text-[#242b36] max-[720px]:text-[20px]">
+        <h2 className="flex items-center gap-2 text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">
           <Layers size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
           비슷한 공고
         </h2>

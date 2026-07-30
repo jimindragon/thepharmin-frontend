@@ -28,7 +28,7 @@ export function SignupStepIndicator({ currentStep, track }: { currentStep: 1 | 2
               >
                 {done ? <Check size={15} /> : step}
               </span>
-              <span className={clsx("whitespace-nowrap text-[13.5px] font-medium", active || done ? "text-[#17202c]" : "text-[#a0a9b7]")}>
+              <span className={clsx("whitespace-nowrap text-[13px] font-medium", active || done ? "text-[#17202c]" : "text-[#a0a9b7]")}>
                 {label}
               </span>
             </div>

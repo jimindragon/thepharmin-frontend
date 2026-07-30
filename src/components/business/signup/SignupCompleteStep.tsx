@@ -34,8 +34,8 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
         <div className="mt-6">
           <Eyebrow align="center">기업회원 가입</Eyebrow>
         </div>
-        <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">가입이 완료되었습니다</h1>
-        <p className="mt-3 text-[14px] font-normal leading-[1.7] text-[#68717e]">
+        <h1 className="mt-3 text-[28px] font-bold tracking-[-0.02em] text-[#17202c]">가입이 완료되었습니다</h1>
+        <p className="mt-3 text-[15px] font-normal leading-[1.7] text-[#68717e]">
           {institutionName ? `${institutionName}, ` : ""}
           {orgTrackCompleteLabel[orgTrack]}으로 가입되었습니다.
           <br />

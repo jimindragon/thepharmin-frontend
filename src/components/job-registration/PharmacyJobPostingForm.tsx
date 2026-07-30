@@ -7,6 +7,7 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
+import { HINT, IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
@@ -168,7 +169,7 @@ function ToggleRow({
     <div className="flex items-start justify-between gap-4 border border-border bg-white px-4 py-3">
       <div>
         <p className="text-[13px] font-medium text-[#303946]">{title}</p>
-        {description && <p className="mt-1 text-[11.5px] text-[#7b8491]">{description}</p>}
+        {description && <p className="mt-1 text-[12px] text-[#7b8491]">{description}</p>}
       </div>
       <ToggleSwitch checked={checked} onChange={onChange} label={ariaLabel} />
     </div>
@@ -236,7 +237,7 @@ function TwoTierPicker({
           ))}
         </div>
         <div className="p-4">
-          <p className="mb-3 text-[12.5px] font-semibold text-[#4f5967]">
+          <p className="mb-3 text-[13px] font-semibold text-[#4f5967]">
             {activeCategory?.label} · 세부 항목
           </p>
           <div role="group" aria-label={detailAriaLabel} className="flex flex-wrap gap-2">
@@ -260,7 +261,7 @@ function TwoTierPicker({
         </div>
       </div>
       {selected.size > 0 && (
-        <p className="mt-2 text-[11.5px] text-[#7b8491]">
+        <p className="mt-2 text-[12px] text-[#7b8491]">
           선택됨: {Array.from(selected).map((id) => labelById.get(id) ?? id).join(", ")}
         </p>
       )}
@@ -271,9 +272,6 @@ function TwoTierPicker({
 
 // ── Style constants ────────────────────────────────────────────────────────────
 
-const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
-const SEL = `${IN} appearance-none pr-8`;
-const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -555,7 +553,7 @@ export function PharmacyJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="p-duties" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"처방전 검토 및 조제\n복약상담 및 고객 응대\n의약품 재고 관리 및 발주\nOTC 의약품 상담"}
               aria-required="true" />
             <FieldError message={errors.responsibilities} />
@@ -568,7 +566,7 @@ export function PharmacyJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="p-reqQual" value={requirements} onChange={(e) => setRequirements(e.target.value)} rows={3}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder="약사 면허 소지자" aria-required="true" />
             <FieldError message={errors.requirements} />
           </div>
@@ -579,7 +577,7 @@ export function PharmacyJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="p-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"약국 근무 경험 보유자\n전산 프로그램 사용 경험자\n주말 또는 야간 근무 가능자"} />
           </div>
 
@@ -589,7 +587,7 @@ export function PharmacyJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
             </FieldLabel>
             <textarea id="p-additionalNotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 전형 일정 관련 안내 등"} />
           </div>
         </SectionCard>
@@ -766,7 +764,7 @@ export function PharmacyJobPostingForm() {
           <div ref={setRef("workCondDetail")}>
             <FieldLabel htmlFor="p-workcond" className="block mb-1.5" required>근무조건 상세</FieldLabel>
             <textarea id="p-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder="예: 주 5일 근무, 오전·오후 교대, 파트타임 가능 여부, 요일별 근무자 구성" />
             <FieldError message={errors.workCondDetail} />
           </div>

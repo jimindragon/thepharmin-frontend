@@ -52,10 +52,10 @@ export function TrackSelectionClient() {
             { label: "공고 등록" },
           ]}
         />
-        <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
+        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
           공고 등록
         </h1>
-        <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+        <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
           등록할 채용 트랙을 선택하세요. 어떤 트랙이든 등록은 무료입니다.
         </p>
       </div>
@@ -69,9 +69,6 @@ export function TrackSelectionClient() {
             onClick={() => router.push(track.href)}
             className="track-card"
           >
-            {/* 상단 그라데이션 라인 (hover/focus 시 scaleX 0→1) */}
-            <div className="track-card-line" />
-
             {/* 이미지 16:10 */}
             <div className="relative aspect-[16/10] overflow-hidden">
               <Image
@@ -91,8 +88,8 @@ export function TrackSelectionClient() {
 
             {/* 트랙명 + 설명 */}
             <div className="px-3 py-3">
-              <p className="text-[14px] font-semibold text-[#17202c]">{track.label}</p>
-              <p className="mt-0.5 text-[12px] text-[#8a94a3]">{track.description}</p>
+              <p className="text-[16px] font-semibold text-[#17202c]">{track.label}</p>
+              <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">{track.description}</p>
             </div>
 
             {/* 우하단 화살표 — hover/focus 시 표시 */}

@@ -49,8 +49,8 @@ export function BusinessJobsClient() {
               { label: "공고 관리" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">공고 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">공고 관리</h1>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             등록한 공고를 관리하고, 공고별로 부스트를 적용할 수 있습니다.
           </p>
         </div>
@@ -89,9 +89,9 @@ export function BusinessJobsClient() {
         <div className="mt-3 border border-border bg-white">
           {hasJobs ? (
             <div className="overflow-x-auto">
-              <div className="min-w-[900px]">
+              <div className="min-w-[940px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-border px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-border px-5 py-3 text-[13px] font-medium text-[#8a94a3]">
                   <span>공고</span>
                   <span>상태</span>
                   <span>지원자</span>
@@ -119,13 +119,13 @@ export function BusinessJobsClient() {
                           <div className="flex flex-wrap items-center gap-1.5">
                             <p
                               className={clsx(
-                                "text-[13px] font-semibold",
+                                "text-[16px] font-semibold",
                                 isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
                               )}
                             >
                               {posting.title}
                             </p>
-                            <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[11px] font-medium text-[#596373]">
+                            <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium text-[#596373]">
                               {jobTrackLabel(posting.track)}
                             </span>
                           </div>
@@ -145,7 +145,7 @@ export function BusinessJobsClient() {
                           />
                           <span
                             className={clsx(
-                              "text-[12px] font-medium",
+                              "text-[13px] font-medium",
                               isClosed
                                 ? "text-[#8a94a3]"
                                 : isPending
@@ -163,7 +163,7 @@ export function BusinessJobsClient() {
                         ) : (
                           <span
                             className={clsx(
-                              "text-[13px] font-semibold",
+                              "text-[14px] font-semibold",
                               isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
                             )}
                           >
@@ -172,19 +172,19 @@ export function BusinessJobsClient() {
                         )}
 
                         {/* 등록일 */}
-                        <span className="text-[12px] font-normal text-[#8a94a3]">
+                        <span className="text-[13px] font-normal text-[#8a94a3]">
                           {posting.registeredAt}
                         </span>
 
                         {/* 마감일 */}
                         <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-                          <p className="text-[12px] font-normal text-[#8a94a3]">
+                          <p className="text-[13px] font-normal text-[#8a94a3]">
                             {posting.closingDate ?? "마감됨"}
                           </p>
                           {dday && (
                             <span
                               className={clsx(
-                                "text-[11px] font-semibold",
+                                "text-[13px] font-semibold",
                                 dday.isUrgent ? "text-status-urgent" : "text-status-positive",
                               )}
                             >
@@ -232,7 +232,7 @@ export function BusinessJobsClient() {
           ) : (
             /* 빈 상태 */
             <div className="py-20 text-center">
-              <p className="text-[15px] font-medium text-[#17202c]">
+              <p className="text-[15px] font-medium text-[#303946]">
                 {statusFilter === "active"
                   ? "게시 중인 공고가 없습니다"
                   : statusFilter === "closed"

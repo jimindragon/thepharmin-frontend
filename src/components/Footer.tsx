@@ -41,7 +41,7 @@ export function Footer() {
   return (
     <footer className="relative bg-[#262626]">
       <div className="app-shell pt-14 pb-12">
-        <nav aria-label="정책 메뉴" className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[13px]">
+        <nav aria-label="정책 메뉴" className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[15px]">
           {footerMenuItems.map((item) => (
             <span
               key={item}
@@ -57,17 +57,17 @@ export function Footer() {
         <div className="mt-10 flex gap-12 max-[760px]:flex-col max-[760px]:gap-8">
           <div className="w-[210px] shrink-0 max-[760px]:w-full">
             <img src="/images/white_logo_1.svg" alt="더파마 리크루트" width={254} height={25} className="h-5 w-auto" />
-            <p className="mt-3 text-[11px] text-[#8a8a8a]">대한민국 No.1 바이오/헬스케어 채용</p>
+            <p className="mt-3 text-[12px] text-[#8a8a8a]">대한민국 No.1 바이오/헬스케어 채용</p>
           </div>
 
-          <div className="min-w-0 flex-1 text-[12px] leading-[2]">
+          <div className="min-w-0 flex-1 text-[13px] leading-[2]">
             {metaLines.map((tokens, index) => (
               <FooterMetaLine key={index} tokens={tokens} />
             ))}
           </div>
         </div>
 
-        <p className="mt-8 text-[12px] text-[#888888]">© 주식회사 더파마뉴스. All rights reserved.</p>
+        <p className="mt-8 text-[13px] text-[#888888]">© 주식회사 더파마뉴스. All rights reserved.</p>
       </div>
 
       <button

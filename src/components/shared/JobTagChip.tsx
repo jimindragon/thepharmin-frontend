@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
  */
 export function JobTagChip({ children }: { children: ReactNode }) {
   return (
-    <span className="border border-border bg-[#f7f8fa] px-2.5 py-0.5 text-[12px] font-medium text-[#596373]">
+    <span className="border border-border bg-[#f7f8fa] px-2.5 py-0.5 text-[13px] font-medium text-[#596373]">
       {children}
     </span>
   );

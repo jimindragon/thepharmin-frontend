@@ -137,7 +137,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     onShare={handleShare}
                   />
                   <p className="mt-3 text-[15px] font-normal text-[#667181]">{heroSubline}</p>
-                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[25px]">
+                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px]">
                     {job.title}
                   </h1>
                   <p className="mt-4 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">
@@ -195,7 +195,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   <div className="space-y-7">
                     {hasRequirements ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">필수 요건</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">필수 요건</h3>
                         <div className="mt-3">
                           <FormattedContentView content={job.requirements} />
                         </div>
@@ -203,7 +203,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     ) : null}
                     {hasPreferred ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">우대사항</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">우대사항</h3>
                         <div className="mt-3">
                           <FormattedContentView content={job.preferred} />
                         </div>
@@ -218,31 +218,31 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                 <IconSectionShell id="conditions" icon={CalendarClock} title="근무 조건">
                   <div className="space-y-7">
                     <div>
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무방식</h3>
-                      <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">근무방식</h3>
+                      <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                         {workModeDisplay}
                       </p>
                     </div>
                     {hasBenefits ? (
                       <div className="border-t border-[#edf1f4] pt-6">
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">복리후생</h3>
-                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">복리후생</h3>
+                        <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                           {job.benefits!.join(" · ")}
                         </p>
                       </div>
                     ) : null}
                     {hasWorkConditionDetail ? (
                       <div className="border-t border-[#edf1f4] pt-6">
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">근무조건 상세</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">근무조건 상세</h3>
                         <div className="mt-3">
                           <FormattedContentView content={{ format: "paragraph", items: [job.workConditionDetail as string] }} />
                         </div>
                       </div>
                     ) : null}
                     <div className="border-t border-[#edf1f4] pt-6">
-                      <h3 className="text-[15px] font-bold text-[#2f3845]">근무지역</h3>
+                      <h3 className="text-[17px] font-bold text-[#2f3845]">근무지역</h3>
                       <div className="mt-3 space-y-4">
-                        <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{job.location.address}</p>
+                        <p className="text-[15px] font-normal leading-[1.75] text-[#3f4855]">{job.location.address}</p>
                         <MapPlaceholder address={job.location.address} orgName={org.name} />
                       </div>
                     </div>
@@ -256,7 +256,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   <div className="space-y-7">
                     {hasHiringProcess ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">전형절차</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">전형절차</h3>
                         <div className="mt-3">
                           <HiringProcessSteps steps={job.hiringProcess} />
                         </div>
@@ -264,8 +264,8 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     ) : null}
                     {hasRequiredDocuments ? (
                       <div className={clsx(hasHiringProcess && "border-t border-[#edf1f4] pt-6")}>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">제출서류</h3>
-                        <p className="mt-2.5 text-[16px] font-normal leading-[1.85] text-[#3f4855]">
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">제출서류</h3>
+                        <p className="mt-2.5 text-[15px] font-normal leading-[1.75] text-[#3f4855]">
                           {job.requiredDocuments!.join(" · ")}
                         </p>
                       </div>
@@ -280,7 +280,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   <div className="space-y-7">
                     {hasDetailImages ? (
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">상세 이미지</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">상세 이미지</h3>
                         <div className="mt-3 space-y-3">
                           {job.detailImages!.map((url) => (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -291,7 +291,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     ) : null}
                     {hasAttachments ? (
                       <div className={clsx(hasDetailImages && "border-t border-[#edf1f4] pt-6")}>
-                        <h3 className="text-[15px] font-bold text-[#2f3845]">첨부파일</h3>
+                        <h3 className="text-[17px] font-bold text-[#2f3845]">첨부파일</h3>
                         <div className="mt-3 space-y-2">
                           {job.attachments!.map((file) => (
                             <a
@@ -367,12 +367,12 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                 {/* E. 대표 제품·서비스 */}
                 {hasProducts ? (
                   <div className="mt-9">
-                    <h3 className="text-[15px] font-bold text-[#2f3845]">대표 제품·서비스</h3>
+                    <h3 className="text-[17px] font-bold text-[#2f3845]">대표 제품·서비스</h3>
                     <div className="mt-3 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
                       {businessContext!.products!.map((product) => (
                         <div key={product.name} className="border-l-2 border-[#d8e0e8] pl-3.5">
-                          <p className="text-[15px] font-bold text-[#17202c]">{product.name}</p>
-                          <p className="mt-1 text-[14px] font-normal leading-relaxed text-[#8b95a1]">{product.description}</p>
+                          <p className="text-[15px] font-semibold text-[#17202c]">{product.name}</p>
+                          <p className="mt-1 text-[15px] font-normal leading-relaxed text-[#8b95a1]">{product.description}</p>
                         </div>
                       ))}
                     </div>
@@ -418,21 +418,21 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />
                           ) : null}
-                          <span className="absolute left-2.5 top-2.5 bg-white/90 px-2 py-1 text-[11px] font-medium text-[#566171]">
+                          <span className="absolute left-2.5 top-2.5 bg-white/90 px-2 py-1 text-[13px] font-medium text-[#566171]">
                             {item.category}
                           </span>
                         </div>
                         <div className="px-4 py-4">
-                          <p className="text-[12px] font-medium text-[#8993a1]">
+                          <p className="text-[12px] font-normal text-[#8993a1]">
                             {item.date} · {item.source}
                           </p>
-                          <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[15px] font-bold leading-[1.4] text-[#2f3845]">
+                          <h3 className="mt-2 line-clamp-2 min-h-[48px] text-[16px] font-semibold leading-[1.45] text-[#202733]">
                             {item.title}
                           </h3>
                           <p className="mt-2 line-clamp-2 text-[13px] font-normal leading-[1.6] text-[#667181]">
                             {item.summary}
                           </p>
-                          <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-[#566171] group-hover:text-brand">
+                          <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-[#566171] group-hover:text-brand">
                             기사 보기
                             <ExternalLink size={13} />
                           </span>

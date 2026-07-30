@@ -51,7 +51,7 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-2 border border-dashed border-[#c7cdd6] bg-[#fafbfc] px-3 py-2">
-        <span className="text-[11px] font-medium text-[#9aa3af]">데모: 상태 전환</span>
+        <span className="text-[12px] font-medium text-[#9aa3af]">데모: 상태 전환</span>
         <div className="flex items-center gap-1.5">
           {DEMO_OPTIONS.map((option) => (
             <button
@@ -60,7 +60,7 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
               onClick={() => handleDemoChange(option.value)}
               aria-pressed={userState === option.value}
               className={clsx(
-                "h-6 border border-dashed px-2 text-[10.5px] font-medium transition",
+                "h-7 border border-dashed px-2 text-[12px] font-medium transition",
                 userState === option.value ? "border-[#111111] text-[#111111]" : "border-[#c7cdd6] text-[#8a95a5] hover:border-[#8a95a5]",
               )}
             >

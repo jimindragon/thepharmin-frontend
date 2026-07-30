@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { SectionCard } from "@/components/business/BusinessFormControls";
+import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { DetailPill } from "@/components/shared/DetailPill";
 import { JobTagChip } from "@/components/shared/JobTagChip";
 import {
@@ -43,18 +44,6 @@ function findLabel(options: { id: string; label: string }[], id: string | null):
   return options.find((option) => option.id === id)?.label ?? id;
 }
 
-/** BusinessApplicantsClient.tsx의 FitScoreBar와 동일 마크업 — 목록 파일은 수정 대상이 아니라 로컬로 복제. */
-function FitScoreBar({ score }: { score: number }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-[72px] bg-[#e5e9ef]">
-        <div className="h-full bg-[#111111]" style={{ width: `${score}%` }} />
-      </div>
-      <span className="w-6 text-right text-[13px] font-semibold tabular-nums text-[#17202c]">{score}</span>
-    </div>
-  );
-}
-
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="grid grid-cols-[120px_1fr] items-start gap-x-6 py-3 max-[560px]:grid-cols-1 max-[560px]:gap-x-0 max-[560px]:gap-y-1">
@@ -67,8 +56,8 @@ function DetailRow({ label, value }: { label: string; value: ReactNode }) {
 function HeaderCell({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="px-4 py-3 first:pl-0 last:pr-0 max-[640px]:px-0">
-      <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
-      <p className="mt-1.5 text-[14px] font-bold text-[#17202c]">{children}</p>
+      <p className="text-[13px] font-medium text-[#8a94a3]">{label}</p>
+      <p className="mt-1.5 text-[15px] font-semibold text-[#17202c]">{children}</p>
     </div>
   );
 }
@@ -76,8 +65,8 @@ function HeaderCell({ label, children }: { label: string; children: ReactNode })
 function PanelField({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
-      <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
-      <p className="mt-1 text-[14px] font-bold text-[#17202c]">{value}</p>
+      <p className="text-[13px] font-medium text-[#8a94a3]">{label}</p>
+      <p className="mt-1 text-[15px] font-semibold text-[#17202c]">{value}</p>
     </div>
   );
 }
@@ -152,8 +141,8 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
             { label: applicant.name },
           ]}
         />
-        <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">지원자 프로필</h1>
-        <p className="mt-2 text-[13px] font-normal text-[#68717e]">지원자의 이력과 지원 현황을 확인합니다.</p>
+        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원자 프로필</h1>
+        <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">지원자의 이력과 지원 현황을 확인합니다.</p>
 
         <section className="mt-5 border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
           <div className="flex items-center gap-4">
@@ -202,10 +191,10 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
                     <div key={career.id} className="py-4 first:pt-0">
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="flex flex-wrap items-baseline gap-2">
-                          <p className="text-[15px] font-bold text-[#17202c]">{career.company}</p>
-                          <p className="text-[14px] font-medium text-[#596373]">{career.role}</p>
+                          <p className="text-[15px] font-semibold text-[#17202c]">{career.company}</p>
+                          <p className="text-[13px] font-normal text-[#596373]">{career.role}</p>
                         </div>
-                        <p className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{career.period}</p>
+                        <p className="shrink-0 text-[13px] font-normal text-[#8a94a3]">{career.period}</p>
                       </div>
                       {career.description ? <p className="mt-2 text-[13px] font-normal leading-relaxed text-[#3f4855]">{career.description}</p> : null}
                     </div>
@@ -227,7 +216,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
             {resume ? (
               <SectionCard title="기본 정보">
                 <div>
-                  <p className="text-[15px] font-bold text-[#17202c]">학력</p>
+                  <p className="text-[15px] font-semibold text-[#17202c]">학력</p>
                   <div className="mt-1 divide-y divide-[#f0f2f5]">
                     <DetailRow label="학교" value={resume.education.school || "-"} />
                     <DetailRow label="학위" value={findLabel(educationOptions, resume.education.degreeId) ?? "-"} />
@@ -237,7 +226,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
 
                 {resume.certificates.length > 0 ? (
                   <div className="mt-6 border-t border-[#eef1f5] pt-5">
-                    <p className="text-[15px] font-bold text-[#17202c]">자격·면허</p>
+                    <p className="text-[15px] font-semibold text-[#17202c]">자격·면허</p>
                     <div className="mt-1 divide-y divide-[#f0f2f5]">
                       {resume.certificates.map((certificate) => (
                         <DetailRow
@@ -252,7 +241,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
 
                 {resume.languages.length > 0 ? (
                   <div className="mt-6 border-t border-[#eef1f5] pt-5">
-                    <p className="text-[15px] font-bold text-[#17202c]">어학</p>
+                    <p className="text-[15px] font-semibold text-[#17202c]">어학</p>
                     <div className="mt-1 divide-y divide-[#f0f2f5]">
                       {resume.languages.map((language) => (
                         <DetailRow key={language.id} label={language.name} value={language.level} />
@@ -280,8 +269,8 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
                           <FileText size={20} />
                         </span>
                         <div className="min-w-0">
-                          <p className="truncate text-[16px] font-bold tracking-[-0.01em] text-[#1c2128]">{attachment.fileName}</p>
-                          <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">
+                          <p className="truncate text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{attachment.fileName}</p>
+                          <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
                             {extension} · {attachment.fileSizeLabel}
                           </p>
                         </div>
@@ -296,10 +285,10 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
           <aside className="sticky top-[84px] h-fit space-y-4 self-start max-[1180px]:static">
             <SectionCard title="직무 적합도">
               <FitScoreBar score={applicant.fitScore} />
-              <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">
+              <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
                 {applicant.fitTotal}개 요건 중 {applicant.fitMet}개 충족
               </p>
-              <p className="mt-4 text-[12px] font-normal leading-relaxed text-[#8a94a3]">지원자가 입력한 이력서와 공고 요건을 비교한 참고 정보입니다.</p>
+              <p className="mt-4 text-[13px] font-normal leading-relaxed text-[#8a94a3]">지원자가 입력한 이력서와 공고 요건을 비교한 참고 정보입니다.</p>
             </SectionCard>
 
             <SectionCard title="채용 진행">

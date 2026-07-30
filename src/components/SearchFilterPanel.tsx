@@ -113,7 +113,7 @@ export function OptionChip({
       disabled={disabled}
       onClick={onClick}
       className={clsx(
-        "min-h-[32px] border px-3 py-1.5 text-left text-[12px] font-medium leading-[1.35] transition-colors",
+        "min-h-[36px] border px-3 py-1.5 text-left text-[13px] font-medium leading-[1.35] transition-colors",
         active
           ? "border-brand bg-[var(--color-brand-soft)] text-brand"
           : "border-[#dfe4ea] bg-white text-[#424b57] hover:border-brand hover:text-brand",
@@ -122,7 +122,7 @@ export function OptionChip({
       title={option.description}
     >
       <span>{option.label}</span>
-      {option.description ? <span className="ml-1 text-[11px] font-normal text-[#8b94a1]">{option.description}</span> : null}
+      {option.description ? <span className="ml-1 text-[12px] font-normal text-[#8b94a1]">{option.description}</span> : null}
     </button>
   );
 }
@@ -171,7 +171,7 @@ export function JobFilterPanel({
                 onToggleJobCategory(category.id);
               }}
               className={clsx(
-                "flex h-[38px] w-full items-center justify-between border-b border-[#eef1f4] px-3 text-left text-[12px] font-medium last:border-b-0",
+                "flex h-[38px] w-full items-center justify-between border-b border-[#eef1f4] px-3 text-left text-[13px] font-medium last:border-b-0",
                 active ? "bg-[#080808] text-white" : selected ? "bg-[#f4f4f4] text-[#171b20]" : "bg-white text-[#46505d] hover:bg-[#f6f7f8]",
               )}
             >
@@ -188,8 +188,8 @@ export function JobFilterPanel({
 
       <div className="border border-[#e3e7ec] bg-[#fbfcfc] p-3.5">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-[12px] font-semibold text-[#2c3440]">{activeCategory?.label}</p>
-          <p className="text-[12px] font-normal text-[#848d9b]">
+          <p className="min-w-0 text-[14px] font-semibold text-[#2c3440]">{activeCategory?.label}</p>
+          <p className="shrink-0 whitespace-nowrap text-[13px] font-normal text-[#848d9b]">
             {activeCategoryAllSelected ? "전체 선택" : activeCategorySubcategoryCount ? `${activeCategorySubcategoryCount}개 선택` : "2차 선택 사항"}
           </p>
         </div>
@@ -200,7 +200,7 @@ export function JobFilterPanel({
               active={activeCategoryAllSelected}
               onClick={() => onToggleJobCategory(activeCategory.id)}
             />
-            <span className="flex items-center text-[11px] font-normal text-[#8a939f]">
+            <span className="flex items-center break-keep text-[12px] font-normal text-[#8a939f]">
               1차 분류만 선택해도 검색에 반영됩니다.
             </span>
           </div>
@@ -258,7 +258,7 @@ export function GroupPanel({
         const selected = selectedIds(filters, section.stateKey);
         return (
           <div key={section.id}>
-            <p className="mb-2 text-[13px] font-semibold text-[#3a4350]">{section.title}</p>
+            <p className="mb-2 text-[14px] font-semibold text-[#3a4350]">{section.title}</p>
             <OptionsPanel
               options={section.options}
               selected={selected}
@@ -304,7 +304,12 @@ export function SearchFilterPanel({
     <div>
       <section className="surface border-[#dddddd] bg-[#f7f7f7] px-3.5 py-3.5" aria-label="채용공고 검색 및 필터">
         <div className="flex items-center gap-3 max-[720px]:flex-col max-[720px]:items-stretch">
-          <div className="flex h-[44px] min-w-0 flex-1 overflow-hidden border border-[#d7d7d7] bg-white">
+          {/* ≤720px에서 부모가 flex-col로 바뀌면 flex-1(=flex-basis:0)이 세로축에 걸려 h-[44px]를 덮어쓴다
+              (박스가 글자 높이인 27px로 찌그러져 아래 검색 버튼 44px과 어긋났다). 그 구간에서만 flex 사이징을
+              끄면 h-[44px]가 다시 살아난다 — 폭은 부모의 items-stretch가 채운다.
+              같은 자리에 height를 다시 선언해도 flex-basis가 이기므로 무효고, flex-1을 w-full로 바꾸면
+              ≥721px 가로 배치에서 검색 버튼(shrink-0 없음)이 88 → 78px로 함께 줄어든다. */}
+          <div className="flex h-[44px] min-w-0 flex-1 overflow-hidden border border-[#d7d7d7] bg-white max-[720px]:flex-none">
             <div className="grid w-10 place-items-center text-[#8b95a4]">
               <Search size={18} />
             </div>
@@ -316,7 +321,7 @@ export function SearchFilterPanel({
                   onSubmitKeyword();
                 }
               }}
-              className="min-w-0 flex-1 text-[13px] font-normal text-text placeholder:text-[#8d8d8d]"
+              className="min-w-0 flex-1 text-[15px] font-normal text-text placeholder:text-[#8d8d8d]"
               placeholder={siteConfig.searchPlaceholder}
               aria-label="채용공고 검색어"
             />
@@ -351,7 +356,7 @@ export function SearchFilterPanel({
               >
                 <span className="shrink-0">{definition.label}</span>
                 {summary ? (
-                  <span className={clsx("max-w-[86px] truncate text-[12px] font-normal", open ? "text-white/72" : "text-[#777777]")}>
+                  <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/72" : "text-[#777777]")}>
                     {summary}
                   </span>
                 ) : null}
@@ -363,7 +368,7 @@ export function SearchFilterPanel({
           <button
             type="button"
             onClick={onResetAll}
-            className="ml-auto inline-flex h-[36px] items-center justify-center gap-1.5 border border-[#d9dee5] bg-white px-3.5 text-[12px] font-medium text-[#667080] transition-colors hover:border-brand hover:text-brand max-[760px]:ml-0"
+            className="ml-auto inline-flex h-[36px] items-center justify-center gap-1.5 border border-[#d9dee5] bg-white px-3.5 text-[13px] font-medium text-[#667080] transition-colors hover:border-brand hover:text-brand max-[760px]:ml-0"
           >
             <RotateCcw size={15} />
             전체 초기화
@@ -374,7 +379,7 @@ export function SearchFilterPanel({
           {specialFilterOptions.filter((option) => !option.tracks || option.tracks.includes(track)).map((option) => (
             <label
               key={option.key}
-              className="inline-flex h-[34px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[12px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
+              className="inline-flex h-[34px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[13px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
             >
               <input
                 type="checkbox"

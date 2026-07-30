@@ -24,14 +24,16 @@ export function BusinessStatCard({
 }: BusinessStatCardProps) {
   return (
     <div className="px-5 py-5">
-      <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
-      <p className="mt-2 text-[30px] font-black leading-none tracking-[-0.03em] text-[#17202c]">
+      <p className="text-[13px] font-medium text-[#8a94a3]">{label}</p>
+      <p className="mt-2 text-[24px] font-bold leading-none tracking-[-0.03em] text-[#17202c]">
         {value}
         {unit && (
-          <span className="ml-1 text-[20px] font-medium text-[#8a94a3]">{unit}</span>
+          <span className="ml-1 text-[15px] font-normal text-[#8a94a3]">{unit}</span>
         )}
       </p>
-      <div className="mt-1.5 min-h-[18px] text-[12px] text-[#68717e]">
+      {/* min-h — 보조문구가 없는 카드도 같은 높이를 차지해 그리드 셀 정렬이 어긋나지 않게 한다.
+          13px 한 줄(line-height 약 21.5px)에 맞춰 22px. */}
+      <div className="mt-1.5 min-h-[22px] text-[13px] font-normal text-[#68717e]">
         {subEmphasis && (
           <span
             className={clsx(

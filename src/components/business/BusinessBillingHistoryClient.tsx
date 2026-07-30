@@ -70,8 +70,8 @@ export function BusinessBillingHistoryClient() {
               { label: "결제 내역" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">결제 내역</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">결제 내역</h1>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             부스트 결제 내역을 조회하고, 세금계산서와 영수증을 발급받을 수 있습니다.
           </p>
         </div>
@@ -134,9 +134,9 @@ export function BusinessBillingHistoryClient() {
             <div className="overflow-x-auto">
               <div className="min-w-[950px]">
                 {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-border px-5 py-3 text-[12px] font-medium text-[#8a94a3]">
+                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-border px-5 py-3 text-[13px] font-medium text-[#8a94a3]">
                   <span>결제일</span>
-                  <span>상품 / 공고</span>
+                  <span>공고 / 상품</span>
                   <span>결제수단</span>
                   <span>금액</span>
                   <span>상태</span>
@@ -155,12 +155,13 @@ export function BusinessBillingHistoryClient() {
                         {/* 결제일 */}
                         <span className="text-[13px] font-normal text-[#8a94a3]">{record.paidAt}</span>
 
-                        {/* 상품/공고 */}
+                        {/* 공고/상품 — 상품명은 "부스트 N주" 3종뿐이라, 행을 식별하는 공고명을 위에 둔다.
+                            트랙 배지는 아랫줄에 붙여 윗줄이 공고명 한 줄을 온전히 쓰게 한다. */}
                         <div className="min-w-0">
-                          <p className="text-[13px] font-semibold text-[#17202c]">{record.productName}</p>
+                          <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
                           <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                            <span className="text-[13px] font-normal text-[#596373]">{record.jobTitle}</span>
-                            <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[11px] font-medium text-[#596373]">
+                            <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
+                            <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium text-[#596373]">
                               {boostTrackLabel(record.track)}
                             </span>
                           </div>
@@ -171,10 +172,10 @@ export function BusinessBillingHistoryClient() {
 
                         {/* 금액 */}
                         <div>
-                          <p className="text-[13px] font-semibold text-[#17202c]">
+                          <p className="text-[14px] font-semibold text-[#17202c]">
                             {formatKrw(toTotalKrw(record.amountKrw))}
                           </p>
-                          <p className="mt-0.5 whitespace-nowrap text-[11px] font-normal text-[#8a94a3]">
+                          <p className="mt-0.5 whitespace-nowrap text-[12px] font-normal text-[#8a94a3]">
                             공급가액 {formatKrw(record.amountKrw)} · VAT {formatKrw(toTotalKrw(record.amountKrw) - record.amountKrw)}
                           </p>
                         </div>
@@ -182,7 +183,7 @@ export function BusinessBillingHistoryClient() {
                         {/* 상태 뱃지 */}
                         <span
                           className={clsx(
-                            "inline-flex w-fit items-center text-[12px] font-medium",
+                            "inline-flex w-fit items-center text-[13px] font-medium",
                             paymentStatusClass(record.status),
                           )}
                         >
@@ -196,7 +197,7 @@ export function BusinessBillingHistoryClient() {
                             disabled={isCancelled}
                             onClick={() => setDocModal({ variant: "taxInvoice", record })}
                             className={clsx(
-                              "inline-flex h-8 items-center justify-center border px-3 text-[12px] font-medium transition",
+                              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
                               isCancelled
                                 ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
                                 : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
@@ -207,7 +208,7 @@ export function BusinessBillingHistoryClient() {
                           <button
                             type="button"
                             onClick={() => setDocModal({ variant: "receipt", record })}
-                            className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                            className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                           >
                             영수증
                           </button>

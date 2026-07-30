@@ -43,13 +43,13 @@ export function AccountMenu() {
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
-            <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{myPageUser.email}</p>
+            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">{myPageUser.email}</p>
           </div>
           <div className="h-px bg-[#edf1f5]" />
           <div className="py-2">
             {myPageMenuGroups.map((group) => (
               <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
+                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
                 <div className="mt-1">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
@@ -95,22 +95,27 @@ export function Header() {
           />
         </a>
 
-        <nav className="flex min-w-0 flex-1 items-center justify-center gap-12 text-[14px] max-[1120px]:hidden">
-          <div className="flex items-center gap-6">
+        {/* 메뉴 라벨은 어떤 폭에서도 글자 단위로 쪼개지면 안 되므로 whitespace-nowrap 고정.
+            대신 폭이 모자라면 아래 보조 메뉴 묶음을 통째로 숨겨서 감당한다. */}
+        <nav className="flex min-w-0 flex-1 items-center justify-center gap-10 text-[14px] max-[1120px]:hidden">
+          <div className="flex items-center gap-[18px]">
             {trackNavigationItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
-                <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+                <a key={item.label} href={item.href} className={clsx("whitespace-nowrap", headerNavItemClassName(isActive))}>
                   {item.label}
                 </a>
               );
             })}
           </div>
-          <div className="flex items-center gap-6">
+          {/* 보조 메뉴 5개 — 9개가 한 줄에 들어가려면 1280px이 필요하다(실측 필요 484.7px / 가용 490.3px).
+              그룹 내 gap은 여유 5.6px가 남는 18px이 상한이다(20px이면 8.4px 넘쳐 우측 pill과 겹친다).
+              그 미만에서는 핵심인 트랙 4개만 남긴다. */}
+          <div className="flex items-center gap-[18px] max-[1279px]:hidden">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
-                <a key={item.label} href={item.href} className={headerNavItemClassName(isActive, "dark")}>
+                <a key={item.label} href={item.href} className={clsx("whitespace-nowrap", headerNavItemClassName(isActive))}>
                   {item.label}
                 </a>
               );
@@ -118,10 +123,12 @@ export function Header() {
           </div>
         </nav>
 
-        {/* 기업 서비스 진입 — 낮은 비중의 보조 텍스트 링크, 1120px 미만에서는 숨김 */}
+        {/* 기업 서비스 진입 — 낮은 비중의 보조 텍스트 링크.
+            nav가 1120px 이하에서 숨으므로(max-[1120px]:hidden) 노출 기준을 1121px로 맞춘다.
+            1120px을 양쪽이 함께 포함하면 그 한 지점에서만 pill이 nav 없이 홀로 남는다. */}
         <a
           href="/business"
-          className="hidden shrink-0 items-center whitespace-nowrap rounded-full border border-white/35 px-3 py-1 text-[11px] font-medium text-white/65 transition-colors hover:border-white/50 hover:text-white/80 min-[1120px]:inline-flex"
+          className="hidden shrink-0 items-center whitespace-nowrap rounded-full border border-white/35 px-3 py-1 text-[13px] font-medium text-white/65 transition-colors hover:border-white/50 hover:text-white/80 min-[1121px]:inline-flex"
         >
           기업 서비스
         </a>

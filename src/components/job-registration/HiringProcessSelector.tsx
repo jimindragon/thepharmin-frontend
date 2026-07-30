@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useState } from "react";
 import { FieldLabel } from "@/components/business/BusinessFormControls";
+import { IN } from "@/components/job-registration/fieldClasses";
 
 const PROCESS_STEP_OPTIONS = [
   "서류 전형",
@@ -33,7 +34,6 @@ const DOCUMENT_OPTIONS = [
   "개인정보 수집·이용 동의서",
 ];
 
-const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 
 export interface HiringProcessSelectorProps {
   processSteps: string[];

@@ -28,7 +28,7 @@ const JOB_ROLE_PLACEHOLDERS: Record<JobTrack, string> = {
 };
 
 const TEXTAREA_CLASS =
-  "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[13px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
+  "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[15px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 
 /** 이 폼 전용 섹션 래퍼. 좌측 열(번호+제목+안내)과 우측 열(입력 영역) 2컬럼 배치.
  * BusinessFormControls의 SectionCard와 시각 톤(흰 배경·얇은 보더·radius 0)만 맞추고, 기업 폼 11곳이 공유하는 그 컴포넌트는 건드리지 않기 위해 이 파일 안에서만 쓰는 로컬 컴포넌트다. */
@@ -48,7 +48,7 @@ function FormSection({
       <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
         <div>
           <p className="text-[12px] font-normal tracking-[0.02em] text-[#a0a9b7]">{number}</p>
-          <h2 className="mt-1.5 text-[18px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
+          <h2 className="mt-1.5 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
           <div className="mt-2 grid gap-1 text-[13px] font-normal leading-[1.65] text-[#7b8491]">{description}</div>
         </div>
         <div>{children}</div>
@@ -200,7 +200,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
               : "직무 경험, 근무 환경 등을 자유롭게 작성해주세요."
           }
         />
-        <p className="mt-1.5 text-right text-[11.5px] font-normal text-[#a0a9b7]">
+        <p className="mt-1.5 text-right text-[12px] font-normal text-[#a0a9b7]">
           {content.length}/{CONTENT_RECOMMENDED_MAX}
         </p>
       </FormSection>

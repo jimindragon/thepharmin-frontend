@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { StageMoveModal } from "@/components/business/StageMoveModal";
@@ -34,19 +35,6 @@ const SORT_OPTIONS = [
   { id: "name" as const, label: "이름순" },
 ];
 type SortOption = "fit" | "date" | "name";
-
-function FitScoreBar({ score }: { score: number }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-[72px] bg-[#e5e9ef]">
-        <div className="h-full bg-[#111111]" style={{ width: `${score}%` }} />
-      </div>
-      <span className="w-6 text-right text-[13px] font-semibold tabular-nums text-[#17202c]">
-        {score}
-      </span>
-    </div>
-  );
-}
 
 export function BusinessApplicantsClient() {
   const [selectedPostingId, setSelectedPostingId] = useState<string>("all");
@@ -163,10 +151,10 @@ export function BusinessApplicantsClient() {
                 { label: "지원자 관리" },
               ]}
             />
-            <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
+            <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
               지원자 관리
             </h1>
-            <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+            <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
               공고별 지원자를 단계별로 관리하고, 서류·면접 진행 상황을 한 곳에서 확인하세요.
             </p>
           </div>
@@ -299,7 +287,7 @@ export function BusinessApplicantsClient() {
           <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
             <div className="min-w-[900px]">
               {/* 헤더 행 */}
-              <div className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_164px_104px_104px_152px] items-center gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
+              <div className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_140px_88px_88px_184px] items-center gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
                 <input
                   type="checkbox"
                   checked={allChecked}
@@ -323,7 +311,7 @@ export function BusinessApplicantsClient() {
                   {paged.map((applicant) => (
                     <div
                       key={applicant.id}
-                      className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_164px_104px_104px_152px] items-center gap-3 py-4 text-[13px]"
+                      className="grid grid-cols-[32px_minmax(0,2fr)_minmax(0,3fr)_140px_88px_88px_184px] items-center gap-3 py-4 text-[13px]"
                     >
                       <input
                         type="checkbox"
@@ -337,7 +325,7 @@ export function BusinessApplicantsClient() {
                         <div className="flex items-center gap-1.5">
                           <Link
                             href={`/business/applicants/${applicant.id}`}
-                            className="font-medium text-[#17202c] hover:underline"
+                            className="text-[16px] font-semibold text-[#17202c] hover:underline"
                           >
                             {applicant.name}
                           </Link>
@@ -368,7 +356,7 @@ export function BusinessApplicantsClient() {
                       {/* 직무 적합도 */}
                       <div>
                         <FitScoreBar score={applicant.fitScore} />
-                        <p className="mt-1 text-[11px] font-normal text-[#8a94a3]">
+                        <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
                           {applicant.fitTotal}개 요건 중 {applicant.fitMet}개 충족
                         </p>
                       </div>
@@ -399,14 +387,14 @@ export function BusinessApplicantsClient() {
                       <div className="flex items-center justify-end gap-1.5">
                         <Link
                           href={`/business/applicants/${applicant.id}`}
-                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[12px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
+                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
                         >
                           프로필 보기
                         </Link>
                         <button
                           type="button"
                           onClick={() => setStageMoveTarget(applicant)}
-                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[12px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
+                          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#dfe4ea] bg-[#f7f8fa] px-3 text-[13px] font-medium text-[#596373] transition hover:border-[#b0bac6] hover:text-[#303946]"
                         >
                           단계 이동
                         </button>
@@ -416,10 +404,10 @@ export function BusinessApplicantsClient() {
                 </div>
               ) : (
                 <div className="py-14 text-center">
-                  <p className="text-[14px] font-medium text-[#303946]">
+                  <p className="text-[15px] font-medium text-[#303946]">
                     {searchQuery ? "검색 결과가 없습니다" : "해당하는 지원자가 없습니다"}
                   </p>
-                  <p className="mt-1.5 text-[13px] font-normal text-[#8a94a3]">
+                  <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
                     {searchQuery
                       ? "검색어를 변경해 다시 시도해 보세요."
                       : "조건을 변경해 다시 확인해 보세요."}

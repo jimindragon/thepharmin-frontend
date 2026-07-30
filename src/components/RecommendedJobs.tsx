@@ -1,9 +1,7 @@
 "use client";
 
-import clsx from "clsx";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
-import { typeScale } from "@/components/ui/Typography";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import type { RecommendedJob } from "@/types/jobs";
@@ -295,7 +293,7 @@ export function RecommendedJobs({ jobs, onPrev, onNext, canGoPrev, canGoNext }: 
   return (
     <section className="mt-[18px]" aria-label="주목할 만한 공고">
       <div className="mb-3 flex items-center gap-2">
-        <h2 className={clsx(typeScale.cardTitle, "text-[#2b3340]")}>주목할 만한 공고</h2>
+        <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#2b3340]">주목할 만한 공고</h2>
         <JobNoticePopover />
         <CarouselControl onPrev={onPrev} onNext={onNext} canGoPrev={canGoPrev} canGoNext={canGoNext} />
       </div>

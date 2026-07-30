@@ -295,7 +295,7 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
       {/* 행 전체 클릭 영역. 우측 액션은 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
       <Link href={href} aria-label={`${item.companyName} 상세 보기`} className="absolute inset-0 z-10" />
       <div className="min-w-0">
-        <p className="line-clamp-2 text-[15px] font-extrabold text-[#171d26]">{item.companyName}</p>
+        <p className="line-clamp-2 text-[16px] font-semibold text-[#171d26]">{item.companyName}</p>
         <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">
           <span className="font-semibold text-[#596373]">{kindLabel}</span>
           {" · "}
@@ -305,7 +305,7 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
       <span aria-hidden="true" className="h-10 w-px shrink-0 self-center bg-[#e5e9ef] max-[560px]:hidden" />
       <div className="min-w-0">
         {item.type === "company" ? (
-          <p className="line-clamp-2 text-[14px] font-normal leading-[1.65] text-[#3f4855] transition group-hover:text-[#111111]">
+          <p className="line-clamp-2 text-[15px] font-normal leading-[1.65] text-[#3f4855] transition group-hover:text-[#111111]">
             “{item.content}”
           </p>
         ) : (
@@ -367,7 +367,7 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
         </div>
       ) : (
         <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 px-5 text-center">
-          <p className="text-[13px] font-normal text-[#8791a0]">해당 조건의 이야기가 아직 없습니다.</p>
+          <p className="text-[15px] font-medium text-[#303946]">해당 조건의 이야기가 아직 없습니다.</p>
         </div>
       )}
 
@@ -378,7 +378,7 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
 
 function SidebarBlockTitle({ children }: { children: string }) {
   return (
-    <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+    <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
       <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
       {children}
     </h2>
@@ -541,7 +541,7 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
 function DirectoryEmptyState() {
   return (
     <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 text-center">
-      <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 기업·기관이 없습니다.</p>
+      <p className="text-[15px] font-medium text-[#303946]">아직 등록된 기업·기관이 없습니다.</p>
       <p className="text-[13px] font-normal text-[#8791a0]">다른 분야를 선택하거나 검색어를 다시 입력해보세요.</p>
     </div>
   );

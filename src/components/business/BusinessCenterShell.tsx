@@ -9,6 +9,7 @@ import { ApprovalGatePanel } from "@/components/business/ApprovalGatePanel";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
 import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
+import { initialBusinessCompanyProfile, initialIndustryOrgManager } from "@/data/businessCompanyProfile";
 import { markBusinessMember } from "@/hooks/useBusinessMember";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
@@ -19,7 +20,7 @@ function SidebarLink({ label, href, active, locked }: { label: string; href: str
     <Link
       href={href}
       className={clsx(
-        "flex items-center justify-between gap-2 border px-3 py-2.5 text-[13px] font-bold transition",
+        "flex items-center justify-between gap-2 border px-3 py-2.5 text-[14px] font-medium transition",
         active
           ? "border-[#111111] bg-[#111111] text-white"
           : "border-transparent text-[#4f5967] hover:border-[#dfe4ea] hover:bg-[#f7f8fa] hover:text-[#111111]",
@@ -47,15 +48,27 @@ export function BusinessSidebar() {
 
   return (
     <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
-      <h2 className="text-[22px] font-black tracking-[0] text-[#17202c]">기업 센터</h2>
+      {/* 마이페이지 사이드바(MyPageShell)와 같은 구조 — 이름/부제/상태칩.
+          값은 헤더 프로필 드롭다운(BusinessAccountMenu)이 읽는 소스를 그대로 쓴다. */}
+      <div>
+        <h2 className="text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">{initialBusinessCompanyProfile.displayName}</h2>
+        <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
+          {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <span className="inline-flex h-6 items-center border border-[#e5e9ef] bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">
+            {orgVerificationStatus === "pending" ? "기업 인증 심사 중" : "기업 인증 완료"}
+          </span>
+        </div>
+      </div>
       <div className="mt-5 h-px bg-[#e5e9ef]" />
       <nav className="mt-5 space-y-7 max-[1040px]:flex max-[1040px]:gap-6 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
-        <div className="-ml-3 max-[1040px]:ml-0 max-[1040px]:min-w-[148px]">
+        <div className="-ml-3 max-[1040px]:ml-0 max-[1040px]:min-w-[156px]">
           <SidebarLink {...businessCenterHomeItem} active={isActive(businessCenterHomeItem.href)} locked={isLocked(businessCenterHomeItem.href)} />
         </div>
         {businessCenterMenuGroups.map((group) => (
-          <div key={group.title} className="max-[1040px]:min-w-[148px]">
-            <p className="text-[12px] font-black text-[#222a35]">{group.title}</p>
+          <div key={group.title} className="max-[1040px]:min-w-[156px]">
+            <p className="text-[17px] font-bold text-[#222a35]">{group.title}</p>
             <div className="mt-2 space-y-1">
               {group.items.map((item) => (
                 <SidebarLink key={item.href} {...item} active={isActive(item.href)} locked={isLocked(item.href)} />

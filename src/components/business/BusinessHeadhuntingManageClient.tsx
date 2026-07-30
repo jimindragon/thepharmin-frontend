@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { Pagination } from "@/components/Pagination";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
+import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import {
   candidateStatusClass,
@@ -52,17 +53,6 @@ function matchesCandidateTab(status: HeadhuntingCandidateStatus, tab: CandidateT
   if (tab === "offer") return status === "offer";
   if (tab === "hired") return status === "hired";
   return false;
-}
-
-function FitScoreBar({ score }: { score: number }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-[72px] bg-[#e5e9ef]">
-        <div className="h-full bg-[#111111]" style={{ width: `${score}%` }} />
-      </div>
-      <span className="w-6 text-right text-[13px] font-semibold tabular-nums text-[#17202c]">{score}</span>
-    </div>
-  );
 }
 
 export function BusinessHeadhuntingManageClient() {
@@ -142,10 +132,10 @@ export function BusinessHeadhuntingManageClient() {
                 { label: "의뢰 관리" },
               ]}
             />
-            <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">
+            <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
               헤드헌팅 관리
             </h1>
-            <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+            <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
               진행 중인 헤드헌팅 의뢰와 추천 후보자 현황을 확인합니다.
             </p>
           </div>
@@ -179,7 +169,7 @@ export function BusinessHeadhuntingManageClient() {
 
         {/* 의뢰 목록 */}
         <div className="mt-6">
-          <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">의뢰 목록</h2>
+          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">의뢰 목록</h2>
           <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8491]">
             등록한 헤드헌팅 의뢰의 진행 상태입니다. 의뢰를 선택하면 아래 후보자 현황이 함께 필터링됩니다.
           </p>
@@ -223,8 +213,8 @@ export function BusinessHeadhuntingManageClient() {
           {/* 테이블 */}
           <div className="mt-3 border border-border bg-white">
             <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
-              <div className="min-w-[800px]">
-                <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
+              <div className="min-w-[873px]">
+                <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] gap-3 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
                   <span>포지션</span>
                   <span>직무 분야</span>
                   <span>진행 상태</span>
@@ -246,7 +236,7 @@ export function BusinessHeadhuntingManageClient() {
                             : "hover:bg-[#fafafa]",
                         )}
                       >
-                        <span className="font-medium text-[#17202c]">
+                        <span className="text-[16px] font-semibold text-[#17202c]">
                           {request.positionTitle}
                         </span>
                         <span className="font-normal text-[#596373]">
@@ -259,7 +249,7 @@ export function BusinessHeadhuntingManageClient() {
                           />
                           <span
                             className={clsx(
-                              "text-[12px] font-medium",
+                              "text-[13px] font-medium",
                               headhuntingStatusClass(request.status),
                             )}
                           >
@@ -267,7 +257,7 @@ export function BusinessHeadhuntingManageClient() {
                           </span>
                         </span>
                         <span className="font-normal text-[#303946]">{request.headcount}명</span>
-                        <span className="font-normal text-[#303946]">
+                        <span className="text-[14px] font-semibold text-[#303946]">
                           {request.recommendedCandidateCount}명
                         </span>
                         <span className="font-normal text-[#8a94a3]">{request.requestedAt}</span>
@@ -280,7 +270,7 @@ export function BusinessHeadhuntingManageClient() {
                             type="button"
                             onClick={() => handleSelectRequest(request.id)}
                             className={clsx(
-                              "inline-flex h-8 items-center justify-center border px-3 text-[12px] font-medium transition",
+                              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
                               selectedRequestId === request.id
                                 ? "border-[#111111] bg-[#111111] text-white"
                                 : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
@@ -294,10 +284,10 @@ export function BusinessHeadhuntingManageClient() {
                   </div>
                 ) : (
                   <div className="py-14 text-center">
-                    <p className="text-[14px] font-medium text-[#303946]">
+                    <p className="text-[15px] font-medium text-[#303946]">
                       해당하는 의뢰가 없습니다
                     </p>
-                    <p className="mt-1.5 text-[13px] font-normal text-[#8a94a3]">
+                    <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
                       조건을 변경해 다시 검색해 보세요.
                     </p>
                   </div>
@@ -309,7 +299,7 @@ export function BusinessHeadhuntingManageClient() {
 
         {/* 추천 후보자 현황 */}
         <div ref={candidatesSectionRef} className="mt-6 scroll-mt-[132px]">
-          <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">
+          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">
             추천 후보자 현황
           </h2>
           <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8491]">
@@ -366,8 +356,8 @@ export function BusinessHeadhuntingManageClient() {
           {/* 테이블 카드 */}
           <div className="mt-3 border border-border bg-white">
             <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
-              <div className="min-w-[840px]">
-                <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_96px] gap-3 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
+              <div className="min-w-[873px]">
+                <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_104px] gap-3 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
                   <span>후보자 · 주요 경력</span>
                   <span>매칭 포지션</span>
                   <span>적합도</span>
@@ -380,7 +370,7 @@ export function BusinessHeadhuntingManageClient() {
                     {pagedCandidates.map((candidate) => (
                       <div
                         key={candidate.id}
-                        className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_96px] items-center gap-3 py-4 text-[13px]"
+                        className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_104px] items-center gap-3 py-4 text-[13px]"
                       >
                         {/* 후보자 · 주요 경력: 아이콘 + 코드/라벨 + 경력 텍스트 */}
                         <div className="flex min-w-0 items-start gap-2.5">
@@ -389,7 +379,7 @@ export function BusinessHeadhuntingManageClient() {
                           </span>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <p className="font-medium text-[#303946]">{candidate.code}</p>
+                              <p className="text-[16px] font-semibold text-[#303946]">{candidate.code}</p>
                               <span className="shrink-0 text-[11px] text-[#8a94a3]">추천 후보자</span>
                             </div>
                             <p className="mt-0.5 text-[13px] font-normal leading-[1.5] text-[#68717e]">
@@ -398,13 +388,13 @@ export function BusinessHeadhuntingManageClient() {
                           </div>
                         </div>
                         {/* 매칭 포지션 */}
-                        <span className="w-fit max-w-full truncate border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[11px] font-medium text-[#596373]">
+                        <span className="w-fit max-w-full truncate border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[12px] font-medium text-[#596373]">
                           {requestTitleById.get(candidate.matchedRequestId) ?? "—"}
                         </span>
                         {/* 적합도 */}
                         <div>
                           <FitScoreBar score={candidate.fitScore} />
-                          <p className="mt-1 text-[11px] font-normal text-[#8a94a3]">
+                          <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
                             {candidate.fitTotal}개 요건 중 {candidate.fitMet}개 충족
                           </p>
                         </div>
@@ -415,7 +405,7 @@ export function BusinessHeadhuntingManageClient() {
                           />
                           <span
                             className={clsx(
-                              "text-[12px] font-medium",
+                              "text-[13px] font-medium",
                               candidateStatusClass(candidate.status),
                             )}
                           >
@@ -423,14 +413,14 @@ export function BusinessHeadhuntingManageClient() {
                           </span>
                         </span>
                         {/* 추천일 */}
-                        <span className="text-[12px] font-normal text-[#8a94a3]">
+                        <span className="text-[13px] font-normal text-[#8a94a3]">
                           {candidate.recommendedAt}
                         </span>
                         {/* 액션 */}
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
-                            className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                            className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                           >
                             상세
                           </button>
@@ -447,14 +437,14 @@ export function BusinessHeadhuntingManageClient() {
                   </div>
                 ) : (
                   <div className="py-14 text-center">
-                    <p className="text-[14px] font-medium text-[#303946]">
+                    <p className="text-[15px] font-medium text-[#303946]">
                       {selectedRequestId
                         ? "해당 의뢰의 후보자가 없습니다"
                         : candidateTab !== "all"
                           ? "해당 상태의 후보자가 없습니다"
                           : "추천된 후보자가 없습니다"}
                     </p>
-                    <p className="mt-1.5 text-[13px] font-normal text-[#8a94a3]">
+                    <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
                       헤드헌팅 의뢰를 진행하면 후보자가 이곳에 추천됩니다.
                     </p>
                   </div>

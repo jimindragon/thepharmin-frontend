@@ -31,7 +31,7 @@
   opacity: 0;
   transform: translateY(14px);
   animation: cardIn 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s;
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
 }
 
 .cardPerson {
@@ -68,23 +68,16 @@
   outline-offset: 2px;
 }
 
-/* 상단 브랜드 그라데이션 액센트 바 */
-.card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--gradient-cta);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+/* hover/focus 시 테두리 톤만 한 단계 진해짐 (헤드헌팅 랜딩 카드와 동일 값) */
+.card:hover,
+.card:focus-visible {
+  border-color: #d8dce2;
 }
 
-.card:hover::after,
-.card:focus-visible::after {
-  transform: scaleX(1);
+/* 다크 카드는 위 값이 무의미하므로 별도 지정 (.chipDark 테두리와 동일 톤) */
+.cardBiz:hover,
+.cardBiz:focus-visible {
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 /* ── Photo layer ───────────────────────────── */
@@ -94,7 +87,7 @@
   background-size: cover;
   background-position: center;
   pointer-events: none;
-  transition: opacity 0.3s, transform 6s ease-out;
+  transition: opacity 0.3s, transform 0.5s ease-out;
 }
 
 .cardPhotoPerson {
@@ -236,5 +229,10 @@
 
   .card:hover {
     transform: none;
+  }
+
+  /* 사진 줌(0.5s)도 정지 — 모션 감소에선 밝기 변화만 남긴다 */
+  .cardPhoto {
+    transition: none;
   }
 }

@@ -26,14 +26,15 @@ const businessNavItems = [
 
 function lightNavItemClassName(active: boolean) {
   return clsx(
-    "whitespace-nowrap transition text-[13px]",
+    "whitespace-nowrap transition text-[14px]",
     active ? "font-medium text-[#303946]" : "font-normal text-[#8a94a3] hover:text-[#303946]",
   );
 }
 
 function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
-    <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex shrink-0 items-center gap-3 hover:opacity-80 transition-opacity">
+    // shrink-0 대신 min-w-0 — 좁은 폭에서 로고가 우측 버튼 그룹을 파고들지 않고 함께 줄어든다.
+    <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex min-w-0 items-center gap-3 hover:opacity-80 transition-opacity">
       <img
         src="/images/color_logo_1.svg"
         alt="더파마 리크루트"
@@ -41,8 +42,10 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
         height={28}
         className="h-[28px] w-[284px] object-contain max-[900px]:h-[25px] max-[900px]:w-[254px] max-[560px]:h-[22px] max-[560px]:w-[224px]"
       />
-      <span className="h-[16px] w-px shrink-0 bg-[#c8ced8]" aria-hidden="true" />
-      <span className="whitespace-nowrap text-[13px] font-bold text-[#111111] max-[420px]:text-[11px]">
+      {/* 960px 이하에서는 우측 버튼 그룹(505px)과 자리를 다투므로 로고만 남긴다.
+          로고 이미지 자체에 "THE PHARMA Recruit" 워드마크가 들어 있어 식별에 문제없다. */}
+      <span className="h-[16px] w-px shrink-0 bg-[#c8ced8] max-[960px]:hidden" aria-hidden="true" />
+      <span className="whitespace-nowrap text-[13px] font-bold text-[#111111] max-[960px]:hidden max-[420px]:text-[11px]">
         기업 센터
       </span>
     </Link>
@@ -81,7 +84,7 @@ export function BusinessAccountMenu() {
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
-            <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
+            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
               {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
             </p>
           </div>
@@ -101,7 +104,7 @@ export function BusinessAccountMenu() {
             </div>
             {businessCenterMenuGroups.map((group) => (
               <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
+                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
                 <div className="mt-1">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
@@ -157,11 +160,14 @@ export function BusinessHeader() {
 
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-border bg-white text-[#17202c]">
-      <div className="app-shell flex h-full items-center justify-between">
+      {/* gap-4 — 좁은 폭에서 로고가 우측 버튼 그룹에 맞닿지 않도록 최소 간격을 보장한다. */}
+      <div className="app-shell flex h-full items-center justify-between gap-4">
         {/* 좌측: 로고 | 기업 센터 | 요금제 · 고객센터 */}
         <div className="flex min-w-0 items-center gap-5">
           <BusinessBrand homeHref="/business" />
-          <nav className="flex items-center gap-7 max-[1120px]:hidden">
+          {/* 우측 버튼 그룹이 505px라 1121~1279px 구간은 nav를 감당하지 못하고 겹친다.
+              1280px부터만 노출하되, 그 1280px도 gap-7(28px)이면 1.2px 겹치므로 gap-6(24px)을 쓴다. */}
+          <nav className="flex items-center gap-6 max-[1279px]:hidden">
             {businessNavItems.map((item) => (
               <Link key={item.href} href={item.href} className={lightNavItemClassName(pathname === item.href)}>
                 {item.label}
@@ -190,7 +196,7 @@ export function BusinessHeader() {
               <div className="flex items-center gap-1">
                 <Link
                   href="/"
-                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[12px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[760px]:hidden"
+                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[13px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[760px]:hidden"
                 >
                   개인 서비스
                 </Link>
@@ -198,7 +204,7 @@ export function BusinessHeader() {
                   notifications={MOCK_BUSINESS_NOTIFICATIONS}
                   viewAllHref="/business/notifications"
                   scope="business"
-                  size={18}
+                  tone="light"
                 />
                 <BusinessAccountMenu />
               </div>

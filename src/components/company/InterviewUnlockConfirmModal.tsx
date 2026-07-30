@@ -26,12 +26,12 @@ export function InterviewUnlockConfirmModal({ credits, onConfirm, onCancel }: In
             </span>
             <div>
               <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#242b36]">면접 후기를 열람할까요?</h3>
-              <p className="mt-1.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">
+              <p className="mt-1.5 text-[15px] font-normal leading-[1.6] text-[#68717e]">
                 열람권 1장이 사용됩니다.
                 <br />
                 열람 후에는 추가 차감 없이 다시 볼 수 있어요.
               </p>
-              <p className="mt-2 text-[12.5px] font-medium text-[#3f4855]">
+              <p className="mt-2 text-[13px] font-medium text-[#3f4855]">
                 보유 {credits}장 → {nextCredits}장
               </p>
             </div>

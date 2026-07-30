@@ -92,19 +92,19 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
             {/* ≤640px에서 제목이 두 줄이 되므로 배지를 첫 줄에 붙인다 */}
             <div className="mt-1.5 flex min-w-0 items-center gap-2 max-[640px]:items-start">
               {job.postingSource === "headhunting" ? (
-                <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[11px] font-medium text-[#535c68]">
+                <span className="shrink-0 border border-[#d7dce2] bg-[#f3f4f5] px-2 py-0.5 text-[13px] font-medium text-[#535c68]">
                   헤드헌팅
                 </span>
               ) : null}
               {/* truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
                   겹치지 않게 브레이크포인트로 완전히 분리한다 */}
-              <h3 className="text-[16px] font-bold text-[#242b36] min-[641px]:truncate max-[640px]:line-clamp-2">
+              <h3 className="text-[16px] font-semibold text-[#242b36] min-[641px]:truncate max-[640px]:line-clamp-2">
                 {job.title}
               </h3>
             </div>
 
             {/* truncate 없음 — 좁은 폭에서는 잘리는 대신 여러 줄로 감긴다 */}
-            <p className="mt-1.5 text-[12px] font-normal text-[#737d8a]">
+            <p className="mt-1.5 text-[13px] font-normal text-[#737d8a]">
               {job.career}
               <span className="px-1.5 text-[#c2c8d1]">·</span>
               {job.education}
@@ -122,7 +122,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
                 <span
                   key={tag}
                   className={clsx(
-                    "rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[10px] font-medium text-[#7c8490]",
+                    "rounded-[var(--radius)] border border-[#e5e9ef] bg-[#f5f7f9] px-2 py-0.5 text-[12px] font-medium text-[#7c8490]",
                     index >= 2 && "max-[480px]:hidden",
                   )}
                 >
@@ -131,7 +131,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
               ))}
             </div>
             {showHourlyBadge ? (
-              <p className="mt-0.5 text-[11px] text-[#0d7369]">시급 조건 충족</p>
+              <p className="mt-0.5 text-[13px] text-[#0d7369]">시급 조건 충족</p>
             ) : null}
           </div>
 
@@ -163,7 +163,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
               </strong>
               <span
                 className={clsx(
-                  "mt-2.5 inline-flex h-[24px] shrink-0 cursor-default items-center whitespace-nowrap rounded-[var(--radius)] px-2 text-[11px] font-medium max-[640px]:mt-0",
+                  "mt-2.5 inline-flex h-[28px] shrink-0 cursor-default items-center whitespace-nowrap rounded-[var(--radius)] px-2 text-[13px] font-medium max-[640px]:mt-0",
                   easyApply ? "bg-brand text-white" : "border border-[#d9e1e8] bg-white text-[#596373]",
                 )}
               >

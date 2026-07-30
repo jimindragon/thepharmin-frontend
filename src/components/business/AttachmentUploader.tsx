@@ -69,14 +69,14 @@ export function AttachmentUploader({
       </button>
 
       {value.length === 0 ? (
-        <p className="mt-3 text-[11.5px] text-[#a0a9b7]">{emptyText}</p>
+        <p className="mt-3 text-[12px] text-[#a0a9b7]">{emptyText}</p>
       ) : (
         <div className="mt-3 divide-y divide-[#eef0f3] border-t border-[#eef0f3]">
           {value.map((item, index) => (
             <div key={`${item.name}-${index}`} className="flex items-center justify-between gap-3 py-2.5">
               <div className="flex min-w-0 items-baseline gap-2">
                 <span className="truncate text-[13px] font-medium text-[#303946]">{item.name}</span>
-                <span className="shrink-0 text-[11.5px] text-[#8a94a3]">{formatFileSize(item.size)}</span>
+                <span className="shrink-0 text-[12px] text-[#8a94a3]">{formatFileSize(item.size)}</span>
               </div>
               <button
                 type="button"

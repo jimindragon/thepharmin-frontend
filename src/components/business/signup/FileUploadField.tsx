@@ -41,7 +41,7 @@ export function FileUploadField({
         </span>
         <span className="min-w-0">
           <span className="block text-[13px] font-medium text-[#303946]">{fileName ?? label}</span>
-          {hint ? <span className="mt-0.5 block truncate text-[11.5px] font-normal text-[#8a94a3]">{hint}</span> : null}
+          {hint ? <span className="mt-0.5 block truncate text-[12px] font-normal text-[#8a94a3]">{hint}</span> : null}
         </span>
       </button>
     </div>

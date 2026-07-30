@@ -4,8 +4,8 @@ import clsx from "clsx";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { FieldLabel } from "@/components/business/BusinessFormControls";
+import { IN } from "@/components/job-registration/fieldClasses";
 
-const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
 
 export interface RecommendedKeywordPickerProps {
   /** 추천 키워드 풀. 직무/분야 연동이 있는 트랙은 호출부가 선택 상태에 맞춰 계산해 전달한다. */
@@ -128,7 +128,7 @@ export function RecommendedKeywordPicker({
         </div>
       )}
 
-      <p className="mt-2.5 text-[11.5px] text-[#a0a9b7]">
+      <p className="mt-2.5 text-[12px] text-[#a0a9b7]">
         선택한 키워드는 공고 검색과 추천 공고 노출에 활용되며, 최대 5개까지 표시됩니다.
       </p>
     </div>

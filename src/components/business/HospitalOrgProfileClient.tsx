@@ -21,7 +21,7 @@ const MAX_KEYWORDS = 8;
 /** 기관 특징 최대 개수 — 기존 mock 최대치(national-fire-hospital/sungae-hospital 6개)를 기준으로 잡는다 */
 const MAX_FEATURES = 6;
 /** 상단 대표 이미지 "이미지 변경/등록" 버튼 전용 — 산업(BusinessCompanyProfileClient)과 동일 스타일 복제 */
-const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[11.5px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
+const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
 /** 텍스트 버튼(삭제 등) — 산업과 동일 스타일 복제 */
 const TEXT_BUTTON = "text-[12px] font-medium text-[#8a94a3] underline-offset-2 hover:text-[#111111] hover:underline";
 
@@ -143,7 +143,7 @@ export function HospitalOrgProfileClient() {
 
   const saveProfile = () => {
     setSaved(true);
-    window.setTimeout(() => setSaved(false), 2200);
+    window.setTimeout(() => setSaved(false), 2400);
   };
 
   // 미리보기는 별도 라우트(/business/company/preview)라 props를 직접 넘길 수 없다 — 이동 직전 sessionStorage에
@@ -163,8 +163,8 @@ export function HospitalOrgProfileClient() {
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "병원 정보 관리" }]} />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">병원 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">채용공고와 병원 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">병원 정보 관리</h1>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">채용공고와 병원 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
           <Link href="/business/company/preview?track=hospital" onClick={goToPreview} className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
@@ -183,7 +183,7 @@ export function HospitalOrgProfileClient() {
               <InfoTooltip text="인증 정보는 승인 상태와 인증 배지에 사용됩니다. 변경이 필요한 경우 변경 요청을 보내주시면 운영팀 검토 후 반영됩니다." />
             </span>
           }
-          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기관 인증 완료</span>}
+          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[13px] font-medium text-[#303946]">기관 인증 완료</span>}
         >
           <div className="grid grid-cols-3 border border-border max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
@@ -192,23 +192,23 @@ export function HospitalOrgProfileClient() {
               ["대표자명", profile.representativeName],
             ].map(([label, value]) => (
               <div key={label} className="border-r border-border px-4 py-4 last:border-r-0 max-[900px]:border-b">
-                <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
+                <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
                 <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
               </div>
             ))}
           </div>
           <div className="grid grid-cols-[minmax(0,1fr)_2fr] border border-t-0 border-border max-[900px]:grid-cols-1">
             <div className="border-r border-border px-4 py-4 max-[900px]:border-b max-[900px]:border-r-0">
-              <p className="text-[11px] font-medium text-[#8a94a3]">요양기관번호</p>
+              <p className="text-[12px] font-medium text-[#8a94a3]">요양기관번호</p>
               <p className="mt-2 text-[13px] font-medium text-[#17202c]">{profile.institutionCode}</p>
             </div>
             <div className="px-4 py-4">
-              <p className="text-[11px] font-medium text-[#8a94a3]">사업자등록증명원</p>
+              <p className="text-[12px] font-medium text-[#8a94a3]">사업자등록증명원</p>
               <p className="mt-2 text-[13px] font-medium text-[#17202c]">{statusLabel(profile.businessLicenseFile.status)}</p>
             </div>
           </div>
           <div className="mt-4">
-            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
+            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#303946] hover:border-[#111111]">
               기관 정보 변경 요청
               <ExternalLink size={13} />
             </Link>
@@ -319,7 +319,7 @@ export function HospitalOrgProfileClient() {
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between gap-3">
               <FieldLabel required>한 줄 소개</FieldLabel>
-              <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
+              <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
             </div>
             <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="예: 진료와 임상연구를 함께 운영하는 상급종합병원" />
           </div>
@@ -327,7 +327,7 @@ export function HospitalOrgProfileClient() {
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between gap-3">
               <FieldLabel>본문 소개</FieldLabel>
-              <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{(profile.fullIntro ?? "").length} / 2000</span>
+              <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{(profile.fullIntro ?? "").length} / 2000</span>
             </div>
             <textarea
               value={profile.fullIntro ?? ""}
@@ -343,8 +343,8 @@ export function HospitalOrgProfileClient() {
             <div className="mt-3 space-y-2.5">
               {profile.features.length > 0 ? (
                 <div className="grid grid-cols-[1fr_2fr_44px] items-end gap-x-3 gap-y-1.5 max-[560px]:hidden">
-                  <p className="text-[11px] font-medium text-[#8a94a3]">제목</p>
-                  <p className="text-[11px] font-medium text-[#8a94a3]">내용</p>
+                  <p className="text-[12px] font-medium text-[#8a94a3]">제목</p>
+                  <p className="text-[12px] font-medium text-[#8a94a3]">내용</p>
                   <div aria-hidden />
                 </div>
               ) : null}
@@ -383,7 +383,7 @@ export function HospitalOrgProfileClient() {
                 </FormActionButton>
               </div>
             ) : null}
-            <p className="mt-2 text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관 상세 페이지에 표시됩니다. 최대 6개</p>
+            <p className="mt-2 text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관 상세 페이지에 표시됩니다. 최대 6개</p>
           </div>
 
           <div className="mt-6 space-y-2">
@@ -396,7 +396,7 @@ export function HospitalOrgProfileClient() {
                     type="button"
                     onClick={() => removeKeyword(keyword)}
                     aria-label={`${keyword} 키워드 삭제`}
-                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white"
+                    className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[13px] font-medium text-white"
                   >
                     {keyword}
                     <X size={12} className="opacity-70" aria-hidden />
@@ -424,9 +424,9 @@ export function HospitalOrgProfileClient() {
               </FormActionButton>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
+              <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
               {profile.keywords.length > 0 ? (
-                <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
+                <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
               ) : null}
             </div>
           </div>
@@ -511,7 +511,7 @@ export function HospitalOrgProfileClient() {
                   <ToggleChip key={item} label={item} selected={profile.specialistPharmacists.includes(item)} onClick={() => toggleSpecialistPharmacist(item)} />
                 ))}
               </div>
-              <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
+              <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">미선택 시 상세 페이지 블록이 노출되지 않습니다.</p>
             </div>
             <div className="space-y-2">
               <FieldLabel>약제부 근무 환경</FieldLabel>
@@ -523,7 +523,7 @@ export function HospitalOrgProfileClient() {
                 className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
               />
               <div className="flex justify-end">
-                <span className="text-[11px] font-medium text-[#8a94a3]">{profile.pharmacyEnvironmentDescription.length} / 2000</span>
+                <span className="text-[12px] font-normal text-[#8a94a3]">{profile.pharmacyEnvironmentDescription.length} / 2000</span>
               </div>
             </div>
           </div>
@@ -572,7 +572,7 @@ export function HospitalOrgProfileClient() {
           <div className="my-6 border-t border-[#f0f2f5]" />
 
           <div>
-            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
+            <h3 className="text-[16px] font-semibold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
             <div className="mt-3 space-y-2.5">
               <label className="flex items-center gap-2 text-[13px] font-medium text-[#3c4654]">
                 <input

@@ -53,16 +53,16 @@ export function BusinessHeadhuntingNewClient() {
       <div>
         <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "헤드헌팅" }, { label: "의뢰 등록" }]} />
         <div className="mt-5 flex items-center justify-between gap-4">
-          <h1 className="text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">새 헤드헌팅 의뢰</h1>
+          <h1 className="text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">새 헤드헌팅 의뢰</h1>
           <Link
             href="/business/headhunting/manage"
-            className="inline-flex h-10 items-center gap-1.5 border border-[#cfd8e3] bg-white px-4 text-[12px] font-medium text-[#303946] hover:border-[#111111]"
+            className="inline-flex h-10 items-center gap-1.5 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111]"
           >
             <ArrowLeft size={14} />
             목록으로
           </Link>
         </div>
-        <p className="mt-2 text-[13px] font-normal text-[#68717e]">전문 직무 인재 탐색을 위한 헤드헌팅 상담을 요청합니다.</p>
+        <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">전문 직무 인재 탐색을 위한 헤드헌팅 상담을 요청합니다.</p>
 
         <div className="mt-6 space-y-5">
           <SectionCard title="채용 정보" description="찾고 있는 포지션과 채용 조건을 입력해 주세요.">

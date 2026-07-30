@@ -28,7 +28,7 @@ export function AttachmentResumeCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="truncate text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{resume.fileName}</h3>
-            <span className="inline-flex h-[22px] items-center border border-border bg-[#f7f8fa] px-2 text-[11px] font-medium text-[#596373]">첨부형</span>
+            <span className="inline-flex items-center border border-border bg-[#f7f8fa] px-2 py-0.5 text-[13px] font-medium text-[#596373]">첨부형</span>
             {resume.isPrimary ? <ResumePrimaryBadge /> : null}
           </div>
           <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">

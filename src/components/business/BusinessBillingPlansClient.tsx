@@ -73,7 +73,7 @@ export function BusinessBillingPlansClient() {
             ]}
           />
           <div className="mt-5 flex items-center justify-between gap-5 max-[760px]:flex-col max-[760px]:items-start">
-            <h1 className="text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">요금제 관리</h1>
+            <h1 className="text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">요금제 관리</h1>
             <button
               type="button"
               onClick={openNewBoostModal}
@@ -83,7 +83,7 @@ export function BusinessBillingPlansClient() {
               새 부스트 적용하기
             </button>
           </div>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             진행 중인 부스트를 확인하고, 새 부스트를 적용하거나 연장할 수 있습니다.
           </p>
         </div>
@@ -113,16 +113,16 @@ export function BusinessBillingPlansClient() {
         </BusinessStatGrid>
 
         {/* 진행 중인 부스트 */}
-        <h2 className="mt-6 text-[22px] font-bold tracking-[-0.02em] text-[#1f2733]">
+        <h2 className="mt-6 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">
           진행 중인 부스트
         </h2>
         <div className="mt-3 border border-border bg-white">
           <div className="px-6 py-6">
             {hasBoosts ? (
               <div className="overflow-x-auto">
-                <div className="min-w-[700px]">
+                <div className="min-w-[740px]">
                   {/* 테이블 헤더 */}
-                  <div className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] gap-4 border-b border-border pb-3 text-[12px] font-medium text-[#8a94a3]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_95px_195px_90px_72px] gap-4 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
                     <span>공고</span>
                     <span>상태</span>
                     <span>기간</span>
@@ -134,12 +134,12 @@ export function BusinessBillingPlansClient() {
                     {boosts.map((boost) => (
                       <div
                         key={boost.id}
-                        className="grid grid-cols-[minmax(0,1fr)_120px_220px_90px_72px] items-center gap-4 py-4 text-[13px]"
+                        className="grid grid-cols-[minmax(0,1fr)_95px_195px_90px_72px] items-center gap-4 py-4 text-[13px]"
                       >
                         {/* 공고명 + 트랙 태그 */}
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
-                          <span className="font-medium text-[#17202c]">{boost.jobTitle}</span>
-                          <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[11px] font-medium text-[#596373]">
+                          <span className="text-[16px] font-semibold text-[#17202c]">{boost.jobTitle}</span>
+                          <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium text-[#596373]">
                             {boostTrackLabel(boost.track)}
                           </span>
                         </div>
@@ -152,14 +152,14 @@ export function BusinessBillingPlansClient() {
                           {BOOST_GRADE_LABEL[boost.grade]} · {boost.durationWeeks}주 · ~{boost.endDate}
                         </span>
                         {/* 결제 금액 */}
-                        <span className="text-[13px] font-medium text-[#17202c]">
+                        <span className="text-[14px] font-semibold text-[#17202c]">
                           {formatKrw(boost.amountKrw)}
                         </span>
                         {/* 액션 버튼 */}
                         <button
                           type="button"
                           onClick={() => openExtendModal(boost.jobId, boost.grade)}
-                          className="inline-flex h-8 items-center justify-center justify-self-end border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+                          className="inline-flex h-8 items-center justify-center justify-self-end border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
                         >
                           연장
                         </button>

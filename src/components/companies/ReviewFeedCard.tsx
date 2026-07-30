@@ -35,11 +35,11 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
     <article className="relative border border-border bg-white p-4">
       {href ? <Link href={href} aria-label={`${review.companyName} 후기 보기`} className="absolute inset-0 z-10" /> : null}
       <div className="flex items-center justify-between gap-2">
-        <p className="truncate text-[13px] font-medium text-[#596373]">{review.companyName}</p>
+        <p className="truncate text-[15px] font-semibold text-[#171d26]">{review.companyName}</p>
         {review.outcome ? (
           <span
             className={clsx(
-              "shrink-0 border px-2 py-0.5 text-[11px]",
+              "shrink-0 border px-2 py-0.5 text-[13px]",
               review.outcome === "합격" ? "border-[#111111] font-bold text-[#111111]" : "border-[#d9d9d9] font-medium text-[#777777]",
             )}
           >
@@ -50,11 +50,11 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
       <p className="mt-1.5 text-[12px] font-normal text-[#8a95a5]">
         {review.jobRole} · {review.writtenAt}
       </p>
-      {applyLabel ? <p className="mt-1 text-[11px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
+      {applyLabel ? <p className="mt-1 text-[12px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       {review.tags.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {review.tags.map((tag) => (
-            <span key={tag} className="border border-[#e4e9ef] bg-white px-2 py-1 text-[11px] font-medium text-[#687382]">
+            <span key={tag} className="border border-[#e4e9ef] bg-white px-2 py-1 text-[13px] font-medium text-[#687382]">
               {tag}
             </span>
           ))}

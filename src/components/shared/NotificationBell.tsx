@@ -11,19 +11,26 @@ interface NotificationBellProps {
   notifications: Notification[];
   viewAllHref: string;
   scope: NotificationScope;
+  /** 벨 아이콘 크기(px). 순수 크기값 — 색·hover·링은 tone이 결정한다. */
   size?: number;
+  /**
+   * 헤더 배경 톤. Eyebrow·Button·headerNavItemClassName과 같은 "light"|"dark" 관례.
+   * 다른 컴포넌트와 달리 기본값이 "dark"인 이유: 벨을 쓰는 헤더 3곳 중 2곳(개인·고객센터)이
+   * 검은 헤더라 그쪽을 무설정 기본으로 두는 편이 호출부가 조용하다.
+   */
+  tone?: "dark" | "light";
 }
 
 const MAX_VISIBLE = 5;
 
-export function NotificationBell({ notifications, viewAllHref, scope, size = 20 }: NotificationBellProps) {
+export function NotificationBell({ notifications, viewAllHref, scope, size = 20, tone = "dark" }: NotificationBellProps) {
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const { markRead, markAllRead, isRead, isLoaded } = useNotificationReadState(scope);
 
   const unreadCount = notifications.filter((notification) => !isRead(notification.id)).length;
   // 읽음 상태 로드 전에는 미읽음 표현(dot·카운트·강조)을 숨긴다 — mock 기본값 기준 깜빡임 방지.
   const hasUnread = isLoaded && unreadCount > 0;
-  const isCompact = size < 20;
+  const isLight = tone === "light";
 
   const visible = [...notifications]
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
@@ -39,15 +46,17 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20 
         aria-label="알림"
         className={clsx(
           "relative grid h-9 w-9 place-items-center",
-          isCompact ? "text-[#303946] hover:bg-[#f4f5f6]" : "hover:bg-white/10",
+          // 다크는 부모(흰 글자)를 그대로 상속받고, 라이트만 아이콘 색을 지정한다.
+          isLight ? "text-[#303946] hover:bg-[#f4f5f6]" : "hover:bg-white/10",
         )}
       >
         <Bell size={size} strokeWidth={2} />
         {hasUnread ? (
           <span
             className={clsx(
-              "absolute rounded-full bg-danger",
-              isCompact ? "right-2 top-2 h-2 w-2 ring-2 ring-white" : "right-2.5 top-2.5 h-2.5 w-2.5 ring-2 ring-[#050505]",
+              // 위치·크기는 20px 아이콘 기준 고정값. 톤에 따라 바뀌는 건 헤더 배경색과 맞물리는 링 색뿐.
+              "absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-danger ring-2",
+              isLight ? "ring-white" : "ring-[#050505]",
             )}
           />
         ) : null}

@@ -50,7 +50,7 @@ export function SectionShell({
     <section className="border border-border bg-white p-6 shadow-[var(--shadow)] max-[720px]:p-5">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733] max-[720px]:text-[20px]">{title}</h2>
+          <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
           {description ? <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8594]">{description}</p> : null}
         </div>
         {action}
@@ -61,7 +61,7 @@ export function SectionShell({
 }
 
 export function Chip({ children, tone = "default", size = "md" }: { children: ReactNode; tone?: "default" | "accent" | "dark"; size?: "md" | "sm" }) {
-  const sizing = size === "sm" ? "h-7 px-2.5 text-[11px]" : "h-8 px-3 text-[12px]";
+  const sizing = size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-8 px-3 text-[13px]";
   return (
     <span
       className={clsx(
@@ -82,7 +82,7 @@ export function Chip({ children, tone = "default", size = "md" }: { children: Re
 export function EmptyState({ message, cta }: { message: string; cta?: ReactNode }) {
   return (
     <div className="border border-dashed border-[#d8e0e8] bg-[#fbfcfd] px-5 py-8 text-center">
-      <p className="text-[14px] font-medium text-[#6c7684]">{message}</p>
+      <p className="text-[15px] font-medium text-[#303946]">{message}</p>
       {cta ? <div className="mt-4">{cta}</div> : null}
     </div>
   );
@@ -99,7 +99,7 @@ export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
   return (
     <SectionShell title="기업 소개">
       {profile.fullIntro ? (
-        <p className="text-[14px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
+        <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
         <div className={clsx("flex flex-wrap gap-x-2.5 gap-y-1.5", hasIntro && "mt-3")}>
@@ -146,8 +146,8 @@ function IndustryDividerStatCell({ icon: Icon, label, value }: { icon: LucideIco
 function IndustryInfoRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="grid grid-cols-[120px_1fr] items-start gap-x-6 py-3 max-[560px]:grid-cols-1 max-[560px]:gap-x-0 max-[560px]:gap-y-1">
-      <span className="text-[13px] font-medium text-[#8993a1]">{label}</span>
-      <span className="min-w-0 text-left text-[14px] font-normal leading-relaxed text-[#2f3845]">{value}</span>
+      <span className="text-[14px] font-medium text-[#8993a1]">{label}</span>
+      <span className="min-w-0 text-left text-[15px] font-normal leading-relaxed text-[#2f3845]">{value}</span>
     </div>
   );
 }
@@ -167,7 +167,7 @@ function LocationMapPlaceholder({ address, orgName }: { address: string; orgName
       <div className="relative z-10 border border-[#d7dde5] bg-white px-5 py-3 text-center shadow-[0_5px_14px_rgba(20,32,46,0.08)]">
         <MapPin className="mx-auto text-[#6b7280]" size={20} aria-hidden />
         <p className="mt-1 text-[13px] font-bold text-[#2f3845]">{orgName}</p>
-        <p className="mt-0.5 text-[11.5px] font-normal text-[#8993a1]">{address}</p>
+        <p className="mt-0.5 text-[12px] font-normal text-[#8993a1]">{address}</p>
       </div>
     </div>
   );
@@ -180,7 +180,7 @@ function LocationSection({ address, orgName }: { address?: string; orgName: stri
   if (!address) return null;
   return (
     <div className="mt-6 border-t border-[#edf1f5] pt-5">
-      <h3 className="text-[15px] font-bold text-[#2f3845]">위치</h3>
+      <h3 className="text-[15px] font-semibold text-[#2f3845]">위치</h3>
       <div className="mt-3 space-y-3">
         <p className="text-[16px] font-normal leading-[1.85] text-[#3f4855]">{address}</p>
         <LocationMapPlaceholder address={address} orgName={orgName} />
@@ -211,7 +211,7 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
 
   return (
     <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">기업 정보</h2>
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">기업 정보</h2>
 
       {hasCards ? (
         <div className="mt-6 grid grid-cols-4 divide-x divide-[#e8edf2] max-[640px]:grid-cols-2">
@@ -250,12 +250,12 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
 
       {profile.sidebar.products.length > 0 ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
-          <h3 className="text-[15px] font-bold text-[#2f3845]">대표 제품</h3>
+          <h3 className="text-[15px] font-semibold text-[#2f3845]">대표 제품</h3>
           <div className="mt-3 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
             {profile.sidebar.products.map((product) => (
               <div key={product.name} className="border-l-2 border-[#d8e0e8] pl-3.5">
-                <p className="text-[15px] font-bold text-[#17202c]">{product.name}</p>
-                <p className="mt-1 text-[14px] font-normal leading-relaxed text-[#8b95a1]">{product.description}</p>
+                <p className="text-[15px] font-semibold text-[#17202c]">{product.name}</p>
+                <p className="mt-1 text-[15px] font-normal leading-relaxed text-[#8b95a1]">{product.description}</p>
               </div>
             ))}
           </div>
@@ -264,7 +264,7 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
 
       {financeItems.length > 0 ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
-          <h3 className="text-[15px] font-bold text-[#2f3845]">재무 정보</h3>
+          <h3 className="text-[15px] font-semibold text-[#2f3845]">재무 정보</h3>
           <div className="mt-3 grid grid-cols-3 gap-3 max-[640px]:grid-cols-1">
             {financeItems.map((item) => (
               <IndustryStatCard
@@ -454,12 +454,13 @@ export function CompanyNewsSection({ profile }: { profile: CompanyProfile }) {
                 <img src={news.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
               </div>
               <div className="p-4">
-                <p className="text-[11px] font-medium text-[#8a95a5]">{news.date}</p>
-                <h3 className="mt-2 line-clamp-2 min-h-[40px] text-[14px] font-bold leading-[1.45] text-[#202733]">{news.title}</h3>
-                <p className="mt-2 text-[12px] font-medium text-[#596373]">
+                <p className="text-[12px] font-normal text-[#8a95a5]">{news.date}</p>
+                {/* min-h는 "2줄분 높이" — 16px × leading-1.45 ≈ 23.2px × 2줄 = 46.4px라 48px로 잡는다(14px 시절엔 40px) */}
+                <h3 className="mt-2 line-clamp-2 min-h-[48px] text-[16px] font-semibold leading-[1.45] text-[#202733]">{news.title}</h3>
+                <p className="mt-2 text-[13px] font-normal text-[#596373]">
                   {news.source} · {news.category}
                 </p>
-                <p className="mt-2 line-clamp-2 text-[12px] font-normal leading-[1.6] text-[#667181]">{news.summary}</p>
+                <p className="mt-2 line-clamp-2 text-[13px] font-normal leading-[1.6] text-[#667181]">{news.summary}</p>
               </div>
             </a>
           ))}
@@ -504,8 +505,9 @@ export function CompanyNewsPreviewSection({ profile }: { profile: CompanyProfile
               <img src={news.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
             </div>
             <div className="p-3">
-              <p className="text-[11px] font-medium text-[#8a95a5]">{news.date}</p>
-              <h3 className="mt-1.5 line-clamp-2 min-h-[36px] text-[13px] font-bold leading-[1.4] text-[#202733]">{news.title}</h3>
+              <p className="text-[12px] font-normal text-[#8a95a5]">{news.date}</p>
+              {/* min-h는 "2줄분 높이" — 15px × leading-1.4 = 21px × 2줄 = 42px(13px 시절엔 36px) */}
+              <h3 className="mt-1.5 line-clamp-2 min-h-[42px] text-[15px] font-semibold leading-[1.4] text-[#202733]">{news.title}</h3>
             </div>
           </a>
         ))}
@@ -542,12 +544,12 @@ function InstitutionFeatures({ features }: { features?: CompanyProfileFeature[] 
   if (!features || !features.length) return null;
   return (
     <div className="mt-6 border-t border-[#edf1f5] pt-5">
-      <h3 className="text-[15px] font-bold text-[#202733]">기관 특징</h3>
+      <h3 className="text-[15px] font-semibold text-[#202733]">기관 특징</h3>
       <div className="mt-3 grid gap-3">
         {features.map((feature) => (
-          <div key={feature.label} className="grid grid-cols-[150px_minmax(0,1fr)] gap-4 text-[13px] max-[560px]:grid-cols-1 max-[560px]:gap-1">
-            <dt className="font-medium text-[#8a94a3]">{feature.label}</dt>
-            <dd className="font-normal leading-[1.6] text-[#3c4654]">{feature.text}</dd>
+          <div key={feature.label} className="grid grid-cols-[150px_minmax(0,1fr)] gap-4 max-[560px]:grid-cols-1 max-[560px]:gap-1">
+            <dt className="text-[14px] font-medium text-[#8a94a3]">{feature.label}</dt>
+            <dd className="text-[15px] font-normal leading-[1.6] text-[#3c4654]">{feature.text}</dd>
           </div>
         ))}
       </div>
@@ -566,7 +568,7 @@ function HospitalOverviewCard({ profile }: { profile: CompanyProfile }) {
   return (
     <SectionShell title="병원 소개">
       {profile.fullIntro ? (
-        <p className="text-[14px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
+        <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
         <div className={clsx("flex flex-wrap gap-x-2.5 gap-y-1.5", hasIntro && "mt-3")}>
@@ -607,7 +609,7 @@ function HospitalInfoCard({ profile, company }: { profile: CompanyProfile; compa
 
   return (
     <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">병원 정보</h2>
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">병원 정보</h2>
 
       {hasCards ? (
         <div className="mt-6 grid grid-cols-4 gap-3 max-[980px]:grid-cols-2 max-[560px]:grid-cols-1">
@@ -641,7 +643,7 @@ function HospitalInfoCard({ profile, company }: { profile: CompanyProfile; compa
 
       {hasDutySection ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
-          <h3 className="text-[15px] font-bold text-[#2f3845]">약제부 근무환경</h3>
+          <h3 className="text-[15px] font-semibold text-[#2f3845]">약제부 근무환경</h3>
           {hasDutyRows ? (
             <div className="mt-3 divide-y divide-[#f0f2f5]">
               {pharmacyStaffCount ? <IndustryInfoRow label="약사 인원" value={pharmacyStaffCount} /> : null}
@@ -684,7 +686,7 @@ function PharmacyOverviewCard({ profile }: { profile: CompanyProfile }) {
   return (
     <SectionShell title="약국 소개">
       {profile.fullIntro ? (
-        <p className="text-[14px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
+        <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
         <div className={clsx("flex flex-wrap gap-x-2.5 gap-y-1.5", hasIntro && "mt-3")}>
@@ -729,7 +731,7 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
 
   return (
     <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">약국 정보</h2>
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">약국 정보</h2>
 
       {hasCards ? (
         <div className="mt-6 grid grid-cols-3 gap-3 max-[720px]:grid-cols-1">
@@ -752,7 +754,7 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
 
       {hasWorkEnvRows ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
-          <h3 className="text-[15px] font-bold text-[#2f3845]">조제 환경</h3>
+          <h3 className="text-[15px] font-semibold text-[#2f3845]">조제 환경</h3>
           <div className="mt-3 divide-y divide-[#f0f2f5]">
             {avgPrescriptions ? <IndustryInfoRow label="일 평균 처방" value={avgPrescriptions} /> : null}
             {mainDepartments ? <IndustryInfoRow label="주요 처방과" value={mainDepartments} /> : null}
@@ -864,7 +866,7 @@ function ResearchOverviewCard({ profile }: { profile: CompanyProfile }) {
   return (
     <SectionShell title="기관 소개">
       {profile.fullIntro ? (
-        <p className="text-[14px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
+        <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
         <div className={clsx("flex flex-wrap gap-x-2.5 gap-y-1.5", hasIntro && "mt-3")}>
@@ -901,7 +903,7 @@ function ResearchInfoCard({ profile }: { profile: CompanyProfile }) {
 
   return (
     <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
-      <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#202733]">연구기관 정보</h2>
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">연구기관 정보</h2>
 
       {hasCards ? (
         <div className="mt-6 grid grid-cols-3 gap-3 max-[720px]:grid-cols-1">
@@ -939,7 +941,7 @@ function ResearchInfoCard({ profile }: { profile: CompanyProfile }) {
 
       {hasResearchEnvRows ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
-          <h3 className="text-[15px] font-bold text-[#2f3845]">연구 환경</h3>
+          <h3 className="text-[15px] font-semibold text-[#2f3845]">연구 환경</h3>
           <div className="mt-3 divide-y divide-[#f0f2f5]">
             {researchFieldLabels.length ? <IndustryInfoRow label="연구 분야" value={researchFieldLabels.join(" · ")} /> : null}
             {profile.equipmentInfra ? <IndustryInfoRow label="연구 장비·인프라" value={profile.equipmentInfra} /> : null}

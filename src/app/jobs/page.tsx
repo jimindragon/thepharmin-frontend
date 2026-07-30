@@ -146,7 +146,7 @@ export default function JobsPage() {
                 </div>
               ) : (
                 <div className="surface flex h-[164px] flex-col items-center justify-center text-center">
-                  <p className="text-[17px] font-semibold text-[#3d4653]">조건에 맞는 공고가 없습니다.</p>
+                  <p className="text-[15px] font-medium text-[#303946]">조건에 맞는 공고가 없습니다.</p>
                   <p className="mt-2 text-[13px] font-normal text-[#8791a0]">필터를 줄이거나 검색어를 다시 입력해보세요.</p>
                 </div>
               )}

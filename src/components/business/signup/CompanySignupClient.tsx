@@ -76,7 +76,7 @@ function OrgVerificationStep({
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </div>
-          <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">선택한 유형에 맞는 관리 화면이 제공됩니다.</p>
+          <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">선택한 유형에 맞는 관리 화면이 제공됩니다.</p>
         </div>
 
         <div className="space-y-2">
@@ -104,7 +104,7 @@ function OrgVerificationStep({
           <div className="space-y-2">
             <FieldLabel required>요양기관번호</FieldLabel>
             <TextInput value={value.institutionCode} onChange={(v) => onChange("institutionCode", v)} placeholder="요양기관번호 8자리" />
-            <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
               병원 유형 선택 시에만 입력합니다. 요양기관 확인용으로 사용되며 공개되지 않습니다.
             </p>
           </div>

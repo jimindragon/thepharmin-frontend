@@ -122,7 +122,7 @@ function FilterPillButton({
     >
       <span className="shrink-0">{label}</span>
       {summary ? (
-        <span className={clsx("max-w-[120px] truncate text-[12px] font-normal", open ? "text-white/72" : "text-[#777777]")}>{summary}</span>
+        <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/72" : "text-[#777777]")}>{summary}</span>
       ) : null}
       {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
     </button>

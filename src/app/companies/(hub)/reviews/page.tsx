@@ -33,7 +33,7 @@ export default function CompaniesReviewsPage() {
         ← 기업 인사이트
       </Link>
       <section className="mt-8">
-        <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">전체 기업 리뷰</h2>
+        <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#111111]">전체 기업 리뷰</h2>
 
         {items.length ? (
           <div className="mt-5 grid grid-cols-3 gap-3 max-[980px]:grid-cols-2 max-[640px]:grid-cols-1">
@@ -43,7 +43,7 @@ export default function CompaniesReviewsPage() {
           </div>
         ) : (
           <div className="mt-5 flex h-[160px] flex-col items-center justify-center gap-1.5 border border-[#e5e9ef] bg-[#fbfcfd] text-center">
-            <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 기업 리뷰가 없습니다.</p>
+            <p className="text-[15px] font-medium text-[#303946]">아직 등록된 기업 리뷰가 없습니다.</p>
           </div>
         )}
       </section>

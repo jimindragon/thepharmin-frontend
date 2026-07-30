@@ -37,7 +37,7 @@ const FIELD_GROUP_GAP = "space-y-6";
 const FIELD_GRID_2COL = "grid grid-cols-2 gap-4 max-[640px]:grid-cols-1";
 /** 로고·상단 대표 이미지 "이미지 변경/등록" 버튼 전용 — 입력칸과 같은 행이 아니라서 CONTROL_HEIGHT를 따르지 않는다.
  * 위계는 FormActionButton과 동일하게 가는 테두리+배경 없음+작은 폰트로 표현하되, 라벨 옆 보조 액션이라 높이는 더 작게 둔다. */
-const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[11.5px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
+const IMAGE_ACTION_BUTTON = "h-8 shrink-0 whitespace-nowrap border border-[#e2e8ef] bg-white px-3 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111]";
 /** 텍스트 버튼(삭제 등) — 테두리 없이 텍스트만, 가장 낮은 위계 */
 const TEXT_BUTTON = "text-[12px] font-medium text-[#8a94a3] underline-offset-2 hover:text-[#111111] hover:underline";
 
@@ -145,7 +145,7 @@ export function BusinessCompanyProfileClient() {
 
   const saveProfile = () => {
     setSaved(true);
-    window.setTimeout(() => setSaved(false), 2200);
+    window.setTimeout(() => setSaved(false), 2400);
   };
 
   // 미리보기는 별도 라우트(/business/company/preview)라 props를 직접 넘길 수 없다 — 이동 직전 sessionStorage에
@@ -165,8 +165,8 @@ export function BusinessCompanyProfileClient() {
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "기업정보 관리" }]} />
-          <h1 className="mt-5 text-[34px] font-bold tracking-[-0.02em] text-[#17202c]">기업 정보 관리</h1>
-          <p className="mt-2 text-[13px] font-normal text-[#68717e]">채용공고와 기업 상세 페이지에 표시되는 회사 정보를 관리합니다.</p>
+          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">기업 정보 관리</h1>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">채용공고와 기업 상세 페이지에 표시되는 회사 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
           <Link href="/business/company/preview?track=industry" onClick={goToPreview} className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
@@ -186,7 +186,7 @@ export function BusinessCompanyProfileClient() {
               <InfoTooltip text="인증 정보는 승인 상태와 인증 배지에 사용됩니다. 변경이 필요한 경우 변경 요청을 보내주시면 운영팀 검토 후 반영됩니다." />
             </span>
           }
-          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#303946]">기업 인증 완료</span>}
+          action={<span className="inline-flex h-7 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[13px] font-medium text-[#303946]">기업 인증 완료</span>}
         >
           <div className="grid grid-cols-4 border border-border max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
             {[
@@ -196,13 +196,13 @@ export function BusinessCompanyProfileClient() {
               ["사업자등록증", statusLabel(admin.businessLicenseFile.status)],
             ].map(([label, value]) => (
               <div key={label} className="border-r border-border px-4 py-4 last:border-r-0 max-[900px]:border-b">
-                <p className="text-[11px] font-medium text-[#8a94a3]">{label}</p>
+                <p className="text-[12px] font-medium text-[#8a94a3]">{label}</p>
                 <p className="mt-2 text-[13px] font-medium text-[#17202c]">{value}</p>
               </div>
             ))}
           </div>
           <div className="mt-4">
-            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]">
+            <Link href="/support" className="inline-flex h-10 items-center gap-1.5 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#303946] hover:border-[#111111]">
               기업 정보 변경 요청
               <ExternalLink size={13} />
             </Link>
@@ -329,7 +329,7 @@ export function BusinessCompanyProfileClient() {
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <FieldLabel required>한 줄 소개</FieldLabel>
-                <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
+                <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.shortIntro.length} / 60</span>
               </div>
               <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="국내 신약개발을 선도하는 제약·바이오 기업" />
             </div>
@@ -337,7 +337,7 @@ export function BusinessCompanyProfileClient() {
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <FieldLabel required>본문 소개</FieldLabel>
-                <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.fullIntro.length} / 2000</span>
+                <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.fullIntro.length} / 2000</span>
               </div>
               <textarea
                 value={profile.fullIntro}
@@ -358,7 +358,7 @@ export function BusinessCompanyProfileClient() {
                       type="button"
                       onClick={() => removeKeyword(keyword)}
                       aria-label={`${keyword} 키워드 삭제`}
-                      className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[12px] font-medium text-white"
+                      className="inline-flex h-9 items-center gap-1.5 border border-[#111111] bg-[#111111] px-3.5 text-[13px] font-medium text-white"
                     >
                       {keyword}
                       <X size={12} className="opacity-70" aria-hidden />
@@ -386,9 +386,9 @@ export function BusinessCompanyProfileClient() {
                 </FormActionButton>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관을 잘 설명하는 키워드를 선택해 주세요. 검색과 추천에 활용됩니다.</p>
                 {profile.keywords.length > 0 ? (
-                  <span className="shrink-0 text-[11px] font-medium text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
+                  <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.keywords.length} / {MAX_KEYWORDS}</span>
                 ) : null}
               </div>
             </div>
@@ -426,8 +426,8 @@ export function BusinessCompanyProfileClient() {
               {profile.products.length < MAX_PRODUCTS ? (
                 <div className="mt-3 border border-[#d8e0e8] bg-[#fbfcfd] p-3">
                   <div className="grid grid-cols-[1fr_2fr_auto] items-end gap-x-3 gap-y-1.5 max-[560px]:grid-cols-1">
-                    <p className="text-[11px] font-medium text-[#8a94a3]">제품명</p>
-                    <p className="text-[11px] font-medium text-[#8a94a3]">한 줄 설명</p>
+                    <p className="text-[12px] font-medium text-[#8a94a3]">제품명</p>
+                    <p className="text-[12px] font-medium text-[#8a94a3]">한 줄 설명</p>
                     <div className="max-[560px]:hidden" aria-hidden />
                     <input
                       value={newProductName}
@@ -454,7 +454,7 @@ export function BusinessCompanyProfileClient() {
                   </div>
                 </div>
               ) : null}
-              <p className="mt-2 text-[11.5px] font-normal leading-[1.55] text-[#8a94a3]">기관 페이지 사이드바에 표시됩니다. 최대 5개</p>
+              <p className="mt-2 text-[12px] font-normal leading-[1.55] text-[#8a94a3]">기관 페이지 사이드바에 표시됩니다. 최대 5개</p>
             </div>
           </div>
         </SectionCard>
@@ -504,7 +504,7 @@ export function BusinessCompanyProfileClient() {
           <div className="my-6 border-t border-[#f0f2f5]" />
 
           <div>
-            <h3 className="text-[16px] font-bold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
+            <h3 className="text-[16px] font-semibold tracking-[-0.02em] text-[#303946]">노출 설정</h3>
             <div className="mt-3 space-y-2.5">
               <label className="flex items-center gap-2 text-[13px] font-medium text-[#3c4654]">
                 <input

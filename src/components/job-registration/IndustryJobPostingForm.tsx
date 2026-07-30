@@ -7,6 +7,7 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
+import { HINT, IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
@@ -131,7 +132,7 @@ function ChipGroup({
           );
         })}
       </div>
-      {hint && <p className="mt-2 text-[11.5px] text-[#a0a9b7]">{hint}</p>}
+      {hint && <p className="mt-2 text-[12px] text-[#a0a9b7]">{hint}</p>}
     </div>
   );
 }
@@ -189,7 +190,7 @@ function ToggleRow({
     <div className="flex items-start justify-between gap-4 border border-border bg-white px-4 py-3">
       <div>
         <p className="text-[13px] font-medium text-[#303946]">{title}</p>
-        {description && <p className="mt-1 text-[11.5px] text-[#7b8491]">{description}</p>}
+        {description && <p className="mt-1 text-[12px] text-[#7b8491]">{description}</p>}
       </div>
       <ToggleSwitch checked={checked} onChange={onChange} label={ariaLabel} />
     </div>
@@ -198,9 +199,6 @@ function ToggleRow({
 
 // ── Style constants ────────────────────────────────────────────────────────────
 
-const IN = "h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
-const SEL = `${IN} appearance-none pr-8`;
-const HINT = "mt-1 text-[11.5px] text-[#a0a9b7]";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -393,7 +391,7 @@ export function IndustryJobPostingForm() {
               </div>
               {/* Right: detail jobs */}
               <div className="p-4">
-                <p className="mb-3 text-[12.5px] font-semibold text-[#4f5967]">
+                <p className="mb-3 text-[13px] font-semibold text-[#4f5967]">
                   {activeCatLabel} · 세부 직무
                 </p>
                 <div role="group" aria-label="세부 직무" className="flex flex-wrap gap-2">
@@ -417,7 +415,7 @@ export function IndustryJobPostingForm() {
               </div>
             </div>
             {selectedJobs.size > 0 && (
-              <p className="mt-2 text-[11.5px] text-[#7b8491]">
+              <p className="mt-2 text-[12px] text-[#7b8491]">
                 선택됨: {Array.from(selectedJobs).map((id) => SUBCATEGORY_LABEL_BY_ID.get(id) ?? id).join(", ")}
               </p>
             )}
@@ -506,7 +504,7 @@ export function IndustryJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">구직자가 포지션의 맥락을 이해할 수 있도록 줄글로 작성해 주세요.</span>
             </FieldLabel>
             <textarea id="i-positionintro" value={positionIntro} onChange={(e) => setPositionIntro(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder="이 포지션이 어떤 팀, 제품, 과제와 연결되는지, 입사 후 어떤 역할을 맡게 되는지 3~5문장으로 작성해 주세요." />
           </div>
 
@@ -517,7 +515,7 @@ export function IndustryJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">담당 업무를 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="i-duties" value={mainDuties} onChange={(e) => setMainDuties(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"국내외 허가자료 작성 및 제출\nCTD 문서 검토 및 관리\n규제기관 질의 대응 및 변경허가 업무 수행"}
               aria-required="true" />
             <FieldError message={errors.mainDuties} />
@@ -530,7 +528,7 @@ export function IndustryJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">지원에 필요한 필수 조건을 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="i-reqQual" value={requiredQual} onChange={(e) => setRequiredQual(e.target.value)} rows={3}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"약학, 생명과학, 화학, 생명공학 등 관련 전공 학사 이상\n신입 또는 관련 업무 경험 보유자"}
               aria-required="true" />
             <FieldError message={errors.requiredQual} />
@@ -542,7 +540,7 @@ export function IndustryJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">우대하는 경험이나 역량을 입력해 주세요.</span>
             </FieldLabel>
             <textarea id="i-preferred" value={preferred} onChange={(e) => setPreferred(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder={"관련 인턴 또는 프로젝트 경험\n영어 문서 작성 및 커뮤니케이션 가능자\n약사 등 관련 면허 보유자"} />
           </div>
 
@@ -552,7 +550,7 @@ export function IndustryJobPostingForm() {
               <span className="ml-2 text-[12px] font-normal text-[#7b8491]">공고 상세에서는 &apos;추가 안내&apos; 영역에 노출됩니다.</span>
             </FieldLabel>
             <textarea id="i-additionalnotes" value={additionalNotes} onChange={(e) => setAdditionalNotes(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder="지원자가 알아두면 좋은 추가 안내가 있다면 입력해 주세요. 예: 입사 후 교육, 포트폴리오 제출 안내, 전형 일정 관련 안내 등" />
           </div>
         </SectionCard>
@@ -588,7 +586,7 @@ export function IndustryJobPostingForm() {
                 className={clsx(IN, sameAsCompanyAddress && "bg-[#f5f6f8] text-[#7d8796] cursor-not-allowed")}
                 aria-required="true" />
               {!address.trim() && (
-                <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[11.5px] text-[#9a6b00]">
+                <div className="mt-2 flex items-center gap-1.5 border border-[#f1dcb7] bg-[#fff9ef] px-3 py-1.5 text-[12px] text-[#9a6b00]">
                   <AlertCircle size={13} aria-hidden />
                   기관정보에 가까운 역·교통 정보가 비어 있습니다. 비어있으면 상세에 노출되지 않습니다.
                 </div>
@@ -612,7 +610,7 @@ export function IndustryJobPostingForm() {
           <div>
             <FieldLabel htmlFor="i-workcond" className="block mb-1.5">근무조건 상세</FieldLabel>
             <textarea id="i-workcond" value={workCondDetail} onChange={(e) => setWorkCondDetail(e.target.value)} rows={4}
-              className={`${IN} h-auto resize-y py-2.5 leading-relaxed`}
+              className={TA}
               placeholder="주 2회 재택근무 가능, 프로젝트 일정에 따라 유연근무를 운영합니다." />
           </div>
         </SectionCard>

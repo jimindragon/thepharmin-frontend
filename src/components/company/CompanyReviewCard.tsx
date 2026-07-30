@@ -120,10 +120,11 @@ export function CompanyReviewCard({
   return (
     <article className={clsx("border border-border bg-white", compact ? "p-3" : "p-4")}>
       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
-        <span className={clsx("min-w-0 truncate font-medium text-[#3f4855]", compact ? "text-[11.5px]" : "text-[12px]")}>
+        <span className={clsx("min-w-0 truncate font-medium text-[#3f4855]", compact ? "text-[12px]" : "text-[13px]")}>
           {review.jobRole} · {review.authorStatus}
         </span>
-        <div className={clsx("flex shrink-0 items-center gap-3 font-normal text-[#9aa5b2]", compact ? "text-[10.5px]" : "text-[11px]")}>
+        {/* 작성일·도움돼요·스크랩은 메타라 두 변형 모두 12px — 기준표 하한이 12여서 compact를 더 줄이지 않는다 */}
+        <div className="flex shrink-0 items-center gap-3 text-[12px] font-normal text-[#9aa5b2]">
           <span>{review.writtenAt}</span>
           {compact ? (
             <span className="inline-flex items-center gap-1 text-[#596373]">
@@ -158,7 +159,7 @@ export function CompanyReviewCard({
         {review.tags.map((tag) => (
           <span
             key={tag}
-            className={clsx("bg-[#f4f6f8] font-medium text-[#596373]", compact ? "px-1.5 py-0.5 text-[10.5px]" : "px-2 py-1 text-[11px]")}
+            className={clsx("bg-[#f4f6f8] font-medium text-[#596373]", compact ? "px-1.5 py-0.5 text-[12px]" : "px-2 py-1 text-[13px]")}
           >
             {tag}
           </span>
@@ -166,12 +167,12 @@ export function CompanyReviewCard({
       </div>
       {!compact && interviewMeta ? (
         <div className="mt-2">
-          <span className="inline-block border border-[#d9d9d9] bg-white px-2 py-1 text-[11px] font-semibold text-[#3f4855]">{interviewMeta}</span>
+          <span className="inline-block border border-[#d9d9d9] bg-white px-2 py-1 text-[13px] font-medium text-[#3f4855]">{interviewMeta}</span>
         </div>
       ) : null}
       {compact ? (
         !review.isInterview && review.content ? (
-          <p className="mt-2 flex gap-1.5 text-[12.5px] leading-[1.6] text-[#596373]">
+          <p className="mt-2 flex gap-1.5 text-[12px] leading-[1.6] text-[#596373]">
             <Quote size={12} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
             <span className="line-clamp-2">{review.content}</span>
           </p>
@@ -202,21 +203,23 @@ export function CompanyReviewCard({
         )
       ) : (
         <>
-          {accessLabel ? <p className="mt-3 text-[11px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
+          {accessLabel ? <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
           <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
             <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
             <span>{review.content}</span>
           </p>
         </>
       )}
-      {!compact && applyLabel ? <p className="mt-2 text-[11px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
+      {!compact && applyLabel ? <p className="mt-2 text-[12px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       {review.outcome ? (
         <div className={clsx("flex justify-end border-t border-[#edf1f5]", compact ? "mt-2 pt-2" : "mt-3 pt-3")}>
           <span
             className={clsx(
               "border",
-              compact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-[11px]",
-              review.outcome === "합격" ? "border-[#111111] font-bold text-[#111111]" : "border-[#d9d9d9] font-medium text-[#777777]",
+              "font-medium",
+              compact ? "px-1.5 py-0.5 text-[12px]" : "px-2 py-0.5 text-[13px]",
+              // 합격/불합격은 굵기가 아니라 보더·글자색으로만 구분한다(배지 굵기는 500 고정)
+              review.outcome === "합격" ? "border-[#111111] text-[#111111]" : "border-[#d9d9d9] text-[#777777]",
             )}
           >
             {review.outcome}
