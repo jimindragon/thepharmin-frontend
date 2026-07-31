@@ -44,7 +44,7 @@ function SupportBusinessAccountMenu() {
         <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
           {initialBusinessCompanyProfile.displayName.slice(0, 1)}
         </span>
-        <span className="whitespace-nowrap text-[13px] font-medium text-white/88 max-[720px]:hidden">
+        <span className="whitespace-nowrap text-[13px] font-medium text-white/90 max-[720px]:hidden">
           {initialBusinessCompanyProfile.displayName}
         </span>
         <ChevronDown
@@ -61,7 +61,7 @@ function SupportBusinessAccountMenu() {
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
-            <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
+            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
               {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
             </p>
           </div>
@@ -81,7 +81,7 @@ function SupportBusinessAccountMenu() {
             </div>
             {businessCenterMenuGroups.map((group) => (
               <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
+                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
                 <div className="mt-1">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
@@ -157,7 +157,7 @@ export function SupportHeader() {
             1:1 문의하기
           </LinkButton>
 
-          <div className="flex shrink-0 items-center gap-2.5 border-l border-white/15 pl-4 text-white/82 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
+          <div className="flex shrink-0 items-center gap-2.5 border-l border-white/15 pl-4 text-white/80 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
             {isLoggedIn ? (
               <>
                 <NotificationBell

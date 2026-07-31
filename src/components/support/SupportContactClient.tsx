@@ -69,8 +69,8 @@ export function SupportContactClient() {
           <div className="app-shell--text">
             <PageBreadcrumb items={[{ label: "고객센터", href: "/support" }, { label: "1:1 문의하기" }]} />
             <section className="mt-7 border border-border bg-white p-10 text-center">
-              <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
-              <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">문의가 접수되었습니다.</h1>
+              <p className="text-[12px] font-medium text-[#8a94a3]">접수 완료</p>
+              <h1 className="mt-3 text-[28px] font-bold tracking-[-0.02em] text-[#17202c] max-[480px]:text-[24px]">문의가 접수되었습니다.</h1>
               <p className="mt-3 text-[14px] font-normal leading-[1.8] text-[#68717e]">
                 담당자가 문의 내용을 확인한 후 영업일 기준 1~2일 이내에 입력하신 이메일로 답변드립니다.
               </p>
@@ -104,7 +104,7 @@ export function SupportContactClient() {
             </p>
 
             <FieldGroup label="회원 유형" required>
-              <div className="grid grid-cols-2 border border-border">
+              <div className="grid grid-cols-2 border border-[#dce2ea]">
                 {memberTypeOptions.map((option, index) => (
                   <button
                     key={option.id}
@@ -112,8 +112,8 @@ export function SupportContactClient() {
                     onClick={() => handleMemberTypeChange(option.id)}
                     className={clsx(
                       "h-12 text-[14px] font-medium transition",
-                      index === 0 && "border-r border-border",
-                      memberType === option.id ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
+                      index === 0 && "border-r border-[#dce2ea]",
+                      memberType === option.id ? "bg-[#111111] text-white" : "bg-white text-[#3d4653] hover:bg-[#f7f8fa]",
                     )}
                   >
                     {option.label}

@@ -414,7 +414,7 @@ function WriteReviewCtaPanel({ onCtaClick }: { onCtaClick: () => void }) {
   return (
     <section className="border border-border bg-[#050505] p-5 text-white">
       <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">다녀온 회사의 이야기를 남겨주세요</h2>
-      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">후기를 작성하면 모든 면접 후기 원문을 열람할 수 있습니다.</p>
+      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/70">후기를 작성하면 모든 면접 후기 원문을 열람할 수 있습니다.</p>
       <Button type="button" variant="gradient" onClick={onCtaClick} className="mt-4 w-full">
         후기 작성하기
       </Button>

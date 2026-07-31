@@ -28,7 +28,7 @@ export function AccountMenu() {
         <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
           김
         </span>
-        <span className="whitespace-nowrap text-[13px] font-medium text-white/88 max-[720px]:hidden">{siteConfig.userName}</span>
+        <span className="whitespace-nowrap text-[13px] font-medium text-white/90 max-[720px]:hidden">{siteConfig.userName}</span>
         <ChevronDown
           size={16}
           color="rgba(255,255,255,0.58)"
@@ -133,7 +133,7 @@ export function Header() {
           기업 서비스
         </a>
 
-        <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/82 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
+        <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/80 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
           <NotificationBell notifications={MOCK_PERSONAL_NOTIFICATIONS} viewAllHref="/mypage/notifications" scope="personal" />
           <AccountMenu />
         </div>

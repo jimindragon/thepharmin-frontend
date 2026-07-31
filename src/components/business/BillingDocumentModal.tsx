@@ -31,7 +31,7 @@ function DocTotal({ label, value }: { label: string; value: string }) {
   return (
     <div className="mt-1 flex items-end justify-between border-t-2 border-[#17202c] pt-3">
       <span className="text-[14px] font-bold text-[#17202c]">{label}</span>
-      <span className="text-[18px] font-bold text-[#17202c]">{value}</span>
+      <span className="text-[17px] font-bold text-[#17202c]">{value}</span>
     </div>
   );
 }
@@ -78,13 +78,13 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
       role="dialog"
       aria-modal="true"
       aria-label={title}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
+      <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{title}</h2>
@@ -104,10 +104,11 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
             <div>
               {/* 상품/공고 */}
               <div>
-                <p className="text-[15px] font-bold text-[#17202c]">{record.productName}</p>
+                <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                  <span className="text-[13px] font-normal text-[#596373]">{record.jobTitle}</span>
-                  <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[11px] font-medium text-[#596373]">
+                  <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
+                  {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. 트랙 배지 4곳(본화면 3 + 영수증 모달)이 같은 처방을 쓴다 — 배지 높이를 전역 정리할 때 함께 볼 것 */}
+                  <span className="inline-flex h-6 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium leading-4 text-[#596373]">
                     {boostTrackLabel(record.track)}
                   </span>
                 </div>
@@ -143,15 +144,15 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
 
               {/* 하단 소자 */}
               <div className="mt-6 border-t border-border pt-4">
-                <p className="text-[11px] font-normal text-[#a0aab6]">{RECEIPT_FOOTER}</p>
-                <p className="mt-0.5 text-[11px] font-normal text-[#a0aab6]">본 영수증은 결제 내역 확인용입니다.</p>
+                <p className="text-[12px] font-normal text-[#a0aab6]">{RECEIPT_FOOTER}</p>
+                <p className="mt-0.5 text-[12px] font-normal text-[#a0aab6]">본 영수증은 결제 내역 확인용입니다.</p>
               </div>
             </div>
           ) : (
             <div>
               {/* 품목 + 발행 상태 */}
               <div className="flex items-start justify-between gap-3">
-                <p className="text-[15px] font-bold text-[#17202c]">{record.productName}</p>
+                <p className="text-[16px] font-semibold text-[#17202c]">{record.productName}</p>
                 <div className="shrink-0 text-right">
                   <p className="text-[13px] font-semibold text-status-positive">발행 완료</p>
                   <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{record.paidAt} 작성</p>

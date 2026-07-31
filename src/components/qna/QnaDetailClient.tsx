@@ -22,7 +22,11 @@ import {
 
 type CommentSortOption = "인기순" | "최신순";
 
-/** /qna/activity 목록 행과 동일한 문법(제목 · 메타 · 본문 발췌) — 본문 하단 "이런 글은 어때요?" 전용 */
+/**
+ * 본문 하단 "이런 글은 어때요?" 전용 행 — /qna/activity 목록 행과 같은 뼈대(제목 · 메타 · 본문 발췌)를 쓰고
+ * 메타·발췌·넘침 처리(line-clamp)까지 동일하다. 제목 크기만 갈리는데(상세 15/600 · 활동 16/600),
+ * 상세 하단은 보조 섹션의 항목이고 활동 목록은 그 페이지의 주인공이라 한 단 차이를 둔 것.
+ */
 const qnaTypeLabel: Record<QnaType, string> = {
   pharmacist: "약사 QNA",
   industry: "산업 QNA",
@@ -32,7 +36,7 @@ function RelatedQnaRow({ entry, previewQuery }: { entry: QnaPost; previewQuery: 
   const excerpt = entry.body[0];
   return (
     <Link href={`/qna/${entry.id}${previewQuery}`} className="block transition hover:opacity-70">
-      <p className="text-[15px] font-bold leading-[1.4] text-[#171d26]">{entry.title}</p>
+      <p className="line-clamp-2 text-[15px] font-semibold leading-[1.4] text-[#171d26]">{entry.title}</p>
       <p className="mt-1 text-[13px] font-normal text-[#8b95a1]">
         {qnaTypeLabel[entry.qnaType]} · {entry.createdAtLabel}
       </p>
@@ -100,7 +104,7 @@ function ReactionRow({
 function CommentSortControl({ value, onChange }: { value: CommentSortOption; onChange: (option: CommentSortOption) => void }) {
   const options: CommentSortOption[] = ["인기순", "최신순"];
   return (
-    <div className="flex items-center gap-3 text-[13px] font-medium text-[#a0a9b7]">
+    <div className="flex items-center gap-3 text-[13px] font-medium text-[#596373]">
       {options.map((option, index) => (
         <span key={option} className="flex items-center gap-3">
           {index > 0 ? <span aria-hidden="true">·</span> : null}
@@ -144,18 +148,18 @@ function CommentRow({
           {isPostAuthor ? (
             <QnaAuthorLabelBadge>{nickname}</QnaAuthorLabelBadge>
           ) : (
-            <span className="text-[13px] font-bold text-[#171d26]">{nickname}</span>
+            <span className="text-[13px] font-semibold text-[#3d4653]">{nickname}</span>
           )}
           {authorLabel ? <QnaAuthorLabelBadge>{authorLabel}</QnaAuthorLabelBadge> : null}
         </div>
         <p className="mt-0.5 text-[13px] font-normal text-[#8b95a1]">{[jobRole, createdAtLabel].filter(Boolean).join(" · ")}</p>
         <p className="mt-1.5 text-[14px] font-normal leading-[1.65] text-[#3d4653]">{body}</p>
-        <div className="mt-1.5 flex items-center gap-3 text-[12px] font-medium text-[#a0a9b7]">
-          <button type="button" onClick={onReact} className="hover:text-[#596373]">
+        <div className="mt-1.5 flex items-center gap-3 text-[13px] font-normal text-[#596373]">
+          <button type="button" onClick={onReact} className="hover:text-[#111111]">
             공감 {likeCount}
           </button>
           {onReply ? (
-            <button type="button" onClick={onReply} className="hover:text-[#596373]">
+            <button type="button" onClick={onReply} className="hover:text-[#111111]">
               답글
             </button>
           ) : null}
@@ -183,7 +187,7 @@ function CommentComposer({ isLoggedIn, placeholder, onSubmit }: { isLoggedIn: bo
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <CommentComposerAvatar anonymous={isAnonymous} />
-          <span className="truncate text-[13px] font-bold text-[#171d26]">{isAnonymous ? "익명" : `${myPageUser.name}님`}</span>
+          <span className="truncate text-[13px] font-semibold text-[#3d4653]">{isAnonymous ? "익명" : `${myPageUser.name}님`}</span>
         </div>
         <label className="flex shrink-0 items-center gap-1.5 text-[12px] font-medium text-[#596373]">
           <input
@@ -293,7 +297,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
           <div className="min-w-0 space-y-5">
             <article className="border border-border bg-white p-7 max-[640px]:p-5">
               {post.isBest ? (
-                <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span>
+                <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
               ) : null}
               <h1 className="text-[22px] font-bold leading-[1.35] tracking-[-0.02em] text-[#171d26] max-[640px]:text-[20px]">{post.title}</h1>
 
@@ -301,7 +305,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <QnaAuthorAvatar id={post.id} nickname={post.nickname} size={40} />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-[15px] font-bold text-[#17202c]">{post.nickname}</span>
+                    <span className="truncate text-[14px] font-semibold text-[#3d4653]">{post.nickname}</span>
                     {post.authorLabel ? <QnaAuthorLabelBadge>{post.authorLabel}</QnaAuthorLabelBadge> : null}
                   </div>
                   <p className="mt-0.5 truncate text-[13px] font-normal text-[#8b95a1]">
@@ -318,7 +322,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 ))}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal text-[#8b95a1]">
+              <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-[#596373]">
                 {post.tags.map((tag) => (
                   <span key={tag} className="whitespace-nowrap">
                     #{tag}
@@ -404,7 +408,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
             {relatedEntries.length ? (
               <section className="border border-border bg-white p-7 max-[640px]:p-5">
-                <h2 className="text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
+                <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
                 <div className="mt-3 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
                   {relatedEntries.map((entry) => (
                     <div key={entry.id} className="py-4 last:pb-0">

@@ -53,13 +53,13 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
       role="dialog"
       aria-modal="true"
       aria-label="단계 이동"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
+      <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">단계 이동</h2>
@@ -75,8 +75,8 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
 
         {/* 지원자 요약 */}
         <div className="shrink-0 border-b border-border px-6 py-4">
-          <p className="text-[15px] font-bold text-[#17202c]">{applicant.name}</p>
-          <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">{postingTitle}</p>
+          <p className="text-[16px] font-semibold text-[#17202c]">{applicant.name}</p>
+          <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">{postingTitle}</p>
         </div>
 
         {/* 스크롤 영역 */}
@@ -106,7 +106,7 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
                     onChange={() => setSelectedStage(stageOpt.id)}
                     className="h-[18px] w-[18px] cursor-pointer accent-[#17A68C] disabled:cursor-not-allowed"
                   />
-                  <span className="text-[14px] font-bold text-[#17202c]">{stageOpt.label}</span>
+                  <span className="text-[14px] font-semibold text-[#17202c]">{stageOpt.label}</span>
                   {isCurrent && (
                     <span className="ml-auto text-[12px] font-normal text-[#8a94a3]">현재 단계</span>
                   )}
@@ -136,7 +136,7 @@ export function StageMoveModal({ open, applicant, onClose, onConfirm }: StageMov
                 onChange={() => setSelectedStage("rejected")}
                 className="h-[18px] w-[18px] cursor-pointer accent-[#a43f31] disabled:cursor-not-allowed"
               />
-              <span className="text-[14px] font-bold text-status-error">불합격 처리</span>
+              <span className="text-[14px] font-semibold text-status-error">불합격 처리</span>
               {applicant.stage === "rejected" && (
                 <span className="ml-auto text-[12px] font-normal text-[#8a94a3]">현재 단계</span>
               )}

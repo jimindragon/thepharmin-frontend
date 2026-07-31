@@ -117,7 +117,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
           <ComposerAvatar anonymous={isAnonymous} />
           <span className="text-[14px] font-bold text-[#171d26]">{isAnonymous ? "익명" : `${myPageUser.name}님`}</span>
           {isVerifiedPharmacist ? (
-            <span className="inline-flex h-5 shrink-0 items-center border border-[#111111] px-1.5 text-[11px] font-medium text-[#111111]">약사 인증</span>
+            <span className="inline-flex h-6 shrink-0 items-center border border-[#111111] px-1.5 text-[12px] font-medium text-[#111111]">약사 인증</span>
           ) : null}
         </div>
         <label className="flex shrink-0 items-center gap-1.5 text-[12px] font-medium text-[#596373]">
@@ -165,11 +165,11 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
                 disabled={disabled}
                 onClick={() => toggleTag(topic)}
                 className={clsx(
-                  "h-8 shrink-0 whitespace-nowrap border px-3 text-[13px] font-medium transition-colors",
+                  "h-9 shrink-0 whitespace-nowrap border px-4 text-[13px] font-medium transition-colors",
                   active
-                    ? "border-transparent bg-[#111111] text-white"
-                    : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
-                  disabled && "cursor-not-allowed opacity-45 hover:border-[#dddddd] hover:bg-[#f4f4f4] hover:text-[#555555]",
+                    ? "border-[#111111] bg-[#111111] text-white"
+                    : "border-[#dce2ea] bg-white text-[#3d4653] hover:border-[#cfd8e3] hover:bg-[#f7f8fa] hover:text-[#111111]",
+                  disabled && "cursor-not-allowed opacity-45 hover:border-[#dce2ea] hover:bg-white hover:text-[#3d4653]",
                 )}
               >
                 #{topic}
@@ -183,7 +183,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
         <button
           type="button"
           onClick={handleCancel}
-          className="inline-flex h-9 items-center border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111]"
+          className="inline-flex h-9 items-center border border-[#dce2ea] bg-white px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111]"
         >
           취소
         </button>

@@ -10,8 +10,8 @@ import type { ReactNode } from "react";
 export const typeScale = {
   heroTitle: "text-[46px] font-bold leading-[1.25] tracking-[-0.03em] max-[760px]:text-[30px]",
   pageTitle: "text-[34px] font-bold leading-[1.2] tracking-[-0.02em] max-[760px]:text-[26px]",
-  sectionTitle: "text-[31px] font-bold leading-[1.3] tracking-[-0.02em] max-[760px]:text-[24px]",
-  cardTitle: "text-[19px] font-bold tracking-[-0.02em]",
+  sectionTitle: "text-[24px] font-bold leading-[1.3] tracking-[-0.02em] max-[760px]:text-[20px]",
+  cardTitle: "text-[17px] font-bold tracking-[-0.02em]",
   body: "text-[15px] font-normal leading-[1.65] tracking-[-0.01em]",
   meta: "text-[13px] font-normal leading-[1.65] tracking-[-0.01em] text-[#8a94a3]",
 } as const;

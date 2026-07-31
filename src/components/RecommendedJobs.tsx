@@ -204,7 +204,9 @@ function FeaturedCard({ job }: { job: RecommendedJob }) {
         <p className="min-w-0 truncate text-[12px] font-medium text-[#4b5563]">{job.company}</p>
       </div>
       <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[18px]">
-        <h3 className="line-clamp-2 text-[16px] font-bold text-[#202734]">{job.title}</h3>
+        {/* 광고 등급 제목: PREMIUM 19 / FEATURED 17 / STANDARD 15 — 2px 간격을 유지해야
+            세 등급이 각각 다른 급으로 읽힌다. 16이면 STANDARD(15)와 1px 차라 뭉개진다. */}
+        <h3 className="line-clamp-2 text-[17px] font-bold text-[#202734]">{job.title}</h3>
         <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
         <div className="mt-auto flex items-center justify-between pt-3">
           <span className="text-[11px] font-medium text-[#6b7481]">{job.applyMethod}</span>
@@ -252,6 +254,12 @@ function cardLink(id: number, slug: string | undefined, children: React.ReactNod
   );
 }
 
+/**
+ * 존별 열 수(premium 3 / featured 4 / standard 5)는 `useFeaturedJobs`의 `ZONE_PAGE_SIZE`와
+ * 같은 값이어야 한다 — /jobs처럼 페이지를 나눠 넘기는 화면에서 한쪽만 바꾸면 마지막 행에
+ * 빈 칸이 남는다. Tailwind JIT가 동적 클래스명을 못 만들어 열 수는 리터럴로 둘 수밖에 없으니,
+ * 바꿀 때는 두 파일을 반드시 함께 고칠 것.
+ */
 export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
   const premiumJobs = jobs.filter((j) => j.adTier === "premium");
   const featuredJobs = jobs.filter((j) => j.adTier === "featured");
@@ -262,7 +270,7 @@ export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
       {premiumJobs.length > 0 && (
         <div>
           <p className={ZONE_LABEL_CLASS}>PREMIUM</p>
-          <div className="grid grid-cols-3 gap-[14px]">
+          <div className="grid grid-cols-3 gap-[14px] max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
             {premiumJobs.map((job) => cardLink(job.id, job.jobSlug, <PremiumCard job={job} />))}
           </div>
         </div>
@@ -271,7 +279,7 @@ export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
       {featuredJobs.length > 0 && (
         <div className="mt-[34px]">
           <p className={ZONE_LABEL_CLASS}>FEATURED</p>
-          <div className="grid grid-cols-4 gap-[14px]">
+          <div className="grid grid-cols-4 gap-[14px] max-[1024px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
             {featuredJobs.map((job) => cardLink(job.id, job.jobSlug, <FeaturedCard job={job} />))}
           </div>
         </div>
@@ -280,7 +288,7 @@ export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
       {standardJobs.length > 0 && (
         <div className="mt-[34px]">
           <p className={ZONE_LABEL_CLASS}>STANDARD</p>
-          <div className="grid grid-cols-5 gap-[14px]">
+          <div className="grid grid-cols-5 gap-[14px] max-[1180px]:grid-cols-4 max-[900px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
             {standardJobs.map((job) => cardLink(job.id, job.jobSlug, <StandardCard job={job} />))}
           </div>
         </div>
@@ -295,7 +303,12 @@ export function RecommendedJobs({ jobs, onPrev, onNext, canGoPrev, canGoNext }: 
       <div className="mb-3 flex items-center gap-2">
         <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#2b3340]">주목할 만한 공고</h2>
         <JobNoticePopover />
-        <CarouselControl onPrev={onPrev} onNext={onNext} canGoPrev={canGoPrev} canGoNext={canGoNext} />
+        {/* 페이지가 하나뿐이면(=양쪽 다 못 넘김) 눌리지 않는 회색 화살표만 남으므로 아예 렌더하지 않는다.
+            광고가 늘어 페이지가 둘 이상이 되면 자동으로 다시 나타난다.
+            우측 정렬은 CarouselControl 자신의 `ml-auto`가 하므로, 빠져도 제목 줄 정렬은 그대로다. */}
+        {canGoPrev || canGoNext ? (
+          <CarouselControl onPrev={onPrev} onNext={onNext} canGoPrev={canGoPrev} canGoNext={canGoNext} />
+        ) : null}
       </div>
       <RecommendedJobsGrid jobs={jobs} />
     </section>

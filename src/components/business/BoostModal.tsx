@@ -89,13 +89,13 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
       role="dialog"
       aria-modal="true"
       aria-label="부스트 적용"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="flex w-full max-w-[480px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
+      <div className="flex w-full max-w-[480px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end">
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">부스트 적용</h2>
@@ -221,14 +221,14 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {opt.discountLabel && (
-                          <span className="border border-[#e2998a] px-1.5 py-0.5 text-[11px] font-medium text-[#c0523b]">
+                          <span className="inline-flex h-6 items-center border border-[#e2998a] px-1.5 text-[12px] font-medium text-[#c0523b]">
                             {opt.discountLabel}
                           </span>
                         )}
                         {point && (
                           <>
                             {point.originalKrw !== point.discountedKrw && (
-                              <span className="text-[12px] text-[#a0a9b7] line-through">{formatKrw(point.originalKrw)}</span>
+                              <span className="text-[13px] font-normal text-[#a0a9b7] line-through">{formatKrw(point.originalKrw)}</span>
                             )}
                             <span className="text-[16px] font-bold tracking-[-0.01em] text-[#17202c]">
                               {formatKrw(point.discountedKrw)}
@@ -295,11 +295,11 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
               <div className="mt-4 flex items-end justify-between border-t border-border pt-4">
                 <span className="text-[14px] font-bold text-[#17202c]">결제 금액</span>
                 <div className="text-right">
-                  <p className="text-[26px] font-bold tracking-[-0.025em] text-[#17202c]">
+                  <p className="text-[24px] font-bold tracking-[-0.025em] text-[#17202c]">
                     {pricePoint ? pricePoint.discountedKrw.toLocaleString("ko-KR") : "-"}
                     {pricePoint && <span className="text-[17px]">원</span>}
                   </p>
-                  <p className="text-[11px] font-normal text-[#a0aab6]">VAT 별도</p>
+                  <p className="text-[12px] font-normal text-[#a0aab6]">VAT 별도</p>
                 </div>
               </div>
             </div>
@@ -332,7 +332,7 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
 
 function StepBadge({ n }: { n: number }) {
   return (
-    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center bg-[#111111] text-[11px] font-bold text-white">
+    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center bg-[#111111] text-[12px] font-semibold text-white">
       {n}
     </span>
   );

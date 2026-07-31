@@ -96,7 +96,7 @@ function FaqAccordion({ groupId, items }: { groupId: string; items: FaqItem[] })
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   if (items.length === 0) {
-    return <p className="py-4 text-[13px] font-normal text-[#a0a9b7]">검색 결과가 없습니다.</p>;
+    return <p className="py-4 text-[15px] font-medium text-[#303946]">검색 결과가 없습니다.</p>;
   }
 
   return (
@@ -117,10 +117,10 @@ function FaqAccordion({ groupId, items }: { groupId: string; items: FaqItem[] })
               className="group flex w-full items-start justify-between gap-4 py-4 text-left transition-colors"
             >
               <span className="min-w-0">
-                <span className="block text-[11px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">{item.category}</span>
+                <span className="block text-[12px] font-medium uppercase tracking-[0.08em] text-[#8a94a3]">{item.category}</span>
                 <span
                   className={clsx(
-                    "mt-1.5 block text-[14px] font-semibold leading-[1.5] tracking-[-0.01em] transition-colors",
+                    "mt-1.5 block text-[15px] font-semibold leading-[1.5] tracking-[-0.01em] transition-colors",
                     open ? "text-[#111111]" : "text-[#242b36] group-hover:text-[#111111]",
                   )}
                 >
@@ -173,7 +173,7 @@ export function SupportHomeClient() {
             THE PHARMA · HELP CENTER
           </Eyebrow>
           <h1 className={`mt-4 text-white ${typeScale.heroTitle}`}>무엇을 도와드릴까요?</h1>
-          <p className="mx-auto mt-4 max-w-[480px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/72">
+          <p className="mx-auto mt-4 max-w-[480px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/70">
             개인회원과 기업회원이 함께 이용하는 통합 고객센터입니다.
           </p>
           <div className="mx-auto mt-8 flex h-14 max-w-[560px] items-center gap-3 border border-white/15 bg-white px-5 shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition focus-within:border-[#111111]">
@@ -193,7 +193,7 @@ export function SupportHomeClient() {
               <section key={group.id} className="border border-border bg-white p-6">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 shrink-0 bg-[#111111]" />
-                  <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#17202c]">{group.title}</h2>
+                  <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{group.title}</h2>
                 </div>
                 <p className="mt-1.5 text-[13px] font-normal text-[#8a94a3]">{group.description}</p>
 
@@ -207,11 +207,11 @@ export function SupportHomeClient() {
           <div className="mt-6 grid grid-cols-[1fr_1fr_1.2fr] gap-5 border border-[#dfe4ea] bg-[#fbfcfd] p-6 max-[760px]:grid-cols-1">
             <div>
               <p className="text-[13px] font-medium text-[#8a94a3]">평균 답변 소요</p>
-              <p className="mt-1.5 text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">영업일 기준 1~2일</p>
+              <p className="mt-1.5 text-[20px] font-bold tracking-[-0.01em] text-[#17202c]">영업일 기준 1~2일</p>
             </div>
             <div>
               <p className="text-[13px] font-medium text-[#8a94a3]">운영 시간</p>
-              <p className="mt-1.5 text-[18px] font-bold tracking-[-0.01em] text-[#17202c]">평일 10:00 - 18:00</p>
+              <p className="mt-1.5 text-[20px] font-bold tracking-[-0.01em] text-[#17202c]">평일 10:00 - 18:00</p>
             </div>
             <div className="flex items-center justify-between gap-4 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-3">
               <p className="text-[13px] font-medium text-[#8a94a3]">원하는 답을 찾지 못하셨나요?</p>

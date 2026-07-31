@@ -14,7 +14,7 @@ function PriceBadge({ file, size = "sm" }: { file: ResourceFile; size?: "sm" | "
     <span
       className={clsx(
         "absolute left-2 top-2 z-10 bg-[#111111] font-medium text-white",
-        size === "md" ? "px-2.5 py-1 text-[12px]" : "px-2 py-0.5 text-[11px]",
+        size === "md" ? "px-2.5 py-1 text-[12px]" : "px-2 py-0.5 text-[12px]",
       )}
     >
       {file.isFree ? "무료" : "유료"}
@@ -36,7 +36,7 @@ function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onP
           <img src={pkg.coverImage} alt="" className="h-full w-full object-cover" />
         </div>
         <div className="flex min-w-0 flex-col">
-          <span className="inline-flex h-6 w-fit items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[11px] font-medium text-[#596373]">
+          <span className="inline-flex h-6 w-fit items-center border border-[#cfd8e3] bg-[#f7f8fa] px-2.5 text-[12px] font-medium text-[#596373]">
             BEST PACKAGE
           </span>
           <Link href={`/resources/${pkg.slug}`} className="mt-3 inline-block">
@@ -44,7 +44,7 @@ function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onP
               {pkg.title}
             </h2>
           </Link>
-          <p className="mt-2 text-[14px] font-normal leading-[1.7] text-[#596373]">{pkg.shortDescription}</p>
+          <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#596373]">{pkg.shortDescription}</p>
 
           {pkg.packageContents ? (
             <div className="mt-5 grid grid-cols-2 gap-y-2 gap-x-4 text-[13px] font-normal text-[#4f5967] max-[480px]:grid-cols-1">
@@ -62,9 +62,9 @@ function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onP
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#edf1f5] pt-5 max-[640px]:flex-col max-[640px]:items-start">
             <div>
               {pkg.originalPrice ? (
-                <span className="mr-2 text-[14px] font-normal text-[#b6bec9] line-through">{pkg.originalPrice.toLocaleString("ko-KR")}원</span>
+                <span className="mr-2 text-[13px] font-normal text-[#b6bec9] line-through">{pkg.originalPrice.toLocaleString("ko-KR")}원</span>
               ) : null}
-              <span className="text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">{formatResourcePrice(pkg)}</span>
+              <span className="text-[24px] font-bold tracking-[-0.02em] text-[#17202c]">{formatResourcePrice(pkg)}</span>
             </div>
             <LinkButton
               href="#"
@@ -117,14 +117,14 @@ function ResourceCard({ file }: { file: ResourceFile }) {
         <img src={file.coverImage} alt="" className="h-full w-full object-cover" />
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{file.englishLabel}</span>
-        <h3 className="mt-1.5 text-[16px] font-bold tracking-[-0.01em] text-[#17202c] transition group-hover:text-[#111111]">{file.title}</h3>
+        <span className="text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{file.englishLabel}</span>
+        <h3 className="mt-1.5 text-[16px] font-semibold tracking-[-0.01em] text-[#17202c] transition group-hover:text-[#111111]">{file.title}</h3>
         <p className="mt-1 text-[12px] font-normal text-[#8a94a3]">
           {file.category} · {file.pageCount}p · PDF
         </p>
         <p className="mt-2.5 line-clamp-2 flex-1 text-[13px] font-normal leading-[1.6] text-[#596373]">{file.shortDescription}</p>
         <div className="mt-3 flex items-end justify-between gap-2 border-t border-[#edf1f5] pt-3">
-          <span className={clsx("text-[16px] font-bold", file.isFree ? "text-[#111111]" : "text-[#17202c]")}>{formatResourcePrice(file)}</span>
+          <span className={clsx("text-[15px] font-bold", file.isFree ? "text-[#111111]" : "text-[#17202c]")}>{formatResourcePrice(file)}</span>
           {file.downloadCount != null ? <span className="text-[12px] font-normal text-[#a0a9b7]">{file.downloadCount.toLocaleString("ko-KR")}명 받음</span> : null}
         </div>
       </div>
@@ -135,7 +135,7 @@ function ResourceCard({ file }: { file: ResourceFile }) {
 function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
   return (
     <section className="border border-border bg-white p-5">
-      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 자료
       </h2>
@@ -143,11 +143,12 @@ function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
         {items.map((item, index) => (
           <li key={item.id}>
             <Link href={`/resources/${item.slug}`} className="flex items-start gap-3 transition hover:opacity-70">
-              <span className="text-[15px] font-bold text-[#a0a9b7]">{String(index + 1).padStart(2, "0")}</span>
+              <span className="text-[13px] font-medium text-[#6c7684]">{String(index + 1).padStart(2, "0")}</span>
               <span className="min-w-0">
-                <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#8a94a3]">
+                <span className="flex items-center gap-1.5 text-[12px] font-medium text-[#8a94a3]">
                   {item.category}
-                  <span className={clsx("px-1 py-px text-[9px] font-medium", item.isFree ? "bg-[#f0f1f3] text-[#4a5261]" : "bg-[#e2e5e9] text-[#6b7280]")}>
+                  {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. PriceBadge 등 다른 배지는 아직 상속 상태이므로 배지 높이를 전역 정리할 때 함께 볼 것 */}
+                  <span className={clsx("px-1 py-px text-[12px] font-medium leading-4", item.isFree ? "bg-[#f0f1f3] text-[#4a5261]" : "bg-[#e2e5e9] text-[#6b7280]")}>
                     {item.isFree ? "무료" : "유료"}
                   </span>
                 </span>
@@ -164,9 +165,9 @@ function PopularResourcesPanel({ items }: { items: ResourceFile[] }) {
 function MembershipPanel({ onCtaClick }: { onCtaClick: () => void }) {
   return (
     <section className="border border-border bg-[#050505] p-5 text-white">
-      <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/55">MEMBERSHIP</span>
+      <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-white/55">MEMBERSHIP</span>
       <h2 className="mt-2 text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">더파마 멤버십으로 모든 유료 자료 무제한</h2>
-      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/68">기업분석·면접후기·직무가이드 전 자료를 월 구독으로 자유롭게 보세요.</p>
+      <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/70">기업분석·면접후기·직무가이드 전 자료를 월 구독으로 자유롭게 보세요.</p>
       <button
         type="button"
         onClick={onCtaClick}
@@ -221,7 +222,7 @@ export function ResourcesHomeClient() {
               </div>
             ) : (
               <div className="flex h-[160px] flex-col items-center justify-center gap-1.5 border border-border bg-white text-center">
-                <p className="text-[14px] font-semibold text-[#3d4653]">아직 등록된 자료가 없습니다.</p>
+                <p className="text-[15px] font-medium text-[#303946]">아직 등록된 자료가 없습니다.</p>
                 <p className="text-[13px] font-normal text-[#8791a0]">다른 카테고리를 선택해보세요.</p>
               </div>
             )}
@@ -233,7 +234,7 @@ export function ResourcesHomeClient() {
           </aside>
         </div>
 
-        {notice ? <p className="mt-4 text-[12px] font-medium text-[#596373]">{notice}</p> : null}
+        {notice ? <p className="mt-4 text-[13px] font-medium text-[#596373]">{notice}</p> : null}
       </div>
     </main>
   );

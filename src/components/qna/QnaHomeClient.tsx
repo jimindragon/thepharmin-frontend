@@ -39,7 +39,7 @@ function withTypeParam(type: QnaType, previewQuery: string) {
 
 function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; previewQuery: string }) {
   return (
-    <div className="flex h-10 shrink-0 overflow-hidden border border-[#dce2ea] bg-white" role="tablist" aria-label="QNA 유형">
+    <div className="flex h-9 shrink-0 overflow-hidden border border-[#dce2ea] bg-white" role="tablist" aria-label="QNA 유형">
       {qnaTypeTabs.map((tab) => {
         const active = tab.id === activeType;
         return (
@@ -63,7 +63,7 @@ function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; prev
 
 function SortControl({ value, onChange }: { value: QnaSortOption; onChange: (option: QnaSortOption) => void }) {
   return (
-    <div className="grid h-[34px] shrink-0 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+    <div className="grid h-[36px] shrink-0 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
       {qnaSortOptions.map((option) => (
         <button
           key={option}
@@ -71,7 +71,7 @@ function SortControl({ value, onChange }: { value: QnaSortOption; onChange: (opt
           onClick={() => onChange(option)}
           className={clsx(
             "min-w-[72px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-            value === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+            value === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
           )}
         >
           {option}
@@ -90,34 +90,36 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
   const content = (
     <article className={clsx("border border-[#e5e9ef] bg-white p-5 transition", clickable && "hover:border-[#111111]")}>
       {isBest ? (
-        <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[11px] font-bold text-white">BEST</span>
+        <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
       ) : null}
 
       <div className="flex items-center gap-2.5">
         <QnaAuthorAvatar id={entry.id} nickname={entry.nickname} size={38} />
         <div className="min-w-0">
-          <p className="truncate text-[15px] font-bold text-[#17202c]">{entry.nickname}</p>
+          <p className="truncate text-[14px] font-semibold text-[#3d4653]">{entry.nickname}</p>
           <p className="mt-0.5 truncate text-[13px] font-normal text-[#8b95a1]">
             {[entry.jobRole, entry.createdAtLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
       </div>
 
-      <h3 className="mt-3 text-[16px] font-bold leading-[1.4] tracking-[-0.01em] text-[#171d26]">{entry.title}</h3>
+      <h3 className="mt-3 text-[17px] font-semibold leading-[1.4] tracking-[-0.01em] text-[#171d26]">{entry.title}</h3>
       <p className="mt-1.5 line-clamp-2 text-[14px] font-normal leading-[1.6] text-[#596373]">{excerpt}</p>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-[#edf1f5] pt-3">
-        <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal text-[#8b95a1]">
+        <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-[#596373]">
           {entry.tags.map((tag) => (
             <span key={tag} className="whitespace-nowrap">
               #{tag}
             </span>
           ))}
-          <span className="whitespace-nowrap">댓글 {commentCount}</span>
         </span>
-        <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-medium text-[#8a94a3]">
-          <ThumbsUp size={14} aria-hidden="true" />
-          {entry.likeCount}
+        <span className="inline-flex shrink-0 items-center gap-2 text-[13px] font-normal text-[#8b95a1]">
+          <span className="whitespace-nowrap">댓글 {commentCount}</span>
+          <span className="inline-flex items-center gap-1">
+            <ThumbsUp size={14} aria-hidden="true" />
+            {entry.likeCount}
+          </span>
         </span>
       </div>
     </article>
@@ -198,7 +200,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           onNotify={(message) => showQnaNotice(setNotice, message)}
         />
 
-        <nav className="mt-8 flex flex-wrap gap-2 border-b border-[#eceff1] pb-3.5" aria-label="QNA 카테고리">
+        <nav className="mt-8 flex flex-wrap gap-2 border-b border-border pb-3.5" aria-label="QNA 카테고리">
           {filterChips.map((chip) => (
             <button
               key={chip}
@@ -206,7 +208,9 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
               onClick={() => setCategoryFilter(chip)}
               className={clsx(
                 "h-[36px] shrink-0 whitespace-nowrap px-4 text-[13px] font-medium transition-colors",
-                categoryFilter === chip ? "bg-[#111111] text-white" : "bg-transparent text-[#8a94a3] hover:text-[#111111]",
+                categoryFilter === chip
+                  ? "border border-[#111111] bg-[#111111] text-white"
+                  : "border border-[#dce2ea] bg-white text-[#3d4653] hover:border-[#cfd8e3] hover:bg-[#f7f8fa] hover:text-[#111111]",
               )}
             >
               {chip === "전체" ? chip : `#${chip}`}

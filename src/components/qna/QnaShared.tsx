@@ -80,7 +80,7 @@ export function QnaAuthorAvatar({ id, nickname, size = 38 }: { id: string; nickn
 
 export function QnaAuthorLabelBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex h-[20px] items-center border border-[#cfd8e3] bg-[#f7f8fa] px-1.5 text-[11px] font-medium text-[#596373]">
+    <span className="inline-flex h-6 items-center border border-[#cfd8e3] bg-[#f7f8fa] px-1.5 text-[12px] font-medium text-[#596373]">
       {children}
     </span>
   );
@@ -101,7 +101,7 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref 
 
   return (
     <section className="border border-border bg-white p-5">
-      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 태그
       </h2>
@@ -109,8 +109,8 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref 
         {tags.map((tag) => {
           const active = selectedTag === tag;
           const className = clsx(
-            "inline-flex h-6 items-center whitespace-nowrap bg-[#f4f6f8] px-2 text-[12px] font-medium transition-colors",
-            active ? "font-bold text-[#111111]" : "text-[#596373] hover:text-[#111111]",
+            "inline-flex h-6 items-center whitespace-nowrap border border-border px-2 text-[12px] transition-colors",
+            active ? "font-bold text-[#111111]" : "font-medium text-[#3d4653] hover:text-[#111111]",
           );
           return tagHref ? (
             <Link key={tag} href={tagHref(tag)} className={className}>
@@ -130,8 +130,8 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref 
 export function QnaOperationPrinciplePanel() {
   return (
     <section className="border border-border bg-[#050505] p-5 text-white">
-      <h2 className="text-[15px] font-bold tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
-      <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-[#b9c0ca]">{qnaOperationPrinciple.description}</p>
+      <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
+      <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-white/70">{qnaOperationPrinciple.description}</p>
     </section>
   );
 }
@@ -140,7 +140,7 @@ export function QnaOperationPrinciplePanel() {
 export function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]; previewQuery: string }) {
   return (
     <section className="border border-border bg-white p-5">
-      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         실시간 인기 글
       </h2>
@@ -149,10 +149,10 @@ export function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaList
           <li key={entry.id}>
             <Link href={`/qna/${entry.id}${previewQuery}`} className="transition hover:opacity-70">
               <span className="flex items-start gap-3">
-                <span className="text-[16px] font-extrabold text-[#c8ced7]">{index + 1}</span>
+                <span className="text-[13px] font-medium text-[#6c7684]">{index + 1}</span>
                 <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
-                  <span className="mt-0.5 block text-[11px] font-normal text-[#a0a9b7]">
+                  <span className="line-clamp-2 text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
+                  <span className="mt-0.5 block text-[12px] font-normal text-[#a0a9b7]">
                     #{entry.tags[0]} · 댓글 {getEntryCommentCount(entry)}
                   </span>
                 </span>
@@ -192,7 +192,7 @@ export function MyActivityPanel({ activeType }: { activeType: QnaType }) {
 
   return (
     <section className="border border-border bg-white p-5">
-      <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         내 활동
       </h2>

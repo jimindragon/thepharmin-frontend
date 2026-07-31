@@ -68,7 +68,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                   {logoSrc ? (
                     <img src={logoSrc} alt={company.name} className="max-h-[34px] w-auto max-w-[160px] object-contain" />
                   ) : (
-                    <span className="text-[15px] font-bold text-[#171b20]/60">{company.name}</span>
+                    <span className="max-w-[160px] truncate text-[13px] font-medium text-[#171b20]/60">{company.name}</span>
                   )}
                 </div>
                 <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f]")}>{company.name}</h3>
@@ -96,7 +96,7 @@ function RecruiterSolutionBanner() {
   return (
     <section className="mt-6 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
       <Link href="/business" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
-        <p className="text-[14px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
+        <p className="text-[15px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
         <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white">
           채용 솔루션 알아보기
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -132,7 +132,7 @@ function ThemeCuration() {
             </div>
             <div className="px-5 py-4">
               <h3 className={clsx(typeScale.cardTitle, "truncate text-[#222222]")}>{card.title}</h3>
-              <p className="mt-2 text-[12px] font-normal text-[#8a8a8a]">{card.subtitle}</p>
+              <p className="mt-2 text-[13px] font-normal text-[#8a8a8a]">{card.subtitle}</p>
             </div>
           </Link>
         ))}
@@ -183,7 +183,7 @@ function HomeRecommendationCard({
         >
           <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
-        <p className="pr-8 text-[12px] font-normal text-[#6b7280]">{job.company}</p>
+        <p className="truncate pr-8 text-[13px] font-medium text-[#6b7280]">{job.company}</p>
         <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111]")}>{job.title}</h3>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {(job.coreKeywords ?? []).slice(0, 4).map((tag) => (
@@ -195,9 +195,9 @@ function HomeRecommendationCard({
         <div className="mt-auto flex items-center justify-between pt-3">
           <div className="flex items-center gap-2">
             {job.postingSource === "headhunting" ? (
-              <span className="bg-[#111111] px-2.5 py-1 text-[11px] font-medium text-white">헤드헌팅</span>
+              <span className="bg-[#111111] px-2.5 py-1 text-[13px] font-medium text-white">헤드헌팅</span>
             ) : null}
-            <span className="text-[11px] font-medium text-[#6b7481]">
+            <span className="text-[13px] font-medium text-[#6b7481]">
               {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
             </span>
           </div>

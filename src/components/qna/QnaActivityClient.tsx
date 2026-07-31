@@ -42,8 +42,8 @@ function ActivityTabControl({
             aria-selected={active}
             onClick={() => onChange(tab.id)}
             className={clsx(
-              "flex h-11 items-center justify-center border-r border-[#dce2ea] px-3 text-[13px] font-medium last:border-r-0",
-              active ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+              "flex h-9 items-center justify-center border-r border-[#dce2ea] px-3 text-[13px] font-medium last:border-r-0",
+              active ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
             )}
           >
             {tab.label}
@@ -63,14 +63,14 @@ function PostActivityRow({ entry, onUnscrap }: { entry: QnaListEntry; onUnscrap?
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0 flex-1">
-        <Link href={`/qna/${entry.id}`} className="text-[15px] font-bold leading-[1.4] text-[#171d26] transition hover:text-[#111111]">
+        <Link href={`/qna/${entry.id}`} className="line-clamp-2 text-[16px] font-semibold leading-[1.4] text-[#171d26] transition hover:text-[#111111]">
           {entry.title}
         </Link>
         <p className="mt-1 text-[13px] font-normal text-[#8b95a1]">
           {qnaTypeLabel[entry.qnaType]} · {entry.createdAtLabel}
         </p>
         <p className="mt-1.5 line-clamp-1 text-[14px] font-normal leading-[1.6] text-[#596373]">{excerpt}</p>
-        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal text-[#8b95a1]">
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-[#596373]">
           {entry.tags.map((tag) => (
             <span key={tag} className="whitespace-nowrap">
               #{tag}
@@ -97,16 +97,16 @@ function CommentActivityRow({ entry }: { entry: MyQnaCommentEntry }) {
     <div className="flex items-start gap-2.5">
       <MessageCircle size={16} className="mt-0.5 shrink-0 text-[#9aa3ad]" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-bold leading-[1.4] text-[#171d26]">{entry.body}</p>
+        <Link
+          href={`/qna/${entry.postId}`}
+          className="block line-clamp-2 text-[16px] font-semibold leading-[1.4] text-[#171d26] transition hover:text-[#111111]"
+        >
+          {entry.postTitle}
+        </Link>
         <p className="mt-1 text-[13px] font-normal text-[#8b95a1]">
           {qnaType ? qnaTypeLabel[qnaType] : ""} · {entry.createdAtLabel}
         </p>
-        <Link
-          href={`/qna/${entry.postId}`}
-          className="mt-1.5 inline-block truncate text-[13px] font-medium text-[#596373] transition hover:text-[#111111]"
-        >
-          원문: {entry.postTitle}
-        </Link>
+        <p className="mt-1.5 line-clamp-2 text-[14px] font-normal leading-[1.6] text-[#3d4653]">{entry.body}</p>
       </div>
     </div>
   );

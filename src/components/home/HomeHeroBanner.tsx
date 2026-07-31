@@ -76,10 +76,13 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
               <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
 
               <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-6">
-                <h1 className="max-w-[720px] break-keep text-[36px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[24px]">
+                {/* 배너 높이가 고정(290/260/230)이라 제목·부제 크기가 곧 레이아웃 여유다.
+                    ≤760px에서 제목은 2줄이 되므로, 부제가 15px보다 크면 긴 부제(약국 슬라이드)가
+                    2줄로 늘어나 내용이 230px를 넘고 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것. */}
+                <h1 className="max-w-[720px] break-keep text-[34px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[26px]">
                   {slide.title}
                 </h1>
-                <p className="mt-[14px] max-w-[560px] break-keep text-[20px] font-normal text-[#c9ced3]">
+                <p className="mt-[14px] max-w-[560px] break-keep text-[17px] font-normal text-[#c9ced3] max-[760px]:text-[15px]">
                   {slide.subtitle}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-5">
