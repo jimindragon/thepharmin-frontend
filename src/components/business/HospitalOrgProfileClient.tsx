@@ -334,7 +334,7 @@ export function HospitalOrgProfileClient() {
               onChange={(event) => updateProfile("fullIntro", event.target.value)}
               maxLength={2000}
               placeholder="병원의 진료 체계, 약제부 운영 방식, 교육 환경과 근무 문화를 자유롭게 소개해 주세요."
-              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
             />
           </div>
 
@@ -355,20 +355,20 @@ export function HospitalOrgProfileClient() {
                     onChange={(event) => updateFeatureItem(item.id, "label", event.target.value)}
                     placeholder="신입 교육"
                     aria-label={`기관 특징 ${index + 1} 제목`}
-                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                   />
                   <input
                     value={item.text}
                     onChange={(event) => updateFeatureItem(item.id, "text", event.target.value)}
                     placeholder="신입 약사 6개월 조제·병동 로테이션"
                     aria-label={`기관 특징 ${index + 1} 내용`}
-                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-normal outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                    className="h-11 min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-normal outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                   />
                   <button
                     type="button"
                     onClick={() => removeFeatureItem(item.id)}
                     aria-label={`기관 특징 ${index + 1} 삭제`}
-                    className="grid h-11 w-11 place-items-center border border-[#dfe4ea] bg-white text-[#a0a9b7] hover:border-danger/30 hover:text-danger"
+                    className="grid h-11 w-11 place-items-center border border-[#dfe4ea] bg-white text-[#a0a9b7] hover:border-[#e14b2d]/30 hover:text-danger"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -416,7 +416,7 @@ export function HospitalOrgProfileClient() {
                 }}
                 disabled={profile.keywords.length >= MAX_KEYWORDS}
                 placeholder="예: 임상약료"
-                className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
+                className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08] disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
               />
               <FormActionButton onClick={addKeyword} disabled={profile.keywords.length >= MAX_KEYWORDS}>
                 <Plus size={14} />
@@ -520,7 +520,7 @@ export function HospitalOrgProfileClient() {
                 onChange={(event) => updateProfile("pharmacyEnvironmentDescription", event.target.value.slice(0, 2000))}
                 maxLength={2000}
                 placeholder="약제부 운영 방식, 당직·조제 환경, 임상약료·특수 조제 업무 등을 자유롭게 소개해 주세요."
-                className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
               />
               <div className="flex justify-end">
                 <span className="text-[12px] font-normal text-[#8a94a3]">{profile.pharmacyEnvironmentDescription.length} / 2000</span>
@@ -607,7 +607,7 @@ export function HospitalOrgProfileClient() {
 
         <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-            <p className="text-[12px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
+            <p className="text-[13px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
             <div className="flex gap-2 max-[640px]:w-full">
               <Link href="/business/company/preview?track=hospital" onClick={goToPreview} className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1">
                 미리보기

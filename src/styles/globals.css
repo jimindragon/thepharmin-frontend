@@ -22,7 +22,7 @@
      하드코딩 값들의 대표값을 채택한 근거는 각 주석에 표기.
      예외적으로 토큰에 흡수하지 않은 값:
        - #0F6E56 / #E4F4EE (HeadhuntingLandingClient) — 색조 다름(초록 계열), 유지
-       - #00A896 (BusinessPricingClient 체크 아이콘) — 확연히 밝은 틸, 유지
+       - #17A68C (BusinessPricingClient 체크 아이콘) — 확연히 밝은 틸, 유지
        - #C0523B / #E2998A (BoostModal, 완료 페이지) — 밝기 7% 차, 유지
        - #E5D27B (PREMIUM 라벨 금색) — 마케팅 강조색, 상태 색 아님
        - logoColor(#B45309) — 렌더링에서 소비 안 함
@@ -36,9 +36,9 @@
 
   /* 대기·진행 상태(검토 대기/면접 진행/일정 대기 등) — 청색 계열.
      토큰명 warning은 참조처 9곳 호환을 위해 유지, 리네임은 백로그 */
-  --status-warning: #1B66CC;
-  --status-warning-subtle: #eff4fb;
-  --status-warning-border: #c7d7ec;
+  --status-pending: #1B66CC;
+  --status-pending-subtle: #eff4fb;
+  --status-pending-border: #c7d7ec;
 
   /* 거부/오류 — 심사 거부, 필수 항목 누락 등 최종 부정 상태
      대표값: #A43F31 (6회). 흡수: #9B3A2D(밝기 3% 차, 4회), #FDF2F0/#FDF6F5→subtle(채널 차 2~3) */
@@ -52,7 +52,7 @@
   /* 상태 점 인디케이터 전용 — 텍스트가 아니라 대비(AA) 제약 없이 채도 높게 사용.
      텍스트 색은 기존 --status-* 유지 */
   --status-positive-dot: #00BD93;
-  --status-warning-dot: #2E7FE6;
+  --status-pending-dot: #2E7FE6;
   --status-error-dot: #E14B2D;
   --status-neutral-dot: #9ca3af;
 

@@ -35,7 +35,6 @@ import {
   type PharmacyOrgProfile,
 } from "@/data/businessOrgProfile";
 import { buildHospitalPreview, buildIndustryPreview, buildPharmacyPreview } from "@/data/businessProfilePreview";
-import { markBusinessMember } from "@/hooks/useBusinessMember";
 
 /** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry.
  * BusinessOrgProfilePageClient(기관정보 관리)와 동일한 규칙 — 가입 결과보다 쿼리가 우선한다. */
@@ -67,7 +66,7 @@ function PreviewControlBar({ track, missing }: { track: OrgTrack; missing: Missi
           {missing.count > 0 ? (
             <Link
               href={fillHref}
-              className="inline-flex h-10 items-center justify-center gap-1.5 border border-[#17a68c] bg-[#eafaf5] px-3.5 text-[12.5px] font-medium text-[#0d7369] transition hover:bg-[#dbf5ec] max-[640px]:flex-1"
+              className="inline-flex h-10 items-center justify-center gap-1.5 border border-status-pending-border bg-status-pending-subtle px-3.5 text-[12.5px] font-medium text-status-pending transition hover:border-status-pending max-[640px]:flex-1"
             >
               <Sparkles size={14} className="shrink-0" />
               부족한 정보 {missing.count}개 채우기
@@ -97,7 +96,6 @@ export function BusinessCompanyPreviewClient() {
   const [pharmacyProfile, setPharmacyProfile] = useState<PharmacyOrgProfile>(initialPharmacyOrgProfile);
 
   useEffect(() => {
-    markBusinessMember();
     const fromSignup = readSignupOrgTrack();
     if (fromSignup) setTrack(fromSignup);
     // ?track= 쿼리 오버라이드는 개발 확인용으로 가입 결과보다 우선한다.

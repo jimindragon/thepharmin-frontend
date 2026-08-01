@@ -79,8 +79,9 @@ export function TrackSelectionClient() {
                 className="object-cover track-card-img"
               />
               {/* 대표 트랙 배지 — 좌상단, 산업만 */}
+              {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외(자료실 사이드바 배지·모달 할인율 배지·트랙 배지에 이미 같은 처방). 11px 라인박스 18.15px가 h-5 콘텐츠 18px를 0.15px 넘고 있어 높이는 그대로 두고 leading만 끊는다. */}
               {track.badge && (
-                <span className="absolute left-0 top-0 z-10 inline-flex h-5 items-center border border-status-positive-border bg-status-positive-subtle px-1.5 text-[11px] font-medium text-status-positive">
+                <span className="absolute left-0 top-0 z-10 inline-flex h-5 items-center border border-status-positive-border bg-status-positive-subtle px-1.5 text-[11px] font-medium leading-4 text-status-positive">
                   {track.badge}
                 </span>
               )}

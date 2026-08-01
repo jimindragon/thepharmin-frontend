@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TrackBadge } from "@/components/business/table/TrackBadge";
 import { boostTrackLabel, type BillingRecord } from "@/data/businessBilling";
 import { initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 
@@ -107,10 +108,8 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
                 <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
                   <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
-                  {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. 트랙 배지 4곳(본화면 3 + 영수증 모달)이 같은 처방을 쓴다 — 배지 높이를 전역 정리할 때 함께 볼 것 */}
-                  <span className="inline-flex h-6 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium leading-4 text-[#596373]">
-                    {boostTrackLabel(record.track)}
-                  </span>
+                  {/* 이 모달은 결제 내역 표에서 바로 열리므로 표 배지와 크기가 어긋나면 한 동작 안에서 드러난다 */}
+                  <TrackBadge label={boostTrackLabel(record.track)} />
                 </div>
               </div>
 

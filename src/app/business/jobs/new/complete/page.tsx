@@ -109,7 +109,7 @@ function CompleteContent() {
         <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
           등록한 공고는 채용공고 목록에 무료로 노출됩니다.
         </p>
-        <span className="mt-4 inline-flex h-7 w-fit items-center justify-center border border-status-warning-border bg-status-warning-subtle px-2 text-[11px] font-medium text-status-warning">
+        <span className="mt-4 inline-flex h-7 w-fit items-center justify-center border border-status-pending-border bg-status-pending-subtle px-2 text-[11px] font-medium text-status-pending">
           검토 대기
         </span>
         <p className="mt-3 text-[13px] font-normal leading-[1.7] text-[#68717e]">

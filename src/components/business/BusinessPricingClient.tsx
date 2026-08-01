@@ -171,7 +171,7 @@ export function BusinessPricingClient() {
             className="pointer-events-none absolute inset-0"
             style={{ background: "linear-gradient(90deg,rgba(12,12,12,.68) 0%,rgba(12,12,12,.62) 30%,rgba(12,12,12,.3) 75%,rgba(12,12,12,.15) 100%)" }}
           />
-<div className="app-shell--default relative z-10 w-full py-[100px] max-[760px]:py-16">
+<div className="app-shell--default relative z-10 py-[100px] max-[760px]:py-16">
             <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9]">결국, 사람이 경쟁력입니다</p>
             <h1
               className="mt-5 font-semibold text-white"
@@ -656,7 +656,7 @@ export function BusinessPricingClient() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
             style={{ background: "var(--gradient-cta)" }}
           />
-          <div className="app-shell--default relative z-10 w-full py-[96px] max-[760px]:py-16">
+          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-16">
             <h2
               className="font-bold text-white"
               style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.04em", lineHeight: 1.22 }}

@@ -3,18 +3,27 @@
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { navigationItems, trackNavigationItems } from "@/config/navigation";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
-import { headerNavItemClassName } from "@/components/headerNavStyles";
+import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 export function AccountMenu() {
   const pathname = usePathname();
+  const router = useRouter();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
+
+  // 개인회원 로그인 상태는 아직 URL 쿼리(?guest) 기반 목업(usePersonalLoginState)이라
+  // 지울 저장소가 없다. 지금은 홈으로 보내는 이동만 하고, 실제 세션 해제는 개인회원
+  // 로그인 상태를 어디에 저장할지 정해진 뒤에 여기에 배선한다.
+  const handleLogout = () => {
+    setOpen(false);
+    router.push("/");
+  };
 
   return (
     <div ref={containerRef} className="relative">
@@ -73,6 +82,12 @@ export function AccountMenu() {
                 </div>
               </div>
             ))}
+          </div>
+          {/* 로그아웃 — 이동 항목들과 성격이 달라 구분선으로 갈라 둔다. */}
+          <div className="border-t border-border px-1 py-1.5">
+            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
+              로그아웃
+            </button>
           </div>
         </div>
       ) : null}

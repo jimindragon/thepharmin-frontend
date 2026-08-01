@@ -75,7 +75,7 @@ function SelectShell({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full appearance-none border border-[#dce4ec] bg-white px-3.5 pr-9 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+        className="h-11 w-full appearance-none border border-[#dce4ec] bg-white px-3.5 pr-9 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
       >
         {children}
       </select>
@@ -246,7 +246,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 value={draft.title}
                 onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
                 placeholder="예: RA 직무용, 메디컬 마케팅용"
-                className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[15px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[15px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
               />
             </FormRow>
             <FormRow label="대표 이력서" align="center">
@@ -361,7 +361,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   value={draft.education.school}
                   onChange={(event) => setDraft((current) => ({ ...current, education: { ...current.education, school: event.target.value } }))}
                   placeholder="예: 서울대학교"
-                  className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                  className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
                 />
               </FormRow>
               <FormRow label="학위" required align="center">
@@ -384,7 +384,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                   value={draft.education.major}
                   onChange={(event) => setDraft((current) => ({ ...current, education: { ...current.education, major: event.target.value } }))}
                   placeholder="예: 약학"
-                  className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                  className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
                 />
               </FormRow>
               <p className="mt-3 text-[12px] font-normal text-[#8a94a3]">학위·전공은 제약·바이오 공고 매칭에 우선 반영됩니다.</p>
@@ -564,7 +564,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 placeholder="직무 경험과 강점을 간단히 소개해 주세요."
                 rows={5}
                 maxLength={1000}
-                className="w-full resize-y border border-[#dce4ec] px-3.5 py-3 text-[14px] font-normal leading-[1.7] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="w-full resize-y border border-[#dce4ec] px-3.5 py-3 text-[14px] font-normal leading-[1.7] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
               />
               <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{draft.selfIntroduction.length} / 1000</p>
             </ResumeSectionCard>

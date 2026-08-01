@@ -1,3 +1,4 @@
+import type { StatusTone } from "@/config/statusTone";
 import { industryJobCategoryOptions } from "@/config/jobFilters";
 
 export type HeadhuntingRequestStatus = "consulting" | "sourcing" | "interviewing" | "completed" | "on_hold";
@@ -104,7 +105,7 @@ export const headhuntingCandidates: HeadhuntingCandidate[] = [
   { id: "cand-6", code: "CAND-045", matchedRequestId: "hh-4", experienceSummary: "PV 시니어 10년", fitScore: 91, fitMet: 4, fitTotal: 5, status: "hired", recommendedAt: "2026.04.22" },
 ];
 
-export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
+export function headhuntingStatusLabel(status: HeadhuntingRequestStatus): string {
   if (status === "consulting") return "상담중";
   if (status === "sourcing") return "후보자 탐색중";
   if (status === "interviewing") return "면접 진행중";
@@ -112,23 +113,22 @@ export function headhuntingStatusLabel(status: HeadhuntingRequestStatus) {
   return "보류";
 }
 
-export function headhuntingStatusClass(status: HeadhuntingRequestStatus) {
-  if (status === "consulting") return "text-[#596373]";
-  if (status === "sourcing") return "text-status-positive";
-  if (status === "interviewing") return "text-status-positive";
-  if (status === "completed") return "text-[#303946]";
-  return "text-status-warning";
-}
+/**
+ * 상태색 3단 원칙 — 회색(idle) = 진행 안 함, 파랑(progress) = 진행 중,
+ * 초록(success) = 완료·긍정 결과. 아래 후보자 맵도 같은 원칙을 따른다.
+ * 진행 상태에 초록을 쓰면 완료가 묻히고, 멈춘 상태에 파랑을 쓰면 진행 중과 섞인다.
+ *
+ * 실제 색 문자열은 statusTone.ts의 STATUS_TONE에만 있다 — 여기는 "성격" 매핑만 든다.
+ */
+export const HEADHUNTING_REQUEST_TONE: Record<HeadhuntingRequestStatus, StatusTone> = {
+  consulting: "idle",
+  sourcing: "progress",
+  interviewing: "progress",
+  completed: "success",
+  on_hold: "idle", // 보류 — 진행이 멈춘 상태라 중립
+};
 
-export function headhuntingStatusDotClass(status: HeadhuntingRequestStatus) {
-  if (status === "consulting") return "bg-status-neutral-dot";
-  if (status === "sourcing") return "bg-status-positive-dot";
-  if (status === "interviewing") return "bg-status-positive-dot";
-  if (status === "completed") return "bg-status-neutral-dot";
-  return "bg-status-warning-dot";
-}
-
-export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
+export function candidateStatusLabel(status: HeadhuntingCandidateStatus): string {
   if (status === "recommended") return "추천됨";
   if (status === "interview_proposed") return "면접 제안";
   if (status === "interview_scheduled") return "면접 확정";
@@ -137,20 +137,11 @@ export function candidateStatusLabel(status: HeadhuntingCandidateStatus) {
   return "보류";
 }
 
-export function candidateStatusClass(status: HeadhuntingCandidateStatus) {
-  if (status === "recommended") return "text-[#596373]";
-  if (status === "interview_proposed") return "text-status-positive";
-  if (status === "interview_scheduled") return "text-status-positive";
-  if (status === "offer") return "text-status-warning";
-  if (status === "hired") return "text-status-positive";
-  return "text-[#596373]";
-}
-
-export function candidateStatusDotClass(status: HeadhuntingCandidateStatus) {
-  if (status === "recommended") return "bg-status-neutral-dot";
-  if (status === "interview_proposed") return "bg-status-positive-dot";
-  if (status === "interview_scheduled") return "bg-status-positive-dot";
-  if (status === "offer") return "bg-status-warning-dot";
-  if (status === "hired") return "bg-status-positive-dot";
-  return "bg-status-neutral-dot";
-}
+export const HEADHUNTING_CANDIDATE_TONE: Record<HeadhuntingCandidateStatus, StatusTone> = {
+  recommended: "idle",
+  interview_proposed: "progress",
+  interview_scheduled: "progress",
+  offer: "progress",
+  hired: "success",
+  declined: "idle",
+};

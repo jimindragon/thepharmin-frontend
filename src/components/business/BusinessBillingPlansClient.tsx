@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,13 +8,17 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { BoostModal } from "@/components/business/BoostModal";
+import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
+import { TrackBadge } from "@/components/business/table/TrackBadge";
+import { STATUS_TONE } from "@/config/statusTone";
 import {
   activeBoosts,
   billingRecords,
   billingStats,
-  boostStatusClass,
+  BOOST_TONE,
   boostStatusLabel,
   boostTrackLabel,
+  type ActiveBoost,
 } from "@/data/businessBilling";
 import { BOOST_GRADE_LABEL, type BoostGrade } from "@/data/boostPricing";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
@@ -21,6 +26,9 @@ import { MOCK_TODAY_DATE } from "@/config/mockToday";
 function formatKrw(amount: number): string {
   return amount.toLocaleString("ko-KR") + "원";
 }
+
+/** 공고 관리의 마감 행과 같은 문구 — 종료된 부스트는 연장할 수 없다 */
+const EXTEND_DISABLED_TITLE = "진행 중인 부스트만 연장할 수 있습니다.";
 
 // ── 통계 카드 보조 문구용 파생 값 ────────────────────────────────────────────
 
@@ -49,6 +57,90 @@ export function BusinessBillingPlansClient() {
   const stats = billingStats;
   const boosts = activeBoosts;
   const hasBoosts = boosts.length > 0;
+
+  const BOOST_COLUMNS: DataTableColumn<ActiveBoost>[] = [
+    {
+      key: "job",
+      header: "공고",
+      width: "minmax(0,1fr)",
+      cell: (boost) => (
+        // 종료된 부스트는 공고 관리의 "마감" 행과 같은 방식으로 제목·주요값을 흐린다
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span
+            className={clsx(
+              "text-[16px] font-semibold",
+              boost.status === "ended" ? "text-[#8a94a3]" : "text-[#17202c]",
+            )}
+          >
+            {boost.jobTitle}
+          </span>
+          <TrackBadge label={boostTrackLabel(boost.track)} />
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "상태",
+      width: "95px",
+      cell: (boost) => (
+        // 이 표는 점을 렌더하지 않아 StatusPill 대신 tone의 text만 쓴다.
+        // 굵기는 여기서 정한다 — 색 매핑은 색만 든다.
+        <span className={clsx("text-[13px] font-medium", STATUS_TONE[BOOST_TONE[boost.status]].text)}>
+          {boostStatusLabel(boost.status, boost.daysLeft)}
+        </span>
+      ),
+    },
+    {
+      key: "period",
+      header: "기간",
+      width: "195px",
+      cell: (boost) => (
+        <span className="whitespace-nowrap text-[13px] font-normal text-[#596373]">
+          {BOOST_GRADE_LABEL[boost.grade]} · {boost.durationWeeks}주 · ~{boost.endDate}
+        </span>
+      ),
+    },
+    {
+      key: "amount",
+      header: "결제 금액",
+      width: "90px",
+      cell: (boost) => (
+        <span
+          className={clsx(
+            "text-[14px] font-semibold",
+            boost.status === "ended" ? "text-[#8a94a3]" : "text-[#303946]",
+          )}
+        >
+          {formatKrw(boost.amountKrw)}
+        </span>
+      ),
+    },
+    {
+      key: "action",
+      width: "72px",
+      align: "end",
+      cell: (boost) => {
+        const isEnded = boost.status === "ended";
+        return (
+          <button
+            type="button"
+            disabled={isEnded}
+            title={isEnded ? EXTEND_DISABLED_TITLE : undefined}
+            aria-label={isEnded ? EXTEND_DISABLED_TITLE : undefined}
+            onClick={() => openExtendModal(boost.jobId, boost.grade)}
+            className={clsx(
+              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+              isEnded
+                ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
+                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+            )}
+          >
+            연장
+          </button>
+        );
+      },
+    },
+  ];
 
   function openNewBoostModal() {
     setExtendTarget(null);
@@ -116,76 +208,25 @@ export function BusinessBillingPlansClient() {
         <h2 className="mt-6 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">
           진행 중인 부스트
         </h2>
-        <div className="mt-3 border border-border bg-white">
-          <div className="px-6 py-6">
-            {hasBoosts ? (
-              <div className="overflow-x-auto">
-                <div className="min-w-[740px]">
-                  {/* 테이블 헤더 */}
-                  <div className="grid grid-cols-[minmax(0,1fr)_95px_195px_90px_72px] gap-4 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
-                    <span>공고</span>
-                    <span>상태</span>
-                    <span>기간</span>
-                    <span>결제 금액</span>
-                    <span aria-hidden="true" />
-                  </div>
-                  {/* 테이블 행 */}
-                  <div className="divide-y divide-[#e5e9ef]">
-                    {boosts.map((boost) => (
-                      <div
-                        key={boost.id}
-                        className="grid grid-cols-[minmax(0,1fr)_95px_195px_90px_72px] items-center gap-4 py-4 text-[13px]"
-                      >
-                        {/* 공고명 + 트랙 태그 */}
-                        <div className="flex min-w-0 flex-wrap items-center gap-2">
-                          <span className="text-[16px] font-semibold text-[#17202c]">{boost.jobTitle}</span>
-                          {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. 트랙 배지 4곳(본화면 3 + 영수증 모달)이 같은 처방을 쓴다 — 배지 높이를 전역 정리할 때 함께 볼 것 */}
-                          <span className="inline-flex h-6 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium leading-4 text-[#596373]">
-                            {boostTrackLabel(boost.track)}
-                          </span>
-                        </div>
-                        {/* 상태 */}
-                        <span className={`text-[13px] ${boostStatusClass(boost.status)}`}>
-                          {boostStatusLabel(boost.status, boost.daysLeft)}
-                        </span>
-                        {/* 기간 */}
-                        <span className="whitespace-nowrap text-[13px] font-normal text-[#596373]">
-                          {BOOST_GRADE_LABEL[boost.grade]} · {boost.durationWeeks}주 · ~{boost.endDate}
-                        </span>
-                        {/* 결제 금액 */}
-                        <span className="text-[14px] font-semibold text-[#17202c]">
-                          {formatKrw(boost.amountKrw)}
-                        </span>
-                        {/* 액션 버튼 */}
-                        <button
-                          type="button"
-                          onClick={() => openExtendModal(boost.jobId, boost.grade)}
-                          className="inline-flex h-8 items-center justify-center justify-self-end border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                        >
-                          연장
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* 빈 상태 */
-              <div className="py-16 text-center">
-                <p className="text-[15px] font-medium text-[#17202c]">아직 진행 중인 부스트가 없습니다</p>
-                <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
-                  부스트는 공고를 목록 상단에 노출하고 관련 인재에게 알림을 보내는 기능입니다.
-                </p>
-                <Link
-                  href="/business/pricing"
-                  className="mt-6 inline-flex h-10 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
-                >
-                  요금제 알아보기
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
+        <DataTable
+          columns={BOOST_COLUMNS}
+          rows={boosts}
+          rowKey={(boost) => boost.id}
+          /* 740(기존 트랙 폭) + 좌우 패딩 48 */
+          minWidth={788}
+          empty={{
+            title: "아직 진행 중인 부스트가 없습니다",
+            description: "부스트는 공고를 목록 상단에 노출하고 관련 인재에게 알림을 보내는 기능입니다.",
+            action: (
+              <Link
+                href="/business/pricing"
+                className="mt-6 inline-flex h-10 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
+              >
+                요금제 알아보기
+              </Link>
+            ),
+          }}
+        />
 
         {/* 하단 안내 배너 */}
         <div className="mt-5 flex items-center justify-between gap-4 border border-border bg-white px-6 py-5 max-[760px]:flex-col max-[760px]:items-start">

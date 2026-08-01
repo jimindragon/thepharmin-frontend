@@ -1,25 +1,30 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Lock } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AccountMenu } from "@/components/Header";
-import { headerNavItemClassName } from "@/components/headerNavStyles";
+import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { Button, LinkButton } from "@/components/ui/Button";
-import { businessCenterHomeItem, businessCenterMenuGroups } from "@/config/businessCenterMenu";
+import { businessAccountMenuItems } from "@/config/businessAccountMenu";
+import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
 import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { MOCK_BUSINESS_NOTIFICATIONS, MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
-import { useBusinessMember } from "@/hooks/useBusinessMember";
+import { clearBusinessMember, useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 
 const supportNavItems = [
   { label: "개인 서비스", href: "/" },
   { label: "기업 서비스", href: "/business" },
 ];
+
+/** BusinessHeaders·BusinessCenterShell의 잠금 툴팁과 같은 문구 */
+const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
 
 /**
  * 기업회원용 프로필 드롭다운. BusinessAccountMenu(BusinessHeaders.tsx)와 같은 데이터
@@ -29,8 +34,17 @@ const supportNavItems = [
  */
 function SupportBusinessAccountMenu() {
   const pathname = usePathname();
+  const router = useRouter();
+  const orgVerificationStatus = useOrgVerificationStatus();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const isHomeActive = pathname === businessCenterHomeItem.href;
+
+  // BusinessAccountMenu의 로그아웃과 같은 동작 — 저장소를 비우고 기업 소개로 보낸다.
+  const handleLogout = () => {
+    clearBusinessMember();
+    setOpen(false);
+    router.push("/business");
+  };
 
   return (
     <div ref={containerRef} className="relative">
@@ -67,6 +81,9 @@ function SupportBusinessAccountMenu() {
           </div>
           <div className="h-px bg-[#edf1f5]" />
           <div className="py-2">
+            {/* 항목·순서·잠금 표시·구분선 구성 모두 BusinessAccountMenu와 동일하다
+                (businessAccountMenuItems 공유 + 같은 isApprovalGatedPath 판정).
+                대시보드를 같은 블록에 둬 5항목을 등간격으로 유지하는 것까지 동일. */}
             <div className="px-1 py-1.5">
               <Link
                 href={businessCenterHomeItem.href}
@@ -78,30 +95,35 @@ function SupportBusinessAccountMenu() {
               >
                 {businessCenterHomeItem.label}
               </Link>
+              {businessAccountMenuItems.map((item) => {
+                const active = pathname === item.href;
+                const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={clsx(
+                      "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
+                      active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    {locked ? (
+                      <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
+                        <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
             </div>
-            {businessCenterMenuGroups.map((group) => (
-              <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
-                <div className="mt-1">
-                  {group.items.map((item) => {
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={clsx(
-                          "flex items-center px-2 py-2 text-[13px] font-medium transition-colors",
-                          active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+          </div>
+          {/* 로그아웃 — BusinessAccountMenu와 같은 위치·구분선·시각 스펙. */}
+          <div className="border-t border-border px-1 py-1.5">
+            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
+              로그아웃
+            </button>
           </div>
         </div>
       ) : null}

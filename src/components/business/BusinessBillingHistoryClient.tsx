@@ -7,12 +7,15 @@ import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BillingDocumentModal } from "@/components/business/BillingDocumentModal";
+import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
+import { TrackBadge } from "@/components/business/table/TrackBadge";
+import { STATUS_TONE } from "@/config/statusTone";
 import {
   billingRecords,
   boostTrackLabel,
   calcCompletedTotal,
   filterBillingRecords,
-  paymentStatusClass,
+  PAYMENT_TONE,
   paymentStatusLabel,
   type BillingPeriod,
   type BillingRecord,
@@ -57,6 +60,114 @@ export function BusinessBillingHistoryClient() {
     completed: periodScoped.filter((r) => r.status === "completed").length,
     cancelled: periodScoped.filter((r) => r.status === "cancelled").length,
   };
+
+  const BILLING_COLUMNS: DataTableColumn<BillingRecord>[] = [
+    {
+      key: "paidAt",
+      header: "결제일",
+      width: "100px",
+      cell: (record) => (
+        <span className="text-[13px] font-normal text-[#8a94a3]">{record.paidAt}</span>
+      ),
+    },
+    {
+      key: "product",
+      header: "공고 / 상품",
+      width: "minmax(0,1fr)",
+      // 상품명은 "부스트 N주" 3종뿐이라, 행을 식별하는 공고명을 위에 둔다.
+      // 트랙 배지는 아랫줄에 붙여 윗줄이 공고명 한 줄을 온전히 쓰게 한다.
+      cell: (record) => (
+        <div className="min-w-0">
+          <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
+          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+            <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
+            {/* 이 표에서만 배지가 행 높이에 닿는다(둘째 줄이 배지라 h-6이면 행이 84.4px).
+                h-5에서는 상품명 텍스트 라인(13px×1.65 = 21.45px)이 바닥이라 행 81.8px */}
+            <TrackBadge label={boostTrackLabel(record.track)} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "method",
+      header: "결제수단",
+      width: "90px",
+      cell: (record) => (
+        <span className="text-[13px] font-normal text-[#596373]">{record.paymentMethod}</span>
+      ),
+    },
+    {
+      key: "amount",
+      header: "금액",
+      width: "200px",
+      cell: (record) => (
+        <div>
+          {/* 취소 건은 취소선으로만 구분한다 — 색은 주요값 잉크 유지.
+              빨강은 "결과가 부정"(불합격)에만 남긴다 */}
+          <p
+            className={clsx(
+              "text-[14px] font-semibold text-[#303946]",
+              record.status === "cancelled" && "line-through",
+            )}
+          >
+            {formatKrw(toTotalKrw(record.amountKrw))}
+          </p>
+          <p className="mt-0.5 whitespace-nowrap text-[12px] font-normal text-[#8a94a3]">
+            공급가액 {formatKrw(record.amountKrw)} · VAT{" "}
+            {formatKrw(toTotalKrw(record.amountKrw) - record.amountKrw)}
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "상태",
+      width: "80px",
+      // 이 표는 점을 렌더하지 않아 StatusPill 대신 tone의 text만 쓴다
+      cell: (record) => (
+        <span
+          className={clsx(
+            "inline-flex w-fit items-center text-[13px] font-medium",
+            STATUS_TONE[PAYMENT_TONE[record.status]].text,
+          )}
+        >
+          {paymentStatusLabel(record.status)}
+        </span>
+      ),
+    },
+    {
+      key: "documents",
+      width: "170px",
+      align: "end",
+      cell: (record) => {
+        const isCancelled = record.status === "cancelled";
+        return (
+          <span className="flex items-center gap-1.5">
+            <button
+              type="button"
+              disabled={isCancelled}
+              onClick={() => setDocModal({ variant: "taxInvoice", record })}
+              className={clsx(
+                "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+                isCancelled
+                  ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
+                  : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+              )}
+            >
+              세금계산서
+            </button>
+            <button
+              type="button"
+              onClick={() => setDocModal({ variant: "receipt", record })}
+              className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+            >
+              영수증
+            </button>
+          </span>
+        );
+      },
+    },
+  ];
 
   return (
     <BusinessCenterShell>
@@ -129,117 +240,29 @@ export function BusinessBillingHistoryClient() {
         </div>
 
         {/* 테이블 영역 */}
-        <div className="mt-3 border border-border bg-white">
-          {hasRecords ? (
-            <div className="overflow-x-auto">
-              <div className="min-w-[950px]">
-                {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] gap-4 border-b border-border px-5 py-3 text-[13px] font-medium text-[#8a94a3]">
-                  <span>결제일</span>
-                  <span>공고 / 상품</span>
-                  <span>결제수단</span>
-                  <span>금액</span>
-                  <span>상태</span>
-                  <span aria-hidden="true" />
-                </div>
-
-                {/* 테이블 행 */}
-                <div className="divide-y divide-[#e5e9ef]">
-                  {filtered.map((record) => {
-                    const isCancelled = record.status === "cancelled";
-                    return (
-                      <div
-                        key={record.id}
-                        className="grid grid-cols-[100px_minmax(0,1fr)_90px_200px_80px_170px] items-center gap-4 px-5 py-4"
-                      >
-                        {/* 결제일 */}
-                        <span className="text-[13px] font-normal text-[#8a94a3]">{record.paidAt}</span>
-
-                        {/* 공고/상품 — 상품명은 "부스트 N주" 3종뿐이라, 행을 식별하는 공고명을 위에 둔다.
-                            트랙 배지는 아랫줄에 붙여 윗줄이 공고명 한 줄을 온전히 쓰게 한다. */}
-                        <div className="min-w-0">
-                          <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
-                          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                            <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
-                            {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. 트랙 배지 4곳(본화면 3 + 영수증 모달)이 같은 처방을 쓴다 — 배지 높이를 전역 정리할 때 함께 볼 것 */}
-                            <span className="inline-flex h-6 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium leading-4 text-[#596373]">
-                              {boostTrackLabel(record.track)}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* 결제수단 */}
-                        <span className="text-[13px] font-normal text-[#596373]">{record.paymentMethod}</span>
-
-                        {/* 금액 */}
-                        <div>
-                          <p className="text-[14px] font-semibold text-[#17202c]">
-                            {formatKrw(toTotalKrw(record.amountKrw))}
-                          </p>
-                          <p className="mt-0.5 whitespace-nowrap text-[12px] font-normal text-[#8a94a3]">
-                            공급가액 {formatKrw(record.amountKrw)} · VAT {formatKrw(toTotalKrw(record.amountKrw) - record.amountKrw)}
-                          </p>
-                        </div>
-
-                        {/* 상태 뱃지 */}
-                        <span
-                          className={clsx(
-                            "inline-flex w-fit items-center text-[13px] font-medium",
-                            paymentStatusClass(record.status),
-                          )}
-                        >
-                          {paymentStatusLabel(record.status)}
-                        </span>
-
-                        {/* 증빙 버튼 */}
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            disabled={isCancelled}
-                            onClick={() => setDocModal({ variant: "taxInvoice", record })}
-                            className={clsx(
-                              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
-                              isCancelled
-                                ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
-                                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
-                            )}
-                          >
-                            세금계산서
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDocModal({ variant: "receipt", record })}
-                            className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                          >
-                            영수증
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* 합계 행 */}
-                <div className="border-t border-border px-5 py-4 text-right">
-                  <span className="text-[13px] font-normal text-[#8a94a3]">
-                    조회 기간 결제 합계 (결제완료 기준)
-                  </span>
-                  <span className="ml-4 text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
-                    {formatKrw(completedTotal)}
-                  </span>
-                </div>
+        <DataTable
+          columns={BILLING_COLUMNS}
+          rows={filtered}
+          rowKey={(record) => record.id}
+          /* A계열의 기존 min-w는 이미 패딩 포함 총폭이었다 — 48을 더하지 않는다 */
+          minWidth={950}
+          empty={{
+            title: "결제 내역이 없습니다",
+            description: "부스트를 이용하면 결제 내역이 이곳에 표시됩니다.",
+          }}
+          footer={
+            hasRecords ? (
+              <div className="border-t border-border px-6 py-4 text-right max-[760px]:px-4">
+                <span className="text-[13px] font-normal text-[#8a94a3]">
+                  조회 기간 결제 합계 (결제완료 기준)
+                </span>
+                <span className="ml-4 text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
+                  {formatKrw(completedTotal)}
+                </span>
               </div>
-            </div>
-          ) : (
-            /* 빈 상태 */
-            <div className="py-20 text-center">
-              <p className="text-[15px] font-medium text-[#17202c]">결제 내역이 없습니다</p>
-              <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
-                부스트를 이용하면 결제 내역이 이곳에 표시됩니다.
-              </p>
-            </div>
-          )}
-        </div>
+            ) : undefined
+          }
+        />
 
         {/* 안내 박스 */}
         <div className="mt-4 border border-[#dfe4ea] bg-[#f7f8fa] px-5 py-4">

@@ -6,11 +6,16 @@ import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BoostModal } from "@/components/business/BoostModal";
+import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
+import { StatusPill } from "@/components/business/table/StatusPill";
+import { TrackBadge } from "@/components/business/table/TrackBadge";
 import {
   filterJobPostings,
   getClosingDday,
+  JOB_POSTING_TONE,
   jobPostings,
   jobTrackLabel,
+  type JobPosting,
   type JobPostingStatusFilter,
 } from "@/data/businessJobs";
 
@@ -36,6 +41,140 @@ export function BusinessJobsClient() {
     active: jobPostings.filter((p) => p.status === "active").length,
     closed: jobPostings.filter((p) => p.status === "closed").length,
   };
+
+  const JOB_COLUMNS: DataTableColumn<JobPosting>[] = [
+    {
+      key: "title",
+      header: "공고",
+      width: "minmax(0,1fr)",
+      cell: (posting) => (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <p
+            className={clsx(
+              "text-[16px] font-semibold",
+              posting.status === "closed" ? "text-[#8a94a3]" : "text-[#17202c]",
+            )}
+          >
+            {posting.title}
+          </p>
+          <TrackBadge label={jobTrackLabel(posting.track)} />
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "상태",
+      width: "80px",
+      // 검토 대기(운영팀 심사 중)와 게시 중은 둘 다 "프로세스가 도는" 상태라 같은 progress를 쓴다.
+      // 이 표에는 결과 상태가 없어 초록이 나오지 않는다.
+      cell: (posting) => (
+        <StatusPill
+          tone={JOB_POSTING_TONE[posting.status]}
+          label={
+            posting.status === "closed"
+              ? "마감"
+              : posting.status === "pending"
+                ? "검토 대기"
+                : "게시 중"
+          }
+        />
+      ),
+    },
+    {
+      key: "applicants",
+      header: "지원자",
+      width: "80px",
+      cell: (posting) =>
+        posting.status === "pending" ? (
+          <span className="text-[13px] text-[#8a94a3]">—</span>
+        ) : (
+          <span
+            className={clsx(
+              "text-[14px] font-semibold",
+              posting.status === "closed" ? "text-[#8a94a3]" : "text-[#303946]",
+            )}
+          >
+            {posting.applicantCount}명
+          </span>
+        ),
+    },
+    {
+      key: "registeredAt",
+      header: "등록일",
+      width: "90px",
+      cell: (posting) => (
+        <span className="text-[13px] font-normal text-[#8a94a3]">{posting.registeredAt}</span>
+      ),
+    },
+    {
+      key: "closingDate",
+      header: "마감일",
+      width: "130px",
+      cell: (posting) => {
+        const dday =
+          posting.status === "active" && posting.closingDate
+            ? getClosingDday(posting.closingDate)
+            : null;
+        return (
+          <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+            <p className="text-[13px] font-normal text-[#8a94a3]">
+              {posting.closingDate ?? "마감됨"}
+            </p>
+            {dday && (
+              <span
+                className={clsx(
+                  "text-[13px] font-semibold",
+                  dday.isUrgent ? "text-status-urgent" : "text-status-positive",
+                )}
+              >
+                D-{dday.daysLeft}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      key: "action",
+      width: "120px",
+      align: "end",
+      // w-[108px] 고정 — 세 상태(연장 disabled / 연장 / 부스트)가 같은 자리를 차지해야 한다
+      cell: (posting) => {
+        const isClosed = posting.status === "closed";
+        const isPending = posting.status === "pending";
+        if (isClosed || isPending) {
+          return (
+            <button
+              type="button"
+              disabled
+              title={EXTEND_DISABLED_TITLE}
+              aria-label={EXTEND_DISABLED_TITLE}
+              className="inline-flex h-8 w-[108px] cursor-not-allowed items-center justify-center border border-[#e5e9ef] px-4 text-[13px] font-medium text-[#c0c8d2]"
+            >
+              연장
+            </button>
+          );
+        }
+        return posting.boost ? (
+          <Link
+            href="/business/billing/plans"
+            className="inline-flex h-8 w-[108px] items-center justify-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            연장
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setBoostModalJobId(posting.id)}
+            className="inline-flex h-8 w-[108px] items-center justify-center gap-1 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946]"
+          >
+            <span>↑</span>
+            <span>부스트</span>
+          </button>
+        );
+      },
+    },
+  ];
 
   return (
     <BusinessCenterShell>
@@ -86,176 +225,35 @@ export function BusinessJobsClient() {
         </div>
 
         {/* 테이블 */}
-        <div className="mt-3 border border-border bg-white">
-          {hasJobs ? (
-            <div className="overflow-x-auto">
-              <div className="min-w-[940px]">
-                {/* 테이블 헤더 */}
-                <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] gap-4 border-b border-border px-5 py-3 text-[13px] font-medium text-[#8a94a3]">
-                  <span>공고</span>
-                  <span>상태</span>
-                  <span>지원자</span>
-                  <span>등록일</span>
-                  <span>마감일</span>
-                </div>
-
-                {/* 테이블 행 */}
-                <div className="divide-y divide-[#e5e9ef]">
-                  {filtered.map((posting) => {
-                    const isClosed = posting.status === "closed";
-                    const isPending = posting.status === "pending";
-                    const isActive = posting.status === "active";
-                    const { boost } = posting;
-                    const dday =
-                      isActive && posting.closingDate ? getClosingDday(posting.closingDate) : null;
-
-                    return (
-                      <div
-                        key={posting.id}
-                        className="grid grid-cols-[minmax(0,1fr)_80px_80px_90px_130px_120px] items-center gap-4 px-5 py-4"
-                      >
-                        {/* 공고 */}
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <p
-                              className={clsx(
-                                "text-[16px] font-semibold",
-                                isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
-                              )}
-                            >
-                              {posting.title}
-                            </p>
-                            {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외. 트랙 배지 4곳(본화면 3 + 영수증 모달)이 같은 처방을 쓴다 — 배지 높이를 전역 정리할 때 함께 볼 것 */}
-                            <span className="inline-flex h-6 items-center border border-[#d8e0e8] px-1.5 text-[13px] font-medium leading-4 text-[#596373]">
-                              {jobTrackLabel(posting.track)}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* 상태 */}
-                        <span className="inline-flex w-fit items-center gap-[8px]">
-                          <span
-                            className={clsx(
-                              "h-[8px] w-[8px] rounded-full shrink-0",
-                              isClosed
-                                ? "bg-status-neutral-dot"
-                                : isPending
-                                  ? "bg-status-warning-dot"
-                                  : "bg-status-positive-dot",
-                            )}
-                          />
-                          <span
-                            className={clsx(
-                              "text-[13px] font-medium",
-                              isClosed
-                                ? "text-[#8a94a3]"
-                                : isPending
-                                  ? "text-status-warning"
-                                  : "text-status-positive",
-                            )}
-                          >
-                            {isClosed ? "마감" : isPending ? "검토 대기" : "게시 중"}
-                          </span>
-                        </span>
-
-                        {/* 지원자 */}
-                        {isPending ? (
-                          <span className="text-[13px] text-[#8a94a3]">—</span>
-                        ) : (
-                          <span
-                            className={clsx(
-                              "text-[14px] font-semibold",
-                              isClosed ? "text-[#8a94a3]" : "text-[#17202c]",
-                            )}
-                          >
-                            {posting.applicantCount}명
-                          </span>
-                        )}
-
-                        {/* 등록일 */}
-                        <span className="text-[13px] font-normal text-[#8a94a3]">
-                          {posting.registeredAt}
-                        </span>
-
-                        {/* 마감일 */}
-                        <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-                          <p className="text-[13px] font-normal text-[#8a94a3]">
-                            {posting.closingDate ?? "마감됨"}
-                          </p>
-                          {dday && (
-                            <span
-                              className={clsx(
-                                "text-[13px] font-semibold",
-                                dday.isUrgent ? "text-status-urgent" : "text-status-positive",
-                              )}
-                            >
-                              D-{dday.daysLeft}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* 액션 */}
-                        <div className="flex justify-end">
-                          {isClosed || isPending ? (
-                            <button
-                              type="button"
-                              disabled
-                              title={EXTEND_DISABLED_TITLE}
-                              aria-label={EXTEND_DISABLED_TITLE}
-                              className="inline-flex h-9 w-[108px] cursor-not-allowed items-center justify-center border border-[#e5e9ef] px-4 text-[13px] font-medium text-[#c0c8d2]"
-                            >
-                              연장
-                            </button>
-                          ) : boost ? (
-                            <Link
-                              href="/business/billing/plans"
-                              className="inline-flex h-9 w-[108px] items-center justify-center border border-[#cfd8e3] px-4 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                            >
-                              연장
-                            </Link>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => setBoostModalJobId(posting.id)}
-                              className="inline-flex h-9 w-[108px] items-center justify-center gap-1 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946]"
-                            >
-                              <span>↑</span>
-                              <span>부스트</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* 빈 상태 */
-            <div className="py-20 text-center">
-              <p className="text-[15px] font-medium text-[#303946]">
-                {statusFilter === "active"
-                  ? "게시 중인 공고가 없습니다"
-                  : statusFilter === "closed"
-                    ? "마감된 공고가 없습니다"
-                    : "등록된 공고가 없습니다"}
-              </p>
-              <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
-                {statusFilter === "all"
-                  ? "공고를 등록하면 여기서 관리할 수 있습니다."
-                  : "조건에 해당하는 공고가 없습니다."}
-              </p>
-              {statusFilter === "all" && (
+        <DataTable
+          columns={JOB_COLUMNS}
+          rows={filtered}
+          rowKey={(posting) => posting.id}
+          /* A계열의 기존 min-w는 이미 패딩 포함 총폭이었다(패딩이 행 안에 있었으므로) —
+             B계열처럼 48을 더하면 안 된다 */
+          minWidth={940}
+          empty={{
+            title:
+              statusFilter === "active"
+                ? "게시 중인 공고가 없습니다"
+                : statusFilter === "closed"
+                  ? "마감된 공고가 없습니다"
+                  : "등록된 공고가 없습니다",
+            description:
+              statusFilter === "all"
+                ? "공고를 등록하면 여기서 관리할 수 있습니다."
+                : "조건에 해당하는 공고가 없습니다.",
+            action:
+              statusFilter === "all" ? (
                 <Link
                   href="/business/jobs/new"
                   className="mt-6 inline-flex h-10 items-center justify-center border border-[#111111] bg-[#111111] px-6 text-[13px] font-semibold text-white transition hover:bg-[#303946]"
                 >
                   공고 등록하기
                 </Link>
-              )}
-            </div>
-          )}
-        </div>
+              ) : undefined,
+          }}
+        />
       </div>
 
       <BoostModal

@@ -1,20 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSession } from "@/components/session/SessionProvider";
 
 /**
- * 개인회원 로그인 상태 모킹. 현재 프로젝트에는 개인회원용 실제 로그인 라우트/인증이 없어,
- * `RecruitmentCalendarClient`의 `?guest=true` 미리보기 패턴과 동일하게 기본은 로그인 상태로
- * 두고, `?guest=true`일 때만 비로그인 상태를 미리 볼 수 있게 한다. `login()`은 실제 인증 없이
- * 로컬 상태만 로그인 상태로 되돌린다(데모용 "로그인하고 보기" 동작).
+ * 개인회원 로그인 상태. 판정 근거는 개인 세션 쿠키(thepharma_personal_session) 하나뿐이며,
+ * SessionProvider가 서버에서 읽어 내려준 값을 구독한다. URL 쿼리는 더 이상 보지 않는다.
+ *
+ * `login()`/`logout()`은 쿠키를 쓰고 지운다 — 서버 컴포넌트 갱신(router.refresh)은
+ * SessionProvider가 쿠키 변경 이벤트를 받아 대신 처리한다.
  */
 export function usePersonalLoginState() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { isPersonalLoggedIn, loginPersonal, logoutPersonal } = useSession();
 
-  useEffect(() => {
-    const guestMode = new URLSearchParams(window.location.search).get("guest") === "true";
-    setIsLoggedIn(!guestMode);
-  }, []);
-
-  return { isLoggedIn, login: () => setIsLoggedIn(true) };
+  return { isLoggedIn: isPersonalLoggedIn, login: loginPersonal, logout: logoutPersonal };
 }

@@ -302,7 +302,10 @@ export function SearchFilterPanel({
 
   return (
     <div>
-      <section className="surface border-[#dddddd] bg-[#f7f7f7] px-3.5 py-3.5" aria-label="채용공고 검색 및 필터">
+      {/* .surface를 쓰지 않는다 — globals.css의 .surface가 @tailwind utilities 뒤 raw CSS라
+          background 단축 속성이 같은 명시도의 bg-* 유틸리티를 순서로 덮어(패널이 흰색으로 렌더) 버린다.
+          테두리는 .surface와 동일한 border-border(#e6e9ee)를 그대로 쓴다. */}
+      <section className="border border-border bg-[#f7f7f7] px-3.5 py-3.5" aria-label="채용공고 검색 및 필터">
         <div className="flex items-center gap-3 max-[720px]:flex-col max-[720px]:items-stretch">
           {/* ≤720px에서 부모가 flex-col로 바뀌면 flex-1(=flex-basis:0)이 세로축에 걸려 h-[44px]를 덮어쓴다
               (박스가 글자 높이인 27px로 찌그러져 아래 검색 버튼 44px과 어긋났다). 그 구간에서만 flex 사이징을
@@ -356,7 +359,7 @@ export function SearchFilterPanel({
               >
                 <span className="shrink-0">{definition.label}</span>
                 {summary ? (
-                  <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/72" : "text-[#777777]")}>
+                  <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/70" : "text-[#777777]")}>
                     {summary}
                   </span>
                 ) : null}
@@ -379,7 +382,7 @@ export function SearchFilterPanel({
           {specialFilterOptions.filter((option) => !option.tracks || option.tracks.includes(track)).map((option) => (
             <label
               key={option.key}
-              className="inline-flex h-[34px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[13px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
+              className="inline-flex h-[36px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[13px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
             >
               <input
                 type="checkbox"

@@ -2,16 +2,13 @@
 
 import clsx from "clsx";
 import { Check } from "lucide-react";
-import type { OrgTrack } from "@/data/businessCompanyProfile";
 
-const BASE_STEP_LABELS = ["기관 인증", "담당자 정보", "계정 생성"] as const;
-
-export function SignupStepIndicator({ currentStep, track }: { currentStep: 1 | 2 | 3; track?: OrgTrack }) {
-  const STEP_LABELS = track === "pharmacy" ? (["약국 인증", ...BASE_STEP_LABELS.slice(1)] as const) : BASE_STEP_LABELS;
+/** 가입 진행 단계 표시기. 라벨·단계 수는 전부 호출부가 정한다(기업/개인 등 가입 종류를 여기서 알지 않는다). */
+export function SignupStepIndicator({ currentStep, labels }: { currentStep: number; labels: readonly string[] }) {
   return (
     <ol className="flex items-center" aria-label="가입 진행 단계">
-      {STEP_LABELS.map((label, index) => {
-        const step = (index + 1) as 1 | 2 | 3;
+      {labels.map((label, index) => {
+        const step = index + 1;
         const done = step < currentStep;
         const active = step === currentStep;
         return (
@@ -32,7 +29,7 @@ export function SignupStepIndicator({ currentStep, track }: { currentStep: 1 | 2
                 {label}
               </span>
             </div>
-            {step !== STEP_LABELS.length ? <span className={clsx("mx-4 h-px flex-1", done ? "bg-[#111111]" : "bg-[#e2e6ec]")} aria-hidden="true" /> : null}
+            {step !== labels.length ? <span className={clsx("mx-4 h-px flex-1", done ? "bg-[#111111]" : "bg-[#e2e6ec]")} aria-hidden="true" /> : null}
           </li>
         );
       })}

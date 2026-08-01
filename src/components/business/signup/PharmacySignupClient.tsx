@@ -6,7 +6,7 @@ import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
-import { SignupStepShell } from "@/components/business/signup/SignupStepShell";
+import { SignupStepShell } from "@/components/shared/SignupStepShell";
 import { ManagerInfoStep, emptyManagerInfo, type ManagerInfo } from "@/components/business/signup/ManagerInfoStep";
 import { AccountCreationStep, emptyAccountCreationInfo, type AccountCreationInfo } from "@/components/business/signup/AccountCreationStep";
 import { SignupCompleteStep } from "@/components/business/signup/SignupCompleteStep";
@@ -145,6 +145,8 @@ function PharmacyVerificationStep({
   );
 }
 
+const STEP_LABELS = ["약국 인증", "담당자 정보", "계정 생성"] as const;
+
 /** 약국 가입 폼 — STEP1(약국 인증)만 전용, STEP2·3은 통합 폼과 완전히 같은 공유 컴포넌트를 쓴다. */
 export function PharmacySignupClient() {
   const [step, setStep] = useState<1 | 2 | 3 | "complete">(1);
@@ -176,7 +178,8 @@ export function PharmacySignupClient() {
   return (
     <SignupStepShell
       step={step}
-      track="pharmacy"
+      labels={STEP_LABELS}
+      eyebrow="기업회원 가입"
       title={step === 1 ? "약국 정보를 인증해 주세요" : step === 2 ? "담당자 정보를 입력해 주세요" : "계정을 생성해 주세요"}
       subtitle={
         step === 1

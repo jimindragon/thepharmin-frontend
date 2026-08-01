@@ -344,7 +344,7 @@ export function BusinessCompanyProfileClient() {
                 onChange={(event) => updateProfile("fullIntro", event.target.value)}
                 maxLength={2000}
                 placeholder="주요 사업, 성장 방향, 조직 문화와 일하는 방식을 자유롭게 소개해 주세요."
-                className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
               />
             </div>
 
@@ -378,7 +378,7 @@ export function BusinessCompanyProfileClient() {
                   }}
                   disabled={profile.keywords.length >= MAX_KEYWORDS}
                   placeholder="키워드 입력"
-                  className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8 disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
+                  className="h-11 min-w-0 flex-1 border border-[#d8e0e8] px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08] disabled:bg-[#f5f6f7] disabled:text-[#a4adba]"
                 />
                 <FormActionButton onClick={addKeyword} disabled={profile.keywords.length >= MAX_KEYWORDS}>
                   <Plus size={14} />
@@ -433,7 +433,7 @@ export function BusinessCompanyProfileClient() {
                       value={newProductName}
                       onChange={(event) => setNewProductName(event.target.value)}
                       placeholder="아토젯정"
-                      className="h-11 w-full min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                      className="h-11 w-full min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                     />
                     <input
                       value={newProductDescription}
@@ -445,7 +445,7 @@ export function BusinessCompanyProfileClient() {
                         }
                       }}
                       placeholder="이상지질혈증 치료제"
-                      className="h-11 w-full min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                      className="h-11 w-full min-w-0 border border-[#d8e0e8] bg-white px-3 text-[13px] font-medium outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                     />
                     <FormActionButton onClick={addProduct}>
                       <Plus size={14} />
@@ -539,7 +539,7 @@ export function BusinessCompanyProfileClient() {
 
         <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-            <p className="text-[12px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
+            <p className="text-[13px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
             <div className="flex gap-2 max-[640px]:w-full">
               <Link href="/business/company/preview?track=industry" onClick={goToPreview} className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1">
                 미리보기

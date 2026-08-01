@@ -1,3 +1,5 @@
+import type { StatusTone } from "@/config/statusTone";
+
 export type ApplicantStage = "new" | "screening" | "first_interview" | "final_interview" | "offer" | "rejected";
 export type ApplicantStageFilter = "all" | ApplicantStage;
 
@@ -237,20 +239,18 @@ export function applicantStageLabel(stage: ApplicantStage): string {
   return "불합격";
 }
 
-export function applicantStageClass(stage: ApplicantStage): string {
-  if (stage === "new") return "text-[#596373]";
-  if (stage === "screening") return "text-status-positive";
-  if (stage === "first_interview") return "text-status-warning";
-  if (stage === "final_interview") return "text-status-warning";
-  if (stage === "offer") return "text-[#596373]";
-  return "text-status-error";
-}
-
-export function applicantStageDotClass(stage: ApplicantStage): string {
-  if (stage === "new") return "bg-status-neutral-dot";
-  if (stage === "screening") return "bg-status-positive-dot";
-  if (stage === "first_interview") return "bg-status-warning-dot";
-  if (stage === "final_interview") return "bg-status-warning-dot";
-  if (stage === "offer") return "bg-status-neutral-dot";
-  return "bg-status-error-dot";
-}
+/**
+ * 상태색 3단 원칙 — 회색(idle) = 진행 안 함, 파랑(progress) = 진행 중,
+ * 초록(success) = 완료·긍정 결과, 빨강(danger) = 부정 결과.
+ * 결과 축에서 빨강의 반대는 초록이므로 합격 제안은 초록, 불합격은 빨강으로 짝을 이룬다.
+ *
+ * 실제 색 문자열은 statusTone.ts의 STATUS_TONE에만 있다 — 여기는 "성격" 매핑만 든다.
+ */
+export const APPLICANT_STAGE_TONE: Record<ApplicantStage, StatusTone> = {
+  new: "idle",
+  screening: "progress",
+  first_interview: "progress",
+  final_interview: "progress",
+  offer: "success",
+  rejected: "danger",
+};

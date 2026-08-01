@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 };
 
 interface QnaActivityPageProps {
-  searchParams: Promise<{ guest?: string; pharmacist?: string; tab?: string }>;
+  searchParams: Promise<{ pharmacist?: string; tab?: string }>;
 }
 
 export default async function QnaActivityPage({ searchParams }: QnaActivityPageProps) {
   const sp = await searchParams;
-  const { isLoggedIn } = resolveQnaViewerState(sp);
+  const { isLoggedIn } = await resolveQnaViewerState(sp);
 
   /** 스크랩·작성글·작성댓글 모두 로그인 사용자 전용 활동이라, 비로그인이면 목록으로 되돌린다 */
   if (!isLoggedIn) {

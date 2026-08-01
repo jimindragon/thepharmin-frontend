@@ -9,3 +9,12 @@
 export function headerNavItemClassName(active: boolean) {
   return active ? "font-medium text-white" : "font-normal text-white/60 hover:text-white";
 }
+
+/**
+ * 계정 드롭다운 안의 '동작' 항목(로그아웃) 클래스. 패널 자체는 다크·라이트 헤더가
+ * 똑같은 흰 패널을 쓰므로 3벌(개인 AccountMenu·기업 BusinessAccountMenu·
+ * 고객센터 SupportBusinessAccountMenu)이 이 한 줄을 공유한다.
+ * 이동 항목은 Link, 로그아웃은 button이라 태그만 다르고 시각 스펙은 동일하다.
+ */
+export const headerDropdownActionClassName =
+  "flex w-full items-center px-2 py-2 text-left text-[13px] font-medium text-[#4f5967] transition-colors hover:text-[#111111]";

@@ -294,7 +294,7 @@ export function BusinessHeadhuntingIntroClient() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px] opacity-[.65]"
             style={{ background: "var(--gradient-cta)" }}
           />
-          <div className="app-shell--default relative z-10 w-full py-[96px] max-[760px]:py-16">
+          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-16">
             <h2
               className="font-semibold text-white"
               style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.04em", lineHeight: 1.22 }}

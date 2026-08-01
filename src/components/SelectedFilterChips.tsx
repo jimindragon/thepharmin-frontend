@@ -20,7 +20,7 @@ export function SelectedFilterChips({ chips, onRemove }: SelectedFilterChipsProp
             key={chip.key}
             type="button"
             onClick={() => onRemove(chip)}
-            className="flex h-[32px] items-center gap-2 border border-[#dddddd] bg-white px-3 text-[13px] font-medium text-[#3d3d3d] transition-colors hover:border-brand hover:bg-[#f4f4f4] hover:text-brand"
+            className="flex h-[36px] items-center gap-2 border border-[#dddddd] bg-white px-3 text-[13px] font-medium text-[#3d3d3d] transition-colors hover:border-brand hover:bg-[#f4f4f4] hover:text-brand"
             aria-label={`${chip.label} 조건 삭제`}
           >
             {chip.label}

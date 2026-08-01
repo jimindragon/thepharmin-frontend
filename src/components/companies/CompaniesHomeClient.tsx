@@ -635,7 +635,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
       <section id="company-directory" className="mt-14 border border-border bg-white p-6 max-[560px]:p-4">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
-          <div className="grid h-[34px] grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+          <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
             {sortOptions.map((option) => (
               <button
                 key={option}
@@ -643,7 +643,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
                 onClick={() => setSortOption(option)}
                 className={clsx(
                   "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-                  sortOption === option ? "bg-[#050505] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+                  sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
                 )}
               >
                 {option}

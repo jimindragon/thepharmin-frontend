@@ -33,8 +33,8 @@ export function ResumeCard({
             <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
             {resume.isPrimary ? <ResumePrimaryBadge /> : null}
             <span className="inline-flex items-center gap-[8px]">
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-warning-dot"}`} />
-              <span className={`text-[13px] font-medium ${complete ? "text-status-positive" : "text-status-warning"}`}>
+              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-pending-dot"}`} />
+              <span className={`text-[13px] font-medium ${complete ? "text-status-positive" : "text-status-pending"}`}>
                 {complete ? "작성완료" : "작성 중"}
               </span>
             </span>

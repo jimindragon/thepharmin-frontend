@@ -1,7 +1,19 @@
+import type { StatusTone } from "@/config/statusTone";
 import type { JobTrack } from "@/types/jobs";
 import { MOCK_TODAY } from "@/config/mockToday";
 
 export type JobPostingStatus = "pending" | "active" | "closed";
+
+/**
+ * 상태색 3단 원칙 — 검토 대기(운영팀 심사 중)와 게시 중은 둘 다 "프로세스가 도는" 상태라
+ * 같은 progress를 쓴다. 이 표에는 결과 상태가 없어 초록이 나오지 않는다.
+ * 마감은 ended — 종료 행 전체 흐려짐과 같은 층의 회색이다.
+ */
+export const JOB_POSTING_TONE: Record<JobPostingStatus, StatusTone> = {
+  pending: "progress",
+  active: "progress",
+  closed: "ended",
+};
 export type JobPostingStatusFilter = "all" | JobPostingStatus;
 
 /** 목데이터의 D-day가 재현되는 기준일. src/config/mockToday.ts의 값을 재수출한다. */

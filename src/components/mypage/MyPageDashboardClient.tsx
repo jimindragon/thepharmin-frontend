@@ -35,7 +35,7 @@ const USER_NAME = myPageUser.name;
 
 const DDAY_BADGE_STYLE: Record<DdayTier, { className: string; dotClassName?: string }> = {
   urgent: { className: "text-status-urgent" },
-  warning: { className: "text-status-warning" },
+  warning: { className: "text-status-pending" },
   neutral: { className: "text-[#4f5967]" },
 };
 
@@ -346,13 +346,13 @@ export function MyPageDashboardClient() {
                           <span
                             className={clsx(
                               "h-[8px] w-[8px] shrink-0 rounded-full",
-                              isComplete ? "bg-status-positive-dot" : "bg-status-warning-dot",
+                              isComplete ? "bg-status-positive-dot" : "bg-status-pending-dot",
                             )}
                           />
                           <span
                             className={clsx(
                               "text-[13px] font-medium",
-                              isComplete ? "text-status-positive" : "text-status-warning",
+                              isComplete ? "text-status-positive" : "text-status-pending",
                             )}
                           >
                             {isComplete ? "작성 완료" : `작성 중 · ${completion}%`}

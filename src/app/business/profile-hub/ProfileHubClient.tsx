@@ -63,7 +63,8 @@ export function ProfileHubClient() {
         </div>
 
         {/* 개발용 배지 — 실서비스에서는 계정 트랙 분기로 대체될 예정인 검토용 임시 허브임을 표시 */}
-        <span className="mt-1 inline-flex h-5 shrink-0 items-center rounded-full border border-[#dfe4ea] bg-[#f5f6f7] px-2 text-[13px] font-medium text-[#9aa3af]">
+        {/* leading-4: body의 line-height 1.65가 배지 안까지 상속되는 것을 끊은 국소 예외(자료실 사이드바 배지·모달 할인율 배지·트랙 배지에 이미 같은 처방). h-5(18px)로는 13px 라인박스 21.45px를 못 담아 잘렸으므로 h-6까지 함께 올린다. */}
+        <span className="mt-1 inline-flex h-6 shrink-0 items-center rounded-full border border-[#dfe4ea] bg-[#f5f6f7] px-2 text-[13px] font-medium leading-4 text-[#9aa3af]">
           개발용
         </span>
       </div>

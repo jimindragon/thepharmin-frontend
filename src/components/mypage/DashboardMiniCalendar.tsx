@@ -92,7 +92,7 @@ export function DashboardMiniCalendar() {
                 </span>
                 {/* 점 — 셀 하단, 최대 2개(청색=내 일정, 적색=스크랩 마감), gap 2px */}
                 <span className="mt-1 flex h-1 items-center gap-[2px]">
-                  {hasSchedule ? <span className="h-1 w-1 rounded-full bg-status-warning-dot" /> : null}
+                  {hasSchedule ? <span className="h-1 w-1 rounded-full bg-status-pending-dot" /> : null}
                   {hasScrap ? <span className="h-1 w-1 rounded-full bg-status-error-dot" /> : null}
                 </span>
               </div>

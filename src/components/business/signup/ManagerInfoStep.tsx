@@ -164,7 +164,7 @@ export function ManagerInfoStep({
                     value={verificationCode}
                     onChange={(event) => setVerificationCode(event.target.value)}
                     placeholder="인증번호 6자리 입력"
-                    className="h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                    className="h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                   />
                   <button
                     type="button"
@@ -181,7 +181,7 @@ export function ManagerInfoStep({
               </div>
             ) : null}
             {isEmailVerified ? (
-              <p className="mt-1.5 flex items-center gap-1 text-[12px] font-medium text-[#17a68c]">
+              <p className="mt-1.5 flex items-center gap-1 text-[12px] font-medium text-status-positive">
                 <Check size={13} /> 인증 완료
               </p>
             ) : null}

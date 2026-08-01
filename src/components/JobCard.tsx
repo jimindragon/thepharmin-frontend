@@ -35,7 +35,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
   const showLogoImage = Boolean(logoUrl) && !logoFailed;
 
   return (
-    <article className="surface group relative border-[#dedede] shadow-none transition-colors hover:border-brand/55 hover:bg-[#fbfcfc]">
+    <article className="surface group relative shadow-none transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc]">
       {job.slug && hasJobDetail(job.slug) ? (
         <Link
           href={`/jobs/${job.slug}`}

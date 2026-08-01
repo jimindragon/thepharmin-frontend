@@ -61,7 +61,7 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
             </div>
             <div className="min-w-0">
               <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
-              <p className="mt-3 text-[15px] font-normal text-white/86 max-[640px]:text-[13px]">{profile.tagline}</p>
+              <p className="mt-3 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
               {/* 배지는 무채색 절제 스타일 통일(STEP 3a-2) — 반투명 흰 보더 + 흰 텍스트, 강조용 채움색 없음 */}
               <div className="mt-4 flex flex-wrap gap-2">
                 {(institutionBadges ?? profile.tags).map((badge) => (
@@ -88,7 +88,7 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
             <button
               type="button"
               onClick={shareCompany}
-              className="inline-flex h-11 items-center justify-center gap-2 border border-white/30 bg-white/10 px-4 text-[13px] font-medium text-white transition hover:bg-white/18 max-[640px]:flex-1"
+              className="inline-flex h-11 items-center justify-center gap-2 border border-white/30 bg-white/10 px-4 text-[13px] font-medium text-white transition hover:bg-white/20 max-[640px]:flex-1"
             >
               <Share2 size={16} />
               {shared ? "복사됨" : "공유"}

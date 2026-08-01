@@ -8,9 +8,10 @@ import { SectionCard } from "@/components/business/BusinessFormControls";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { DetailPill } from "@/components/shared/DetailPill";
 import { JobTagChip } from "@/components/shared/JobTagChip";
+import { STATUS_TONE } from "@/config/statusTone";
 import {
+  APPLICANT_STAGE_TONE,
   applicantJobPostings,
-  applicantStageClass,
   applicantStageLabel,
   STAGE_TABS,
   type Applicant,
@@ -175,7 +176,11 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
               </HeaderCell>
               <HeaderCell label="지원일">{applicant.appliedAt}</HeaderCell>
               <HeaderCell label="현재 단계">
-                <span className={applicantStageClass(applicant.stage)}>{applicantStageLabel(applicant.stage)}</span>
+                {/* 표가 아니라 헤더 셀이라 점 없이 텍스트만 — 크기·굵기는 HeaderCell에서 상속받는다.
+                    색은 지원자 목록과 같은 APPLICANT_STAGE_TONE을 쓴다(두 경로로 갈리지 않게). */}
+                <span className={STATUS_TONE[APPLICANT_STAGE_TONE[applicant.stage]].text}>
+                  {applicantStageLabel(applicant.stage)}
+                </span>
               </HeaderCell>
             </div>
           </div>

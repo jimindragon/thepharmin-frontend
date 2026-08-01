@@ -122,7 +122,7 @@ function FilterPillButton({
     >
       <span className="shrink-0">{label}</span>
       {summary ? (
-        <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/72" : "text-[#777777]")}>{summary}</span>
+        <span className={clsx("max-w-[120px] truncate text-[13px] font-normal", open ? "text-white/70" : "text-[#777777]")}>{summary}</span>
       ) : null}
       {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
     </button>
@@ -207,7 +207,7 @@ export function MyPagePreferencesClient() {
 
       <CategoryTabs activeTrack={activeTab} onChange={handleTabChange} />
 
-      <section className="mt-5 border border-[#dddddd] bg-[#f7f7f7] px-5 py-5 max-[640px]:px-4">
+      <section className="mt-5 border border-border bg-[#f7f7f7] px-5 py-5 max-[640px]:px-4">
         <div className="flex flex-wrap items-center gap-2">
           {config.filters.map((definition) => {
             const open = openFilterId === definition.id;

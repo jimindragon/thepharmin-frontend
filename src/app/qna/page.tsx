@@ -11,12 +11,12 @@ export const metadata: Metadata = {
 };
 
 interface QnaPageProps {
-  searchParams: Promise<{ guest?: string; pharmacist?: string; type?: string }>;
+  searchParams: Promise<{ pharmacist?: string; type?: string }>;
 }
 
 export default async function QnaPage({ searchParams }: QnaPageProps) {
   const params = await searchParams;
-  const { isLoggedIn, isVerifiedPharmacist } = resolveQnaViewerState(params);
+  const { isLoggedIn, isVerifiedPharmacist } = await resolveQnaViewerState(params);
 
   const requestedType: QnaType | undefined =
     params.type === "industry" ? "industry" : params.type === "pharmacist" ? "pharmacist" : undefined;

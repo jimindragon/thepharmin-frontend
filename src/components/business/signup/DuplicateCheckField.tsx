@@ -38,7 +38,7 @@ export function DuplicateCheckField({
           </button>
         }
       />
-      {isChecked ? <p className="mt-1.5 text-[12px] font-medium text-[#17a68c]">{availableMessage}</p> : null}
+      {isChecked ? <p className="mt-1.5 text-[12px] font-medium text-status-positive">{availableMessage}</p> : null}
     </div>
   );
 }

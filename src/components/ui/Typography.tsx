@@ -68,7 +68,7 @@ export function SectionIntro({
         <p
           className={clsx(
             "mt-3 text-[14px] font-normal leading-[1.75] tracking-[-0.01em]",
-            tone === "dark" ? "text-white/72" : "text-[#68717e]",
+            tone === "dark" ? "text-white/70" : "text-[#68717e]",
             align === "center" && "mx-auto max-w-[640px]",
           )}
         >

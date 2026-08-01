@@ -128,7 +128,12 @@ export function TextInput({
         className={clsx(
           // leading-tight — 한 줄 입력이라 줄간격이 필요 없다. 브라우저 기본(1.65)에 맡기면
           // 15px에서 h-11 상하 여유가 한쪽 8.6px밖에 남지 않는다. textarea에는 쓰지 말 것.
-          "h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[15px] font-normal leading-tight text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8",
+          //
+          // 포커스 링 알파(/[0.08])는 대괄호 표기가 유일한 방법이다. Tailwind는 알파 modifier를 5의 배수만
+          // 유틸리티로 생성하므로 /8은 규칙 자체가 만들어지지 않고, 두께(focus:ring-4)만 적용된 채 링 색이
+          // --tw-ring-color 기본값인 blue-500/50으로 떨어져 파란 링이 그려진다. 8%를 쓰려면 대괄호로 적을 것.
+          // 이 줄과 job-registration/fieldClasses의 FIELD_BASE, 두 줄이 폼 필드 168개를 커버한다.
+          "h-11 min-w-0 flex-1 border border-[#d8e0e8] bg-white px-3.5 text-[15px] font-normal leading-tight text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]",
           (disabled || readOnly) && "bg-[#f5f6f7] text-[#7d8796]",
         )}
       />

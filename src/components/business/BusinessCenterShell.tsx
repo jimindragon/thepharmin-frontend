@@ -4,13 +4,12 @@ import clsx from "clsx";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { ApprovalGatePanel } from "@/components/business/ApprovalGatePanel";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
 import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { initialBusinessCompanyProfile, initialIndustryOrgManager } from "@/data/businessCompanyProfile";
-import { markBusinessMember } from "@/hooks/useBusinessMember";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
 const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
@@ -62,8 +61,14 @@ export function BusinessSidebar() {
         </div>
       </div>
       <div className="mt-5 h-px bg-[#e5e9ef]" />
-      <nav className="mt-5 space-y-7 max-[1040px]:flex max-[1040px]:gap-6 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
-        <div className="-ml-3 max-[1040px]:ml-0 max-[1040px]:min-w-[156px]">
+      {/* mt-3(12px) — 대시보드를 위 구분선 쪽으로 붙여 "상단 고정 항목"임을 위치로 드러낸다.
+          아래 그룹과의 간격은 space-y-7(28px) 그대로라 위 12 < 아래 28로 소속이 갈린다.
+          이전에는 20 vs 28이라 차이가 8px뿐이어서 대시보드가 양쪽 어디에도 안 붙어 보였다. */}
+      <nav className="mt-3 space-y-7 max-[1040px]:flex max-[1040px]:gap-6 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
+        {/* 그룹 밖 단독 항목이지만 라벨이 아니라 항목이므로 그룹 안 항목과 같은 정렬을 쓴다.
+            이전에는 -ml-3로 텍스트를 그룹 라벨 x에 맞췄는데, 활성 박스 폭이 컨테이너로 결정돼
+            좌측으로만 12px 넓어지면서(223px) 다른 항목(211px)보다 튀어나와 보였다. */}
+        <div className="max-[1040px]:min-w-[156px]">
           <SidebarLink {...businessCenterHomeItem} active={isActive(businessCenterHomeItem.href)} locked={isLocked(businessCenterHomeItem.href)} />
         </div>
         {businessCenterMenuGroups.map((group) => (
@@ -86,10 +91,6 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const orgVerificationStatus = useOrgVerificationStatus();
   const isGated = orgVerificationStatus === "pending" && isApprovalGatedPath(pathname);
-
-  useEffect(() => {
-    markBusinessMember();
-  }, []);
 
   return (
     <>

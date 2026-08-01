@@ -1,3 +1,4 @@
+import type { StatusTone } from "@/config/statusTone";
 import type { JobTrack } from "@/types/jobs";
 import type { BoostGrade } from "@/data/boostPricing";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
@@ -31,11 +32,19 @@ export function boostStatusLabel(status: BoostStatus, daysLeft: number): string 
   return "종료";
 }
 
-export function boostStatusClass(status: BoostStatus): string {
-  if (status === "ending_soon") return "text-status-urgent font-medium";
-  if (status === "active") return "text-status-positive font-medium";
-  return "text-[#8a94a3]";
-}
+/**
+ * 상태색 3단 원칙 — 회색(ended) = 종료, 파랑(progress) = 진행 중, 초록 = 완료·결과.
+ * 이 표에는 결과 상태가 없어 초록이 나오지 않는다.
+ * 종료 임박(urgent)만 3단 밖 — 진행 축이 아니라 시간 압박 축이라 D-day 계열과 같은 성격이다.
+ *
+ * 이 표는 점을 렌더하지 않으므로 StatusPill이 아니라 STATUS_TONE의 text만 쓴다.
+ * 굵기(font-medium)는 호출부가 정한다 — 색 매핑에 굵기를 섞지 않는다.
+ */
+export const BOOST_TONE: Record<BoostStatus, StatusTone> = {
+  active: "progress",
+  ending_soon: "urgent",
+  ended: "ended",
+};
 
 export function boostTrackLabel(track: JobTrack): string {
   const labels: Record<JobTrack, string> = {
@@ -124,10 +133,11 @@ export function paymentStatusLabel(status: PaymentStatus): string {
   return "결제취소";
 }
 
-export function paymentStatusClass(status: PaymentStatus): string {
-  if (status === "completed") return "text-status-positive";
-  return "text-[#8a94a3]";
-}
+/** 결제완료는 결과(success), 결제취소는 끝난 행(ended). 이 표도 점을 렌더하지 않는다. */
+export const PAYMENT_TONE: Record<PaymentStatus, StatusTone> = {
+  completed: "success",
+  cancelled: "ended",
+};
 
 export const billingRecords: BillingRecord[] = [
   {

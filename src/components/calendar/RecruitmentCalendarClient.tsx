@@ -29,6 +29,7 @@ import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/c
 import { mockUserPreferences } from "@/data/mockUserPreferences";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
+import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
 import { addMonths, buildMonthDays, dateKey } from "@/utils/monthGrid";
 import type { FilterOption, Job, JobCategoryOption, JobTrack } from "@/types/jobs";
@@ -573,7 +574,7 @@ function MoreJobsModal({
 
 export function RecruitmentCalendarClient() {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { isLoggedIn, login } = usePersonalLoginState();
   const [activeTab, setActiveTab] = useState<CalendarTab>("all");
   const [visibleMonth, setVisibleMonth] = useState(new Date(DEFAULT_YEAR, DEFAULT_MONTH, 1));
   const [trackFilter, setTrackFilter] = useState<CalendarTrackFilter>("all");
@@ -584,12 +585,6 @@ export function RecruitmentCalendarClient() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [moreJobs, setMoreJobs] = useState<{ dateLabel: string; jobs: CalendarJob[] } | null>(null);
   const [emailAlertOn, setEmailAlertOn] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const guestMode = new URLSearchParams(window.location.search).get("guest") === "true";
-    setIsLoggedIn(!guestMode);
-  }, []);
 
   useEffect(() => {
     const stored = getAllStoredJobPreferences();
@@ -835,7 +830,7 @@ export function RecruitmentCalendarClient() {
                   <span>{tab.label}</span>
                   <span
                     className={`ml-2 inline-flex min-w-[26px] items-center justify-center rounded-full px-2 py-[2px] text-[12px] ${
-                      active ? "bg-white/18 text-white" : "bg-[#edf0f3] text-[#8a93a1]"
+                      active ? "bg-white/20 text-white" : "bg-[#edf0f3] text-[#8a93a1]"
                     }`}
                   >
                     {tabCounts[tab.id]}
@@ -979,7 +974,7 @@ export function RecruitmentCalendarClient() {
                             >
                               <span>{definition.label}</span>
                               {summary ? (
-                                <span className={active ? "text-white/72" : "text-[#8a93a1]"}>{summary}</span>
+                                <span className={active ? "text-white/70" : "text-[#8a93a1]"}>{summary}</span>
                               ) : null}
                               {openFilterId === definition.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                             </button>
@@ -1137,7 +1132,7 @@ export function RecruitmentCalendarClient() {
         <LoginGateModal
           onClose={() => setLoginModalOpen(false)}
           onLogin={() => {
-            setIsLoggedIn(true);
+            login();
             setLoginModalOpen(false);
           }}
         />

@@ -6,14 +6,14 @@ import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
-import { SignupStepShell } from "@/components/business/signup/SignupStepShell";
+import { SignupStepShell } from "@/components/shared/SignupStepShell";
 import { ManagerInfoStep, emptyManagerInfo, type ManagerInfo } from "@/components/business/signup/ManagerInfoStep";
 import { AccountCreationStep, emptyAccountCreationInfo, type AccountCreationInfo } from "@/components/business/signup/AccountCreationStep";
 import { SignupCompleteStep } from "@/components/business/signup/SignupCompleteStep";
 import { getOrgTrackForInstitutionType, signupInstitutionTypeOptions, writeSignupOrgTrack, type SignupInstitutionType } from "@/config/businessSignup";
 
 const SEL_INPUT =
-  "h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-8 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
+  "h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-8 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]";
 
 interface OrgVerificationInfo {
   institutionType: SignupInstitutionType | "";
@@ -133,6 +133,8 @@ function OrgVerificationStep({
   );
 }
 
+const STEP_LABELS = ["기관 인증", "담당자 정보", "계정 생성"] as const;
+
 /** 기업·병원·연구기관 통합 가입 폼 — STEP1(기관 인증)만 트랙 전용, STEP2·3은 약국 폼과 완전히 같은 공유 컴포넌트를 쓴다. */
 export function CompanySignupClient() {
   const [step, setStep] = useState<1 | 2 | 3 | "complete">(1);
@@ -165,6 +167,8 @@ export function CompanySignupClient() {
   return (
     <SignupStepShell
       step={step}
+      labels={STEP_LABELS}
+      eyebrow="기업회원 가입"
       title={step === 1 ? "기관 정보를 인증해 주세요" : step === 2 ? "담당자 정보를 입력해 주세요" : "계정을 생성해 주세요"}
       subtitle={
         step === 1

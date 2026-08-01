@@ -5,6 +5,9 @@ import clsx from "clsx";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
+import { StatusPill } from "@/components/business/table/StatusPill";
+import { TrackBadge } from "@/components/business/table/TrackBadge";
+import type { StatusTone } from "@/config/statusTone";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { getClosingDday, jobPostings, jobTrackLabel, MOCK_TODAY } from "@/data/businessJobs";
 import { LOGIN_COMPANY } from "@/data/businessCompanyProfile";
@@ -28,48 +31,57 @@ function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: bo
 const TASKS: Array<{
   id: string;
   title: string;
-  badge: { label: string; className: string; dotClassName?: string };
+  badge: { label: string; tone: StatusTone };
   desc: string;
   action: { label: string; href: string };
 }> = [
   {
     id: "t1",
     title: "신규 지원자 3명이 검토를 기다려요",
-    badge: { label: "미검토", className: "text-status-error", dotClassName: "bg-status-error-dot" },
+    badge: { label: "미검토", tone: "danger" },
     desc: "제제연구 선임연구원 모집 · 가장 오래된 지원 3일 경과",
     action: { label: "지원자 검토", href: "/business/applicants" },
   },
   {
     id: "t2",
     title: "임상개발 PM 채용 공고가 곧 마감돼요",
-    badge: { label: "D-2", className: "text-status-urgent" },
+    badge: { label: "D-2", tone: "urgent" },
     desc: "2026.07.21 마감 · 현재 지원자 4명",
     action: { label: "공고 연장", href: "/business/jobs" },
   },
   {
     id: "t3",
     title: "헤드헌팅 후보자 CAND-008이 검토를 기다려요",
-    badge: { label: "검토 대기", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
+    badge: { label: "검토 대기", tone: "progress" },
     desc: "RA 팀장급 (허가 전략) · 적합도 88% · 6월 5일 추천됨",
     action: { label: "후보자 확인", href: "/business/headhunting/manage" },
   },
   {
     id: "t4",
     title: "정수민님 최종 면접 일정을 확정하세요",
-    badge: { label: "D-2", className: "text-status-urgent" },
+    badge: { label: "D-2", tone: "urgent" },
     desc: "제제연구 선임연구원 · 6월 29일(일) 14:00 제안됨",
     action: { label: "일정 확정", href: "/business/applicants" },
   },
   {
     id: "t5",
     title: "CAND-009 처우 협의가 진행 중이에요",
-    badge: { label: "처우 협의", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
+    badge: { label: "처우 협의", tone: "success" },
     desc: "RA 팀장급 (허가 전략) · 헤드헌터 회신 필요",
     action: { label: "협의 보기", href: "/business/headhunting/manage" },
   },
 ];
 
-const UPCOMING_INTERVIEWS = [
+const UPCOMING_INTERVIEWS: Array<{
+  id: string;
+  day: string;
+  monthLabel: string;
+  time: string;
+  candidate: string;
+  stage: string;
+  posting: string;
+  badge: { label: string; tone: StatusTone };
+}> = [
   {
     id: "i1",
     day: "29",
@@ -78,7 +90,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "정수민",
     stage: "최종 면접",
     posting: "제제연구 선임연구원 모집",
-    badge: { label: "일정 확정 대기", className: "text-status-warning", dotClassName: "bg-status-warning-dot" },
+    badge: { label: "일정 확정 대기", tone: "progress" },
   },
   {
     id: "i2",
@@ -88,7 +100,7 @@ const UPCOMING_INTERVIEWS = [
     candidate: "CAND-014",
     stage: "1차 면접",
     posting: "임상개발 PM (CRA 총괄) · 헤드헌팅",
-    badge: { label: "확정", className: "text-status-positive", dotClassName: "bg-status-positive-dot" },
+    badge: { label: "확정", tone: "success" },
   },
 ];
 
@@ -123,14 +135,7 @@ function TaskRow({
         {/* 배지는 제목 줄이 아니라 메타 줄에 둔다 — 제목이 길어져도 배지가 밀려 내려가지 않는다
             (개인 대시보드 ChecklistRowCell과 같은 배치) */}
         <div className="mt-0.5 flex flex-wrap items-center gap-[12px]">
-          <span className="inline-flex w-fit items-center gap-[8px]">
-            {badge.dotClassName ? (
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
-            ) : null}
-            <span className={clsx("text-[13px] font-medium", badge.className)}>
-              {badge.label}
-            </span>
-          </span>
+          <StatusPill tone={badge.tone} label={badge.label} />
           <p className="text-[13px] leading-[1.5] text-[#68717e]">{desc}</p>
         </div>
       </div>
@@ -169,14 +174,7 @@ function InterviewRow({
         </p>
         <p className="mt-0.5 text-[12px] text-[#8a94a3]">{posting}</p>
         <div className="mt-2">
-          <span className="inline-flex items-center gap-[8px]">
-            {badge.dotClassName ? (
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
-            ) : null}
-            <span className={clsx("text-[12px] font-medium", badge.className)}>
-              {badge.label}
-            </span>
-          </span>
+          <StatusPill tone={badge.tone} label={badge.label} size="sm" />
         </div>
       </div>
     </div>
@@ -311,9 +309,7 @@ export function BusinessDashboardClient() {
                           <span className="text-[13px] font-semibold text-[#17202c]">
                             {job.title}
                           </span>
-                          <span className="inline-flex h-5 items-center border border-[#d8e0e8] px-1.5 text-[11px] font-medium text-[#596373]">
-                            {jobTrackLabel(job.track)}
-                          </span>
+                          <TrackBadge label={jobTrackLabel(job.track)} size="sm" />
                         </div>
                         <p className="mt-0.5 text-[12px] text-[#8a94a3]">
                           {job.registeredAt} 등록 · 게시 중

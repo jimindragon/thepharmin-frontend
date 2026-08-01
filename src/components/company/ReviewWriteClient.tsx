@@ -28,7 +28,7 @@ const JOB_ROLE_PLACEHOLDERS: Record<JobTrack, string> = {
 };
 
 const TEXTAREA_CLASS =
-  "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[15px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
+  "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[15px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]";
 
 /** 이 폼 전용 섹션 래퍼. 좌측 열(번호+제목+안내)과 우측 열(입력 영역) 2컬럼 배치.
  * BusinessFormControls의 SectionCard와 시각 톤(흰 배경·얇은 보더·radius 0)만 맞추고, 기업 폼 11곳이 공유하는 그 컴포넌트는 건드리지 않기 위해 이 파일 안에서만 쓰는 로컬 컴포넌트다. */
@@ -151,7 +151,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
                 <select
                   value={applyYear}
                   onChange={(event) => setApplyYear(event.target.value ? Number(event.target.value) : "")}
-                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                 >
                   <option value="">선택 안 함</option>
                   {applyYearOptions.map((year) => (
@@ -237,7 +237,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
                 <select
                   value={interviewFormat}
                   onChange={(event) => setInterviewFormat(event.target.value as InterviewFormat | "")}
-                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
                 >
                   <option value="">선택 안 함</option>
                   {interviewFormatOptions.map((option) => (

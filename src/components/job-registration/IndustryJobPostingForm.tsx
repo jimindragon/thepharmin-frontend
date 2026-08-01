@@ -158,11 +158,14 @@ function SegControl({
           {label}
         </FieldLabel>
       </div>
-      <div role="radiogroup" aria-labelledby={id} className="inline-flex overflow-hidden border border-[#d8e0e8]">
+      {/* nowrap이면 min-content(라벨 폭 합)까지만 줄어 부모를 뚫는다 — flex-wrap으로 좁은 폭에서 접는다.
+          테두리는 컨테이너가 위·왼쪽만 긋고 각 셀이 오른쪽·아래를 그린다. 그래야 wrap 시 행 사이 구분선이 생기고
+          우단이 컨테이너 테두리와 겹쳐 2px가 되지 않는다. grow는 각 행을 우단까지 채워 들쭉날쭉을 막는다. */}
+      <div role="radiogroup" aria-labelledby={id} className="inline-flex max-w-full flex-wrap border-l border-t border-[#d8e0e8]">
         {options.map((opt) => (
           <button key={opt} type="button" role="radio" aria-checked={value === opt} onClick={() => onChange(opt)}
             className={clsx(
-              "h-11 border-r border-[#d8e0e8] px-5 text-[13px] font-medium last:border-r-0 transition-colors",
+              "h-11 grow border-b border-r border-[#d8e0e8] px-5 text-[13px] font-medium transition-colors",
               value === opt ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
             )}>
             {opt}
@@ -677,7 +680,7 @@ export function IndustryJobPostingForm() {
             <div id="apply-method-label">
               <FieldLabel className="block mb-2" required>지원 방식</FieldLabel>
             </div>
-            <div role="radiogroup" aria-labelledby="apply-method-label" className="inline-flex overflow-hidden border border-[#d8e0e8]">
+            <div role="radiogroup" aria-labelledby="apply-method-label" className="inline-flex max-w-full flex-wrap border-l border-t border-[#d8e0e8]">
               {(
                 [
                   { value: "url" as const, label: "기업 채용페이지 지원" },
@@ -689,7 +692,7 @@ export function IndustryJobPostingForm() {
                 return (
                   <button key={v} type="button" role="radio" aria-checked={on} onClick={() => setApplyMethod(v)}
                     className={clsx(
-                      "inline-flex h-11 items-center gap-1.5 border-r border-[#d8e0e8] px-5 text-[13px] font-medium last:border-r-0 transition-colors",
+                      "inline-flex h-11 grow items-center justify-center gap-1.5 border-b border-r border-[#d8e0e8] px-5 text-[13px] font-medium transition-colors",
                       on ? "bg-[#111111] text-white" : "bg-white text-[#4f5967] hover:bg-[#f7f8fa]",
                     )}>
                     {label}
@@ -799,7 +802,7 @@ export function IndustryJobPostingForm() {
         {/* ── 하단 저장바 — space-y-5 스택의 마지막 자식 ── */}
         <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-            <p className="text-[12px] font-normal text-[#7b8491]">
+            <p className="text-[13px] font-normal text-[#7b8491]">
               저장되지 않은 변경사항이 있습니다
               {missingCount > 0 && (
                 <> · 게시 전 <strong className="text-danger">필수 항목 {missingCount}개</strong>를 확인하세요</>

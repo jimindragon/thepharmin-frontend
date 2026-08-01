@@ -21,7 +21,7 @@ export function Pagination({ currentPage, onPageChange }: PaginationProps) {
             onClick={() => onPageChange(page)}
             className={clsx(
               "h-[38px] w-[46px] border border-r-0 border-[#dce2ea] text-[13px] font-medium",
-              currentPage === page ? "bg-[#050505] text-white" : "bg-white text-[#5c6675] hover:bg-[#f5f5f5] hover:text-brand",
+              currentPage === page ? "bg-[#111111] text-white" : "bg-white text-[#5c6675] hover:bg-[#f5f5f5] hover:text-brand",
             )}
           >
             {page}

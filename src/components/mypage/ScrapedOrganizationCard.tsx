@@ -20,7 +20,7 @@ export function ScrapedOrganizationCard({
   onRemove: (id: string) => void;
 }) {
   return (
-    <article className="group relative flex min-h-[112px] items-center gap-4 border border-[#dfe4ea] bg-white p-5 transition-colors hover:border-brand/55 hover:bg-[#fbfcfc] max-[480px]:flex-col max-[480px]:items-stretch">
+    <article className="group relative flex min-h-[112px] items-center gap-4 border border-[#dfe4ea] bg-white p-5 transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc] max-[480px]:flex-col max-[480px]:items-stretch">
       <Link href={organization.href} className="absolute inset-0 z-10" aria-label={`${organization.name} 상세 보기`}>
         <span className="sr-only">{organization.name} 상세 보기</span>
       </Link>

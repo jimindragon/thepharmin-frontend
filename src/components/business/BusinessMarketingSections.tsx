@@ -68,7 +68,7 @@ export function BusinessImageBand({
         backgroundPosition: "center",
       }}
     >
-      <div className="app-shell--default w-full">{children}</div>
+      <div className="app-shell--default">{children}</div>
     </section>
   );
 }

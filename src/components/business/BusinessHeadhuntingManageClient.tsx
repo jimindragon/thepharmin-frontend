@@ -9,18 +9,20 @@ import { Pagination } from "@/components/Pagination";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
+import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
+import { StatusPill } from "@/components/business/table/StatusPill";
 import {
-  candidateStatusClass,
-  candidateStatusDotClass,
   candidateStatusLabel,
+  HEADHUNTING_CANDIDATE_TONE,
+  HEADHUNTING_REQUEST_TONE,
   headhuntingCandidates,
   headhuntingJobCategoryLabel,
   headhuntingJobSubcategoryLabel,
   headhuntingRequests,
-  headhuntingStatusClass,
-  headhuntingStatusDotClass,
   headhuntingStatusLabel,
+  type HeadhuntingCandidate,
   type HeadhuntingCandidateStatus,
+  type HeadhuntingRequest,
   type HeadhuntingRequestStatus,
 } from "@/data/headhunting";
 
@@ -106,6 +108,176 @@ export function BusinessHeadhuntingManageClient() {
   );
 
   const requestTitleById = new Map(headhuntingRequests.map((r) => [r.id, r.positionTitle]));
+
+  // 열 정의 — grid-cols는 DataTable이 여기서 한 번만 조립한다(헤더·행 복제 해소).
+  // 액션 셀이 selectedRequestId·handleSelectRequest를 읽어야 해서 컴포넌트 안에 둔다.
+  const REQUEST_COLUMNS: DataTableColumn<HeadhuntingRequest>[] = [
+    {
+      key: "position",
+      header: "포지션",
+      width: "minmax(0,1fr)",
+      cell: (request) => (
+        <span className="text-[16px] font-semibold text-[#17202c]">{request.positionTitle}</span>
+      ),
+    },
+    {
+      key: "category",
+      header: "직무 분야",
+      width: "120px",
+      cell: (request) => (
+        <span className="font-normal text-[#596373]">
+          {headhuntingJobCategoryLabel(request.jobCategoryId)} ·{" "}
+          {headhuntingJobSubcategoryLabel(request.jobCategoryId, request.jobSubcategoryId)}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      header: "진행 상태",
+      width: "140px",
+      cell: (request) => (
+        <StatusPill
+          tone={HEADHUNTING_REQUEST_TONE[request.status]}
+          label={headhuntingStatusLabel(request.status)}
+        />
+      ),
+    },
+    {
+      key: "headcount",
+      header: "인원",
+      width: "64px",
+      cell: (request) => <span className="font-normal text-[#303946]">{request.headcount}명</span>,
+    },
+    {
+      key: "candidates",
+      header: "추천 후보자",
+      width: "96px",
+      cell: (request) => (
+        <span className="text-[14px] font-semibold text-[#303946]">
+          {request.recommendedCandidateCount}명
+        </span>
+      ),
+    },
+    {
+      key: "requestedAt",
+      header: "신청일",
+      width: "96px",
+      cell: (request) => <span className="font-normal text-[#8a94a3]">{request.requestedAt}</span>,
+    },
+    {
+      key: "action",
+      width: "104px",
+      align: "end",
+      cell: (request) => (
+        // stopPropagation — 행 클릭과 버튼 클릭이 겹쳐 두 번 실행되지 않게 한다
+        <span onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={() => handleSelectRequest(request.id)}
+            className={clsx(
+              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+              selectedRequestId === request.id
+                ? "border-[#111111] bg-[#111111] text-white"
+                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+            )}
+          >
+            후보자 보기
+          </button>
+        </span>
+      ),
+    },
+  ];
+
+  const CANDIDATE_COLUMNS: DataTableColumn<HeadhuntingCandidate>[] = [
+    {
+      key: "candidate",
+      header: "후보자 · 주요 경력",
+      width: "minmax(0,3fr)",
+      cell: (candidate) => (
+        // 아이콘 + 코드/라벨 + 경력 텍스트
+        <div className="flex min-w-0 items-start gap-2.5">
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#a4adba]">
+            <User size={14} />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <p className="text-[16px] font-semibold text-[#17202c]">{candidate.code}</p>
+              <span className="shrink-0 text-[11px] text-[#8a94a3]">추천 후보자</span>
+            </div>
+            <p className="mt-0.5 text-[13px] font-normal leading-[1.5] text-[#8a94a3]">
+              {candidate.experienceSummary}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "matchedPosition",
+      header: "매칭 포지션",
+      width: "minmax(0,2fr)",
+      cell: (candidate) => (
+        // block — 셀 래퍼 안에서는 인라인이 되어 truncate(overflow:hidden)가 먹지 않는다.
+        // 그리드 직속일 때는 blockify로 자동이었지만 지금은 명시해야 한다.
+        <span className="block w-fit max-w-full truncate border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[12px] font-medium text-[#596373]">
+          {requestTitleById.get(candidate.matchedRequestId) ?? "—"}
+        </span>
+      ),
+    },
+    {
+      key: "fit",
+      header: "적합도",
+      width: "120px",
+      cell: (candidate) => (
+        <div>
+          <FitScoreBar score={candidate.fitScore} />
+          <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
+            {candidate.fitTotal}개 요건 중 {candidate.fitMet}개 충족
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "진행 상태",
+      width: "110px",
+      cell: (candidate) => (
+        <StatusPill
+          tone={HEADHUNTING_CANDIDATE_TONE[candidate.status]}
+          label={candidateStatusLabel(candidate.status)}
+        />
+      ),
+    },
+    {
+      key: "recommendedAt",
+      header: "추천일",
+      width: "88px",
+      cell: (candidate) => (
+        <span className="text-[13px] font-normal text-[#8a94a3]">{candidate.recommendedAt}</span>
+      ),
+    },
+    {
+      key: "action",
+      width: "104px",
+      align: "end",
+      cell: () => (
+        <span className="flex items-center gap-1.5">
+          <button
+            type="button"
+            className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            상세
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[#cfd8e3] text-[#8a94a3] transition hover:border-[#111111] hover:text-[#111111]"
+            aria-label="더보기"
+          >
+            <MoreHorizontal size={14} />
+          </button>
+        </span>
+      ),
+    },
+  ];
 
   function handleSelectRequest(id: string) {
     const next = selectedRequestId === id ? null : id;
@@ -211,90 +383,19 @@ export function BusinessHeadhuntingManageClient() {
           </div>
 
           {/* 테이블 */}
-          <div className="mt-3 border border-border bg-white">
-            <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
-              <div className="min-w-[873px]">
-                <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] gap-3 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
-                  <span>포지션</span>
-                  <span>직무 분야</span>
-                  <span>진행 상태</span>
-                  <span>인원</span>
-                  <span>추천 후보자</span>
-                  <span>신청일</span>
-                  <span />
-                </div>
-                {filteredRequests.length > 0 ? (
-                  <div className="divide-y divide-[#e5e9ef]">
-                    {filteredRequests.map((request) => (
-                      <div
-                        key={request.id}
-                        onClick={() => handleSelectRequest(request.id)}
-                        className={clsx(
-                          "grid cursor-pointer grid-cols-[minmax(0,1fr)_120px_140px_64px_96px_96px_104px] items-center gap-3 py-4 text-[13px] transition",
-                          selectedRequestId === request.id
-                            ? "bg-[#f7f8fa]"
-                            : "hover:bg-[#fafafa]",
-                        )}
-                      >
-                        <span className="text-[16px] font-semibold text-[#17202c]">
-                          {request.positionTitle}
-                        </span>
-                        <span className="font-normal text-[#596373]">
-                          {headhuntingJobCategoryLabel(request.jobCategoryId)} ·{" "}
-                          {headhuntingJobSubcategoryLabel(request.jobCategoryId, request.jobSubcategoryId)}
-                        </span>
-                        <span className="inline-flex w-fit items-center gap-[8px]">
-                          <span
-                            className={`h-[8px] w-[8px] rounded-full shrink-0 ${headhuntingStatusDotClass(request.status)}`}
-                          />
-                          <span
-                            className={clsx(
-                              "text-[13px] font-medium",
-                              headhuntingStatusClass(request.status),
-                            )}
-                          >
-                            {headhuntingStatusLabel(request.status)}
-                          </span>
-                        </span>
-                        <span className="font-normal text-[#303946]">{request.headcount}명</span>
-                        <span className="text-[14px] font-semibold text-[#303946]">
-                          {request.recommendedCandidateCount}명
-                        </span>
-                        <span className="font-normal text-[#8a94a3]">{request.requestedAt}</span>
-                        {/* 후보자 보기 — stopPropagation so click doesn't double-fire */}
-                        <div
-                          className="flex justify-end"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleSelectRequest(request.id)}
-                            className={clsx(
-                              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
-                              selectedRequestId === request.id
-                                ? "border-[#111111] bg-[#111111] text-white"
-                                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
-                            )}
-                          >
-                            후보자 보기
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-14 text-center">
-                    <p className="text-[15px] font-medium text-[#303946]">
-                      해당하는 의뢰가 없습니다
-                    </p>
-                    <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
-                      조건을 변경해 다시 검색해 보세요.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <DataTable
+            columns={REQUEST_COLUMNS}
+            rows={filteredRequests}
+            rowKey={(request) => request.id}
+            /* 873(기존 트랙 폭) + 좌우 패딩 48 — 패딩이 행 안으로 들어와 총폭에 포함된다 */
+            minWidth={921}
+            onRowClick={(request) => handleSelectRequest(request.id)}
+            isRowSelected={(request) => selectedRequestId === request.id}
+            empty={{
+              title: "해당하는 의뢰가 없습니다",
+              description: "조건을 변경해 다시 검색해 보세요.",
+            }}
+          />
         </div>
 
         {/* 추천 후보자 현황 */}
@@ -354,111 +455,27 @@ export function BusinessHeadhuntingManageClient() {
           </div>
 
           {/* 테이블 카드 */}
-          <div className="mt-3 border border-border bg-white">
-            <div className="overflow-x-auto px-6 pb-2 pt-6 max-[760px]:px-4">
-              <div className="min-w-[873px]">
-                <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_104px] gap-3 border-b border-border pb-3 text-[13px] font-medium text-[#8a94a3]">
-                  <span>후보자 · 주요 경력</span>
-                  <span>매칭 포지션</span>
-                  <span>적합도</span>
-                  <span>진행 상태</span>
-                  <span>추천일</span>
-                  <span />
+          <DataTable
+            columns={CANDIDATE_COLUMNS}
+            rows={pagedCandidates}
+            rowKey={(candidate) => candidate.id}
+            minWidth={921}
+            empty={{
+              title: selectedRequestId
+                ? "해당 의뢰의 후보자가 없습니다"
+                : candidateTab !== "all"
+                  ? "해당 상태의 후보자가 없습니다"
+                  : "추천된 후보자가 없습니다",
+              description: "헤드헌팅 의뢰를 진행하면 후보자가 이곳에 추천됩니다.",
+            }}
+            pagination={
+              filteredCandidates.length > 0 ? (
+                <div className="pb-6">
+                  <Pagination currentPage={candidatePage} onPageChange={setCandidatePage} />
                 </div>
-                {pagedCandidates.length > 0 ? (
-                  <div className="divide-y divide-[#e5e9ef]">
-                    {pagedCandidates.map((candidate) => (
-                      <div
-                        key={candidate.id}
-                        className="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)_120px_110px_88px_104px] items-center gap-3 py-4 text-[13px]"
-                      >
-                        {/* 후보자 · 주요 경력: 아이콘 + 코드/라벨 + 경력 텍스트 */}
-                        <div className="flex min-w-0 items-start gap-2.5">
-                          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center border border-[#dfe4ea] bg-[#f7f8fa] text-[#a4adba]">
-                            <User size={14} />
-                          </span>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <p className="text-[16px] font-semibold text-[#303946]">{candidate.code}</p>
-                              <span className="shrink-0 text-[11px] text-[#8a94a3]">추천 후보자</span>
-                            </div>
-                            <p className="mt-0.5 text-[13px] font-normal leading-[1.5] text-[#68717e]">
-                              {candidate.experienceSummary}
-                            </p>
-                          </div>
-                        </div>
-                        {/* 매칭 포지션 */}
-                        <span className="w-fit max-w-full truncate border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[12px] font-medium text-[#596373]">
-                          {requestTitleById.get(candidate.matchedRequestId) ?? "—"}
-                        </span>
-                        {/* 적합도 */}
-                        <div>
-                          <FitScoreBar score={candidate.fitScore} />
-                          <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">
-                            {candidate.fitTotal}개 요건 중 {candidate.fitMet}개 충족
-                          </p>
-                        </div>
-                        {/* 진행 상태 */}
-                        <span className="inline-flex w-fit items-center gap-[8px]">
-                          <span
-                            className={`h-[8px] w-[8px] rounded-full shrink-0 ${candidateStatusDotClass(candidate.status)}`}
-                          />
-                          <span
-                            className={clsx(
-                              "text-[13px] font-medium",
-                              candidateStatusClass(candidate.status),
-                            )}
-                          >
-                            {candidateStatusLabel(candidate.status)}
-                          </span>
-                        </span>
-                        {/* 추천일 */}
-                        <span className="text-[13px] font-normal text-[#8a94a3]">
-                          {candidate.recommendedAt}
-                        </span>
-                        {/* 액션 */}
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                          >
-                            상세
-                          </button>
-                          <button
-                            type="button"
-                            className="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[#cfd8e3] text-[#8a94a3] transition hover:border-[#111111] hover:text-[#111111]"
-                            aria-label="더보기"
-                          >
-                            <MoreHorizontal size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-14 text-center">
-                    <p className="text-[15px] font-medium text-[#303946]">
-                      {selectedRequestId
-                        ? "해당 의뢰의 후보자가 없습니다"
-                        : candidateTab !== "all"
-                          ? "해당 상태의 후보자가 없습니다"
-                          : "추천된 후보자가 없습니다"}
-                    </p>
-                    <p className="mt-2 text-[13px] font-normal text-[#8a94a3]">
-                      헤드헌팅 의뢰를 진행하면 후보자가 이곳에 추천됩니다.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 페이지네이션 */}
-            {filteredCandidates.length > 0 && (
-              <div className="pb-6">
-                <Pagination currentPage={candidatePage} onPageChange={setCandidatePage} />
-              </div>
-            )}
-          </div>
+              ) : undefined
+            }
+          />
         </div>
       </div>
     </BusinessCenterShell>

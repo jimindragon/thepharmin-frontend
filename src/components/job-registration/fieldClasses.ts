@@ -9,7 +9,11 @@
  * 넘겨야 하는데 TextInput이 그 prop을 받지 않고, select/textarea는 아예 커버하지 못하기 때문.
  */
 const FIELD_BASE =
-  "w-full border border-[#d8e0e8] bg-white px-3.5 text-[15px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8";
+  // 포커스 링 알파(/[0.08])는 대괄호 표기가 유일한 방법이다. Tailwind는 알파 modifier를 5의 배수만
+  // 유틸리티로 생성하므로 /8은 규칙 자체가 만들어지지 않고, 두께(focus:ring-4)만 적용된 채 링 색이
+  // --tw-ring-color 기본값인 blue-500/50으로 떨어져 파란 링이 그려진다. 8%를 쓰려면 대괄호로 적을 것.
+  // 이 줄과 BusinessFormControls의 TextInput, 두 줄이 폼 필드 168개를 커버한다.
+  "w-full border border-[#d8e0e8] bg-white px-3.5 text-[15px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]";
 
 /** 한 줄 입력. leading-tight — 줄간격이 필요 없고, 기본값이면 h-11 상하 여유가 모자란다. */
 export const IN = `h-11 ${FIELD_BASE} leading-tight`;

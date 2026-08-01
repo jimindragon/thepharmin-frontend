@@ -7,7 +7,7 @@ import { getQnaPostById } from "@/data/qna";
 
 interface QnaDetailPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ guest?: string; pharmacist?: string }>;
+  searchParams: Promise<{ pharmacist?: string }>;
 }
 
 export async function generateMetadata({ params }: QnaDetailPageProps): Promise<Metadata> {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: QnaDetailPageProps): Promise<
 export default async function QnaDetailPage({ params, searchParams }: QnaDetailPageProps) {
   const { id } = await params;
   const sp = await searchParams;
-  const { isLoggedIn, isVerifiedPharmacist } = resolveQnaViewerState(sp);
+  const { isLoggedIn, isVerifiedPharmacist } = await resolveQnaViewerState(sp);
 
   const post = getQnaPostById(id);
   if (!post) notFound();

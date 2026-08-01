@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InterviewsFeedClient } from "@/components/companies/InterviewsFeedClient";
 import { companies, companyReviews } from "@/data/companies";
+import { readPersonalSession } from "@/lib/session.server";
 
 export const metadata: Metadata = {
   title: "면접 후기 | THE PHARMA Recruit.",
@@ -9,13 +10,14 @@ export const metadata: Metadata = {
 };
 
 interface CompaniesInterviewsPageProps {
-  searchParams: Promise<{ guest?: string; reviewer?: string }>;
+  searchParams: Promise<{ reviewer?: string }>;
 }
 
-/** /companies 허브와 동일한 guest/reviewer 쿼리파라미터 게이팅 규칙을 그대로 적용한다 */
+/** 로그인 여부는 개인 세션 쿠키로 판정하고, "면접 후기를 이미 작성했는가"는 실제 회원 필드가 없어
+ * 여전히 ?reviewer=true 미리보기 파라미터로 둔다 — 두 축은 서로 독립이다. */
 export default async function CompaniesInterviewsPage({ searchParams }: CompaniesInterviewsPageProps) {
   const params = await searchParams;
-  const isLoggedIn = params.guest !== "true";
+  const isLoggedIn = await readPersonalSession();
   const hasWrittenInterviewReview = params.reviewer === "true";
   const canReadInterviewReviews = isLoggedIn && hasWrittenInterviewReview;
 

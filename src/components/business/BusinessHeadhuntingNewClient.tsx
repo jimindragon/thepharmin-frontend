@@ -155,14 +155,16 @@ export function BusinessHeadhuntingNewClient() {
             </div>
           </SectionCard>
 
-          <div className="sticky bottom-0 z-20 border border-border bg-white/96 px-6 py-4 backdrop-blur max-[760px]:px-4">
+          <div className="sticky bottom-0 z-30 min-h-[64px] border-t border-border bg-white/95 px-6 py-4 shadow-[0_-4px_16px_rgba(20,32,46,0.08)] backdrop-blur max-[760px]:px-4">
             <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
-              <p className="text-[12px] font-normal text-[#7b8491]">제출 후 담당 매니저가 1~2영업일 내에 연락드립니다.</p>
+              <p className="text-[13px] font-normal text-[#7b8491]">1~2영업일 내에 담당 매니저가 연락드립니다.</p>
               <button
                 type="button"
                 onClick={() => isValid && setSubmitted(true)}
                 disabled={!isValid}
-                className="inline-flex h-11 items-center justify-center gap-2 bg-[#111111] px-7 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:bg-[#cfd8e3] max-[640px]:w-full"
+                className="inline-flex h-11 items-center justify-center gap-2 px-9 text-[13px] font-bold text-white transition disabled:cursor-not-allowed disabled:bg-[#cfd8e3] max-[640px]:w-full"
+                /* 그라데이션은 활성 상태에만 — background-image는 disabled:bg-[#cfd8e3]를 덮으므로 비활성 시 아예 걸지 않는다. */
+                style={isValid ? { backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" } : undefined}
               >
                 <Send size={15} />
                 의뢰 제출하기

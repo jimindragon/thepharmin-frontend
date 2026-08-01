@@ -22,7 +22,7 @@ export const emptyAccountCreationInfo: AccountCreationInfo = {
   agreeMarketing: false,
 };
 
-function AgreeCheckbox({
+export function AgreeCheckbox({
   label,
   required,
   checked,
@@ -83,7 +83,7 @@ export function AccountCreationStep({
               type="password"
               value={value.password}
               onChange={(event) => onChange("password", event.target.value)}
-              className="h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+              className="h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
             />
           </div>
           <div className="space-y-2">
@@ -92,7 +92,7 @@ export function AccountCreationStep({
               type="password"
               value={value.passwordConfirm}
               onChange={(event) => onChange("passwordConfirm", event.target.value)}
-              className="h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/8"
+              className="h-11 w-full border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
             />
             {value.passwordConfirm && !passwordsMatch ? (
               <p className="text-[12px] font-medium text-danger">비밀번호가 일치하지 않습니다.</p>

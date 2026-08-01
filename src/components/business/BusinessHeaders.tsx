@@ -3,13 +3,15 @@
 import clsx from "clsx";
 import { ChevronDown, Lock, Plus } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { headerDropdownActionClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { NotificationBell } from "@/components/shared/NotificationBell";
-import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
+import { businessAccountMenuItems } from "@/config/businessAccountMenu";
+import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { MOCK_BUSINESS_NOTIFICATIONS } from "@/data/notifications";
-import { useBusinessMember } from "@/hooks/useBusinessMember";
+import { clearBusinessMember, useBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
@@ -59,22 +61,33 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
  */
 export function BusinessAccountMenu() {
   const pathname = usePathname();
+  const router = useRouter();
   const orgVerificationStatus = useOrgVerificationStatus();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const isHomeActive = pathname === businessCenterHomeItem.href;
 
+  // 로그인 화면(/business/login)이 아니라 기업 소개(/business)로 보낸다 —
+  // 나가려는 사람에게 곧바로 다시 들어오라고 요구하지 않기 위해서.
+  const handleLogout = () => {
+    clearBusinessMember();
+    setOpen(false);
+    router.push("/business");
+  };
+
   return (
-    <div ref={containerRef} className="relative max-[640px]:hidden">
+    // 좁은 폭에서 숨기지 않고 트리거만 줄인다 — 개인 Header·SupportHeader와 같은 기준(이름 720, 화살표 520).
+    // 숨기면 사이드바 없는 화면(/business·pricing·headhunting·company/preview)에서 기업센터 진입로가 사라진다.
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111]"
+        className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111] max-[520px]:gap-0 max-[520px]:px-1.5"
       >
         <span className="grid h-6 w-6 place-items-center bg-[#f0f2f4] text-[11px]">{initialBusinessCompanyProfile.displayName.slice(0, 1)}</span>
-        <span className="hidden whitespace-nowrap md:inline">{initialBusinessCompanyProfile.displayName}</span>
-        <ChevronDown size={14} className={clsx("text-[#7d8796] transition-transform", open && "rotate-180")} />
+        <span className="whitespace-nowrap max-[720px]:hidden">{initialBusinessCompanyProfile.displayName}</span>
+        <ChevronDown size={14} className={clsx("text-[#7d8796] transition-transform max-[520px]:hidden", open && "rotate-180")} />
       </button>
 
       {open ? (
@@ -90,6 +103,8 @@ export function BusinessAccountMenu() {
           </div>
           <div className="h-px bg-[#edf1f5]" />
           <div className="py-2">
+            {/* 대시보드도 나머지 4항목과 한 블록에 둔다 — 구분선을 지운 뒤에도 블록을 나눠 두면
+                py-1.5 두 겹이 12px 여백으로 남아 첫 행만 유독 떨어져 보인다. 5항목 모두 등간격. */}
             <div className="px-1 py-1.5">
               <Link
                 href={businessCenterHomeItem.href}
@@ -101,46 +116,36 @@ export function BusinessAccountMenu() {
               >
                 {businessCenterHomeItem.label}
               </Link>
+              {businessAccountMenuItems.map((item) => {
+                const active = pathname === item.href;
+                const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={clsx(
+                      "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
+                      active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    {locked ? (
+                      <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
+                        <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
             </div>
-            {businessCenterMenuGroups.map((group) => (
-              <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
-                <div className="mt-1">
-                  {group.items.map((item) => {
-                    const active = pathname === item.href;
-                    const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={clsx(
-                          "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
-                          active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                        )}
-                      >
-                        <span>{item.label}</span>
-                        {locked ? (
-                          <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
-                            <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
           </div>
-          <div className="h-px bg-[#edf1f5]" />
-          <div className="px-1 py-1.5">
-            <Link
-              href="/"
-              onClick={() => setOpen(false)}
-              className="flex items-center px-2 py-2 text-[13px] font-medium text-[#a0a9b7] transition-colors hover:text-[#4f5967]"
-            >
-              개인 홈으로 전환
-            </Link>
+          {/* 로그아웃 — 이동이 아니라 상태를 끊는 동작이라 위 항목들과 구분선으로 갈라 둔다.
+              색은 나머지와 동일하게(경고색 없음): 되돌릴 수 있는 평범한 동작이다. */}
+          <div className="border-t border-border px-1 py-1.5">
+            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
+              로그아웃
+            </button>
           </div>
         </div>
       ) : null}
@@ -194,9 +199,11 @@ export function BusinessHeader() {
               </div>
               {/* 아이콘 그룹 */}
               <div className="flex items-center gap-1">
+                {/* 520까지 유지 — 760에서 헤드헌팅 의뢰(103px)가 빠져 자리가 생기는데 같은 브레이크포인트에
+                    묶여 함께 사라지면서 641~760 구간에 기업→개인 전환 경로가 없어졌었다. */}
                 <Link
                   href="/"
-                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[13px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[760px]:hidden"
+                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[13px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[520px]:hidden"
                 >
                   개인 서비스
                 </Link>
