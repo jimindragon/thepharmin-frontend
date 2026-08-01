@@ -159,7 +159,7 @@ function ChecklistRowCell({ Icon, title, meta, ctaLabel, href, isNewBadge, onNav
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex items-start gap-3 px-5 py-4 transition hover:bg-[#f7f8fa] max-[600px]:flex-wrap"
+      className="flex items-start gap-3 px-6 py-4 max-[760px]:px-4 transition hover:bg-[#f7f8fa] max-[600px]:flex-wrap"
     >
       <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-[#e5e9ef] bg-[#f7f8fa]">
         <Icon className="h-[15px] w-[15px] text-[#596373]" />
@@ -189,7 +189,7 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
   const { day, monthLabel, time } = formatScheduleDayParts(date);
   const badge = resolveScheduleBadge(badgeInput, date);
   return (
-    <div className="flex items-start gap-4 px-5 py-4">
+    <div className="flex items-start gap-4 px-6 py-4 max-[760px]:px-4">
       <div className="w-12 shrink-0 text-center">
         <p className="text-[24px] font-black leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
         <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
@@ -287,7 +287,7 @@ export function MyPageDashboardClient() {
 
             {/* 지금 확인할 일 — 임박 일정(날짜 파생) + 미열람 제안(알림 읽음 상태 파생) */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">
                   지금 확인할 일
                   <span className="ml-2 text-status-positive">{checklistRows.length}</span>
@@ -306,13 +306,13 @@ export function MyPageDashboardClient() {
                   ))}
                 </div>
               ) : (
-                <p className="px-5 py-4 text-[13px] text-[#8a94a3]">지금 확인할 항목이 없습니다</p>
+                <p className="px-6 py-4 max-[760px]:px-4 text-[13px] text-[#8a94a3]">지금 확인할 항목이 없습니다</p>
               )}
             </section>
 
             {/* 내 이력서 — 작성형 이력서 전체를 행으로 상시 표시(첨부형 pdf 제외) */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">내 이력서</h2>
                 <Link
                   href="/mypage/resume"
@@ -329,7 +329,7 @@ export function MyPageDashboardClient() {
                     .map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id)
                     .slice(0, 3);
                   return (
-                    <div key={resume.id} className="grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-5 py-4">
+                    <div key={resume.id} className="grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-6 py-4 max-[760px]:px-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate text-[16px] font-semibold text-[#17202c]">{resume.title}</span>
@@ -373,7 +373,7 @@ export function MyPageDashboardClient() {
 
             {/* 관심 조건 — 설정 여부에 따라 요약/설정 유도, 상시 표시 */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">관심 조건</h2>
                 <Link
                   href="/mypage/preferences"
@@ -382,7 +382,7 @@ export function MyPageDashboardClient() {
                   수정 ›
                 </Link>
               </div>
-              <div className="px-5 py-4">
+              <div className="px-6 py-4 max-[760px]:px-4">
                 {hasPreferences ? (
                   <p className="text-[15px] leading-[1.7] text-[#68717e]">
                     RA 외 2개 / 3~5년 · 서울·경기
@@ -413,7 +413,7 @@ export function MyPageDashboardClient() {
 
             {/* 다가오는 일정 — 예정 일정 전체(내부·외부, 면접·서류발표·마감) */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">다가오는 일정</h2>
                 <Link
                   href="/calendar"
@@ -429,7 +429,7 @@ export function MyPageDashboardClient() {
                   ))}
                 </div>
               ) : (
-                <p className="px-5 py-4 text-[13px] text-[#8a94a3]">예정된 일정이 없습니다</p>
+                <p className="px-6 py-4 max-[760px]:px-4 text-[13px] text-[#8a94a3]">예정된 일정이 없습니다</p>
               )}
             </section>
           </div>

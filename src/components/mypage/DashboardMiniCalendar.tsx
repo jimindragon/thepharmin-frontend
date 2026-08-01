@@ -39,7 +39,7 @@ export function DashboardMiniCalendar() {
 
   return (
     <section className="border border-border bg-white">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+      <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
         <h2 className="text-[17px] font-bold text-[#17202c]">
           {TODAY_YEAR}년 {TODAY_MONTH_1}월
         </h2>

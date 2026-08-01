@@ -127,7 +127,7 @@ function TaskRow({
   action,
 }: (typeof TASKS)[0]) {
   return (
-    <div className="flex items-start gap-3 px-5 py-4 max-[600px]:flex-wrap">
+    <div className="flex items-start gap-3 px-6 py-4 max-[760px]:px-4 max-[600px]:flex-wrap">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[16px] font-semibold text-[#17202c]">{title}</span>
@@ -159,7 +159,7 @@ function InterviewRow({
   badge,
 }: (typeof UPCOMING_INTERVIEWS)[0]) {
   return (
-    <div className="flex items-start gap-4 px-5 py-4">
+    <div className="flex items-start gap-4 px-6 py-4 max-[760px]:px-4">
       <div className="w-12 shrink-0 text-center">
         <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">
           {day}
@@ -266,7 +266,7 @@ export function BusinessDashboardClient() {
 
             {/* 처리할 항목 */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">
                   처리할 항목
                   <span className="ml-2 text-status-positive">5</span>
@@ -287,7 +287,7 @@ export function BusinessDashboardClient() {
 
             {/* 공고별 지원 현황 */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">공고별 지원 현황</h2>
                 <Link
                   href="/business/jobs"
@@ -302,16 +302,23 @@ export function BusinessDashboardClient() {
                   return (
                     <div
                       key={job.id}
-                      className="grid grid-cols-[minmax(0,1fr)_56px_56px] items-center gap-3 px-5 py-4"
+                      // 우측 두 열 40px — 실측 필요폭은 "지원자" 캡션 28px, "D-22" 29.9px다.
+                      // 56px은 2배 과대라 390에서 제목 열을 124px까지 밀어냈다.
+                      // auto로 열지 않는 이유: 행마다 별개 grid라 D-day 폭(20.6~29.9)이 행마다
+                      // 달라지고, 그만큼 지원자 열의 x가 행마다 어긋난다.
+                      className="grid grid-cols-[minmax(0,1fr)_40px_40px] items-center gap-3 px-6 py-4 max-[760px]:px-4"
                     >
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-[13px] font-semibold text-[#17202c]">
+                          {/* break-keep: 390에서 제목 열이 156px라 긴 공고명은 2줄이 되는데,
+                              기본 word-break는 CJK를 아무 데서나 끊어 "제제연구 선임연구 / 원 모집"이 된다.
+                              어절 경계로 옮기는 것뿐이라 줄 수·행 높이는 그대로다. */}
+                          <span className="break-keep text-[16px] font-semibold text-[#17202c]">
                             {job.title}
                           </span>
-                          <TrackBadge label={jobTrackLabel(job.track)} size="sm" />
+                          <TrackBadge label={jobTrackLabel(job.track)} />
                         </div>
-                        <p className="mt-0.5 text-[12px] text-[#8a94a3]">
+                        <p className="mt-0.5 text-[13px] text-[#68717e]">
                           {job.registeredAt} 등록 · 게시 중
                         </p>
                       </div>
@@ -325,7 +332,9 @@ export function BusinessDashboardClient() {
                         <span
                           className={clsx(
                             "text-[13px] font-bold",
-                            dday.isUrgent ? "text-status-urgent" : "text-[#4f5967]",
+                            // 비긴급 초록은 공고 관리 표(BusinessJobsClient closingDate 열)와 같은 규칙이다 —
+                            // 같은 getClosingDday() 값을 두 곳이 보여주므로 색 분기도 같이 간다.
+                            dday.isUrgent ? "text-status-urgent" : "text-status-positive",
                           )}
                         >
                           D-{dday.value}
@@ -343,7 +352,7 @@ export function BusinessDashboardClient() {
 
             {/* 다가오는 면접 */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">다가오는 면접</h2>
                 <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
               </div>
@@ -356,12 +365,12 @@ export function BusinessDashboardClient() {
 
             {/* 최근 활동 */}
             <section className="border border-border bg-white">
-              <div className="border-b border-border px-5 py-4">
+              <div className="border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">최근 활동</h2>
               </div>
               <div className="divide-y divide-[#e5e9ef]">
                 {RECENT_ACTIVITIES.map((act) => (
-                  <div key={act.id} className="flex items-start gap-3 px-5 py-3">
+                  <div key={act.id} className="flex items-start gap-3 px-6 py-3 max-[760px]:px-4">
                     <div className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-status-positive" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] leading-[1.5] text-[#17202c]">
