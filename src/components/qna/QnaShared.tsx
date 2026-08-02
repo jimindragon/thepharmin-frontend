@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getEntryCommentCount, getMyQnaComments, getMyQnaPosts, getPopularQnaTags, getQnaPostById, qnaOperationPrinciple } from "@/data/qna";
 import { readQnaScraps } from "@/components/qna/qnaScraps";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import type { QnaAuthorType, QnaListEntry, QnaType } from "@/types/qna";
 
 /** 글쓰기/댓글/공감/스크랩/공유/신고 — 백엔드가 없는 동작은 이 토스트로 통일해서 알린다 */
@@ -37,44 +38,25 @@ export function QnaAvatar({ authorType, initial, size = 36 }: { authorType: QnaA
   );
 }
 
-/** id 문자열을 0~mod-1 범위로 결정론적으로 매핑(djb2) — Math.random 대신 매 렌더링 동일한 값을 내도록 */
-function hashToIndex(id: string, mod: number): number {
-  let hash = 5381;
-  for (let i = 0; i < id.length; i += 1) {
-    hash = ((hash << 5) + hash + id.charCodeAt(i)) >>> 0;
-  }
-  return hash % mod;
-}
-
-const authorAvatarTones = [
-  "bg-[#eef1f5] text-[#596373]",
-  "bg-[#dde3ea] text-[#45505f]",
-  "bg-[#c9d1db] text-[#333d4b]",
-  "bg-[#b3bec9] text-[#202734]",
-];
-
-/** "익명"/"작성자"는 익명 계열이라 서로 구분되면 안 되므로 단색 하나로 고정한다 */
-const anonymousAvatarTone = "bg-[#e8ebef] text-[#596373]";
-
+/** "익명"/"작성자"는 익명 계열이라 서로 구분되면 안 된다 — QNA 도메인 규칙이라 PersonAvatar가 아니라 여기 남는다 */
 function isAnonymousNickname(nickname: string): boolean {
   return nickname === "익명" || nickname === "작성자";
 }
 
 /**
  * QNA 카드 상단 작성자 블록 전용 원형 아바타 — 닉네임 이니셜을 그대로 쓴다.
- * "익명"/"작성자"(익명 계열)는 서로 식별되면 안 되므로 항상 같은 단색이고,
- * 실명(기업·헤드헌터·비익명 사용자)만 id 해시 기반 회색 톤 로테이션을 받는다.
+ * 익명 계열은 seed 없이 넘겨 항상 같은 단색을 받고,
+ * 실명(기업·헤드헌터·비익명 사용자)만 id를 seed로 넘겨 회색 톤 로테이션을 받는다.
+ * 톤 배열과 해시는 PersonAvatar가 갖고 있고, 이 함수는 "무엇을 seed로 줄지"만 정한다.
  */
 export function QnaAuthorAvatar({ id, nickname, size = 38 }: { id: string; nickname: string; size?: number }) {
-  const tone = isAnonymousNickname(nickname) ? anonymousAvatarTone : authorAvatarTones[hashToIndex(id, authorAvatarTones.length)];
   return (
-    <span
-      className={clsx("grid shrink-0 place-items-center rounded-full text-[14px] font-bold", tone)}
-      style={{ width: size, height: size }}
-      aria-hidden="true"
-    >
-      {nickname.slice(0, 1)}
-    </span>
+    <PersonAvatar
+      label={nickname}
+      size={size}
+      seed={isAnonymousNickname(nickname) ? undefined : id}
+      className="shrink-0"
+    />
   );
 }
 

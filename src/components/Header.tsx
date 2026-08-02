@@ -9,6 +9,7 @@ import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 import { siteConfig } from "@/config/site";
 import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
 import { NotificationBell } from "@/components/shared/NotificationBell";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
@@ -33,11 +34,11 @@ export function AccountMenu() {
         onClick={() => setOpen((current) => !current)}
         aria-haspopup="menu"
         aria-expanded={open}
+        // 아바타는 aria-hidden이고 이름 텍스트는 720px 이하에서 숨으므로, 이름을 마크업에 기대지 않고 여기서 직접 준다.
+        aria-label={`${myPageUser.name}님 계정 메뉴`}
         className="flex items-center gap-2 py-1 pl-1 pr-1.5 hover:bg-white/10 max-[520px]:gap-1.5 max-[520px]:pr-1.5"
       >
-        <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
-          김
-        </span>
+        <PersonAvatar label={myPageUser.name} size={30} />
         <span className="whitespace-nowrap text-[13px] font-medium text-white/90 max-[720px]:hidden">{siteConfig.userName}</span>
         <ChevronDown
           size={16}
@@ -55,7 +56,7 @@ export function AccountMenu() {
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
-            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">{myPageUser.email}</p>
+            <p className="mt-0.5 text-[13px] font-normal text-[#6b7480]">{myPageUser.email}</p>
           </div>
           <div className="h-px bg-[#edf1f5]" />
           <div className="py-2">
@@ -64,7 +65,7 @@ export function AccountMenu() {
               // 라벨이 아래 항목 묶음에 붙어야 "이 묶음의 제목"으로 읽힌다. 첫 그룹만 pt-1 —
               // 위에 이메일 아래 구분선이 이미 있어 같은 12px을 주면 과하게 벌어진다.
               <div key={group.title} className="px-1 pb-1.5 pt-3 first:pt-1">
-                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#b0bac6]">{group.title}</p>
+                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#6b7480]">{group.title}</p>
                 <div className="mt-0.5">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
@@ -80,7 +81,7 @@ export function AccountMenu() {
                       >
                         <span className={active ? "font-bold" : undefined}>{item.label}</span>
                         {item.badge ? (
-                          <span className={clsx("text-[12px] font-normal", active ? "text-[#596373]" : "text-[#a0a9b7]")}>{item.badge}</span>
+                          <span className={clsx("text-[12px] font-normal", active ? "text-[#596373]" : "text-[#6b7480]")}>{item.badge}</span>
                         ) : null}
                       </Link>
                     );

@@ -8,6 +8,7 @@ import { SectionCard } from "@/components/business/BusinessFormControls";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { DetailPill } from "@/components/shared/DetailPill";
 import { JobTagChip } from "@/components/shared/JobTagChip";
+import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { STATUS_TONE } from "@/config/statusTone";
 import {
   APPLICANT_STAGE_TONE,
@@ -147,9 +148,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
 
         <section className="mt-5 border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
           <div className="flex items-center gap-4">
-            <span className="grid h-[52px] w-[52px] shrink-0 place-items-center rounded-full bg-[#f2f4f7] text-[18px] font-bold text-[#303946]">
-              {applicant.name.charAt(0)}
-            </span>
+            <PersonAvatar label={applicant.name} size={52} className="shrink-0" />
             <div>
               <p className="text-[22px] font-bold text-[#17202c]">{applicant.name}</p>
               <p className="mt-1 text-[13px] font-normal text-[#68717e]">

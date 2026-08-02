@@ -56,7 +56,7 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
         {/* 인증·프리미엄 배지는 변별력 없어 제거됨(공고 등록 자체가 사업자 인증 전제) — Hero는 "식별"(로고·기관명·한줄소개·액션) 역할로 한정한다 */}
         <div className="flex items-end justify-between gap-6 max-[820px]:items-start max-[820px]:flex-col">
           <div className="flex min-w-0 items-center gap-6 max-[640px]:items-start max-[640px]:gap-4">
-            <div className="grid h-[118px] w-[118px] shrink-0 place-items-center border border-white/24 bg-white text-center text-[16px] font-medium leading-tight text-[#17212c] shadow-[0_18px_42px_rgba(0,0,0,0.22)] max-[640px]:h-[92px] max-[640px]:w-[92px] max-[640px]:text-[13px]">
+            <div className="grid h-[118px] w-[118px] shrink-0 place-items-center bg-white text-center text-[16px] font-medium leading-tight text-[#17212c] shadow-[0_18px_42px_rgba(0,0,0,0.22)] max-[640px]:h-[92px] max-[640px]:w-[92px] max-[640px]:text-[13px]">
               {profile.logoImage ? <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" /> : profile.logoText}
             </div>
             <div className="min-w-0">
@@ -79,7 +79,7 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
             <button
               type="button"
               onClick={() => setInterested((current) => !current)}
-              className="inline-flex h-11 items-center justify-center gap-2 border border-white/85 bg-white px-4 text-[13px] font-medium text-[#17212c] transition hover:bg-[#f4f4f4] max-[640px]:flex-1"
+              className="inline-flex h-11 items-center justify-center gap-2 bg-white px-4 text-[13px] font-medium text-[#17212c] transition hover:bg-[#f4f4f4] max-[640px]:flex-1"
               aria-pressed={interested}
             >
               <Bookmark size={16} fill={interested ? "currentColor" : "none"} />
