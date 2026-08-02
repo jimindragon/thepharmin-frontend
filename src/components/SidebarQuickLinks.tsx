@@ -17,8 +17,6 @@ interface SidebarQuickLinksProps {
   savedCount: number;
   preference: UserJobPreference | null;
   preferenceApplied: boolean;
-  activeQuickLink: string;
-  onQuickLinkClick: (key: string) => void;
   onApplyPreference: (preference: UserJobPreference) => void;
   onClearPreferenceFilters: () => void;
 }
@@ -61,8 +59,6 @@ export function SidebarQuickLinks({
   savedCount,
   preference,
   preferenceApplied,
-  activeQuickLink,
-  onQuickLinkClick,
   onApplyPreference,
   onClearPreferenceFilters,
 }: SidebarQuickLinksProps) {
@@ -77,7 +73,6 @@ export function SidebarQuickLinks({
   const hasPreference = isLoggedIn && Boolean(savedPreference);
 
   const goToPreferences = () => {
-    onQuickLinkClick("preference");
     if (!isLoggedIn) {
       setLoginGateOpen(true);
       return;
@@ -86,14 +81,12 @@ export function SidebarQuickLinks({
   };
 
   const handleApplyPreference = () => {
-    onQuickLinkClick("preference");
     if (savedPreference) {
       onApplyPreference(savedPreference);
     }
   };
 
   const handleClearPreference = () => {
-    onQuickLinkClick("preference");
     onClearPreferenceFilters();
   };
 
@@ -115,16 +108,12 @@ export function SidebarQuickLinks({
         onPrimaryCtaClick={!hasPreference ? goToPreferences : preferenceApplied ? handleClearPreference : handleApplyPreference}
         secondaryActionLabel={hasPreference ? "관심조건 수정" : undefined}
         secondaryActionHref={hasPreference ? preferencesHref : undefined}
-        onSecondaryActionClick={hasPreference ? () => onQuickLinkClick("preference") : undefined}
       />
 
       <JobUsageTipsCard
         savedCount={savedCount}
-        onSavedClick={() => onQuickLinkClick("saved")}
-        onRecentClick={() => {
-          onQuickLinkClick("recent");
-          router.push(sharedRoutes.myPageRecentJobs);
-        }}
+        onSavedClick={() => router.push(sharedRoutes.myPageScraps)}
+        onRecentClick={() => router.push(sharedRoutes.myPageRecentJobs)}
         onPreferenceSettingsClick={goToPreferences}
       />
 

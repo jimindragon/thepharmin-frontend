@@ -322,7 +322,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                 {/* A. 기업 요약 + 관심 기업 저장 */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <CompanyLogo name={org.name} logoText="" logoUrl={org.logoUrl} size="lg" />
+                    <CompanyLogo name={org.name} logoUrl={org.logoUrl} size="lg" />
                     <div>
                       <p className="text-[17px] font-bold text-[#1f2733]">{org.name}</p>
                       <p className="mt-1.5 text-[15px] font-medium leading-[1.5] text-[#2f3845]">{org.shortIntro}</p>

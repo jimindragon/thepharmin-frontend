@@ -12,9 +12,9 @@ export function headerNavItemClassName(active: boolean) {
 
 /**
  * 계정 드롭다운 안의 '동작' 항목(로그아웃) 클래스. 패널 자체는 다크·라이트 헤더가
- * 똑같은 흰 패널을 쓰므로 실제 렌더되는 2벌(개인 AccountMenu·기업 BusinessAccountMenu)이
- * 이 한 줄을 공유한다. 세 번째 소비처인 고객센터 SupportBusinessAccountMenu는 코드에는
- * 남아 있지만 고객센터 헤더가 개인 세션만 보게 되면서 더 이상 렌더되지 않는다.
+ * 똑같은 흰 패널을 쓰므로 2벌(개인 AccountMenu·기업 BusinessAccountMenu)이 이 한 줄을
+ * 공유한다. 고객센터에도 세 번째 벌이 있었으나, 헤더가 개인 세션만 보게 되면서 렌더되지
+ * 않는 채로 남아 있다가 삭제됐다.
  * 이동 항목은 Link, 로그아웃은 button이라 태그만 다르고 시각 스펙은 동일하다.
  */
 export const headerDropdownActionClassName =

@@ -25,7 +25,6 @@ export function SignupCompleteStep({ orgTrack, institutionName }: { orgTrack: Or
     // 가입을 마치면 곧바로 기업 세션을 연다 — 두 트랙(기업·약국) 폼이 공유하는 유일한 도착 지점이라
     // 여기 한 곳이면 "기관 정보 입력하러 가기"로 나가든 "나중에 하기"로 나가든 로그인 상태로 도착한다.
     markBusinessMember();
-    // eslint-disable-next-line no-console
     console.log("[signup] orgTrack assigned:", orgTrack);
   }, [orgTrack]);
 

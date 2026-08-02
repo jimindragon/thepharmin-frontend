@@ -17,7 +17,6 @@ import { useState, type ReactNode } from "react";
 export function ResumeSectionCard({
   title,
   description,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   index: _index,
   status = "작성 중",
   collapsible = false,

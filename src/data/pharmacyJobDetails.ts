@@ -63,9 +63,6 @@ export const applyMethodLabelMap: Record<string, string> = {
   homepage: "기업 홈페이지 지원",
 };
 
-type PharmacyTypeId = "local" | "clinic-front" | "large" | "beauty";
-type PharmacyFeatureId = "otc_focused" | "prescription_focused" | "mixed";
-
 // 근무 시간대 그룹: 같은 시간에 근무하는 요일을 묶음
 // 예: 화·목은 오후, 토는 오전 → 두 개의 WorkScheduleBlock
 export interface WorkScheduleBlock {

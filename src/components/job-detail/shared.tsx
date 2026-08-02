@@ -77,12 +77,10 @@ export function getCompanyDetailHref(companyId?: string) {
 
 export function CompanyLogo({
   name,
-  logoText,
   logoUrl,
   size = "lg",
 }: {
   name: string;
-  logoText: string;
   logoUrl?: string;
   size?: "sm" | "lg";
 }) {
@@ -442,7 +440,7 @@ export function JobDetailActionRow({
 }) {
   const companyContent = (
     <>
-      {showLogo ? <CompanyLogo name={orgName} logoText="" logoUrl={logoUrl} size="sm" /> : null}
+      {showLogo ? <CompanyLogo name={orgName} logoUrl={logoUrl} size="sm" /> : null}
       <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
     </>
   );
@@ -452,7 +450,7 @@ export function JobDetailActionRow({
       <div className="flex flex-wrap items-center gap-3 max-[560px]:w-full max-[560px]:flex-col max-[560px]:items-start">
         {companyId ? (
           <Link href={`/companies/${companyId}`} className="group flex items-center gap-3">
-            {showLogo ? <CompanyLogo name={orgName} logoText="" logoUrl={logoUrl} size="sm" /> : null}
+            {showLogo ? <CompanyLogo name={orgName} logoUrl={logoUrl} size="sm" /> : null}
             <p className="text-[15px] font-normal text-[#667181] group-hover:text-brand">{orgName}</p>
           </Link>
         ) : (

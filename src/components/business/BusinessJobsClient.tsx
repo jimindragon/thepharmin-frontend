@@ -33,7 +33,6 @@ export function BusinessJobsClient() {
   const [boostModalJobId, setBoostModalJobId] = useState<string | null>(null);
 
   const filtered = filterJobPostings(jobPostings, statusFilter);
-  const hasJobs = filtered.length > 0;
 
   const tabCounts: Record<JobPostingStatusFilter, number> = {
     all: jobPostings.length,

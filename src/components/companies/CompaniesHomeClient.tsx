@@ -179,7 +179,7 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
     node.scrollLeft = state.startScrollLeft - delta;
   };
 
-  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const endDrag = () => {
     const node = scrollRef.current;
     const state = dragState.current;
     if (node && state?.isDragging && node.hasPointerCapture(state.pointerId)) {

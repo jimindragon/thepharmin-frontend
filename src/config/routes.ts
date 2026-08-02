@@ -7,4 +7,5 @@ export const sharedRoutes = {
   support: "/support",
   myPagePreferences: "/mypage/preferences",
   myPageRecentJobs: "/mypage/recent-jobs",
+  myPageScraps: "/mypage/scraps",
 } as const;

@@ -341,7 +341,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
               {/* 병원 정보 */}
               <IconSectionShell id="hospital" icon={Building2} title="병원 정보">
                 <div className="flex items-start gap-4">
-                  <CompanyLogo name={org.hospitalName} logoText="" logoUrl={org.logoUrl} size="lg" />
+                  <CompanyLogo name={org.hospitalName} logoUrl={org.logoUrl} size="lg" />
                   <div>
                     <p className="text-[17px] font-bold text-[#1f2733]">{org.hospitalName}</p>
                     <p className="mt-2 text-[15px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>

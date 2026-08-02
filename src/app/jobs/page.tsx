@@ -42,7 +42,6 @@ export default function JobsPage() {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeQuickLink, setActiveQuickLink] = useState("preference");
   const [preference, setPreferenceState] = useState<UserJobPreference | null>(null);
 
   const filterState = useJobFilters(false);
@@ -53,7 +52,6 @@ export default function JobsPage() {
   // 트랙(페이지 분야)이 바뀔 때마다 그 분야의 저장된 관심조건만 불러온다 — 자동으로 적용하지는 않는다.
   useEffect(() => {
     setPreferenceState(getStoredJobPreference(activeTrack));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTrack]);
 
   useEffect(() => {
@@ -159,8 +157,6 @@ export default function JobsPage() {
               savedCount={bookmarkedIds.length}
               preference={preference}
               preferenceApplied={filterState.preferenceApplied}
-              activeQuickLink={activeQuickLink}
-              onQuickLinkClick={setActiveQuickLink}
               onApplyPreference={applyPreference}
               onClearPreferenceFilters={clearPreferenceFilters}
             />

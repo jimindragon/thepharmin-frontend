@@ -7,7 +7,7 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
-import { HINT, IN, SEL, TA } from "@/components/job-registration/fieldClasses";
+import { IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";

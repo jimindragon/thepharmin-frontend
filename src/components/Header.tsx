@@ -112,7 +112,7 @@ export function Header() {
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
-        <a href="/" className="flex shrink-0 items-center" aria-label="더파마 리크루트 홈으로 이동">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="더파마 리크루트 홈으로 이동">
           <img
             src="/images/white_logo_1.svg"
             alt="더파마 리크루트"
@@ -120,7 +120,7 @@ export function Header() {
             height={25}
             className="h-[25px] w-[254px] object-contain max-[900px]:h-[23px] max-[900px]:w-[234px] max-[520px]:h-[21px] max-[520px]:w-[214px]"
           />
-        </a>
+        </Link>
 
         {/* 메뉴 라벨은 어떤 폭에서도 글자 단위로 쪼개지면 안 되므로 whitespace-nowrap 고정.
             대신 폭이 모자라면 아래 보조 메뉴 묶음을 통째로 숨겨서 감당한다. */}

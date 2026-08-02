@@ -116,7 +116,11 @@ export interface ResearchJobPosting {
 
 export interface ResearchOrg {
   institutionName: string;
-  /** jobs.ts의 logoText/logoColor(이니셜 배지)를 그대로 옮겨 담는다. logoUrl 로딩 실패 시 안전망으로 쓰인다 */
+  /**
+   * jobs.ts의 logoText/logoColor(이니셜 배지)를 그대로 옮겨 담는다.
+   * 상세 화면은 이 값을 읽지 않는다 — 로고는 logoUrl로 그리고, 로딩 실패나 자산 부재 시에는
+   * EntityLogo가 institutionName에서 이니셜을 만들어 대신 채운다.
+   */
   logoText: string;
   logoColor: string;
   /** 기업정보 폼 업로드 이미지. industryJobDetails.ts의 IndustryOrg.logoUrl과 동일 목적 */

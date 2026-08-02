@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
+import { FieldLabel } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 
 export interface AccountCreationInfo {

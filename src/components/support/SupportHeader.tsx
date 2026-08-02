@@ -1,135 +1,19 @@
 "use client";
 
-import clsx from "clsx";
-import { ChevronDown, Lock } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { AccountMenu } from "@/components/Header";
-import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
+import { headerNavItemClassName } from "@/components/headerNavStyles";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { LinkButton } from "@/components/ui/Button";
-import { businessAccountMenuItems } from "@/config/businessAccountMenu";
-import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
-import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
-import { clearBusinessMember } from "@/hooks/useBusinessMember";
-import { useDropdownMenu } from "@/hooks/useDropdownMenu";
-import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 
 const supportNavItems = [
   { label: "개인 서비스", href: "/" },
   { label: "기업 서비스", href: "/business" },
 ];
-
-/** BusinessHeaders·BusinessCenterShell의 잠금 툴팁과 같은 문구 */
-const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
-
-/**
- * 기업회원용 프로필 드롭다운. BusinessAccountMenu(BusinessHeaders.tsx)와 같은 데이터
- * (initialBusinessCompanyProfile, businessCenterMenuGroups)와 드롭다운 패널 구성을 쓰지만,
- * 고객센터 헤더가 개인회원 헤더와 같은 다크 톤이라 트리거 버튼만 AccountMenu와 같은
- * 다크 스타일로 맞춘다.
- */
-function SupportBusinessAccountMenu() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const orgVerificationStatus = useOrgVerificationStatus();
-  const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
-  const isHomeActive = pathname === businessCenterHomeItem.href;
-
-  // BusinessAccountMenu의 로그아웃과 같은 동작 — 저장소를 비우고 기업 소개로 보낸다.
-  const handleLogout = () => {
-    clearBusinessMember();
-    setOpen(false);
-    router.push("/business");
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((current) => !current)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="flex items-center gap-2 py-1 pl-1 pr-1.5 hover:bg-white/10 max-[520px]:gap-1.5 max-[520px]:pr-1.5"
-      >
-        <span className="grid h-[30px] w-[30px] place-items-center border border-white/20 bg-[#222222] text-[14px] font-medium text-white">
-          {initialBusinessCompanyProfile.displayName.slice(0, 1)}
-        </span>
-        <span className="whitespace-nowrap text-[13px] font-medium text-white/90 max-[720px]:hidden">
-          {initialBusinessCompanyProfile.displayName}
-        </span>
-        <ChevronDown
-          size={16}
-          color="rgba(255,255,255,0.58)"
-          className={clsx("transition-transform max-[520px]:hidden", open && "rotate-180")}
-        />
-      </button>
-
-      {open ? (
-        <div
-          role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
-        >
-          <div className="px-3 py-2.5">
-            <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
-            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
-              {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
-            </p>
-          </div>
-          <div className="h-px bg-[#edf1f5]" />
-          <div className="py-2">
-            {/* 항목·순서·잠금 표시·구분선 구성 모두 BusinessAccountMenu와 동일하다
-                (businessAccountMenuItems 공유 + 같은 isApprovalGatedPath 판정).
-                대시보드를 같은 블록에 둬 5항목을 등간격으로 유지하는 것까지 동일. */}
-            <div className="px-1 py-1.5">
-              <Link
-                href={businessCenterHomeItem.href}
-                onClick={() => setOpen(false)}
-                className={clsx(
-                  "flex items-center px-2 py-2 text-[13px] font-medium transition-colors",
-                  isHomeActive ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                )}
-              >
-                {businessCenterHomeItem.label}
-              </Link>
-              {businessAccountMenuItems.map((item) => {
-                const active = pathname === item.href;
-                const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={clsx(
-                      "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
-                      active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                    )}
-                  >
-                    <span>{item.label}</span>
-                    {locked ? (
-                      <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
-                        <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-          {/* 로그아웃 — BusinessAccountMenu와 같은 위치·구분선·시각 스펙. */}
-          <div className="border-t border-border px-1 py-1.5">
-            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
-              로그아웃
-            </button>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
 
 /**
  * 화면은 경로로 판단한다 — /business/* 는 기업 세션만, 그 밖은 개인 세션만 본다.
@@ -146,7 +30,7 @@ export function SupportHeader() {
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
-        <a href="/" className="flex shrink-0 items-center" aria-label="THE PHARMA Recruit. 홈으로 이동">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="THE PHARMA Recruit. 홈으로 이동">
           <img
             src="/images/white_logo_1.svg"
             alt="THE PHARMA Recruit."
@@ -154,7 +38,7 @@ export function SupportHeader() {
             height={25}
             className="h-[25px] w-[254px] object-contain max-[900px]:h-[23px] max-[900px]:w-[234px] max-[520px]:h-[21px] max-[520px]:w-[214px]"
           />
-        </a>
+        </Link>
 
         <nav className="flex min-w-0 flex-1 items-center justify-center gap-6 whitespace-nowrap text-[14px] max-[860px]:hidden">
           {supportNavItems.map((item) => {

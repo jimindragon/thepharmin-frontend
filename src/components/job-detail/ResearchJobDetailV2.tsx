@@ -348,7 +348,7 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
               {/* 기관 정보 */}
               <IconSectionShell id="org" icon={Building2} title="기관 정보">
                 <div className="flex items-start gap-4">
-                  <CompanyLogo name={org.institutionName} logoText="" logoUrl={org.logoUrl} size="lg" />
+                  <CompanyLogo name={org.institutionName} logoUrl={org.logoUrl} size="lg" />
                   <div>
                     <p className="text-[17px] font-bold text-[#1f2733]">{org.institutionName}</p>
                     <p className="mt-2 text-[15px] font-medium leading-[1.6] text-[#2f3845]">{org.shortIntro}</p>

@@ -1,4 +1,3 @@
-import { companyExampleImages } from "@/config/companyImages";
 import { jobTrackLabels } from "@/config/jobTracks";
 import { deriveJobTrack } from "@/config/trackMapping";
 import { JOB_SUBCATEGORY } from "@/data/taxonomy";

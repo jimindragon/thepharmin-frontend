@@ -20,9 +20,8 @@ const ACCOUNT_MENU_HREFS = [
 /**
  * 대시보드(businessCenterHomeItem)를 뺀 나머지 4항목. businessCenterMenuGroups의 정의 순서를
  * 그대로 따르므로 사이드바 config가 바뀌어도 목록이 갈라지지 않는다.
- * 현재 실제로 렌더되는 드롭다운은 BusinessHeaders 1벌뿐이다 — SupportHeader의
- * SupportBusinessAccountMenu도 이 목록을 참조하지만, 고객센터 헤더가 개인 세션만 보게 되면서
- * 더 이상 렌더되지 않는다(컴포넌트는 코드에 남아 있음).
+ * 이 목록을 쓰는 드롭다운은 BusinessHeaders 1벌뿐이다 — SupportHeader에도 한 벌 있었으나
+ * 고객센터 헤더가 개인 세션만 보게 되면서 렌더되지 않는 채로 남아 있다가 삭제됐다.
  */
 export const businessAccountMenuItems: BusinessCenterMenuItem[] = businessCenterMenuGroups
   .flatMap((group) => group.items)

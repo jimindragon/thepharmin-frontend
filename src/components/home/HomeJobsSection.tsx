@@ -58,7 +58,6 @@ export function HomeJobsSection({
 }) {
   const [sortOption, setSortOption] = useState<SortOption>("추천순");
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeQuickLink, setActiveQuickLink] = useState("preference");
   const [preference, setPreferenceState] = useState<UserJobPreference | null>(null);
   const filterState = useJobFilters(false, { syncUrl: false });
   const activeJobTrack = filterState.filters.track;
@@ -169,8 +168,6 @@ export function HomeJobsSection({
             savedCount={bookmarkedIds.length}
             preference={preference}
             preferenceApplied={filterState.preferenceApplied}
-            activeQuickLink={activeQuickLink}
-            onQuickLinkClick={setActiveQuickLink}
             onApplyPreference={applyPreference}
             onClearPreferenceFilters={clearPreferenceFilters}
           />

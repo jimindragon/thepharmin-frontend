@@ -5,7 +5,6 @@ import Link from "next/link";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
-import { Eyebrow, SectionIntro, typeScale } from "@/components/ui/Typography";
 import { companyExampleImages } from "@/config/companyImages";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 
