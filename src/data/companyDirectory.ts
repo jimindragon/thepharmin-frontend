@@ -1,6 +1,7 @@
 import { companies, companyReviews } from "@/data/companies";
 import { companyProfiles } from "@/data/companyProfiles";
 import { jobs } from "@/data/jobs";
+import { companyLogos } from "@/config/companyImages";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import type { Job, JobTrack } from "@/types/jobs";
 
@@ -168,7 +169,9 @@ export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company)
     type: company.industry,
     region: regionFromAddress(company.address),
     logoText: company.logoText,
-    logoUrl: company.logoUrl,
+    // 다른 화면(JobCard·홈·공고 상세)과 같은 "직접 필드 ?? 이름으로 조회" 순서. companies.ts에 logoUrl을
+    // 채우는 대신 여기서 폴백해야 companyLogos가 로고 자산의 단일 출처로 남는다
+    logoUrl: company.logoUrl ?? companyLogos[company.name],
     logoColor: company.logoColor,
     logoAccent: company.logoAccent,
     verified: company.verified,

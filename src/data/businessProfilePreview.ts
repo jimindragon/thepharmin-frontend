@@ -11,6 +11,7 @@ import type { HospitalOrgProfile, OrgFeatureItem, PharmacyOrgProfile } from "@/d
 import { regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 /**
  * 기업센터 "브랜드 페이지 미리보기"용 변환기. 기관정보 관리(BusinessCompanyProfileClient/HospitalOrgProfileClient/
@@ -50,7 +51,7 @@ export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmi
   return {
     id: profile.id,
     name: profile.name,
-    logoText: profile.name.slice(0, 2),
+    logoText: getCompanyInitial(profile.name),
     logoImage: profile.logoUrl ?? undefined,
     tagline: profile.shortIntro,
     tags: [typeLabel, profile.foundedYear ? `설립 ${profile.foundedYear}년` : null, employeeCountLabel(profile.employeeCount)].filter(

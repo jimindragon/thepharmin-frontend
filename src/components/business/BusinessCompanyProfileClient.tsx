@@ -27,6 +27,7 @@ import {
   type OrgAdmin,
   type OrgManager,
 } from "@/data/businessCompanyProfile";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 const MAX_KEYWORDS = 8;
 const MAX_PRODUCTS = 5;
@@ -54,8 +55,8 @@ function ImageMark({ url, alt, fallback }: { url: string | null; alt: string; fa
   }
 
   return (
-    <div className="grid h-full w-full place-items-center bg-[#f7f8fa] text-[13px] font-bold text-[#4f5968]">
-      {fallback.slice(0, 2)}
+    <div className="grid h-full w-full place-items-center bg-[#f7f8fa] text-[13px] font-semibold text-[#596373]">
+      {getCompanyInitial(fallback)}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { jobs } from "@/data/jobs";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 import { formatJobDeadlineLabel } from "@/utils/dday";
 
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
@@ -165,7 +166,7 @@ function HomeRecommendationCard({
         {logoUrl ? (
           <img src={logoUrl} alt={job.company} className="max-h-10 w-full object-contain" />
         ) : (
-          <span className="text-[13px] font-semibold text-[#596373]">{job.company.slice(0, 2)}</span>
+          <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>
         )}
       </div>
       {/* 세로 구분선 */}

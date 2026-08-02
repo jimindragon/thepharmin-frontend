@@ -11,6 +11,7 @@ import { type FileStatus, type OrgManager } from "@/data/businessCompanyProfile"
 import { initialHospitalOrgManager, initialHospitalOrgProfile, saveHospitalOrgProfileDraft, specialistPharmacistOptions, type HospitalOrgProfile, type OrgFeatureItem } from "@/data/businessOrgProfile";
 import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import type { HospitalOperator, HospitalType } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 /** 카드 내부 필드 그룹 간 세로 간격 — STEP 4-c 기준을 이 컴포넌트에도 동일 적용 */
 const FIELD_GROUP_GAP = "space-y-6";
@@ -43,8 +44,8 @@ function ImageMark({ url, alt, fallback }: { url: string | null; alt: string; fa
   }
 
   return (
-    <div className="grid h-full w-full place-items-center bg-[#f7f8fa] text-[13px] font-bold text-[#4f5968]">
-      {fallback.slice(0, 2)}
+    <div className="grid h-full w-full place-items-center bg-[#f7f8fa] text-[13px] font-semibold text-[#596373]">
+      {getCompanyInitial(fallback)}
     </div>
   );
 }

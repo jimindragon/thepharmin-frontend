@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { getCompanyInitial } from "@/utils/companyInitial";
 import type { RecommendedJob } from "@/types/jobs";
 
 interface RecommendedJobsProps {
@@ -119,7 +120,7 @@ function LogoLine({
           className="flex shrink-0 items-center justify-center text-[13px] font-semibold text-[#596373]"
           style={{ width, height }}
         >
-          {company.slice(0, 2)}
+          {getCompanyInitial(company)}
         </span>
       )}
       <div className="mx-[10px] w-px shrink-0 bg-[#eeeeee]" style={{ height }} />
@@ -149,7 +150,7 @@ function LogoPatch({
         />
       ) : (
         <span className="text-[13px] font-semibold text-[#596373]">
-          {company.slice(0, 2)}
+          {getCompanyInitial(company)}
         </span>
       )}
     </div>
