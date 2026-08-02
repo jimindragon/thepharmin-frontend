@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { headerDropdownActionClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { businessAccountMenuItems } from "@/config/businessAccountMenu";
 import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
@@ -83,9 +84,16 @@ export function BusinessAccountMenu() {
         onClick={() => setOpen((current) => !current)}
         aria-haspopup="menu"
         aria-expanded={open}
+        // 아바타가 aria-hidden이고 사명은 720px 이하에서 숨으므로, 버튼 이름은 여기서만 나온다.
+        // 개인 헤더와 달리 법인명이라 "님"을 붙이지 않는다.
+        aria-label={`${initialBusinessCompanyProfile.displayName} 계정 메뉴`}
         className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111] max-[520px]:gap-0 max-[520px]:px-1.5"
       >
-        <span className="grid h-6 w-6 place-items-center bg-[#f0f2f4] text-[11px]">{initialBusinessCompanyProfile.displayName.slice(0, 1)}</span>
+        <EntityLogo
+          name={initialBusinessCompanyProfile.displayName}
+          logoUrl={initialBusinessCompanyProfile.logoUrl ?? undefined}
+          size={24}
+        />
         <span className="whitespace-nowrap max-[720px]:hidden">{initialBusinessCompanyProfile.displayName}</span>
         <ChevronDown size={14} className={clsx("text-[#7d8796] transition-transform max-[520px]:hidden", open && "rotate-180")} />
       </button>

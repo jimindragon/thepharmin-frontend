@@ -1,14 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { getCompanyInitial } from "@/utils/companyInitial";
+import { Building2 } from "lucide-react";
+
+/** 아이콘이 박스의 42~45%를 차지하도록. PersonAvatar와 같은 이유로 비례식 대신 구간으로 끊는다 */
+function iconSizeFor(size: number): number {
+  if (size <= 28) return 14;
+  if (size >= 64) return 30;
+  if (size >= 44) return 20;
+  return 18;
+}
 
 export function EntityLogo({
-  name,
   logoUrl,
   size = 48,
   className,
 }: {
+  /** 폴백이 아이콘이 된 뒤로는 렌더에 쓰이지 않는다. 로고 img의 alt를 채울 때 쓸 자리 */
   name: string;
   logoUrl?: string;
   size?: number;
@@ -26,7 +34,7 @@ export function EntityLogo({
       {showImage ? (
         <img src={logoUrl} alt="" className="h-full w-full object-contain p-1.5" onError={() => setImageFailed(true)} />
       ) : (
-        <span className="text-[13px] font-bold text-[#596373]">{getCompanyInitial(name)}</span>
+        <Building2 size={iconSizeFor(size)} strokeWidth={1.75} className="text-[#596373]" />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { User } from "lucide-react";
 
 /** id 문자열을 0~mod-1 범위로 결정론적으로 매핑(djb2) — Math.random 대신 매 렌더링 동일한 값을 내도록 */
 function hashToIndex(id: string, mod: number): number {
@@ -22,14 +23,12 @@ const personAvatarTones = [
 /** seed가 없을 때(= 서로 구분될 필요가 없는 단일 정체) 쓰는 고정 톤 */
 const singleTone = "bg-[#e8ebef] text-[#596373]";
 
-/**
- * 박스 대비 글자 크기 비율이 지점마다 0.346~0.467로 흩어져 있어 단일 비율로는 현행을 재현할 수 없다.
- * 실제로 필요한 값이 11/14/18 세 개뿐이라 비례식 대신 구간으로 끊는다.
- */
-function fontSizeFor(size: number): number {
-  if (size <= 28) return 11;
-  if (size >= 48) return 18;
-  return 14;
+/** 실루엣이 박스의 약 45~50%를 차지하도록. 글자 때와 같은 이유로 비례식 대신 구간으로 끊는다 */
+function iconSizeFor(size: number): number {
+  if (size <= 28) return 14;
+  if (size >= 48) return 26;
+  if (size >= 36) return 18;
+  return 16;
 }
 
 /**
@@ -43,11 +42,11 @@ function fontSizeFor(size: number): number {
  * 드롭다운 트리거 <button> 안에서도 쓰이므로 인터랙티브 요소를 렌더하지 않는다.
  */
 export function PersonAvatar({
-  label,
   size,
   seed,
   className,
 }: {
+  /** 지금은 렌더에 쓰이지 않지만, 프로필 사진이 붙으면 그 img의 alt가 될 자리 */
   label: string;
   size: number;
   seed?: string;
@@ -57,11 +56,11 @@ export function PersonAvatar({
 
   return (
     <span
-      className={clsx("grid place-items-center rounded-full font-bold", tone, className)}
-      style={{ width: size, height: size, fontSize: fontSizeFor(size) }}
+      className={clsx("grid place-items-center rounded-full", tone, className)}
+      style={{ width: size, height: size }}
       aria-hidden="true"
     >
-      {label.slice(0, 1)}
+      <User size={iconSizeFor(size)} strokeWidth={1.75} />
     </span>
   );
 }
