@@ -10,10 +10,13 @@ import { Eyebrow } from "@/components/ui/Typography";
 import {
   affiliationConfig,
   memberAffiliationOptions,
+  memberGradeOptions,
   memberPositionOptions,
   shouldShowLicenseField,
+  GRADE_BASE_YEAR,
   type MemberAffiliationId,
   type MemberOption,
+  type StudentGrade,
 } from "@/config/memberAffiliation";
 import { defaultLegacyOccupationId, getLegacyOccupation, type LegacyOccupation } from "@/config/legacyOccupationMap";
 
@@ -96,7 +99,8 @@ interface ProfileState {
   hasPharmacistLicense: boolean;
   licenseNumber: string;
   orgName: string;
-  studentId: string;
+  /** 학생 전용. 가입 폼과 같은 형태 — 선택 시점의 기준 연도를 함께 담는다(학년은 해마다 올라가므로). */
+  studentGrade: StudentGrade | null;
   positionId: string;
 }
 
@@ -106,7 +110,7 @@ const resetBelowAffiliation = {
   hasPharmacistLicense: false,
   licenseNumber: "",
   orgName: "",
-  studentId: "",
+  studentGrade: null,
   positionId: "",
 } as const;
 
@@ -161,11 +165,17 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
     setProfile({ ...resetBelowAffiliation, affiliationId: id, secondaryId: presetSecondaryFor(id, occupation) });
   };
 
-  /** 완료 조건 — 소속 유형 + (2차가 있는 소속이면) 2차 + (소속명이 있으면) 소속명. 면허·학번·직급은 선택이다. */
+  /**
+   * 완료 조건 — 소속 유형 + (2차가 있는 소속이면) 2차 + (소속명이 있으면) 소속명 +
+   * (칸이 나오는 소속이면) 학년·직급. 가입 폼의 canProceedFromProfile과 같은 범위다.
+   * 면허번호만은 여기서 선택으로 남는다(OptionalLicenseField 주석 참고).
+   */
   const canSubmit = Boolean(
     profile.affiliationId &&
       (!config?.secondary || profile.secondaryId) &&
-      (!config?.orgNameLabel || profile.orgName.trim()),
+      (!config?.orgNameLabel || profile.orgName.trim()) &&
+      (!config?.showGrade || profile.studentGrade) &&
+      (!config?.showPosition || profile.positionId),
   );
 
   /**
@@ -253,23 +263,25 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
               </div>
             ) : null}
 
-            {config?.showStudentId ? (
+            {config?.showGrade ? (
               <div className="space-y-2">
-                <FieldLabel>
-                  학번 <span className="font-normal text-[#9aa3af]">(선택)</span>
-                </FieldLabel>
-                <TextInput
-                  value={profile.studentId}
-                  onChange={(v) => updateProfile("studentId", v)}
-                  placeholder="학번을 입력해 주세요"
+                <FieldLabel required>학년</FieldLabel>
+                <OptionButtonGroup
+                  options={memberGradeOptions}
+                  value={profile.studentGrade ? String(profile.studentGrade.grade) : ""}
+                  onChange={(id) => updateProfile("studentGrade", { grade: Number(id), baseYear: GRADE_BASE_YEAR })}
+                  ariaLabel="학년"
                 />
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
+                  {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
+                </p>
               </div>
             ) : null}
 
             {config?.showPosition ? (
               <div className="space-y-2">
-                <FieldLabel htmlFor="migration-position">
-                  직급 <span className="font-normal text-[#9aa3af]">(선택)</span>
+                <FieldLabel required htmlFor="migration-position">
+                  직급
                 </FieldLabel>
                 <select
                   id="migration-position"
@@ -277,7 +289,7 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
                   onChange={(event) => updateProfile("positionId", event.target.value)}
                   className={SEL}
                 >
-                  <option value="">선택 안 함</option>
+                  <option value="">선택해 주세요</option>
                   {memberPositionOptions.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.label}

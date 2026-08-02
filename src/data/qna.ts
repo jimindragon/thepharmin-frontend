@@ -10,7 +10,8 @@ import type { QnaListEntry, QnaPost, QnaType } from "@/types/qna";
 
 export const qnaOperationPrinciple = {
   title: "QNA 운영 원칙",
-  description: "익명 회원은 식별되지 않으며, 기업·헤드헌터는 공개된 산업 토론에만 참여할 수 있습니다.",
+  description:
+    "익명 회원은 식별되지 않으며, 약사 QNA에는 인증된 약사와 예비약사가, 기업·헤드헌터는 공개된 산업 토론에만 참여할 수 있습니다.",
 };
 
 /** 목록 상단 카테고리 필터 칩 — qnaTags.ts의 태그 풀을 그대로 참조한다(더 이상 별도 category 값이 아니다) */
@@ -434,6 +435,18 @@ export const qnaPosts: QnaPost[] = [
         isMine: true,
         replies: [],
       },
+      {
+        id: "pharmacist-career-001-c3",
+        authorType: "anonymous",
+        authorName: "익명 · 예비약사",
+        avatarInitial: "약",
+        nickname: "익명3",
+        jobRole: "예비약사",
+        createdAtLabel: "30분 전",
+        likeCount: 2,
+        body: "저도 졸업 후 진로를 고민 중이라 정독했습니다. 병원 실무를 먼저 쌓는 쪽이 나중에 선택지가 넓어진다는 말씀으로 이해했는데 맞을까요?",
+        replies: [],
+      },
     ],
     relatedPostIds: ["pharmacist-opening-001", "pharmacist-salary-001", "pharmacist-hospital-001"],
   },
@@ -554,6 +567,66 @@ export const qnaPosts: QnaPost[] = [
       },
     ],
     relatedPostIds: ["pharmacist-career-001", "pharmacist-practice-001", "pharmacist-opening-001"],
+  },
+  {
+    /** 예비약사(약대 6학년, 재학증명서 인증) 작성 글 — jobRole만 다르고 나머지 표시 체계는 다른 익명 글과 완전히 같다. */
+    id: "pharmacist-preliminary-001",
+    qnaType: "pharmacist",
+    tags: ["취업·이직", "약국 실무"],
+    title: "국시 준비하면서 약국 실무 미리 익혀두려면 뭐부터 봐야 할까요?",
+    body: [
+      "약대 6학년이고 내년 국가시험을 준비하고 있습니다. 실습은 다녀왔지만 막상 현장에 나가면 학교에서 배운 것과 실무가 많이 다르다는 이야기를 들어서 미리 준비하고 싶습니다.",
+      "복약지도나 청구 업무처럼 학교에서 깊게 다루지 않는 부분을 졸업 전에 어느 정도까지 익혀두는 게 현실적인지, 선배 약사님들 조언을 구하고 싶습니다.",
+    ],
+    authorType: "anonymous",
+    authorName: "익명 · 예비약사",
+    avatarInitial: "약",
+    nickname: "익명",
+    jobRole: "예비약사",
+    createdAtLabel: "1시간 전",
+    minutesAgo: 60,
+    viewCount: 864,
+    likeCount: 22,
+    comments: [
+      {
+        id: "pharmacist-preliminary-001-c1",
+        authorType: "anonymous",
+        authorName: "익명 · 약사",
+        avatarInitial: "약",
+        nickname: "익명1",
+        jobRole: "근무약사",
+        createdAtLabel: "40분 전",
+        likeCount: 8,
+        body: "국시 끝나고 배워도 늦지 않아요. 굳이 미리 보신다면 청구 프로그램 화면에 익숙해지는 정도가 제일 도움이 됩니다.",
+        replies: [
+          {
+            id: "pharmacist-preliminary-001-c1-r1",
+            authorType: "anonymous",
+            authorName: "익명 · 예비약사",
+            avatarInitial: "약",
+            nickname: "작성자",
+            jobRole: "예비약사",
+            isPostAuthor: true,
+            createdAtLabel: "20분 전",
+            likeCount: 2,
+            body: "청구 쪽부터 보면 되겠네요. 답변 감사합니다!",
+          },
+        ],
+      },
+      {
+        id: "pharmacist-preliminary-001-c2",
+        authorType: "anonymous",
+        authorName: "익명 · 개국약사",
+        avatarInitial: "약",
+        nickname: "익명2",
+        jobRole: "개국약사",
+        createdAtLabel: "30분 전",
+        likeCount: 6,
+        body: "실무는 어차피 현장에서 몸으로 익히게 됩니다. 지금은 국시에 집중하시고, 대신 자주 나가는 약 위주로 복약지도 문구를 정리해 두시면 첫 달이 훨씬 수월해요.",
+        replies: [],
+      },
+    ],
+    relatedPostIds: ["pharmacist-practice-001", "pharmacist-opening-001", "pharmacist-career-001"],
   },
 ];
 

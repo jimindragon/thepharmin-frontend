@@ -1,5 +1,6 @@
 import { industryJobCategoryOptions } from "@/config/jobFilters/industryFilters";
 import { researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 
 /** 개인 가입 프로필의 "소속 유형". 리크루트의 JobTrack(산업/연구/병원/약국)과는 별개 축이다. */
 export type MemberAffiliationId =
@@ -85,6 +86,61 @@ const jobSeekingOptions: MemberOption[] = [
   { id: "nurse", label: "간호사" },
 ];
 
+/** 약대가 6년제라 6학년까지 둔다. 4년제 전공자는 4학년까지만 고르면 된다. */
+export const memberGradeOptions: MemberOption[] = [
+  { id: "1", label: "1학년" },
+  { id: "2", label: "2학년" },
+  { id: "3", label: "3학년" },
+  { id: "4", label: "4학년" },
+  { id: "5", label: "5학년" },
+  { id: "6", label: "6학년" },
+];
+
+/** 학년 저장의 기준 연도. 실제 시계가 아니라 시연 기준일에서 뽑는다. */
+export const GRADE_BASE_YEAR = MOCK_TODAY_DATE.getFullYear();
+
+/**
+ * 학년은 해마다 올라가므로 값 하나로는 시간이 지나면 틀린 정보가 된다.
+ * "어느 해 기준의 몇 학년"으로 저장해 두면 나중에 경과 연수를 더해 현재 학년을 계산할 수 있다.
+ */
+export interface StudentGrade {
+  /** baseYear 시점의 학년(1~6) */
+  grade: number;
+  baseYear: number;
+}
+
+/** 예비약사 인증 대상 학년. 약대 6학년(졸업예정자)만 해당한다. */
+export const PRELIMINARY_PHARMACIST_GRADE = 6;
+
+/**
+ * 예비약사 자격의 만료 기준일 — "다가오는 약사 국가시험 이후".
+ * 국시는 보통 1월이라 기준일이 1월 안이면 그해 1월 말, 아니면 다음 해 1월 말이 만료일이 된다.
+ * 6학년은 1년이면 졸업하므로 이 자격은 영구적이지 않다.
+ */
+export function upcomingPharmacistExamExpiry(from: Date = MOCK_TODAY_DATE): string {
+  const year = from.getMonth() === 0 ? from.getFullYear() : from.getFullYear() + 1;
+  return `${year}.01.31`;
+}
+
+/**
+ * 약대 6학년의 재학증명서 인증. 약사 면허 인증과는 별개 축이다
+ * — 면허는 영구 자격이고 이쪽은 졸업하면 끝나는 한시 자격이다.
+ *
+ * 학생증은 받지 않는다. 학생증에는 대부분 학번과 이름만 있고 현재 학년이 없어
+ * 6학년인지 확인할 수 없다. 학년이 찍히는 재학증명서만 받는다.
+ */
+export interface PreliminaryPharmacistVerification {
+  /** 등록한 재학증명서 파일명. 목데이터 단계라 파일 자체는 보관하지 않는다. */
+  certificateFileName: string;
+  /**
+   * 승인 시 확정되는 만료일. 승인 파이프라인이 아직 없어 지금은 항상 null이다.
+   * 저장소가 붙으면 서버가 승인 시각 기준으로 계산해 이 자리에 기록한다.
+   */
+  expiresAt: string | null;
+  /** 승인되면 만료일이 될 날짜 — upcomingPharmacistExamExpiry()로 미리 계산해 둔다. */
+  expiresAtOnApproval: string;
+}
+
 export const memberPositionOptions: MemberOption[] = [
   { id: "intern", label: "인턴" },
   { id: "staff", label: "사원/신입" },
@@ -109,8 +165,9 @@ export interface AffiliationConfig {
   secondary?: AffiliationSecondary;
   /** 소속명 입력 라벨. null이면 소속명 칸을 감춘다 */
   orgNameLabel: string | null;
-  /** 학번 칸(학생 전용) */
-  showStudentId: boolean;
+  /** 학년 선택(학생 전용). 나오는 소속에서는 필수다 — 가입 폼과 소속 확인 화면이 함께 쓴다. */
+  showGrade?: boolean;
+  /** 직급 칸. 나오는 소속에서는 필수다(학생·구직 중은 애초에 감춘다). */
   showPosition: boolean;
   /**
    * auto     — 2차 선택이 licenseTriggerIds에 들면 면허 칸이 자동으로 나온다
@@ -124,7 +181,6 @@ export interface AffiliationConfig {
 const COMPANY_LIKE: AffiliationConfig = {
   secondary: { label: "직무", options: industryJobGroups },
   orgNameLabel: "회사명",
-  showStudentId: false,
   showPosition: true,
   licenseMode: "checkbox",
 };
@@ -137,7 +193,6 @@ export const affiliationConfig: Record<MemberAffiliationId, AffiliationConfig> =
   hospital: {
     secondary: { label: "직무", options: hospitalRoleOptions },
     orgNameLabel: "병원명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "auto",
     licenseTriggerIds: ["pharmacist", "herbal_pharmacist"],
@@ -145,7 +200,6 @@ export const affiliationConfig: Record<MemberAffiliationId, AffiliationConfig> =
   pharmacy: {
     secondary: { label: "직무", options: pharmacyRoleOptions },
     orgNameLabel: "약국명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "auto",
     licenseTriggerIds: ["owner_pharmacist", "staff_pharmacist", "herbal_pharmacist"],
@@ -153,34 +207,30 @@ export const affiliationConfig: Record<MemberAffiliationId, AffiliationConfig> =
   research: {
     secondary: { label: "직무", options: researchJobGroups },
     orgNameLabel: "기관명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "checkbox",
   },
   government: {
     secondary: { label: "직무", options: governmentRoleOptions },
     orgNameLabel: "기관명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "auto",
     licenseTriggerIds: ["pharmacist"],
   },
   finance: {
     orgNameLabel: "회사명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "checkbox",
   },
   media: {
     orgNameLabel: "회사명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "checkbox",
   },
   student: {
     secondary: { label: "전공 계열", options: studentMajorOptions },
     orgNameLabel: "학교명",
-    showStudentId: true,
+    showGrade: true,
     showPosition: false,
     licenseMode: "none",
   },
@@ -191,14 +241,12 @@ export const affiliationConfig: Record<MemberAffiliationId, AffiliationConfig> =
       options: jobSeekingOptions,
     },
     orgNameLabel: null,
-    showStudentId: false,
     showPosition: false,
     licenseMode: "auto",
     licenseTriggerIds: ["pharmacist", "herbal_pharmacist"],
   },
   etc: {
     orgNameLabel: "소속명",
-    showStudentId: false,
     showPosition: true,
     licenseMode: "checkbox",
   },

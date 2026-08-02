@@ -185,7 +185,7 @@ export const billingRecords: BillingRecord[] = [
 ];
 
 /** "YYYY.MM.DD" 문자열 → Date */
-function parseKoDate(s: string): Date {
+export function parseKoDate(s: string): Date {
   const [y, m, d] = s.split(".").map(Number);
   return new Date(y, m - 1, d);
 }

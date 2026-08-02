@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
+import { SocialLoginButtons } from "@/components/shared/SocialLoginButtons";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
@@ -18,11 +19,11 @@ const RAW_INPUT =
 export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
   const { login } = usePersonalLoginState();
-  const [email, setEmail] = useState("");
+  const [accountId, setAccountId] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
 
-  const canSubmit = Boolean(email.trim()) && password.trim() !== "";
+  const canSubmit = Boolean(accountId.trim()) && password.trim() !== "";
 
   // 기업 로그인(BusinessLoginClient)과 같은 형태 — 자격 검증 없이 세션 쿠키만 쓰고 이동한다.
   const handleLogin = () => {
@@ -41,8 +42,8 @@ export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
 
         <div className="mt-8 space-y-5">
           <div className="space-y-2">
-            <FieldLabel required>이메일</FieldLabel>
-            <TextInput value={email} onChange={setEmail} placeholder="example@email.com" />
+            <FieldLabel required>아이디</FieldLabel>
+            <TextInput value={accountId} onChange={setAccountId} placeholder="아이디를 입력해 주세요" />
           </div>
           <div className="space-y-2">
             <FieldLabel required>비밀번호</FieldLabel>
@@ -55,8 +56,10 @@ export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <label className="flex items-center gap-2 text-[13px] text-[#4f5967]">
+        {/* 링크가 둘로 늘면서 390px에서 한 줄에 다 들어가지 않는다. 좁아지면 링크 줄만 아래로 내린다
+            — 그러지 않으면 "로그인 상태 유지"가 두 줄로 접힌다. */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5">
+          <label className="flex items-center gap-2 whitespace-nowrap text-[13px] text-[#4f5967]">
             <input
               type="checkbox"
               checked={keepSignedIn}
@@ -65,12 +68,22 @@ export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
             />
             로그인 상태 유지
           </label>
-          <Link
-            href="/login/reset"
-            className="text-[13px] text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
-          >
-            비밀번호를 잊으셨나요?
-          </Link>
+          {/* 두 링크를 구분자로 나란히 — 푸터 메타 줄과 같은 관례. */}
+          <p className="ml-auto text-[13px] whitespace-nowrap">
+            <Link
+              href="/login/find-id"
+              className="text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+            >
+              아이디 찾기
+            </Link>
+            <span className="px-2 text-[#c2c8d1]">|</span>
+            <Link
+              href="/login/reset"
+              className="text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+            >
+              비밀번호를 잊으셨나요?
+            </Link>
+          </p>
         </div>
 
         <div className="mt-7">
@@ -79,13 +92,16 @@ export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
           </Button>
         </div>
 
-        <div className="mt-8 border-t border-border" />
-        <p className="mt-5 text-center text-[13px] text-[#68717e]">
+        {/* 로그인 버튼과 이 줄 사이에는 구분선을 두지 않는다 — 로그인·회원가입은 "계정으로 하는 일"로
+            한 덩어리다. 구분선은 방식이 다른 소셜 영역 위(SocialLoginButtons)에만 둔다. */}
+        <p className="mt-6 text-center text-[13px] text-[#68717e]">
           아직 회원이 아니신가요?{" "}
           <Link href="/signup" className="font-medium text-[#111111] underline underline-offset-2">
             회원가입
           </Link>
         </p>
+
+        <SocialLoginButtons />
       </div>
     </main>
   );

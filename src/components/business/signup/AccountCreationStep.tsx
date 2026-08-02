@@ -42,7 +42,7 @@ export function AgreeCheckbox({
         className="h-4 w-4 accent-[#111111]"
       />
       <span className="text-[13px] font-medium text-[#303946]">
-        <span className={required ? "text-danger" : "text-[#8a94a3]"}>[{required ? "필수" : "선택"}]</span> {label}
+        <span className="text-[#8a94a3]">[{required ? "필수" : "선택"}]</span> {label}
       </span>
     </label>
   );

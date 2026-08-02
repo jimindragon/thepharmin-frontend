@@ -28,7 +28,7 @@ import { useMemberMigration } from "@/hooks/useMemberMigration";
  *   /support     — 이관 중 문제가 생긴 사람이 문의할 곳
  * 하위 경로까지 함께 열어 준다(`/login/reset/new`, `/business/dashboard` 등).
  */
-const EXEMPT_PREFIXES = ["/migration", "/login", "/signup", "/business", "/pharmacy-preview", "/support"] as const;
+const EXEMPT_PREFIXES = ["/migration", "/login", "/signup", "/business", "/pharmacy-preview", "/support", "/terms"] as const;
 
 export function isExemptFromMigration(pathname: string): boolean {
   return EXEMPT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));

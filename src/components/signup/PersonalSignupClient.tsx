@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { BadgeCheck, Check, Mail } from "lucide-react";
+import { BadgeCheck, Check, GraduationCap, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { Button, LinkButton } from "@/components/ui/Button";
@@ -10,16 +10,23 @@ import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { SignupStepShell } from "@/components/shared/SignupStepShell";
 import { AgreeCheckbox } from "@/components/business/signup/AccountCreationStep";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
+import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
 import { SEL } from "@/components/job-registration/fieldClasses";
 import { PhoneVerificationField } from "@/components/signup/PhoneVerificationField";
 import {
   affiliationConfig,
   memberAffiliationOptions,
+  memberGradeOptions,
   memberPositionOptions,
   shouldShowLicenseField,
+  upcomingPharmacistExamExpiry,
+  GRADE_BASE_YEAR,
+  PRELIMINARY_PHARMACIST_GRADE,
   type MemberAffiliationId,
   type MemberOption,
+  type PreliminaryPharmacistVerification,
+  type StudentGrade,
 } from "@/config/memberAffiliation";
 
 const STEP_LABELS = ["약관 동의", "회원 정보", "가입 완료"] as const;
@@ -122,7 +129,13 @@ function DoneNotice({ icon, title, children }: { icon: ReactNode; title: string;
   );
 }
 
-function SignupDoneStep({ hasPharmacistLicense }: { hasPharmacistLicense: boolean }) {
+function SignupDoneStep({
+  hasPharmacistLicense,
+  hasPreliminaryPharmacistCert,
+}: {
+  hasPharmacistLicense: boolean;
+  hasPreliminaryPharmacistCert: boolean;
+}) {
   return (
     <div className="text-center">
       <span className="mx-auto grid h-14 w-14 place-items-center bg-[#111111] text-white">
@@ -148,6 +161,11 @@ function SignupDoneStep({ hasPharmacistLicense }: { hasPharmacistLicense: boolea
             약사 인증은 면허증 확인 후 완료됩니다. 마이페이지에서 진행 상태를 확인하실 수 있습니다.
           </DoneNotice>
         ) : null}
+        {hasPreliminaryPharmacistCert ? (
+          <DoneNotice icon={<GraduationCap size={28} aria-hidden />} title="예비약사 인증">
+            재학증명서 확인 후 약사 회원 전용 QNA를 이용하실 수 있습니다.
+          </DoneNotice>
+        ) : null}
       </div>
 
       <div className="mt-10 border-t border-border" />
@@ -167,6 +185,7 @@ function SignupDoneStep({ hasPharmacistLicense }: { hasPharmacistLicense: boolea
 /** STEP2 계정 정보 + 본인 확인. 프로필(소속 유형·직무 등) 묶음은 다음 단계에서 추가한다. */
 interface MemberInfoState {
   name: string;
+  accountId: string;
   email: string;
   password: string;
   passwordConfirm: string;
@@ -175,6 +194,7 @@ interface MemberInfoState {
 
 const emptyMemberInfoState: MemberInfoState = {
   name: "",
+  accountId: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -189,7 +209,10 @@ interface ProfileState {
   licenseNumber: string;
   licenseFileName: string | null;
   orgName: string;
-  studentId: string;
+  /** 학생 전용. 선택 시점의 기준 연도를 함께 담는다(학년은 해마다 올라가므로). */
+  studentGrade: StudentGrade | null;
+  /** 약대 6학년 전용, 선택 항목. 등록하지 않아도 가입은 완료된다. */
+  preliminaryPharmacist: PreliminaryPharmacistVerification | null;
   positionId: string;
 }
 
@@ -200,7 +223,8 @@ const emptyProfileState: ProfileState = {
   licenseNumber: "",
   licenseFileName: null,
   orgName: "",
-  studentId: "",
+  studentGrade: null,
+  preliminaryPharmacist: null,
   positionId: "",
 };
 
@@ -211,7 +235,8 @@ const resetProfileBelowAffiliation = {
   licenseNumber: "",
   licenseFileName: null,
   orgName: "",
-  studentId: "",
+  studentGrade: null,
+  preliminaryPharmacist: null,
   positionId: "",
 } as const;
 
@@ -262,15 +287,20 @@ function ProfileGroup({
   value,
   onChangeAffiliation,
   onChangeSecondary,
+  onChangeGrade,
   onChange,
 }: {
   value: ProfileState;
   onChangeAffiliation: (id: MemberAffiliationId) => void;
   onChangeSecondary: (id: string) => void;
+  onChangeGrade: (grade: number) => void;
   onChange: <K extends keyof ProfileState>(key: K, next: ProfileState[K]) => void;
 }) {
   const config = value.affiliationId ? affiliationConfig[value.affiliationId] : null;
   const showLicense = config ? shouldShowLicenseField(config, value.secondaryId, value.hasPharmacistLicense) : false;
+  /** 예비약사 인증은 학년 칸이 있는 소속(=학생)의 6학년에만 나온다. 약사 면허 칸과는 서로 배타적이다. */
+  const showPreliminaryPharmacist =
+    Boolean(config?.showGrade) && value.studentGrade?.grade === PRELIMINARY_PHARMACIST_GRADE;
 
   return (
     <div>
@@ -328,19 +358,57 @@ function ProfileGroup({
           </div>
         ) : null}
 
-        {config?.showStudentId ? (
+        {config?.showGrade ? (
           <div className="space-y-2">
-            <FieldLabel>
-              학번 <span className="font-normal text-[#9aa3af]">(선택)</span>
-            </FieldLabel>
-            <TextInput value={value.studentId} onChange={(v) => onChange("studentId", v)} placeholder="학번을 입력해 주세요" />
+            <FieldLabel required>학년</FieldLabel>
+            <OptionButtonGroup
+              options={memberGradeOptions}
+              value={value.studentGrade ? String(value.studentGrade.grade) : ""}
+              onChange={(id) => onChangeGrade(Number(id))}
+              ariaLabel="학년"
+            />
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
+              {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
+            </p>
+          </div>
+        ) : null}
+
+        {showPreliminaryPharmacist ? (
+          <div className="space-y-2">
+            <h3 className="text-[15px] font-bold tracking-[-0.01em] text-[#1f2733]">
+              예비약사 인증 <span className="font-normal text-[#9aa3af]">(선택)</span>
+            </h3>
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
+              졸업예정자는 재학증명서를 등록하면 약사 회원 전용 QNA를 이용하실 수 있습니다.
+            </p>
+            {/* 학생증은 받지 않는다 — 대부분 학번과 이름만 있고 현재 학년이 없어 6학년인지 확인할 수 없다. */}
+            <div className="pt-1">
+              <FileUploadField
+                label="재학증명서"
+                hint="학년이 표시된 재학증명서를 등록해 주세요."
+                accept=".pdf,.jpg,.jpeg,.png"
+                onFileSelected={(fileName) =>
+                  onChange(
+                    "preliminaryPharmacist",
+                    fileName
+                      ? {
+                          certificateFileName: fileName,
+                          // 승인 파이프라인이 아직 없어 만료일은 비워 두고, 승인 시 적용될 날짜만 담아 둔다.
+                          expiresAt: null,
+                          expiresAtOnApproval: upcomingPharmacistExamExpiry(),
+                        }
+                      : null,
+                  )
+                }
+              />
+            </div>
           </div>
         ) : null}
 
         {config?.showPosition ? (
           <div className="space-y-2">
-            <FieldLabel htmlFor="signup-position">
-              직급 <span className="font-normal text-[#9aa3af]">(선택)</span>
+            <FieldLabel required htmlFor="signup-position">
+              직급
             </FieldLabel>
             <select
               id="signup-position"
@@ -348,7 +416,7 @@ function ProfileGroup({
               onChange={(event) => onChange("positionId", event.target.value)}
               className={SEL}
             >
-              <option value="">선택 안 함</option>
+              <option value="">선택해 주세요</option>
               {memberPositionOptions.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.label}
@@ -362,7 +430,7 @@ function ProfileGroup({
   );
 }
 
-/** STEP 2 — 회원 정보. 아이디 입력란은 없다(이메일이 로그인 식별자). */
+/** STEP 2 — 회원 정보. 로그인 식별자는 아이디다(뉴스 기존 회원 이관 부담을 줄이려 아이디 방식을 유지한다). */
 function MemberInfoStep({
   value,
   onChange,
@@ -372,6 +440,7 @@ function MemberInfoStep({
   profile,
   onChangeAffiliation,
   onChangeSecondary,
+  onChangeGrade,
   onChangeProfile,
 }: {
   value: MemberInfoState;
@@ -382,6 +451,7 @@ function MemberInfoStep({
   profile: ProfileState;
   onChangeAffiliation: (id: MemberAffiliationId) => void;
   onChangeSecondary: (id: string) => void;
+  onChangeGrade: (grade: number) => void;
   onChangeProfile: <K extends keyof ProfileState>(key: K, next: ProfileState[K]) => void;
 }) {
   const passwordsMatch = value.password.trim() !== "" && value.password === value.passwordConfirm;
@@ -394,6 +464,16 @@ function MemberInfoStep({
           <div className="space-y-2">
             <FieldLabel required>이름(실명)</FieldLabel>
             <TextInput value={value.name} onChange={(v) => onChange("name", v)} placeholder="이름을 입력해 주세요" />
+          </div>
+          <div className="space-y-2">
+            <FieldLabel required>아이디</FieldLabel>
+            <DuplicateCheckField
+              value={value.accountId}
+              onChange={(v) => onChange("accountId", v)}
+              placeholder="영문 소문자, 숫자 조합"
+              availableMessage="사용 가능한 아이디입니다."
+            />
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">영문 소문자·숫자 허용, 4~15자</p>
           </div>
           <div className="space-y-2">
             <FieldLabel required>이메일</FieldLabel>
@@ -441,6 +521,7 @@ function MemberInfoStep({
         value={profile}
         onChangeAffiliation={onChangeAffiliation}
         onChangeSecondary={onChangeSecondary}
+        onChangeGrade={onChangeGrade}
         onChange={onChangeProfile}
       />
     </div>
@@ -549,6 +630,16 @@ export function PersonalSignupClient() {
     });
   };
 
+  /** 6학년에서 벗어나면 예비약사 인증 칸이 사라지므로 등록해 둔 재학증명서도 함께 비운다. */
+  const changeGrade = (grade: number) => {
+    setProfile((current) => ({
+      ...current,
+      studentGrade: { grade, baseYear: GRADE_BASE_YEAR },
+      preliminaryPharmacist:
+        grade === PRELIMINARY_PHARMACIST_GRADE ? current.preliminaryPharmacist : null,
+    }));
+  };
+
   const updateProfile = <K extends keyof ProfileState>(key: K, next: ProfileState[K]) => {
     setProfile((current) => ({ ...current, [key]: next }));
   };
@@ -563,11 +654,15 @@ export function PersonalSignupClient() {
     if (affiliation.secondary && !profile.secondaryId) return false;
     if (affiliation.orgNameLabel && !profile.orgName.trim()) return false;
     if (showLicenseField && !profile.licenseNumber.trim()) return false;
+    // 학년·직급은 칸이 나오는 소속에서만 필수다 — 감춰진 소속에서는 빈 값이어도 통과시킨다.
+    if (affiliation.showGrade && !profile.studentGrade) return false;
+    if (affiliation.showPosition && !profile.positionId) return false;
     return true;
   })();
 
   const canProceedFromMemberInfo =
     Boolean(memberInfo.name.trim()) &&
+    Boolean(memberInfo.accountId.trim()) &&
     Boolean(memberInfo.email.trim()) &&
     memberInfo.password.trim() !== "" &&
     memberInfo.password === memberInfo.passwordConfirm &&
@@ -600,10 +695,16 @@ export function PersonalSignupClient() {
           profile={profile}
           onChangeAffiliation={changeAffiliation}
           onChangeSecondary={changeSecondary}
+          onChangeGrade={changeGrade}
           onChangeProfile={updateProfile}
         />
       ) : null}
-      {step === 3 ? <SignupDoneStep hasPharmacistLicense={Boolean(profile.licenseNumber.trim())} /> : null}
+      {step === 3 ? (
+        <SignupDoneStep
+          hasPharmacistLicense={Boolean(profile.licenseNumber.trim())}
+          hasPreliminaryPharmacistCert={Boolean(profile.preliminaryPharmacist)}
+        />
+      ) : null}
 
       {step === 1 ? (
         <>
