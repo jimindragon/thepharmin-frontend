@@ -10,6 +10,7 @@ import { Pagination } from "@/components/Pagination";
 import { RecommendedJobs } from "@/components/RecommendedJobs";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
 import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
+import { InterestPromptGate } from "@/components/onboarding/InterestPromptGate";
 import { PageTitle } from "@/components/ui/Typography";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import { siteConfig } from "@/config/site";
@@ -88,6 +89,7 @@ export default function JobsPage() {
   return (
     <>
       <Header />
+      <InterestPromptGate />
       <main className="pb-9 pt-[18px]">
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />

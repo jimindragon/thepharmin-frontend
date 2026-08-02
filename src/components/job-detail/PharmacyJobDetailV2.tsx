@@ -50,6 +50,7 @@ import {
   type PharmacyJobDetail,
 } from "@/data/pharmacyJobDetails";
 import { getSimilarJobs } from "@/data/similarJobs";
+import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import type { Job } from "@/types/jobs";
 
 // ── Static data ────────────────────────────────────────────────────────────────
@@ -66,12 +67,27 @@ const PHARMACY_HERO_IMAGES = [
 /**
  * jobRecord: jobs.ts의 실제 Job 레코드. 마감 표시(ApplyCard)만 이 값을 파생 소스로 쓴다 — PharmacyJobDetail 자체의 job(동명이지만 별도 타입)과 혼동 주의.
  * optional인 이유: /pharmacy-preview(기업센터 미리보기)는 jobs.ts에 아직 등록되지 않은 초안을 렌더링할 수 있어 조인 대상이 없을 수 있다.
+ *
+ * isPreview: 기업센터 미리보기(/pharmacy-preview)에서만 true. 이 화면은 기업 담당자가 "구직자에게 이렇게 보인다"를
+ * 확인하는 용도라, 보는 사람의 개인 세션에 따라 결과가 달라지면 미리보기 역할을 못 한다 — 처음 방문한 구직자 기준인
+ * 비로그인으로 고정한다. 기본값 false라 실제 상세(/jobs/[slug])는 종전대로 개인 세션을 따른다.
  */
-export function PharmacyJobDetailV2({ data, jobRecord }: { data: PharmacyJobDetail; jobRecord?: Job }) {
+export function PharmacyJobDetailV2({
+  data,
+  jobRecord,
+  isPreview = false,
+}: {
+  data: PharmacyJobDetail;
+  jobRecord?: Job;
+  isPreview?: boolean;
+}) {
   const { job, org } = data;
 
-  // 검증용 mock 로그인 토글 — 실제 세션 연결은 추후 처리
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 훅은 미리보기에서도 그대로 호출하고(조건부 호출은 React 규칙 위반) 값만 덮어쓴다.
+  // 로그인 상태의 출처는 개인 세션 쿠키 하나뿐 — 같은 화면의 헤더(Header.tsx)와 같다.
+  const { isLoggedIn: personalLoggedIn } = usePersonalLoginState();
+  const isLoggedIn = isPreview ? false : personalLoggedIn;
+
   const [saved, setSaved] = useState(false);
   const [interested, setInterested] = useState(false);
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
@@ -124,15 +140,6 @@ export function PharmacyJobDetailV2({ data, jobRecord }: { data: PharmacyJobDeta
 
   return (
     <>
-      {/* 검증용 로그인 토글 (실 서비스에는 없음) */}
-      <button
-        type="button"
-        onClick={() => setIsLoggedIn((v) => !v)}
-        className="fixed right-4 top-4 z-50 border border-[#d7dce2] bg-white px-3 py-1.5 text-[12px] font-medium text-[#4f5967] shadow-[var(--shadow)] hover:border-brand"
-      >
-        {isLoggedIn ? "로그인됨 (클릭: 로그아웃 보기)" : "비로그인 (클릭: 로그인 보기)"}
-      </button>
-
       <main className="bg-[#f5f6f7] pb-28 pt-6">
         <div className="app-shell">
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">

@@ -44,6 +44,7 @@ import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import type { IndustryJobDetail } from "@/data/industryJobDetails";
 import { getIndustryNews, hasDirectCompanyNews } from "@/data/industryNews";
 import { getSimilarJobs } from "@/data/similarJobs";
+import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { getIndustryJobCoverImage } from "@/utils/industryImage";
 import type { Job } from "@/types/jobs";
 
@@ -53,8 +54,8 @@ import type { Job } from "@/types/jobs";
 export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJobDetail; jobRecord: Job }) {
   const { job, org, businessContext } = data;
 
-  // 검증용 mock 로그인 토글 — 실제 세션 연결은 추후 처리
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 로그인 상태는 개인 세션 쿠키 하나만 본다 — 같은 화면의 헤더(Header.tsx)와 같은 출처다.
+  const { isLoggedIn } = usePersonalLoginState();
   const [saved, setSaved] = useState(false);
   const [interested, setInterested] = useState(false);
   const { ref: sidebarRef, top: sidebarTop } = useStickySidebarTop();
@@ -102,15 +103,6 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
 
   return (
     <>
-      {/* 검증용 로그인 토글 (실 서비스에는 없음) */}
-      <button
-        type="button"
-        onClick={() => setIsLoggedIn((v) => !v)}
-        className="fixed right-4 top-4 z-50 border border-[#d7dce2] bg-white px-3 py-1.5 text-[12px] font-medium text-[#4f5967] shadow-[var(--shadow)] hover:border-brand"
-      >
-        {isLoggedIn ? "로그인됨 (클릭: 로그아웃 보기)" : "비로그인 (클릭: 로그인 보기)"}
-      </button>
-
       <main className="bg-[#f5f6f7] pb-28 pt-6">
         <div className="app-shell">
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">

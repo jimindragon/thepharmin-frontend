@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
+import { InterestPromptGate } from "@/components/onboarding/InterestPromptGate";
 import { recommendedJobs } from "@/data/recommendedJobs";
 import type { JobTrack } from "@/types/jobs";
 
@@ -23,6 +24,8 @@ export function TrackLandingClient({ track }: { track: JobTrack }) {
   return (
     <>
       <Header />
+      {/* 뉴스에서 공고 링크로 들어오면 목록(/jobs)이 아니라 여기에 먼저 닿는다 — 두 곳 모두에 둔다. */}
+      <InterestPromptGate />
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={track} />

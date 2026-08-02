@@ -18,13 +18,16 @@ import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
 const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
 
-// 가운데 nav: 요금제 · 고객센터만 유지.
 // 기업센터는 BusinessAccountMenu 드롭다운 안에 이미 있어 중복을 피함.
 // 헤드헌팅 의뢰는 우측 아웃라인 버튼으로 승격.
+//
+// requiresLogin — 로그인해야 실제로 쓸 수 있는 항목. 비로그인에게는 렌더하지 않는다.
+// 눌러도 BusinessCenterShell의 로그인 안내판만 나오는 메뉴를 보여 주는 것은 길이 아니라 벽이다.
+// 조건을 마크업에 흩뿌리지 않고 여기 한 곳에 적어 두는 이유 — 항목이 늘 때 nav JSX를 다시 읽지 않아도 된다.
 const businessNavItems = [
-  { label: "상품안내", href: "/business#pricing" },
-  { label: "대시보드", href: "/business/dashboard" },
-  { label: "기업관리", href: "/business/profile-hub" },
+  { label: "상품안내", href: "/business#pricing", requiresLogin: false },
+  { label: "대시보드", href: "/business/dashboard", requiresLogin: true },
+  { label: "기업관리", href: "/business/profile-hub", requiresLogin: true },
 ];
 
 function lightNavItemClassName(active: boolean) {
@@ -185,11 +188,13 @@ export function BusinessHeader() {
           {/* 우측 버튼 그룹이 505px라 1121~1279px 구간은 nav를 감당하지 못하고 겹친다.
               1280px부터만 노출하되, 그 1280px도 gap-7(28px)이면 1.2px 겹치므로 gap-6(24px)을 쓴다. */}
           <nav className="flex items-center gap-6 max-[1279px]:hidden">
-            {businessNavItems.map((item) => (
-              <Link key={item.href} href={item.href} className={lightNavItemClassName(pathname === item.href)}>
-                {item.label}
-              </Link>
-            ))}
+            {businessNavItems
+              .filter((item) => isMember || !item.requiresLogin)
+              .map((item) => (
+                <Link key={item.href} href={item.href} className={lightNavItemClassName(pathname === item.href)}>
+                  {item.label}
+                </Link>
+              ))}
           </nav>
         </div>
 

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/Footer";
+import { DevStatePanel } from "@/components/dev/DevStatePanel";
+import { MigrationGuard } from "@/components/migration/MigrationGuard";
 import { SessionProvider } from "@/components/session/SessionProvider";
 import { readBusinessSession, readPersonalSession } from "@/lib/session.server";
 import "@/styles/globals.css";
@@ -27,8 +29,10 @@ export default async function RootLayout({
     <html lang="ko">
       <body>
         <SessionProvider isPersonalLoggedIn={isPersonalLoggedIn} isBusinessLoggedIn={isBusinessLoggedIn}>
-          {children}
+          <MigrationGuard>{children}</MigrationGuard>
           <Footer />
+          {/* 개발용 상태 전환 패널 — 임시 장치. 삭제 방법은 components/dev/DevStatePanel.tsx 상단 주석 참고. */}
+          {process.env.NODE_ENV === "development" ? <DevStatePanel /> : null}
         </SessionProvider>
       </body>
     </html>

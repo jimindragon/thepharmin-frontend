@@ -73,9 +73,19 @@ export function SupportHeader() {
                 <AccountMenu />
               </>
             ) : (
-              <LinkButton href={loginHref} variant="secondary" tone="dark" size="sm">
-                로그인
-              </LinkButton>
+              /* 개인·기업 헤더와 같은 순서(로그인 → 회원가입). 다만 이 헤더는 두 버튼 모두 LinkButton으로 둔다 —
+                 개인 헤더가 생 Link를 쓰는 것은 그쪽 사정이고, 여기서는 이미 쓰고 있는 방식을 따르는 편이 낫다.
+                 회원가입에 gradient/primary를 쓰지 않는 이유 — 이 헤더의 주 CTA는 "1:1 문의하기"다. */
+              <>
+                <LinkButton href={loginHref} variant="secondary" tone="dark" size="sm">
+                  로그인
+                </LinkButton>
+                {/* 520px 미만에서만 접는다 — 개인·기업 헤더가 가입 버튼에 쓰는 것과 같은 기준이다.
+                    로고(214px)와 로그인만으로 이미 꽉 차 390px에서 21px 넘쳤다. 로그인은 유일한 진입로라 항상 남긴다. */}
+                <LinkButton href="/signup" variant="secondary" tone="dark" size="sm" className="max-[520px]:hidden">
+                  회원가입
+                </LinkButton>
+              </>
             )}
           </div>
         </div>
