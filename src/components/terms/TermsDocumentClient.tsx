@@ -1,3 +1,5 @@
+import clsx from "clsx";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthHeader } from "@/components/shared/AuthHeader";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
@@ -6,6 +8,7 @@ import {
   KOREAN_ORDINALS,
   emailRefusalNotice,
   getEffectiveVersion,
+  getTermsCounterpart,
   termsDocuments,
   type TermsArticle as TermsArticleData,
   type TermsDocumentId,
@@ -120,6 +123,58 @@ function EmailRefusalNoticeView() {
   );
 }
 
+/**
+ * 이용약관 2종 전환. 칸 순서는 개인회원 → 기관회원으로 고정한다 —
+ * [현재 문서, 상대 문서] 순으로 그리면 /terms/business에서 순서가 뒤집혀 같은 UI가 경로마다 달라 보인다.
+ * 라벨에 "이용약관"을 반복하지 않는다: 바로 위 h1이 이미 "이용약관"/"기관회원 이용약관"이다.
+ */
+const termsSwitchTabs: { id: TermsDocumentId; label: string }[] = [
+  { id: "service", label: "개인회원" },
+  { id: "business", label: "기관회원" },
+];
+
+/**
+ * 생김새는 QnaHomeClient.tsx의 QnaTypeToggle에서 클래스 문자열을 그대로 가져왔다 — 이 리포에서
+ * 2지선다를 그리는 유일한 선례다. 갈라지지 않게 그쪽을 고치면 여기도 함께 볼 것.
+ * (바깥에 w-fit만 더했다. 그쪽은 flex 행 안에 있어 필요 없지만 여기서는 블록 흐름이라 없으면 전폭으로 늘어난다.)
+ *
+ * 활성 판정은 usePathname이 아니라 docId로 한다 — 경로를 다시 해석할 이유가 없고,
+ * usePathname을 쓰면 이 파일이 "use client"가 되어 본문 전체가 클라이언트 번들에 실린다(파일 상단 주석 참고).
+ *
+ * 상대 문서의 본문이 비어 있어도 버튼을 막지 않는다. 눌러서 넘어간 화면에서 "이 문서는 준비 중입니다"를
+ * 보게 하는 것이 규칙이다(data/terms.ts의 getTermsCounterpart 주석과 같은 내용).
+ */
+function TermsSwitch({ docId }: { docId: TermsDocumentId }) {
+  return (
+    <div
+      className="flex h-9 w-fit shrink-0 overflow-hidden border border-[#dce2ea] bg-white"
+      role="tablist"
+      aria-label="이용약관 종류"
+    >
+      {termsSwitchTabs.map((tab) => {
+        const target = termsDocuments.find((item) => item.id === tab.id);
+        if (!target) return null;
+
+        const active = tab.id === docId;
+        return (
+          <Link
+            key={tab.id}
+            href={target.path}
+            role="tab"
+            aria-selected={active}
+            className={clsx(
+              "flex h-full min-w-[100px] items-center justify-center border-r border-[#dce2ea] px-4 text-[13px] font-medium transition-colors last:border-r-0",
+              active ? "bg-[#111111] text-white" : "text-[#596373] hover:bg-[#f4f4f4] hover:text-[#111111]",
+            )}
+          >
+            {tab.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 export function TermsDocumentClient({ docId }: { docId: TermsDocumentId }) {
   const doc = termsDocuments.find((item) => item.id === docId);
 
@@ -128,6 +183,8 @@ export function TermsDocumentClient({ docId }: { docId: TermsDocumentId }) {
   }
 
   const effective = getEffectiveVersion(doc);
+  // 짝이 없는 문서(개인정보처리방침·이메일무단수집거부)는 전환 UI 자체를 그리지 않는다.
+  const hasCounterpart = getTermsCounterpart(docId) !== null;
 
   return (
     <>
@@ -144,6 +201,14 @@ export function TermsDocumentClient({ docId }: { docId: TermsDocumentId }) {
             <p className="mt-2 text-[13px] font-medium text-[#8a94a3]">
               {effective.version.effectiveDate} {effective.upcoming ? "시행 예정" : "시행"}
             </p>
+          ) : null}
+
+          {/* 위 mt-8(32px) < 아래 mt-12(48px) — 전환 UI가 제목 덩어리에 붙고 본문과는 떨어져 보이게 한다.
+              두 값 모두 이 파일이 이미 쓰던 것이다(준비 중 안내의 mt-8, 장 섹션의 mt-12). */}
+          {hasCounterpart ? (
+            <div className="mt-8">
+              <TermsSwitch docId={docId} />
+            </div>
           ) : null}
 
           {effective ? (

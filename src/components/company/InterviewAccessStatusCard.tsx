@@ -43,8 +43,9 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
             label: "보유 열람권",
             value: "0장",
             title: null as string | null,
-            subtext: "후기를 작성하면 2장 지급",
-            primaryLabel: "후기 작성하고 2장 받기",
+            subtext: "후기가 승인되면 2장 지급",
+            // 라벨은 지급을 약속하지 않는 행동 문구로 두고, 조건은 아래 subtext·caption이 진다.
+            primaryLabel: "면접 후기 작성하기",
             primaryHref: writeHref,
             primaryCaption: "작성 승인 시 지급",
             secondaryLabel: "열람권 관리",
@@ -57,7 +58,8 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
             subtext: "후기 1개 열람 시 1장 사용",
             primaryLabel: "면접 후기 작성하기",
             primaryHref: writeHref,
-            primaryCaption: "작성 시 열람권 +2장",
+            // 승인 전제를 noCredits의 "작성 승인 시 지급"·툴팁의 "면접 후기 승인 시 2장 추가 지급"과 맞춘다.
+            primaryCaption: "작성 승인 시 열람권 +2장",
             secondaryLabel: "열람권 관리",
             secondaryHref: MANAGE_HREF,
           };

@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { FieldLabel, Segmented, TextInput } from "@/components/business/BusinessFormControls";
+import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { Button } from "@/components/ui/Button";
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
 import { REVIEW_TAG_MAX, interviewDifficultyOptions, interviewFormatOptions } from "@/config/reviewTags";
@@ -87,6 +88,11 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
     : `가장 기억에 남는 근무 경험을 최대 ${REVIEW_TAG_MAX}개까지 선택해 주세요.`;
   const contentDetailGuide = isInterview ? "경험을 자유롭게 작성해 주세요." : "근무 경험을 자유롭게 작성해 주세요.";
   const CONTENT_RECOMMENDED_MAX = isInterview ? 350 : 150;
+  // 열람권은 면접 후기에만 지급된다(mypage/review-credits의 "면접 후기 작성 승인 시 +2장",
+  // InterviewAccessStatusCard). 기업 리뷰는 지급 대상이 아니라 게시 문구만 남긴다.
+  const submitHint = isInterview
+    ? "작성한 후기는 운영팀 검토 후 게시되며, 게시되면 열람권이 지급됩니다."
+    : "작성한 리뷰는 운영팀 검토 후 게시됩니다.";
 
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) => {
@@ -253,18 +259,22 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
         </FormSection>
       ) : null}
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" onClick={() => router.push(listHref)}>
-          취소
-        </Button>
-        <Button type="button" variant="gradient" onClick={handleSubmit}>
-          작성 완료
-        </Button>
+      {/* 안내는 버튼 위 한 줄로 쌓는다 — 같은 행에 두면 390px에서 문구가 버튼에 밀려 3줄로 쪼개진다. */}
+      <div className="grid gap-3">
+        <InlineInfoHint>{submitHint}</InlineInfoHint>
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="secondary" onClick={() => router.push(listHref)}>
+            취소
+          </Button>
+          <Button type="button" variant="gradient" onClick={handleSubmit}>
+            작성 완료
+          </Button>
+        </div>
       </div>
 
       {showToast ? (
         <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
-          작성이 완료되었습니다.
+          작성이 완료되었습니다. 운영팀 검토 후 게시됩니다.
         </div>
       ) : null}
     </div>
