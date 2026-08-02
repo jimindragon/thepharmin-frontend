@@ -187,7 +187,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
         >
           취소
         </button>
-        <Button type="button" variant="gradient" size="sm" onClick={handleSubmit} disabled={!draft.trim()} className="disabled:cursor-not-allowed disabled:opacity-45">
+        <Button type="button" variant="gradient" size="sm" onClick={handleSubmit} disabled={!draft.trim()}>
           질문하기
         </Button>
       </div>

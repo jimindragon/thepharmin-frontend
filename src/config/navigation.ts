@@ -10,7 +10,5 @@ export const navigationItems = [
   { label: "기업 인사이트", href: "/companies" },
   { label: "QNA", href: "/qna" },
   { label: "자료실", href: "/resources" },
-  // 헤드헌팅: Header.tsx에서 useBusinessMember()로 href를 분기
-  // (개인/비로그인 → /headhunting/select, 기업 회원 → /business/headhunting)
   { label: "헤드헌팅", href: "/headhunting/select" },
 ];

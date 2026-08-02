@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthHeader } from "@/components/shared/AuthHeader";
 import { PersonalSignupClient } from "@/components/signup/PersonalSignupClient";
 
 export const metadata: Metadata = {
@@ -6,5 +7,10 @@ export const metadata: Metadata = {
 };
 
 export default function PersonalSignupPage() {
-  return <PersonalSignupClient />;
+  return (
+    <>
+      <AuthHeader />
+      <PersonalSignupClient />
+    </>
+  );
 }

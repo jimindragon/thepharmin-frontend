@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthHeader } from "@/components/shared/AuthHeader";
 import { PersonalLoginClient } from "@/components/login/PersonalLoginClient";
 
 export const metadata: Metadata = {
@@ -12,5 +13,10 @@ interface PersonalLoginPageProps {
 export default async function PersonalLoginPage({ searchParams }: PersonalLoginPageProps) {
   const { redirect } = await searchParams;
 
-  return <PersonalLoginClient redirectTo={redirect || "/"} />;
+  return (
+    <>
+      <AuthHeader />
+      <PersonalLoginClient redirectTo={redirect || "/"} />
+    </>
+  );
 }

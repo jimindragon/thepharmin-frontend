@@ -215,7 +215,6 @@ function CommentComposer({ isLoggedIn, placeholder, onSubmit }: { isLoggedIn: bo
           size="sm"
           onClick={onSubmit}
           disabled={!isLoggedIn}
-          className="disabled:cursor-not-allowed disabled:opacity-50"
         >
           등록
         </Button>

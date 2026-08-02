@@ -276,7 +276,6 @@ function OfferResponseModal({
             variant="primary"
             disabled={!canConfirm}
             onClick={handleConfirm}
-            style={!canConfirm ? { background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" } : undefined}
           >
             {isAccept ? "수락 확정" : "거절 확정"}
           </Button>

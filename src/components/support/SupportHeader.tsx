@@ -7,13 +7,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { AccountMenu } from "@/components/Header";
 import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
 import { NotificationBell } from "@/components/shared/NotificationBell";
-import { Button, LinkButton } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/Button";
 import { businessAccountMenuItems } from "@/config/businessAccountMenu";
 import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { sharedRoutes } from "@/config/routes";
 import { initialIndustryOrgManager, initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
-import { MOCK_BUSINESS_NOTIFICATIONS, MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
-import { clearBusinessMember, useBusinessMember } from "@/hooks/useBusinessMember";
+import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
+import { clearBusinessMember } from "@/hooks/useBusinessMember";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
@@ -132,17 +132,16 @@ function SupportBusinessAccountMenu() {
 }
 
 /**
- * 고객센터는 개인회원·기업회원이 함께 보는 중립 페이지라, 둘 중 하나라도
- * 로그인된 상태면 로그인 화면으로 본다. 두 상태가 동시에 true인 경우(데모에서
- * 기업 로그인까지 거친 뒤 고객센터로 돌아온 경우)는 명시적으로 로그인한
- * 기업 계정 쪽을 우선 표시한다 — 개인회원 상태는 기본값이 항상 true인 목업이라
- * 신뢰도가 더 낮다.
+ * 화면은 경로로 판단한다 — /business/* 는 기업 세션만, 그 밖은 개인 세션만 본다.
+ * 고객센터는 후자라 개인 세션 하나만 보고, 두 상태를 조합해 우선순위를 따지지 않는다.
+ * 기업 계정으로만 로그인한 사용자에게 이 헤더가 비로그인으로 보이는 것은 그 규칙의 결과다.
  */
 export function SupportHeader() {
   const pathname = usePathname();
-  const { isLoggedIn: isPersonalLoggedIn, login } = usePersonalLoginState();
-  const isBusinessMember = useBusinessMember();
-  const isLoggedIn = isPersonalLoggedIn || isBusinessMember;
+  const { isLoggedIn } = usePersonalLoginState();
+
+  // 개인 헤더(Header.tsx)와 같은 규칙으로 돌아올 경로를 넘긴다.
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname)}`;
 
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
@@ -183,16 +182,16 @@ export function SupportHeader() {
             {isLoggedIn ? (
               <>
                 <NotificationBell
-                  notifications={isBusinessMember ? MOCK_BUSINESS_NOTIFICATIONS : MOCK_PERSONAL_NOTIFICATIONS}
-                  viewAllHref={isBusinessMember ? "/business/notifications" : "/mypage/notifications"}
-                  scope={isBusinessMember ? "business" : "personal"}
+                  notifications={MOCK_PERSONAL_NOTIFICATIONS}
+                  viewAllHref="/mypage/notifications"
+                  scope="personal"
                 />
-                {isBusinessMember ? <SupportBusinessAccountMenu /> : <AccountMenu />}
+                <AccountMenu />
               </>
             ) : (
-              <Button type="button" variant="secondary" tone="dark" size="sm" onClick={() => login()}>
+              <LinkButton href={loginHref} variant="secondary" tone="dark" size="sm">
                 로그인
-              </Button>
+              </LinkButton>
             )}
           </div>
         </div>

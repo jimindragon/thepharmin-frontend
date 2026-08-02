@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
+import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 
 /**
  * TextInput이 type prop을 받지 않아 비밀번호는 생 input을 쓴다.
@@ -16,14 +17,16 @@ const RAW_INPUT =
 
 export function PersonalLoginClient({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
+  const { login } = usePersonalLoginState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
 
   const canSubmit = Boolean(email.trim()) && password.trim() !== "";
 
+  // 기업 로그인(BusinessLoginClient)과 같은 형태 — 자격 검증 없이 세션 쿠키만 쓰고 이동한다.
   const handleLogin = () => {
-    // 목업 — 실제 인증은 백엔드 연동 필요. 지금은 검증 없이 redirectTo로 이동만 한다.
+    login();
     router.push(redirectTo);
   };
 

@@ -11,16 +11,17 @@ import { headerDropdownActionClassName, headerNavItemClassName } from "@/compone
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 
 export function AccountMenu() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = usePersonalLoginState();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
 
-  // 개인회원 로그인 상태는 아직 URL 쿼리(?guest) 기반 목업(usePersonalLoginState)이라
-  // 지울 저장소가 없다. 지금은 홈으로 보내는 이동만 하고, 실제 세션 해제는 개인회원
-  // 로그인 상태를 어디에 저장할지 정해진 뒤에 여기에 배선한다.
+  // 기업 계정 메뉴의 로그아웃(BusinessAccountMenu)과 같은 순서 — 세션을 끊고, 메뉴를 닫고, 홈으로 보낸다.
   const handleLogout = () => {
+    logout();
     setOpen(false);
     router.push("/");
   };
@@ -97,6 +98,12 @@ export function AccountMenu() {
 
 export function Header() {
   const pathname = usePathname();
+  const { isLoggedIn } = usePersonalLoginState();
+
+  // 로그인 화면 자기 자신에서는 redirect를 붙이지 않는다 — 로그인 후 다시 로그인 화면으로 돌아오게 된다.
+  const loginHref =
+    pathname === "/login" || pathname === "/signup" ? "/login" : `/login?redirect=${encodeURIComponent(pathname)}`;
+
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
       <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
@@ -149,8 +156,27 @@ export function Header() {
         </a>
 
         <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/80 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
-          <NotificationBell notifications={MOCK_PERSONAL_NOTIFICATIONS} viewAllHref="/mypage/notifications" scope="personal" />
-          <AccountMenu />
+          {isLoggedIn ? (
+            <>
+              <NotificationBell notifications={MOCK_PERSONAL_NOTIFICATIONS} viewAllHref="/mypage/notifications" scope="personal" />
+              <AccountMenu />
+            </>
+          ) : (
+            /* 기업 헤더(BusinessHeaders)의 비로그인 로그인/가입 버튼과 같은 구조·치수를 쓴다.
+               색만 다크 헤더 톤으로 바꿨다 — 기업 헤더는 흰 배경이라 그쪽 회색을 그대로 쓰면 검은 헤더에서 보이지 않는다.
+               가입 버튼만 520px 미만에서 숨긴다(헤더의 기존 520 브레이크포인트). 로그인은 유일한 진입로라 항상 남긴다. */
+            <div className="flex items-center gap-2">
+              <Link href={loginHref} className="inline-flex h-10 items-center px-3 text-[12px] font-medium text-white/90 hover:text-white">
+                로그인
+              </Link>
+              <Link
+                href="/signup"
+                className="hidden h-10 items-center border border-white/35 px-3 text-[12px] font-medium text-white/90 hover:border-white/50 hover:text-white min-[521px]:inline-flex"
+              >
+                회원가입
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

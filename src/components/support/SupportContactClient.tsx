@@ -233,7 +233,6 @@ export function SupportContactClient() {
                 size="md"
                 disabled={!isValid}
                 onClick={handleSubmit}
-                className={clsx(!isValid && "cursor-not-allowed opacity-40")}
               >
                 문의 접수
               </Button>

@@ -163,6 +163,10 @@ export function BusinessHeader() {
   const pathname = usePathname();
   const isMember = useBusinessMember();
 
+  // 로그인 화면 자기 자신에서는 redirect를 붙이지 않는다 — 개인 헤더(Header.tsx)와 같은 규칙.
+  const loginHref =
+    pathname === "/business/login" ? "/business/login" : `/business/login?redirect=${encodeURIComponent(pathname)}`;
+
   return (
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-border bg-white text-[#17202c]">
       {/* gap-4 — 좁은 폭에서 로고가 우측 버튼 그룹에 맞닿지 않도록 최소 간격을 보장한다. */}
@@ -217,26 +221,19 @@ export function BusinessHeader() {
               </div>
             </>
           ) : (
-            <>
-              <div className="flex items-center gap-2">
-                <Link href="/business/login" className="hidden h-10 items-center px-3 text-[12px] font-medium text-[#4f5967] hover:text-[#111111] sm:inline-flex">
-                  로그인
-                </Link>
-                <Link href="/business/signup" className="hidden h-10 items-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111] md:inline-flex">
-                  기업 계정 신청
-                </Link>
-              </div>
-              <div className="flex items-center gap-2.5">
-                {/* 2순위 — 아웃라인 버튼, 760px 미만에서 숨김 */}
-                <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden">
-                  헤드헌팅 의뢰
-                </LinkButton>
-                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼 */}
-                <LinkButton href="/business/login" variant="gradient" size="sm" className="max-[520px]:hidden">
-                  공고 등록하기
-                </LinkButton>
-              </div>
-            </>
+            <div className="flex items-center gap-2">
+              {/* 로그인은 이 헤더의 유일한 진입로라 어느 폭에서도 숨기지 않는다.
+                  계정 신청만 이 파일의 최협 브레이크포인트(520)에서 접는다 — 개인 헤더와 같은 규칙. */}
+              <Link href={loginHref} className="inline-flex h-10 items-center px-3 text-[12px] font-medium text-[#4f5967] hover:text-[#111111]">
+                로그인
+              </Link>
+              <Link
+                href="/business/signup"
+                className="hidden h-10 items-center border border-[#cfd8e3] px-3 text-[12px] font-medium text-[#303946] hover:border-[#111111] min-[521px]:inline-flex"
+              >
+                기업 계정 신청
+              </Link>
+            </div>
           )}
         </div>
       </div>

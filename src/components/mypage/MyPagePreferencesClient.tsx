@@ -325,7 +325,6 @@ export function MyPagePreferencesClient() {
           size="md"
           disabled={!hasChanges}
           onClick={handleSave}
-          className={clsx(!hasChanges && "cursor-not-allowed opacity-40")}
         >
           저장
         </Button>

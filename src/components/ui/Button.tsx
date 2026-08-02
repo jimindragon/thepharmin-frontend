@@ -43,6 +43,15 @@ function getButtonStyle(variant: ButtonVariant, tone: ButtonTone, size: ButtonSi
     };
   }
 
+  // primary/secondary의 비활성도 gradient와 같은 처리를 쓴다 — 활성 클래스를 아예 걸지 않고
+  // 토큰 두 개를 style로 주입해, 활성 배경/hover가 비활성 위에 남지 않도록 한다.
+  if (disabled) {
+    return {
+      className: clsx(base, "cursor-not-allowed"),
+      style: { background: "var(--color-disabled-bg)", color: "var(--color-disabled-text)" },
+    };
+  }
+
   if (variant === "primary") {
     return {
       className: clsx(

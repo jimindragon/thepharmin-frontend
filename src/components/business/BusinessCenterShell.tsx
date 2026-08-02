@@ -7,9 +7,11 @@ import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 import { ApprovalGatePanel } from "@/components/business/ApprovalGatePanel";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
+import { LinkButton } from "@/components/ui/Button";
 import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
 import { businessCenterHomeItem, businessCenterMenuGroups, isApprovalGatedPath } from "@/config/businessCenterMenu";
 import { initialBusinessCompanyProfile, initialIndustryOrgManager } from "@/data/businessCompanyProfile";
+import { useBusinessMember } from "@/hooks/useBusinessMember";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 
 const LOCK_TITLE = "기업 인증 후 이용할 수 있습니다";
@@ -87,10 +89,58 @@ export function BusinessSidebar() {
   );
 }
 
+/**
+ * 기업 세션이 없을 때 기업센터 본문 자리에 대신 놓이는 안내.
+ * 접근 제어가 아니라 목업 검증용이다 — 로그인 전 화면이 로그인 후 화면과 섞이지 않게 갈라 준다.
+ * 실제 차단은 인증이 붙을 때 서버가 한다.
+ *
+ * 마크업은 같은 셸의 기존 게이트(ApprovalGatePanel)를 그대로 따른다.
+ */
+function LoginRequiredPanel({ redirectTo }: { redirectTo: string }) {
+  // 로그인 후 막혀 있던 그 화면으로 되돌린다 — 셸이 이미 읽어 둔 pathname을 그대로 받는다.
+  const loginHref = `/business/login?redirect=${encodeURIComponent(redirectTo)}`;
+
+  return (
+    <div className="flex min-h-[420px] flex-col items-center justify-center px-6 py-16 text-center">
+      <Lock size={20} className="text-[#6b7280]" />
+      <h2 className="mt-4 text-[17px] font-bold text-[#17202c]">로그인이 필요합니다</h2>
+      <p className="mt-2 max-w-[520px] text-[15px] font-normal leading-[1.7] text-[#68717e]">
+        기업센터는 기업 계정으로 로그인한 뒤 이용할 수 있습니다.
+      </p>
+      <div className="mt-7">
+        <LinkButton href={loginHref} variant="primary">
+          기업 로그인
+        </LinkButton>
+      </div>
+      <p className="mt-4 text-[13px] text-[#68717e]">
+        <Link href="/business/signup" className="font-medium text-[#111111] underline underline-offset-2">
+          기업 계정 신청
+        </Link>
+      </p>
+    </div>
+  );
+}
+
 export function BusinessCenterShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isMember = useBusinessMember();
   const orgVerificationStatus = useOrgVerificationStatus();
   const isGated = orgVerificationStatus === "pending" && isApprovalGatedPath(pathname);
+
+  // 비로그인이면 사이드바까지 함께 감춘다 — 사이드바가 회사명·인증 상태를 그대로 드러내
+  // 본문만 가려서는 "로그인 전 화면"이 되지 않는다. 헤더는 그대로 두어 진입로를 남긴다.
+  if (!isMember) {
+    return (
+      <>
+        <BusinessHeader />
+        <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
+          <div className="app-shell">
+            <LoginRequiredPanel redirectTo={pathname} />
+          </div>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
