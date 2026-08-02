@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AgreeCheckbox } from "@/components/business/signup/AccountCreationStep";
@@ -39,41 +40,6 @@ function MigrationCard({ children }: { children: React.ReactNode }) {
     <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7] px-11 py-16 max-[760px]:px-5 max-[760px]:py-10">
       <div className="mx-auto max-w-[560px] border border-border bg-white p-10 max-[560px]:p-6">{children}</div>
     </main>
-  );
-}
-
-/**
- * 개정 요약 한 줄 + 약관 전문 미리보기.
- *
- * 미리보기 상자는 개인 가입 폼 STEP1의 TermsPreview와 같은 형태다 — 그쪽은 모듈 내부 함수라
- * export되어 있지 않고 가입 폼은 이번 범위에서 무변경이라, 공유하지 않고 여기 한 벌 둔다.
- * 재동의 화면에만 있는 것은 요약 한 줄이다("무엇이 달라졌는가").
- *
- * 요약을 상자 밖이 아니라 상자 안 맨 윗줄에 둔다 — 밖에 두면 바로 위 체크박스 라벨과
- * 같은 층으로 읽혀 위계가 서지 않았다. 상자 안에 넣으면 "이 약관에 딸린 설명"으로 묶인다.
- *
- * 본문이 아직 없어도 상자는 남긴다 — 상자를 없애면 요약이 다시 체크박스와 같은 층으로 떨어지고,
- * 나중에 약관 본문이 들어올 때 자리를 새로 만들어야 한다. 지금은 한 줄짜리 상자다.
- */
-function ChangeSummaryWithPreview({ summary }: { summary: string }) {
-  return (
-    <div className="mt-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="min-w-0 break-keep text-[12px] font-medium leading-[1.6] text-[#596373]">{summary}</p>
-        <a
-          href="#"
-          className="shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
-        >
-          전문 보기
-        </a>
-      </div>
-      {/*
-        약관 본문이 들어올 자리. 법률 검토 중이라 아직 비어 있고, 자리표시자 문장도 두지 않는다 —
-        바로 위 "전문 보기" 링크가 이미 같은 말을 하고 있었다.
-        본문이 확정되면 이 주석 자리에 스크롤 영역을 되살린다:
-          <div className="mt-1.5 max-h-[96px] overflow-y-auto break-keep text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-      */}
-    </div>
   );
 }
 
@@ -195,18 +161,41 @@ export function MigrationClient({ redirectTo }: { redirectTo: string }) {
         <div className="mt-3 border-t border-border" />
 
         <div className="mt-4 space-y-2">
-          <div>
+          {/*
+            "전문 보기"를 체크박스 줄 안쪽 오른쪽 끝에 겹쳐 둔다 — 형제로 나란히 두면 그 줄만
+            좁아져 아래 줄들과 오른쪽 끝이 어긋난다(AgreeCheckbox가 테두리 있는 전폭 박스다).
+            가입 폼 STEP1과 같은 마크업이지만 공유 컴포넌트로 빼지는 않았다 — 줄 하나 수준이다.
+          */}
+          <div className="relative">
             <AgreeCheckbox label="이용약관 동의" required checked={agreements.service} onChange={(v) => updateAgreement("service", v)} />
-            <ChangeSummaryWithPreview summary="채용 서비스 추가에 따라 이용약관이 변경되었습니다." />
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="이용약관 전문 보기 (새 창)"
+              onClick={(event) => event.stopPropagation()}
+              className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+            >
+              전문 보기
+            </Link>
           </div>
-          <div>
+          <div className="relative">
             <AgreeCheckbox
               label="개인정보 수집·이용 동의"
               required
               checked={agreements.privacy}
               onChange={(v) => updateAgreement("privacy", v)}
             />
-            <ChangeSummaryWithPreview summary="채용 서비스 추가에 따라 개인정보 수집·이용 내용이 변경되었습니다." />
+            <Link
+              href="/terms/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="개인정보 수집·이용 동의 전문 보기 (새 창)"
+              onClick={(event) => event.stopPropagation()}
+              className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+            >
+              전문 보기
+            </Link>
           </div>
           <AgreeCheckbox
             label="광고성 정보 수신 — 이메일"

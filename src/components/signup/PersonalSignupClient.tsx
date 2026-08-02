@@ -92,23 +92,6 @@ const emptyAgreementState: AgreementState = {
   marketingSms: false,
 };
 
-/** 약관 본문 미리보기 — 본문은 아직 확정 전이라 자리표시자만. "전문 보기"는 연결 예정(동작 없음).
- * 시각 스펙은 InfoNoticeBox(shared/InfoNoticeBox.tsx)의 테두리·배경·타이포를 따르되 아이콘 없이 스크롤 영역만 둔다. */
-function TermsPreview() {
-  return (
-    <div className="mt-2 border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-3">
-      <div className="flex justify-end">
-        <a href="#" className="text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]">
-          전문 보기
-        </a>
-      </div>
-      <div className="mt-1.5 max-h-[96px] overflow-y-auto text-[12px] font-normal leading-[1.6] text-[#6f7783]">
-        <p>약관 본문 준비 중</p>
-      </div>
-    </div>
-  );
-}
-
 /**
  * STEP 3 — 가입 완료. 기업 폼과 달리 셸 안에 남겨 스텝 표시기가 계속 보인다.
  * 유입 경로(뉴스/리크루트)별 안내·버튼 분기는 경로를 판별할 수단이 아직 없어 이번 범위에서 제외했다.
@@ -555,13 +538,37 @@ function AgreementStep({
 
       <div className="mt-4 space-y-2">
         <AgreeCheckbox label="만 14세 이상입니다" required checked={value.age14} onChange={(v) => onChange("age14", v)} />
-        <div>
+        {/*
+          "전문 보기"를 체크박스 줄 안쪽 오른쪽 끝에 겹쳐 둔다. 형제로 나란히 두면(flex) 그 줄의
+          체크박스 박스만 링크 폭만큼 좁아져 위아래 줄과 오른쪽 끝이 어긋난다 — AgreeCheckbox가
+          테두리 있는 전폭 박스라서다. right-4는 그 박스의 px-4와 같은 값이다.
+          링크는 label 바깥이라 눌러도 체크가 켜지지 않는다(stopPropagation은 이중 안전장치).
+        */}
+        <div className="relative">
           <AgreeCheckbox label="이용약관 동의" required checked={value.service} onChange={(v) => onChange("service", v)} />
-          <TermsPreview />
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="이용약관 전문 보기 (새 창)"
+            onClick={(event) => event.stopPropagation()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+          >
+            전문 보기
+          </Link>
         </div>
-        <div>
+        <div className="relative">
           <AgreeCheckbox label="개인정보 수집·이용 동의" required checked={value.privacy} onChange={(v) => onChange("privacy", v)} />
-          <TermsPreview />
+          <Link
+            href="/terms/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="개인정보 수집·이용 동의 전문 보기 (새 창)"
+            onClick={(event) => event.stopPropagation()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+          >
+            전문 보기
+          </Link>
         </div>
         <AgreeCheckbox
           label="광고성 정보 수신 — 이메일"

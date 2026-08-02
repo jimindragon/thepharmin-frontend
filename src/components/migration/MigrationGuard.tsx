@@ -26,6 +26,8 @@ import { useMemberMigration } from "@/hooks/useMemberMigration";
  *   /pharmacy-preview — 기업 담당자가 브랜드 페이지를 확인하는 화면. /business 밖에 있는 것은
  *                      라우트 설계상의 사정일 뿐이고 성격은 기업센터 화면이라 개인 이관과 무관하다
  *   /support     — 이관 중 문제가 생긴 사람이 문의할 곳
+ *   /terms       — 약관·정책 문서. 로그인·전환 여부와 무관하게 누구나 볼 수 있어야 하고,
+ *                  재동의 화면의 "전문 보기"가 여기를 가리키므로 막으면 순환이 생긴다
  * 하위 경로까지 함께 열어 준다(`/login/reset/new`, `/business/dashboard` 등).
  */
 const EXEMPT_PREFIXES = ["/migration", "/login", "/signup", "/business", "/pharmacy-preview", "/support", "/terms"] as const;

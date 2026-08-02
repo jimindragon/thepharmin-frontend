@@ -1,8 +1,21 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
+import Link from "next/link";
+import { sharedRoutes } from "@/config/routes";
 
-const footerMenuItems = ["서비스 소개", "고객센터", "이용약관", "개인정보처리방침", "이메일무단수집거부"];
+/**
+ * href가 없는 항목은 아직 대응 라우트가 없다는 뜻이고, 지금까지처럼 클릭되지 않는 텍스트로 남는다.
+ * 고객센터만 sharedRoutes를 거친다 — 여러 화면이 함께 가리키는 경로라서다(config/routes.ts).
+ * 약관 3개는 푸터만 쓰므로 sharedRoutes에 넣지 않고 여기 문자열로 둔다.
+ */
+const footerMenuItems: { label: string; href?: string }[] = [
+  { label: "서비스 소개" },
+  { label: "고객센터", href: sharedRoutes.support },
+  { label: "이용약관", href: "/terms" },
+  { label: "개인정보처리방침", href: "/terms/privacy" },
+  { label: "이메일무단수집거부", href: "/terms/email" },
+];
 
 type MetaToken = { label?: string; value: string };
 
@@ -42,14 +55,18 @@ export function Footer() {
     <footer className="relative bg-[#262626]">
       <div className="app-shell pt-14 pb-12">
         <nav aria-label="정책 메뉴" className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[15px]">
-          {footerMenuItems.map((item) => (
-            <span
-              key={item}
-              className="cursor-default text-[#cfcfcf]"
-            >
-              {item}
-            </span>
-          ))}
+          {footerMenuItems.map((item) =>
+            item.href ? (
+              // cursor-default는 "클릭 대상 아님"을 뜻하므로 링크가 되는 항목에서는 뺀다.
+              <Link key={item.label} href={item.href} className="text-[#cfcfcf] transition hover:text-white">
+                {item.label}
+              </Link>
+            ) : (
+              <span key={item.label} className="cursor-default text-[#cfcfcf]">
+                {item.label}
+              </span>
+            ),
+          )}
         </nav>
 
         <div className="mt-8 border-t-[0.5px] border-[#353535]" />

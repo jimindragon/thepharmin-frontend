@@ -4,6 +4,7 @@ import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import {
   CIRCLED_NUMBERS,
   KOREAN_ORDINALS,
+  emailRefusalNotice,
   getEffectiveVersion,
   termsDocuments,
   type TermsArticle as TermsArticleData,
@@ -87,6 +88,38 @@ function TermsArticle({ article }: { article: TermsArticleData }) {
   );
 }
 
+/**
+ * 이메일무단수집거부 — 약관이 아니라 법적 고지라 장·조·항 계층도, 시행일도 없다(data/terms.ts).
+ * 크기·색·간격은 위 조문 렌더의 값을 그대로 쓴다: 법령명·소제목 17, 본문 15, 항 마커는 ①②③.
+ */
+function EmailRefusalNoticeView() {
+  return (
+    <>
+      <p className={`mt-8 ${BODY_TEXT}`}>{emailRefusalNotice.intro}</p>
+
+      <section className="mt-12">
+        <h2 className="break-keep text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
+          {emailRefusalNotice.lawTitle}
+        </h2>
+        <div className="mt-3 space-y-3">
+          {emailRefusalNotice.clauses.map((clause, index) => (
+            <MarkedLine key={index} marker={CIRCLED_NUMBERS[index]}>
+              {clause}
+            </MarkedLine>
+          ))}
+          <p className={BODY_TEXT}>{emailRefusalNotice.penalty}</p>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{emailRefusalNotice.report.title}</h2>
+        {/* spam.kisa.or.kr은 링크로 만들지 않는다 — 도메인이 바뀌면 죽은 링크가 된다. */}
+        <p className={`mt-3 ${BODY_TEXT}`}>{emailRefusalNotice.report.text}</p>
+      </section>
+    </>
+  );
+}
+
 export function TermsDocumentClient({ docId }: { docId: TermsDocumentId }) {
   const doc = termsDocuments.find((item) => item.id === docId);
 
@@ -140,6 +173,8 @@ export function TermsDocumentClient({ docId }: { docId: TermsDocumentId }) {
                 </div>
               </section>
             </>
+          ) : docId === "email" ? (
+            <EmailRefusalNoticeView />
           ) : (
             <div className="mt-8">
               <InfoNoticeBox>이 문서는 준비 중입니다. 확정되는 대로 게시합니다.</InfoNoticeBox>
