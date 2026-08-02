@@ -47,9 +47,11 @@ export function AccountMenu() {
       </button>
 
       {open ? (
+        // 3그룹 11항목이라 노트북 높이에서 로그아웃까지 넘친다. 패널 상단은 헤더(64px) 아래 8px에
+        // 붙으므로 뷰포트에서 그 72px과 하단 여백 16px을 빼야 잘리지 않는다 — 고정 px는 720 높이에서 다시 넘친다.
         <div
           role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 max-h-[calc(100vh-88px)] w-[260px] overflow-y-auto border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
         >
           <div className="px-3 py-2.5">
             <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
@@ -58,9 +60,12 @@ export function AccountMenu() {
           <div className="h-px bg-[#edf1f5]" />
           <div className="py-2">
             {myPageMenuGroups.map((group) => (
-              <div key={group.title} className="px-1 py-1.5">
-                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#a0a9b7]">{group.title}</p>
-                <div className="mt-1">
+              // 라벨 위(pt-3 + 앞 그룹 pb-1.5 = 18px)는 넓고 아래(mt-0.5 = 2px)는 좁다 —
+              // 라벨이 아래 항목 묶음에 붙어야 "이 묶음의 제목"으로 읽힌다. 첫 그룹만 pt-1 —
+              // 위에 이메일 아래 구분선이 이미 있어 같은 12px을 주면 과하게 벌어진다.
+              <div key={group.title} className="px-1 pb-1.5 pt-3 first:pt-1">
+                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#b0bac6]">{group.title}</p>
+                <div className="mt-0.5">
                   {group.items.map((item) => {
                     const active = pathname === item.href;
                     return (
