@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthHeader } from "@/components/shared/AuthHeader";
 import { SignupTypeSelectClient } from "@/components/business/signup/SignupTypeSelectClient";
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function BusinessSignupPage() {
-  return <SignupTypeSelectClient />;
+  return (
+    <>
+      <AuthHeader />
+      <SignupTypeSelectClient />
+    </>
+  );
 }

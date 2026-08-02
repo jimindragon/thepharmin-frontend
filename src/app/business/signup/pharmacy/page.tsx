@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthHeader } from "@/components/shared/AuthHeader";
 import { PharmacySignupClient } from "@/components/business/signup/PharmacySignupClient";
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function BusinessSignupPharmacyPage() {
-  return <PharmacySignupClient />;
+  return (
+    <>
+      <AuthHeader />
+      <PharmacySignupClient />
+    </>
+  );
 }

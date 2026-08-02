@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { PageHeader } from "@/components/PageHeader";
 import styles from "./SignupTypeSelectClient.module.css";
 
@@ -9,7 +8,6 @@ import styles from "./SignupTypeSelectClient.module.css";
 export function SignupTypeSelectClient() {
   return (
     <>
-      <BusinessHeader />
       <main className={styles.main}>
         <div className={`app-shell ${styles.shell}`}>
           <PageHeader
