@@ -44,7 +44,7 @@ export function InfoTooltip({ title, lines, text, placement = "top", className }
           "pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 border border-[#17202c] bg-[#17202c] text-left font-normal text-white opacity-0 shadow-[0_8px_20px_rgba(17,24,39,0.18)] transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100",
           placement === "bottom" ? "top-full mt-2" : "bottom-full mb-2",
           isCompact
-            ? "w-max max-w-[240px] px-3 py-2 text-[11.5px] leading-[1.5]"
+            ? "w-max max-w-[240px] px-3 py-2 text-[12px] leading-[1.5]"
             : "w-[340px] max-w-[calc(100vw-32px)] px-4 py-4 text-[13px] leading-[1.6]",
         )}
       >

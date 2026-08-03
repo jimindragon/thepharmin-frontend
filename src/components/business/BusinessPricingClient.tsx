@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * 이 파일은 마케팅 랜딩 전용 타이포 스케일을 쓴다 — 확정 타이포 스케일
+ * (34/28/24/22/20/17/16/15/14/13/12)의 예외로 인정됨.
+ *
+ * 히어로 h1은 clamp(36px,5.2vw,58px), 섹션 h2는 clamp(24px,3vw,38px)로 뷰포트에 따라
+ * 유동한다. 본문·배지 쪽에도 12.5/13.5/10.5 같은 소수점 값이 섞여 있는데, 유료 상품
+ * 위계를 촘촘히 나누기 위한 것이라 그대로 둔다.
+ * "스케일 위반"으로 보고 일괄 치환하지 말 것 — 바꾸려면 랜딩 전체를 함께 재설계해야 한다.
+ */
+
 import clsx from "clsx";
 import { Check, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";

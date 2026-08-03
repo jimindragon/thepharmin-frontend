@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * 이 파일은 마케팅 랜딩 전용 타이포 스케일을 쓴다 — 확정 타이포 스케일
+ * (34/28/24/22/20/17/16/15/14/13/12)의 예외로 인정됨.
+ *
+ * 히어로 h1은 clamp(36px,5.2vw,58px), 섹션 h2는 clamp(24px,3vw,38px)로 뷰포트에 따라
+ * 유동한다. BusinessPricingClient와 같은 값을 쓰며, 두 랜딩은 한 쌍으로 유지한다.
+ * "스케일 위반"으로 보고 일괄 치환하지 말 것 — 바꾸려면 두 랜딩을 함께 재설계해야 한다.
+ */
+
 import { useEffect } from "react";
 import Link from "next/link";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";

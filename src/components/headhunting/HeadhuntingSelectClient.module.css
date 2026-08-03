@@ -114,13 +114,14 @@
 }
 
 /* ── Card text ─────────────────────────────── */
+/* 회원 유형 선택 카드 라벨 — 가입 유형 선택(SignupTypeSelectClient.module.css)과 같은 역할이므로 크기·행간·자간을 같게 유지한다. 한쪽만 바꾸지 말 것. */
 .cardType {
   position: relative;
   z-index: 1;
-  font-size: clamp(30px, 3.4vw, 40px);
+  font-size: clamp(26px, 3vw, 34px);
   font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
   color: var(--color-text);
 }
 

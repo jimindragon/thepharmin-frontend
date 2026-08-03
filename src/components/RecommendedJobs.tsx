@@ -206,7 +206,9 @@ function FeaturedCard({ job }: { job: RecommendedJob }) {
       </div>
       <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[18px]">
         {/* 광고 등급 제목: PREMIUM 19 / FEATURED 17 / STANDARD 15 — 2px 간격을 유지해야
-            세 등급이 각각 다른 급으로 읽힌다. 16이면 STANDARD(15)와 1px 차라 뭉개진다. */}
+            세 등급이 각각 다른 급으로 읽힌다. 16이면 STANDARD(15)와 1px 차라 뭉개진다.
+            타이포 스케일 예외로 확정됨 — PREMIUM 19는 스케일(최대 17)을 넘지만 유료 구좌
+            위계라 콘텐츠 카드(17)보다 큰 것이 의도다. 19/17/15 사다리를 유지할 것. */}
         <h3 className="line-clamp-2 text-[17px] font-bold text-[#202734]">{job.title}</h3>
         <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
         <div className="mt-auto flex items-center justify-between pt-3">

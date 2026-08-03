@@ -114,6 +114,7 @@
 }
 
 /* ── Card text ─────────────────────────────── */
+/* 회원 유형 선택 카드 라벨 — 헤드헌팅 유형 선택(HeadhuntingSelectClient.module.css)과 같은 역할이므로 크기·행간·자간을 같게 유지한다. 한쪽만 바꾸지 말 것. */
 .cardType {
   position: relative;
   z-index: 1;
