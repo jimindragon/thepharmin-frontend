@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel } from "@/components/business/BusinessFormControls";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
@@ -102,8 +103,43 @@ export function AccountCreationStep({
       </div>
 
       <div className="mt-8 space-y-2">
-        <AgreeCheckbox label="이용약관 및 개인정보 처리방침" required checked={value.agreeService} onChange={(v) => onChange("agreeService", v)} />
-        <AgreeCheckbox label="기관회원 서비스 이용약관" required checked={value.agreeOrgTerms} onChange={(v) => onChange("agreeOrgTerms", v)} />
+        {/*
+          "전문 보기"를 체크박스 줄 안쪽 오른쪽 끝에 겹쳐 둔다. 형제로 나란히 두면(flex) 그 줄의
+          체크박스 박스만 링크 폭만큼 좁아져 위아래 줄과 오른쪽 끝이 어긋난다 — AgreeCheckbox가
+          테두리 있는 전폭 박스라서다. right-4는 그 박스의 px-4와 같은 값이다.
+          링크는 label 바깥이라 눌러도 체크가 켜지지 않는다(stopPropagation은 이중 안전장치).
+          개인 가입(PersonalSignupClient.tsx)과 같은 구조다.
+
+          이 항목은 이용약관과 개인정보 처리방침 둘을 한 줄로 묶고 있어 링크를 하나만 걸 수 있다.
+          이용약관(/terms)으로 보낸다 — 그 화면의 전환 버튼으로 기관회원 약관까지 갈 수 있고,
+          개인정보처리방침은 푸터에 따로 링크가 있다.
+        */}
+        <div className="relative">
+          <AgreeCheckbox label="이용약관 및 개인정보 처리방침" required checked={value.agreeService} onChange={(v) => onChange("agreeService", v)} />
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="이용약관 및 개인정보 처리방침 전문 보기 (새 창)"
+            onClick={(event) => event.stopPropagation()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+          >
+            전문 보기
+          </Link>
+        </div>
+        <div className="relative">
+          <AgreeCheckbox label="기관회원 서비스 이용약관" required checked={value.agreeOrgTerms} onChange={(v) => onChange("agreeOrgTerms", v)} />
+          <Link
+            href="/terms/business"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="기관회원 서비스 이용약관 전문 보기 (새 창)"
+            onClick={(event) => event.stopPropagation()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 shrink-0 text-[12px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]"
+          >
+            전문 보기
+          </Link>
+        </div>
         <AgreeCheckbox label="마케팅 정보 수신" checked={value.agreeMarketing} onChange={(v) => onChange("agreeMarketing", v)} />
       </div>
 
