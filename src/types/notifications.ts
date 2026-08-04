@@ -21,6 +21,46 @@ export type BusinessNotificationType =
   | "headhunting_candidates" // B9 후보자 추천 도착
   | "offer_accepted"; // B10 제안 수락됨
 
+/**
+ * 알림 목록 행 좌측에 붙는 유형 라벨.
+ * 값은 알림 설정 화면의 그룹명(PERSONAL_NOTIFICATION_SETTINGS·BUSINESS_NOTIFICATION_SETTINGS)과
+ * 맞춘 확정본이라 임의로 다듬지 않는다 — 바꾸면 설정 화면과 어긋난다.
+ * Record로 선언해 유형이 늘어나면 컴파일러가 누락을 잡게 한다.
+ */
+export const PERSONAL_NOTIFICATION_TYPE_LABELS: Record<PersonalNotificationType, string> = {
+  application_submitted: "지원·전형",
+  application_screening: "지원·전형",
+  interview_confirmed: "지원·전형",
+  final_result: "지원·전형",
+  offer_received: "제안",
+  preference_new_jobs: "관심 조건",
+  scrap_deadline: "마감",
+  review_pass_granted: "제안",
+};
+
+export const BUSINESS_NOTIFICATION_TYPE_LABELS: Record<BusinessNotificationType, string> = {
+  new_applicant: "지원자",
+  job_deadline_soon: "공고·부스트",
+  job_closed: "공고·부스트",
+  boost_ending_soon: "공고·부스트",
+  boost_ended: "공고·부스트",
+  payment_completed: "결제",
+  payment_cancelled: "결제",
+  tax_invoice_issued: "결제",
+  headhunting_candidates: "헤드헌팅",
+  offer_accepted: "제안",
+};
+
+/**
+ * 목록 컴포넌트는 개인·기업 알림을 함께 받아 Notification<string>으로 다루므로,
+ * 여기서 scope로 표를 고르고 좁은 유형으로 단언한다 — 두 표의 키는 서로 겹치지 않는다.
+ */
+export function getNotificationTypeLabel(scope: "personal" | "business", type: string): string {
+  return scope === "personal"
+    ? PERSONAL_NOTIFICATION_TYPE_LABELS[type as PersonalNotificationType]
+    : BUSINESS_NOTIFICATION_TYPE_LABELS[type as BusinessNotificationType];
+}
+
 export type NotificationChannel = "site" | "email" | "alimtalk";
 
 /** 대시보드 "지금 확인할 일" 등에서 알림을 종류별로 분류할 때 쓰는 선택 태그. */

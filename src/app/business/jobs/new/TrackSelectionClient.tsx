@@ -109,24 +109,20 @@ export function TrackSelectionClient() {
         ))}
       </div>
 
-      {/* 부스트 helper — 카드 그리드와 동일 폭 */}
-      <div className="mt-6 border-t border-[#e8ecf0] pt-5">
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <p className="text-[13px] font-medium text-[#303946]">
-              더 빠른 채용이 필요하신가요?
-            </p>
-            <p className="mt-0.5 text-[13px] text-[#8a94a3]">
-              등록은 무료, 노출을 높이고 싶을 땐 부스트로 상단에 노출하세요.
-            </p>
-          </div>
-          <Link
-            href="/business#pricing"
-            className="shrink-0 text-[13px] font-medium text-[#303946] transition hover:text-[#111111] hover:underline"
-          >
-            요금제 안내 보기 →
-          </Link>
+      {/* 부스트 helper — 카드 그리드와 동일 폭. 요금제 관리 하단 안내 배너와 같은 흰 박스 스타일 */}
+      <div className="mt-5 flex items-center justify-between gap-4 border border-border bg-white px-6 py-5 max-[760px]:flex-col max-[760px]:items-start">
+        <div>
+          <p className="text-[14px] font-bold text-[#17202c]">더 빠른 채용이 필요하신가요?</p>
+          <p className="mt-1 text-[13px] font-normal text-[#68717e]">
+            등록은 무료, 노출을 높이고 싶을 땐 부스트로 상단에 노출하세요.
+          </p>
         </div>
+        <Link
+          href="/business#pricing"
+          className="shrink-0 text-[13px] font-medium text-[#303946] transition hover:text-[#111111] hover:underline"
+        >
+          요금제 안내 보기 →
+        </Link>
       </div>
     </BusinessCenterShell>
   );
