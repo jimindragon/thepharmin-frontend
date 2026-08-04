@@ -38,6 +38,17 @@ export interface CompanyProfileFeature {
 export interface CompanyProfile {
   id: string;
   name: string;
+  /**
+   * 로고 이미지(logoImage)가 없을 때 로고 칸에 대신 그릴 글자. CompanyHero가 이 값을 가공 없이 그대로 찍는다.
+   *
+   * 전체 이름을 넣지 말 것 — 가장 작은 로고 칸(74×30, RecommendedJobs의 Standard 티어)이 6자에서 넘치고,
+   * 기관명 중앙값이 6~7자라 전체 이름은 어느 칸에서도 성립하지 않는다. 대략 4자 이내로 둔다.
+   * 영문 약어(PHARMA·YUHAN·SBL 등)와, 한미약품·메디코아처럼 알아보기 쉬운 축약은 그대로 둔다.
+   *
+   * 이 필드를 손으로 채우지 않는 경로(기업센터 미리보기 변환기 businessProfilePreview.ts)는
+   * getCompanyInitial(name)으로 앞 2글자를 잘라 자동 생성한다. 손으로 고른 값이 있으면 그쪽이 이긴다
+   * — 기쁨(화곡 기쁨약국)·센트럴(불당센트럴약국)처럼 자동 생성이 낼 수 없는 더 나은 이니셜을 살리기 위해서다.
+   */
   logoText: string;
   logoImage?: string;
   tagline: string;
@@ -955,7 +966,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "snubh",
     name: "분당서울대학교병원",
-    logoText: "분당서울대학교병원",
+    logoText: "분당",
     logoImage: companyLogos["분당서울대병원"],
     tagline: "진료와 임상연구를 함께 운영하는 상급종합병원",
     tags: ["병원", "설립 2003년", "사원수 501명 이상"],
@@ -1198,7 +1209,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "osan-hankook-hospital",
     name: "오산한국병원",
-    logoText: "오산한국병원",
+    logoText: "오산",
     logoImage: companyLogos["오산한국병원"],
     tagline: "경기 오산 지역의 진료를 담당하는 종합병원입니다.",
     tags: ["병원", "설립 1989년", "사원수 101~500명"],
@@ -1236,7 +1247,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "armed-forces-seoul-district-hospital",
     name: "국군서울지구병원",
-    logoText: "국군서울지구병원",
+    logoText: "국군",
     logoImage: companyLogos["국군서울지구병원"],
     tagline: "군 장병과 군무원의 진료를 담당하는 군 병원입니다.",
     tags: ["병원", "설립 1971년", "사원수 101~500명"],
@@ -1273,7 +1284,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "eunhaeng-pharmacy",
     name: "은행약국",
-    logoText: "은행약국",
+    logoText: "은행",
     // N3 PART B 확정 문구로 교체 (기존의 평가성 문구 → 사실 서술)
     tagline: "내과·이비인후과 의원 처방을 주로 조제하는 의원층 약국",
     tags: ["약국", "설립 2026.02.11"],
@@ -1565,7 +1576,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "seoul-asan-hospital",
     name: "서울아산병원",
-    logoText: "서울아산병원",
+    logoText: "아산",
     logoImage: companyLogos["서울아산병원"],
     tagline: "임상과 연계한 의학 연구를 수행하는 병원 연구소입니다.",
     tags: ["연구기관", "설립 1989년"],

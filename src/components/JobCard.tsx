@@ -3,9 +3,9 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
-import { useState } from "react";
 import { companyLogos } from "@/config/companyImages";
 import type { Job } from "@/types/jobs";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { formatHospitalSalary } from "@/utils/salary";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { getCompanyDetailHref } from "@/components/job-detail/shared";
@@ -31,8 +31,6 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
   const easyApply = job.applyMethod === "간편 지원";
   const companyDetailHref = getCompanyDetailHref(job.companyId);
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
-  const [logoFailed, setLogoFailed] = useState(false);
-  const showLogoImage = Boolean(logoUrl) && !logoFailed;
 
   return (
     <article className="surface group relative shadow-none transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc]">
@@ -57,16 +55,21 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
         {/* 로고 컬럼 — ≤480px에서는 숨긴다. 회사명이 바로 옆에 텍스트로 중복 표시되므로
             정보 칸 폭을 확보하는 쪽이 우선 */}
         <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[640px]:w-[96px] max-[640px]:px-3 max-[480px]:hidden">
-          {showLogoImage ? (
-            <img
-              src={logoUrl}
-              alt={job.company}
-              className="max-h-10 w-full object-contain"
-              onError={() => setLogoFailed(true)}
-            />
-          ) : (
-            <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>
-          )}
+          {/* 폭은 칸이 정한다 — EntityLogo가 인라인 style로 넣는 width를 !w-full로 덮어야
+              칸의 ≤640px 축소(콘텐츠 폭 90→72)를 그대로 따라간다. 인라인 style은 클래스보다
+              세므로 important 없이는 이길 수 없다.
+              height 40 + padding 0은 종전 `max-h-10 w-full object-contain`과 같은 렌더 결과다.
+              폴백은 건물 아이콘이 아니라 이니셜이다 — 로고 없는 항목이 여러 줄 연속으로
+              깔리는 화면(약국 탭)에서 전부 같은 아이콘이 되면 행 구분이 사라진다. */}
+          <EntityLogo
+            name={job.company}
+            logoUrl={logoUrl}
+            variant="wide"
+            height={40}
+            padding={0}
+            className="!w-full"
+            fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>}
+          />
         </div>
 
         {/* 세로 구분선 — 로고 칸과 함께 사라진다 */}

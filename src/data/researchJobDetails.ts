@@ -118,8 +118,9 @@ export interface ResearchOrg {
   institutionName: string;
   /**
    * jobs.ts의 logoText/logoColor(이니셜 배지)를 그대로 옮겨 담는다.
-   * 상세 화면은 이 값을 읽지 않는다 — 로고는 logoUrl로 그리고, 로딩 실패나 자산 부재 시에는
-   * EntityLogo가 institutionName에서 이니셜을 만들어 대신 채운다.
+   * 상세 화면은 이 값을 읽지 않는다 — 로고는 logoUrl로 그린다. 로딩 실패나 자산 부재 시에는
+   * 이니셜이 아니라 건물 아이콘이 나온다: 상세 화면이 쓰는 CompanyLogo(job-detail/shared.tsx)가
+   * EntityLogo에 fallback을 넘기지 않아 EntityLogo의 기본 폴백(Building2 아이콘)으로 빠진다.
    */
   logoText: string;
   logoColor: string;

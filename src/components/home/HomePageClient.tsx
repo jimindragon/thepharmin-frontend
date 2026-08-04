@@ -9,6 +9,7 @@ import { CarouselControl } from "@/components/RecommendedJobs";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
 import { companyLogos } from "@/config/companyImages";
 import { FEATURED_COMPANY_IDS, getActiveJobCount } from "@/data/companyDirectory";
@@ -69,7 +70,7 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
                   {logoSrc ? (
                     <img src={logoSrc} alt={company.name} className="max-h-[34px] w-auto max-w-[160px] object-contain" />
                   ) : (
-                    <span className="max-w-[160px] truncate text-[13px] font-medium text-[#171b20]/60">{company.name}</span>
+                    <span className="max-w-[160px] truncate text-[13px] font-medium text-[#171b20]/60">{getCompanyInitial(company.name)}</span>
                   )}
                 </div>
                 <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f]")}>{company.name}</h3>
@@ -163,11 +164,17 @@ function HomeRecommendationCard({
       </Link>
       {/* 로고 영역: 박스 없이 이미지만, 없으면 이니셜 */}
       <div className="flex w-[130px] shrink-0 items-center justify-center px-5">
-        {logoUrl ? (
-          <img src={logoUrl} alt={job.company} className="max-h-10 w-full object-contain" />
-        ) : (
-          <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>
-        )}
+        {/* JobCard와 같은 규격 — 폭은 칸이 정하므로 !w-full로 EntityLogo의 인라인 width를 덮는다.
+            height 40 + padding 0은 종전 `max-h-10 w-full object-contain`과 같은 렌더 결과다. */}
+        <EntityLogo
+          name={job.company}
+          logoUrl={logoUrl}
+          variant="wide"
+          height={40}
+          padding={0}
+          className="!w-full"
+          fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>}
+        />
       </div>
       {/* 세로 구분선 */}
       <div className="w-px shrink-0 self-stretch bg-[#eeeeee]" />

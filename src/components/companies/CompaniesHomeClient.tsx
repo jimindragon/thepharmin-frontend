@@ -6,6 +6,7 @@ import { ChevronRight, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Pagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/Button";
+import { EntityLogo } from "@/components/ui/EntityLogo";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
 import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
@@ -483,21 +484,22 @@ function CompanyStatColumn({ label, count, href }: { label: string; count: numbe
 
 /** JobCard.tsx의 [로고|구분선|정보] 문법을 따른다: 이미지 로고는 흰 배경 위에 직접, logoText 폴백만 기존 회색 이니셜 칩 스타일을 유지한다. */
 function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(entry.logoUrl) && !imageFailed;
-
   return (
     <div className="flex h-[52px] w-[120px] shrink-0 items-center justify-center max-[640px]:w-[100px]">
-      {showImage ? (
-        <img
-          src={entry.logoUrl}
-          alt={entry.name}
-          className="max-h-[46px] max-w-[100px] object-contain max-[640px]:max-w-[76px]"
-          onError={() => setImageFailed(true)}
-        />
-      ) : (
-        <span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(entry.name)}</span>
-      )}
+      {/* JobCard와 달리 !w-full을 쓸 수 없다 — 여기는 이미지가 칸 폭(120/100)이 아니라
+          별도의 max-w(100/76)로 제한돼 있어, 칸을 채우면 로고가 커진다.
+          그래서 종전 max-w/max-h 값을 EntityLogo의 width/height로 그대로 옮기고
+          ≤640px 축소만 important로 덮는다. */}
+      <EntityLogo
+        name={entry.name}
+        logoUrl={entry.logoUrl}
+        variant="wide"
+        width={100}
+        height={46}
+        padding={0}
+        className="max-[640px]:!w-[76px]"
+        fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(entry.name)}</span>}
+      />
     </div>
   );
 }

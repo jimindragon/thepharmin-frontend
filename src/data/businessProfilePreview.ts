@@ -98,7 +98,7 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
   const company: Company = {
     id,
     name: org.institutionName,
-    logoText: org.institutionName,
+    logoText: getCompanyInitial(org.institutionName),
     logoUrl: org.logoUrl ?? undefined,
     logoColor: "#111111",
     verified: true,
@@ -116,7 +116,7 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
   const profile: CompanyProfile = {
     id,
     name: org.institutionName,
-    logoText: org.institutionName,
+    logoText: getCompanyInitial(org.institutionName),
     logoImage: org.logoUrl ?? undefined,
     tagline: org.shortIntro,
     tags: [typeLabel, region, org.bedCount ? `병상 ${org.bedCount}` : null].filter((value): value is string => Boolean(value)),
@@ -165,7 +165,7 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
   const company: Company = {
     id,
     name: org.pharmacyName,
-    logoText: org.pharmacyName,
+    logoText: getCompanyInitial(org.pharmacyName),
     logoUrl: org.logoUrl ?? undefined,
     logoColor: "#111111",
     verified: true,
@@ -181,7 +181,7 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
   const profile: CompanyProfile = {
     id,
     name: org.pharmacyName,
-    logoText: org.pharmacyName,
+    logoText: getCompanyInitial(org.pharmacyName),
     logoImage: org.logoUrl ?? undefined,
     tagline: org.shortIntro,
     tags: [typeLabel, region].filter((value): value is string => Boolean(value)),

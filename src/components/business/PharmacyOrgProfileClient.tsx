@@ -55,7 +55,8 @@ function FieldError({ message }: { message?: string }) {
 /** 로고 박스 표시 — 산업/병원과 동일 구현 복제 */
 function ImageMark({ url, alt, fallback }: { url: string | null; alt: string; fallback: string }) {
   if (url) {
-    return <img src={url} alt={alt} className="h-full w-full object-contain p-[12%]" />;
+    // 패딩을 넣지 말 것 — 부모 칸의 p-3가 이미 여백이다. 로고 자산은 대부분 가로로 길어(평균 3:1) 표시 영역이 줄면 로고가 크게 쪼그라든다.
+    return <img src={url} alt={alt} className="h-full w-full object-contain" />;
   }
 
   return (
