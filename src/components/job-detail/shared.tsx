@@ -9,6 +9,7 @@ import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
 import type { FormattedContent, Job, JobTrack } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
 
 /**
@@ -75,6 +76,24 @@ export function getCompanyDetailHref(companyId?: string) {
   return companyDirectory.find((entry) => entry.id === companyId)?.detailHref;
 }
 
+/**
+ * 공고 상세의 기관 로고. lg는 본문 "기업/기관/병원 정보" 섹션 요약, sm은 히어로 액션 행(헤더)에 쓴다.
+ *
+ * 종전 정사각 칸(68×68 / 46×46)은 로고 자산 61개 중 93%가 가로형(중앙 비율 약 3:1)이라는 사실과 맞지 않아,
+ * 3:1 로고가 각각 높이 11px / 6px까지 쪼그라들었다. EntityLogo의 wide variant로 높이는 그대로 두고 폭만 넓힌다.
+ * 폭 140/130은 목록 행(JobCard 90×40 · 기업 목록 100×46)보다 커야 상세의 위계가 맞아 고른 기존 값이다.
+ * 더 넓힐 수도 있었지만 140이 상한이다 — 160이면 병원 트랙 1280px에서 옆 소개문이 한 줄 늘어 블록이 +22px 커진다.
+ * lg의 ≤640px 축소는 기업 목록 셀(CompaniesHomeClient)이 쓰는 값·중단점을 그대로 가져왔다 —
+ * 좁은 화면에서는 옆 기관 소개문이 들어갈 폭을 남겨야 한다. 76은 390px에서 어느 트랙도 소개문 줄 수가
+ * 늘지 않는 값이다(연구는 80까지, 산업은 90까지가 한계라 둘 중 좁은 쪽에 맞춘다).
+ * 모바일에서도 로고는 커진다 — 폭이 아니라 padding 8→0에서 오는 몫이다.
+ * sm은 중단점이 다르다. 헤더 좌측 묶음이 max-[560px]에서 세로로 접혀 그때부터 기관명이 로고와 폭을 나눠 쓰기 때문에,
+ * 긴 이름("한국과학기술연구원(KIST)")이 두 줄로 접히지 않는 100까지 그 지점에서 줄인다.
+ *
+ * 테두리·배경·그림자는 뺐다. 주변이 흰 카드라 bg-white는 보이지 않고 rounded-[var(--radius)]는 0으로 계산되며,
+ * 칸이 로고 비율에 맞은 뒤로는 테두리로 감쌀 빈 공간 자체가 없다 — wide를 쓰는 다른 두 자리와도 같아진다.
+ * 폴백은 건물 아이콘이 아니라 이니셜이다(JobCard와 같은 규격).
+ */
 export function CompanyLogo({
   name,
   logoUrl,
@@ -84,26 +103,20 @@ export function CompanyLogo({
   logoUrl?: string;
   size?: "sm" | "lg";
 }) {
-  const [imageFailed, setImageFailed] = useState(false);
   const resolvedLogoUrl = logoUrl ?? companyLogos[name];
-  const showImage = Boolean(resolvedLogoUrl) && !imageFailed;
-  const boxSize = size === "lg" ? "h-[68px] w-[68px]" : "h-[46px] w-[46px]";
-  const boxPx = size === "lg" ? 68 : 46;
-
-  if (!showImage) {
-    return <EntityLogo name={name} size={boxPx} className="shrink-0" />;
-  }
+  const isLarge = size === "lg";
 
   return (
-    <div
-      className={clsx(
-        "grid shrink-0 place-items-center rounded-[var(--radius)] border border-border bg-white shadow-[0_3px_10px_rgba(20,32,46,0.04)]",
-        boxSize,
-      )}
-      aria-label={`${name} 로고`}
-    >
-      <img src={resolvedLogoUrl} alt={`${name} 로고`} className="h-full w-full object-contain p-2" onError={() => setImageFailed(true)} />
-    </div>
+    <EntityLogo
+      name={name}
+      logoUrl={resolvedLogoUrl}
+      variant="wide"
+      width={isLarge ? 140 : 130}
+      height={isLarge ? 68 : 46}
+      padding={0}
+      className={clsx("shrink-0", isLarge ? "max-[640px]:!w-[76px]" : "max-[560px]:!w-[100px]")}
+      fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(name)}</span>}
+    />
   );
 }
 
