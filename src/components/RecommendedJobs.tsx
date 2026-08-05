@@ -82,7 +82,7 @@ export function JobNoticePopover() {
           <p className="text-[14px] font-bold text-[#17202c]">공고 노출 효과를 높여보세요</p>
           <p className="break-keep text-[12px] font-normal leading-[1.6] text-[#687383]">기업회원 전용 노출 상품과 요금제를 확인할 수 있습니다.</p>
           <Link
-            href="/business/pricing"
+            href="/business#pricing"
             onClick={() => setOpen(false)}
             className="inline-flex h-9 items-center justify-center bg-brand px-4 text-[13px] font-medium text-white hover:bg-[var(--color-brand-dark)]"
           >

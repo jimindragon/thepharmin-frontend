@@ -33,7 +33,8 @@ import {
 
 const USER_NAME = myPageUser.name;
 
-const DDAY_BADGE_STYLE: Record<DdayTier, { className: string; dotClassName?: string }> = {
+/** D-day 배지는 점 없이 텍스트 색만 쓴다 — 프로젝트 규칙상 D-day에는 상태 점을 붙이지 않는다. */
+const DDAY_BADGE_STYLE: Record<DdayTier, { className: string }> = {
   urgent: { className: "text-status-urgent" },
   warning: { className: "text-status-pending" },
   neutral: { className: "text-[#4f5967]" },
@@ -58,7 +59,7 @@ type UpcomingSchedule = {
   eventLabel: string;
   jobTitle: string;
   company: string;
-  badge: { ddayPrefix: string } | { label: string; className: string; dotClassName?: string };
+  badge: { ddayPrefix: string };
 };
 
 // 다가오는 일정(우측 레일) — 예정 일정 전체(내부·외부, 면접·서류발표·마감). 좌측 "지금 확인할 일"과는
@@ -144,12 +145,9 @@ function formatScheduleDayParts(dateStr: string) {
 function resolveScheduleBadge(
   badge: UpcomingSchedule["badge"],
   date: string,
-): { label: string; className: string; dotClassName?: string } {
-  if ("ddayPrefix" in badge) {
-    const dday = getDdayInfo(date, MYPAGE_MOCK_TODAY);
-    return { label: `${badge.ddayPrefix}${dday.label}`, ...DDAY_BADGE_STYLE[dday.tier] };
-  }
-  return badge;
+): { label: string; className: string } {
+  const dday = getDdayInfo(date, MYPAGE_MOCK_TODAY);
+  return { label: `${badge.ddayPrefix}${dday.label}`, ...DDAY_BADGE_STYLE[dday.tier] };
 }
 
 // ─── sub-components ────────────────────────────────────────────────────────────
@@ -191,20 +189,17 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
   return (
     <div className="flex items-start gap-4 px-6 py-4 max-[760px]:px-4">
       <div className="w-12 shrink-0 text-center">
-        <p className="text-[24px] font-black leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
+        <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
         <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
         {time ? (
           <p className="mt-1 text-[13px] font-semibold text-status-urgent">{time}</p>
         ) : null}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[17px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
-        <p className="mt-1.5 text-[15px] text-[#8a94a3]">{jobTitle} · {company}</p>
+        <p className="text-[16px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
+        <p className="mt-1.5 text-[13px] text-[#8a94a3]">{jobTitle} · {company}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           <span className="inline-flex w-fit items-center gap-[8px]">
-            {badge.dotClassName ? (
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${badge.dotClassName}`} />
-            ) : null}
             <span className={clsx("text-[13px] font-medium", badge.className)}>
               {badge.label}
             </span>

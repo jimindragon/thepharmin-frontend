@@ -9,8 +9,10 @@ import { StatusPill } from "@/components/business/table/StatusPill";
 import { TrackBadge } from "@/components/business/table/TrackBadge";
 import type { StatusTone } from "@/config/statusTone";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
+import { applicants } from "@/data/applicants";
 import { getClosingDday, jobPostings, jobTrackLabel, MOCK_TODAY } from "@/data/businessJobs";
 import { LOGIN_COMPANY } from "@/data/businessCompanyProfile";
+import { headhuntingCandidates, headhuntingRequests } from "@/data/headhunting";
 import { useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { formatKoreanDate } from "@/utils/dday";
 
@@ -25,6 +27,26 @@ function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: bo
   const { daysLeft, isUrgent } = getClosingDday(job.closingDate);
   return { value: daysLeft, isUrgent };
 }
+
+/**
+ * 상단 통계 카드는 각 관리 화면과 같은 계산식을 쓴다 — 같은 라벨이 화면마다 다른 값을
+ * 말하지 않게 하는 것이 요점이다. 기준을 바꿀 일이 생기면 아래 원본과 함께 고쳐야 한다.
+ * 면접: BusinessApplicantsClient / 헤드헌팅: BusinessHeadhuntingManageClient.
+ */
+const interviewApplicants = applicants.filter((a) => a.interviewDate != null);
+const interviewCount = interviewApplicants.length;
+const nearInterviewCount = interviewApplicants.filter(
+  (a) => (a.daysUntilInterview ?? Infinity) <= 2,
+).length;
+
+const activeHeadhuntingCount = headhuntingRequests.filter(
+  (r) => r.status !== "completed" && r.status !== "on_hold",
+).length;
+const totalCandidateCount = headhuntingCandidates.length;
+const pendingCandidateCount = headhuntingCandidates.filter((c) => c.status === "recommended").length;
+
+/** 마감 임박 — 게시 중 공고 중 D-2 이내. getClosingDday의 isUrgent(diff <= 2)를 그대로 따른다(공고별 지원 현황의 빨간 D-day와 같은 기준). */
+const closingSoonCount = activeJobs.filter((job) => getJobDday(job).isUrgent).length;
 
 // ─── dashboard-only mock data ─────────────────────────────────────────────────
 
@@ -60,7 +82,7 @@ const TASKS: Array<{
     id: "t4",
     title: "정수민님 최종 면접 일정을 확정하세요",
     badge: { label: "D-2", tone: "urgent" },
-    desc: "제제연구 선임연구원 · 6월 29일(일) 14:00 제안됨",
+    desc: "제제연구 선임연구원 · 7월 21일(화) 14:00 제안됨",
     action: { label: "일정 확정", href: "/business/applicants" },
   },
   {
@@ -84,8 +106,8 @@ const UPCOMING_INTERVIEWS: Array<{
 }> = [
   {
     id: "i1",
-    day: "29",
-    monthLabel: "6월 일",
+    day: "21",
+    monthLabel: "7월",
     time: "14:00",
     candidate: "정수민",
     stage: "최종 면접",
@@ -94,8 +116,8 @@ const UPCOMING_INTERVIEWS: Array<{
   },
   {
     id: "i2",
-    day: "02",
-    monthLabel: "7월 수",
+    day: "24",
+    monthLabel: "7월",
     time: "10:30",
     candidate: "CAND-014",
     stage: "1차 면접",
@@ -164,15 +186,15 @@ function InterviewRow({
         <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">
           {day}
         </p>
-        <p className="mt-1 text-[11px] text-[#8a94a3]">{monthLabel}</p>
-        <p className="mt-1 text-[12px] font-semibold text-[#4f5967]">{time}</p>
+        <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
+        <p className="mt-1 text-[13px] font-semibold text-[#4f5967]">{time}</p>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-semibold text-[#17202c]">
+        <p className="text-[16px] font-semibold text-[#17202c]">
           {candidate}
           <span className="ml-1.5 font-normal text-[#68717e]">· {stage}</span>
         </p>
-        <p className="mt-0.5 text-[12px] text-[#8a94a3]">{posting}</p>
+        <p className="mt-1.5 text-[13px] text-[#8a94a3]">{posting}</p>
         <div className="mt-2">
           <StatusPill tone={badge.tone} label={badge.label} size="sm" />
         </div>
@@ -207,11 +229,11 @@ export function BusinessDashboardClient() {
               오늘 처리할 항목이 있어요.
             </h1>
             <p className="mt-2 text-[13px] text-[#68717e]">
-              <span className="font-semibold text-[#17202c]">처리 대기 5건</span>
+              <span className="font-semibold text-[#17202c]">처리 대기 {TASKS.length}건</span>
               <span className="mx-1 text-[#c0c8d2]">·</span>
               신규 지원 3{" "}
               <span className="text-[#c0c8d2]">·</span>
-              {" "}마감 임박 1{" "}
+              {" "}마감 임박 {closingSoonCount}{" "}
               <span className="text-[#c0c8d2]">·</span>
               {" "}후보자 회신 1
             </p>
@@ -245,16 +267,16 @@ export function BusinessDashboardClient() {
           />
           <BusinessStatCard
             label="면접 예정"
-            value="2"
+            value={String(interviewCount)}
             unit="건"
-            subEmphasis="D-2 이내 1건"
+            subEmphasis={nearInterviewCount > 0 ? `D-2 이내 ${nearInterviewCount}건` : undefined}
             emphasisVariant="urgent"
           />
           <BusinessStatCard
             label="진행 중 헤드헌팅"
-            value="3"
+            value={String(activeHeadhuntingCount)}
             unit="건"
-            sub="추천 후보자 6명 · 검토 대기 2명"
+            sub={`추천 후보자 ${totalCandidateCount}명 · 검토 대기 ${pendingCandidateCount}명`}
           />
         </BusinessStatGrid>
 
@@ -269,7 +291,7 @@ export function BusinessDashboardClient() {
               <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">
                   처리할 항목
-                  <span className="ml-2 text-status-positive">5</span>
+                  <span className="ml-2 text-status-positive">{TASKS.length}</span>
                 </h2>
                 <Link
                   href="/business/applicants"
@@ -354,13 +376,22 @@ export function BusinessDashboardClient() {
             <section className="border border-border bg-white">
               <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">다가오는 면접</h2>
-                <span className="cursor-default text-[12px] text-[#c0c8d2]">캘린더 ›</span>
+                <Link
+                  href="/business/applicants"
+                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
+                >
+                  지원자 관리 ›
+                </Link>
               </div>
-              <div className="divide-y divide-[#e5e9ef]">
-                {UPCOMING_INTERVIEWS.map((item) => (
-                  <InterviewRow key={item.id} {...item} />
-                ))}
-              </div>
+              {UPCOMING_INTERVIEWS.length > 0 ? (
+                <div className="divide-y divide-[#e5e9ef]">
+                  {UPCOMING_INTERVIEWS.map((item) => (
+                    <InterviewRow key={item.id} {...item} />
+                  ))}
+                </div>
+              ) : (
+                <p className="px-6 py-4 max-[760px]:px-4 text-[13px] text-[#8a94a3]">예정된 면접이 없습니다</p>
+              )}
             </section>
 
             {/* 최근 활동 */}

@@ -219,7 +219,7 @@ export function BusinessBillingPlansClient() {
             description: "부스트는 공고를 목록 상단에 노출하고 관련 인재에게 알림을 보내는 기능입니다.",
             action: (
               <Link
-                href="/business/pricing"
+                href="/business#pricing"
                 className="mt-6 inline-flex h-10 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
               >
                 요금제 알아보기
