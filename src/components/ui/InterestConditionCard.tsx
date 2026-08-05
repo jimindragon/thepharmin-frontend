@@ -1,4 +1,4 @@
-import { Info, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -41,12 +41,11 @@ export function InterestConditionCard({
 
   return (
     <div className="border border-gray-200 bg-white p-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <div className="flex items-center gap-2">
           <SlidersHorizontal size={17} strokeWidth={2} className="text-gray-700" />
           <h3 className="text-[15px] font-semibold text-[#171b20]">내 관심조건</h3>
         </div>
-        <Info size={15} className="text-gray-400" />
       </div>
 
       <div className="mt-4 border-t border-gray-200 pt-4">

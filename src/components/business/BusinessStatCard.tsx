@@ -62,7 +62,7 @@ export function BusinessStatCard({
   // "카드 전체가 눌린다"는 신호를 화면마다 다르게 주지 않기 위해서다.
   if (href) {
     return (
-      <Link href={href} className="block px-5 py-5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
+      <Link href={href} className="block px-5 py-5 transition hover:bg-[#fbfbfb]">
         {body}
       </Link>
     );
