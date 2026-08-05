@@ -129,8 +129,9 @@ function CompleteContent() {
                   {trackLabel}
                 </span>
               </div>
+              {/* deadline이 이미 "채용 시 마감"이면 접미사를 붙이지 않는다 — "채용 시 마감 마감"이 된다 */}
               <p className="mt-1 text-[13px] font-normal text-[#8a9ab0]">
-                검토 대기 · {deadline} 마감
+                검토 대기 · {deadline === "채용 시 마감" ? deadline : `${deadline} 마감`}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">

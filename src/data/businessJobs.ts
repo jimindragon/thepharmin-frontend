@@ -114,6 +114,18 @@ export const jobPostings: JobPosting[] = [
     applicantCount: 3,
     boost: false,
   },
+  // 검수 흐름(제출 → 검토 대기 → 게시) 데모용 1건. registeredAt은 MOCK_TODAY 이전,
+  // closingDate는 이후여야 게시 후 D-day가 정상 계산된다.
+  {
+    id: "job-7",
+    title: "품질보증(QA) 담당자 채용",
+    track: "industry",
+    registeredAt: "2026.07.18",
+    closingDate: "2026.08.14",
+    status: "pending",
+    applicantCount: 0,
+    boost: false,
+  },
 ];
 
 export function filterJobPostings(

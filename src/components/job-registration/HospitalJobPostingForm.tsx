@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
@@ -272,6 +273,8 @@ function TwoTierPicker({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function HospitalJobPostingForm() {
+  const router = useRouter();
+
   // §1 기본 정보
   const [title, setTitle] = useState("");
   const [activeJobCategory, setActiveJobCategory] = useState(hospitalJobCategoryOptions[0].id);
@@ -351,6 +354,22 @@ export function HospitalJobPostingForm() {
       }
     }
     return count === 0;
+  }
+
+  /**
+   * 게시하기 — 필수 항목을 통과했을 때만 등록 완료 화면으로 넘긴다.
+   * 목업 단계라 저장은 하지 않는다(공고 목록에 추가되지 않는 것은 의도된 한계).
+   * 완료 화면은 title·deadline·track 쿼리 3개만 읽으므로 그 세 값만 넘긴다 —
+   * 조기 마감만 켜고 날짜를 비워둔 경우는 완료 화면이 그대로 이해하는 "채용 시 마감"으로 보낸다.
+   */
+  function handlePublish() {
+    if (!validate()) return;
+    const params = new URLSearchParams({
+      title,
+      deadline: deadline || "채용 시 마감",
+      track: "hospital",
+    });
+    router.push(`/business/jobs/new/complete?${params.toString()}`);
   }
 
   function toggleJob(id: string) {
@@ -824,7 +843,7 @@ export function HospitalJobPostingForm() {
                 className="inline-flex h-11 items-center justify-center border border-[#111111] bg-white px-7 text-[13px] font-medium text-[#111111] hover:bg-[#f7f8fa] max-[640px]:flex-1">
                 임시 저장
               </button>
-              <button type="button" onClick={() => validate()}
+              <button type="button" onClick={handlePublish}
                 className="inline-flex h-11 items-center justify-center px-9 text-[13px] font-bold text-white transition max-[640px]:flex-1"
                 style={{ backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" }}>
                 공고 게시하기
