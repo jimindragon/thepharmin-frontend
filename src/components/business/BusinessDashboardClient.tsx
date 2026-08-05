@@ -33,6 +33,12 @@ function getJobDday(job: (typeof jobPostings)[0]): { value: number; isUrgent: bo
  * 말하지 않게 하는 것이 요점이다. 기준을 바꿀 일이 생기면 아래 원본과 함께 고쳐야 한다.
  * 면접: BusinessApplicantsClient / 헤드헌팅: BusinessHeadhuntingManageClient.
  */
+/**
+ * "신규"의 정의는 stage === "new"(미처리) 하나로 고정한다 — 지원자 관리의 탭·NEW 배지·표 '현재 단계'가
+ * 이미 쓰는 기준이고, 그 화면의 통계 카드도 같은 기준을 쓴다. isNew(최근 지원) 축과 섞지 않는다.
+ */
+const newApplicantCount = applicants.filter((a) => a.stage === "new").length;
+
 const interviewApplicants = applicants.filter((a) => a.interviewDate != null);
 const interviewCount = interviewApplicants.length;
 const nearInterviewCount = interviewApplicants.filter(
@@ -45,51 +51,51 @@ const activeHeadhuntingCount = headhuntingRequests.filter(
 const totalCandidateCount = headhuntingCandidates.length;
 const pendingCandidateCount = headhuntingCandidates.filter((c) => c.status === "recommended").length;
 
-/** 마감 임박 — 게시 중 공고 중 D-2 이내. getClosingDday의 isUrgent(diff <= 2)를 그대로 따른다(공고별 지원 현황의 빨간 D-day와 같은 기준). */
-const closingSoonCount = activeJobs.filter((job) => getJobDday(job).isUrgent).length;
-
 // ─── dashboard-only mock data ─────────────────────────────────────────────────
 
+/**
+ * 처리할 항목 — 한 행이 [D-day][대상 · 무슨 일][버튼] 세 칸으로만 읽히게 필드를 나눠 둔다.
+ * 대상과 사건을 한 문장에 섞어 쓰던 때는 행마다 어디가 대상인지 눈으로 찾아야 했다.
+ * 배열 순서가 곧 표시 순서다(렌더에 정렬 없음) — 급한 순으로, D-day 있는 건을 위에 둔다.
+ */
 const TASKS: Array<{
   id: string;
-  title: string;
-  badge: { label: string; tone: StatusTone };
-  desc: string;
+  /** 시간 압박이 있는 건만 채운다. 없으면 좌측 칸을 같은 폭의 빈 칸으로 비워 대상 열의 x를 맞춘다. */
+  dday?: string;
+  target: string;
+  what: string;
   action: { label: string; href: string };
 }> = [
   {
-    id: "t1",
-    title: "신규 지원자 3명이 검토를 기다려요",
-    badge: { label: "미검토", tone: "danger" },
-    desc: "제제연구 선임연구원 모집 · 가장 오래된 지원 3일 경과",
-    action: { label: "지원자 검토", href: "/business/applicants" },
-  },
-  {
     id: "t2",
-    title: "임상개발 PM 채용 공고가 곧 마감돼요",
-    badge: { label: "D-2", tone: "urgent" },
-    desc: "2026.07.21 마감 · 현재 지원자 4명",
+    dday: "D-2",
+    target: "임상개발 PM 채용",
+    what: "공고 마감",
     action: { label: "공고 연장", href: "/business/jobs" },
   },
   {
-    id: "t3",
-    title: "헤드헌팅 후보자 CAND-008이 검토를 기다려요",
-    badge: { label: "검토 대기", tone: "progress" },
-    desc: "RA 팀장급 (허가 전략) · 적합도 88% · 6월 5일 추천됨",
-    action: { label: "후보자 확인", href: "/business/headhunting/manage" },
-  },
-  {
     id: "t4",
-    title: "정수민님 최종 면접 일정을 확정하세요",
-    badge: { label: "D-2", tone: "urgent" },
-    desc: "제제연구 선임연구원 · 7월 21일(화) 14:00 제안됨",
+    dday: "D-2",
+    target: "정수민",
+    what: "면접 일정 확정",
     action: { label: "일정 확정", href: "/business/applicants" },
   },
   {
+    id: "t1",
+    target: "신규 지원자 2명",
+    what: "검토 대기",
+    action: { label: "지원자 검토", href: "/business/applicants" },
+  },
+  {
+    id: "t3",
+    target: "CAND-008",
+    what: "후보자 검토 대기",
+    action: { label: "후보자 확인", href: "/business/headhunting/manage" },
+  },
+  {
     id: "t5",
-    title: "CAND-009 처우 협의가 진행 중이에요",
-    badge: { label: "처우 협의", tone: "success" },
-    desc: "RA 팀장급 (허가 전략) · 헤드헌터 회신 필요",
+    target: "CAND-009",
+    what: "처우 협의 중",
     action: { label: "협의 보기", href: "/business/headhunting/manage" },
   },
 ];
@@ -126,44 +132,20 @@ const UPCOMING_INTERVIEWS: Array<{
   },
 ];
 
-const RECENT_ACTIVITIES: Array<{
-  id: string;
-  before: string;
-  keyword: string;
-  after: string;
-  time: string;
-}> = [
-  { id: "a1", before: "", keyword: "윤가람님", after: "이 제제연구 선임연구원 모집에 지원했어요", time: "방금 전" },
-  { id: "a2", before: "", keyword: "서나윤님", after: "이 지원해 서류 검토 단계로 이동했어요", time: "2시간 전" },
-  { id: "a3", before: "헤드헌터가 ", keyword: "CAND-008", after: " 후보자를 추천했어요", time: "어제" },
-  { id: "a4", before: "", keyword: "배기태님", after: "에게 합격 제안을 보냈어요", time: "2일 전" },
-  { id: "a5", before: "", keyword: "임상개발 PM 채용", after: " 공고를 게시했어요", time: "3일 전" },
-];
-
 // ─── sub-components ───────────────────────────────────────────────────────────
 
-function TaskRow({
-  title,
-  badge,
-  desc,
-  action,
-}: (typeof TASKS)[0]) {
+function TaskRow({ dday, target, what, action }: (typeof TASKS)[0]) {
   return (
-    <div className="flex items-start gap-3 px-6 py-4 max-[760px]:px-4 max-[600px]:flex-wrap">
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[16px] font-semibold text-[#17202c]">{title}</span>
-        </div>
-        {/* 배지는 제목 줄이 아니라 메타 줄에 둔다 — 제목이 길어져도 배지가 밀려 내려가지 않는다
-            (개인 대시보드 ChecklistRowCell과 같은 배치) */}
-        <div className="mt-0.5 flex flex-wrap items-center gap-[12px]">
-          <StatusPill tone={badge.tone} label={badge.label} />
-          <p className="text-[13px] leading-[1.5] text-[#68717e]">{desc}</p>
-        </div>
-      </div>
+    <div className="flex items-center gap-4 px-6 py-4 max-[760px]:px-4">
+      {/* D-day가 없는 행도 같은 폭을 차지한다 — 비우면 대상 열이 행마다 좌우로 흔들린다. */}
+      <span className="w-[42px] shrink-0 text-[13px] font-medium text-status-urgent">{dday}</span>
+      <p className="min-w-0 flex-1 text-[15px] text-[#17202c]">
+        {target}
+        <span className="text-[#68717e]"> · {what}</span>
+      </p>
       <Link
         href={action.href}
-        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111] max-[600px]:ml-11"
+        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
       >
         {action.label}
       </Link>
@@ -181,24 +163,21 @@ function InterviewRow({
   badge,
 }: (typeof UPCOMING_INTERVIEWS)[0]) {
   return (
-    <div className="flex items-start gap-4 px-6 py-4 max-[760px]:px-4">
-      <div className="w-12 shrink-0 text-center">
-        <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">
-          {day}
-        </p>
-        <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
-        <p className="mt-1 text-[13px] font-semibold text-[#4f5967]">{time}</p>
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[16px] font-semibold text-[#17202c]">
-          {candidate}
-          <span className="ml-1.5 font-normal text-[#68717e]">· {stage}</span>
-        </p>
-        <p className="mt-1.5 text-[13px] text-[#8a94a3]">{posting}</p>
-        <div className="mt-2">
-          <StatusPill tone={badge.tone} label={badge.label} size="sm" />
-        </div>
-      </div>
+    // 좌측 날짜 칸과 우측 본문을 3줄 격자로 묶는다 — 2칼럼 flex로 각자 쌓던 때는 폰트·마진이 달라
+    // 줄이 아래로 갈수록 어긋났다(실측 baseline 차 2→4→12px, 메타가 2줄이면 33px).
+    // items-baseline이 줄마다 좌우 baseline을 맞추고, 세로 간격은 gap-y-1.5로 일원화한다(개인 ScheduleRow와 동일 구조).
+    <div className="grid grid-cols-[48px_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 px-6 py-4 max-[760px]:px-4">
+      <p className="text-center text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
+      <p className="text-[16px] font-semibold leading-tight text-[#17202c]">
+        {candidate}
+        <span className="ml-1.5 font-normal text-[#68717e]">· {stage}</span>
+      </p>
+
+      <p className="text-center text-[13px] text-[#8a94a3]">{monthLabel}</p>
+      <p className="text-[13px] text-[#8a94a3]">{posting}</p>
+
+      <p className="text-center text-[13px] font-semibold text-[#4f5967]">{time}</p>
+      <StatusPill tone={badge.tone} label={badge.label} size="sm" />
     </div>
   );
 }
@@ -228,15 +207,6 @@ export function BusinessDashboardClient() {
               <br />
               오늘 처리할 항목이 있어요.
             </h1>
-            <p className="mt-2 text-[13px] text-[#68717e]">
-              <span className="font-semibold text-[#17202c]">처리 대기 {TASKS.length}건</span>
-              <span className="mx-1 text-[#c0c8d2]">·</span>
-              신규 지원 3{" "}
-              <span className="text-[#c0c8d2]">·</span>
-              {" "}마감 임박 {closingSoonCount}{" "}
-              <span className="text-[#c0c8d2]">·</span>
-              {" "}후보자 회신 1
-            </p>
           </div>
           <div className="text-right">
             <p className="text-[13px] text-[#8a94a3]">{formatKoreanDate(MOCK_TODAY)}</p>
@@ -258,12 +228,13 @@ export function BusinessDashboardClient() {
             value={String(activeJobs.length)}
             unit="개"
             sub={`전체 등록 공고 ${jobPostings.length}개 중 게시 중`}
+            href="/business/jobs"
           />
           <BusinessStatCard
             label="신규 지원자"
-            value="3"
+            value={String(newApplicantCount)}
             unit="명"
-            sub="최근 7일 · 미검토 3명"
+            href="/business/applicants"
           />
           <BusinessStatCard
             label="면접 예정"
@@ -271,12 +242,14 @@ export function BusinessDashboardClient() {
             unit="건"
             subEmphasis={nearInterviewCount > 0 ? `D-2 이내 ${nearInterviewCount}건` : undefined}
             emphasisVariant="urgent"
+            href="/business/applicants"
           />
           <BusinessStatCard
             label="진행 중 헤드헌팅"
             value={String(activeHeadhuntingCount)}
             unit="건"
             sub={`추천 후보자 ${totalCandidateCount}명 · 검토 대기 ${pendingCandidateCount}명`}
+            href="/business/headhunting/manage"
           />
         </BusinessStatGrid>
 
@@ -288,17 +261,12 @@ export function BusinessDashboardClient() {
 
             {/* 처리할 항목 */}
             <section className="border border-border bg-white">
-              <div className="flex items-center justify-between border-b border-border px-6 py-4 max-[760px]:px-4">
+              <div className="border-b border-border px-6 py-4 max-[760px]:px-4">
                 <h2 className="text-[17px] font-bold text-[#17202c]">
                   처리할 항목
-                  <span className="ml-2 text-status-positive">{TASKS.length}</span>
+                  {/* 남은 할 일 개수라 완료색(초록)을 쓰지 않는다 — 다 처리한 상태와 헷갈린다. */}
+                  <span className="ml-2 text-[#68717e]">{TASKS.length}</span>
                 </h2>
-                <Link
-                  href="/business/applicants"
-                  className="text-[12px] text-[#8a94a3] transition hover:text-[#111111]"
-                >
-                  전체 보기 ›
-                </Link>
               </div>
               <div className="divide-y divide-[#e5e9ef]">
                 {TASKS.map((task) => (
@@ -369,7 +337,7 @@ export function BusinessDashboardClient() {
             </section>
           </div>
 
-          {/* 우측: 다가오는 면접 + 최근 활동 */}
+          {/* 우측: 다가오는 면접 */}
           <div className="space-y-4">
 
             {/* 다가오는 면접 */}
@@ -392,28 +360,6 @@ export function BusinessDashboardClient() {
               ) : (
                 <p className="px-6 py-4 max-[760px]:px-4 text-[13px] text-[#8a94a3]">예정된 면접이 없습니다</p>
               )}
-            </section>
-
-            {/* 최근 활동 */}
-            <section className="border border-border bg-white">
-              <div className="border-b border-border px-6 py-4 max-[760px]:px-4">
-                <h2 className="text-[17px] font-bold text-[#17202c]">최근 활동</h2>
-              </div>
-              <div className="divide-y divide-[#e5e9ef]">
-                {RECENT_ACTIVITIES.map((act) => (
-                  <div key={act.id} className="flex items-start gap-3 px-6 py-3 max-[760px]:px-4">
-                    <div className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-status-positive" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] leading-[1.5] text-[#17202c]">
-                        {act.before}
-                        <span className="font-medium text-[#17202c]">{act.keyword}</span>
-                        {act.after}
-                      </p>
-                      <p className="mt-0.5 text-[12px] text-[#8a94a3]">{act.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </section>
           </div>
         </div>

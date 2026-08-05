@@ -54,7 +54,10 @@ export function BusinessApplicantsClient() {
       : applicantList.filter((a) => a.postingId === selectedPostingId);
 
   // Stats
-  const newCount = scopedApplicants.filter((a) => a.isNew).length;
+  // "신규"의 정의는 stage === "new"(미처리) 하나로 고정한다 — 탭·NEW 배지·표 '현재 단계'가 이미 쓰는 기준이다.
+  // 카드 값은 아래 tabCounts.new를 그대로 재사용해, 같은 화면에서 카드와 탭이 다른 수를 말할 수 없게 한다.
+  // 유입량(최근 7일)은 "신규"와 다른 축이라 값이 아니라 보조 문구로 분리한다.
+  const recentApplicantCount = scopedApplicants.filter((a) => a.daysAgo <= 7).length;
   const reviewCount = scopedApplicants.length;
   const interviewApplicants = scopedApplicants.filter((a) => a.interviewDate != null);
   const interviewCount = interviewApplicants.length;
@@ -300,9 +303,9 @@ export function BusinessApplicantsClient() {
         <BusinessStatGrid cols={4}>
           <BusinessStatCard
             label="신규 지원"
-            value={String(newCount)}
+            value={String(tabCounts.new)}
             unit="명"
-            sub="최근 7일"
+            sub={`최근 7일 지원 ${recentApplicantCount}명`}
           />
           <BusinessStatCard
             label="검토 진행 중"

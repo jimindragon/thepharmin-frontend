@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "next/link";
 
 interface BusinessStatCardProps {
   label: string;
@@ -12,6 +13,12 @@ interface BusinessStatCardProps {
   emphasisVariant?: "neutral" | "urgent";
   /** 일반 보조 문구(항상 회색) */
   sub?: string;
+  /**
+   * 넘기면 카드 전체가 해당 목적지로 가는 링크가 된다(hover 강조 포함).
+   * 넘기지 않으면 클릭 영역도 hover도 없는 기존 표시 전용 카드 그대로다 —
+   * 지원자 관리·헤드헌팅 관리·요금제 관리의 카드는 링크가 아니므로 이 prop을 쓰지 않는다.
+   */
+  href?: string;
 }
 
 export function BusinessStatCard({
@@ -21,9 +28,10 @@ export function BusinessStatCard({
   subEmphasis,
   emphasisVariant = "neutral",
   sub,
+  href,
 }: BusinessStatCardProps) {
-  return (
-    <div className="px-5 py-5">
+  const body = (
+    <>
       <p className="text-[13px] font-medium text-[#8a94a3]">{label}</p>
       <p className="mt-2 text-[24px] font-bold leading-none tracking-[-0.03em] text-[#17202c]">
         {value}
@@ -47,8 +55,20 @@ export function BusinessStatCard({
         {subEmphasis && sub && <span className="text-[#c0c8d2]"> · </span>}
         {sub && <span>{sub}</span>}
       </div>
-    </div>
+    </>
   );
+
+  // hover 토큰은 캘린더 공고 카드(RecruitmentCalendarClient)와 같은 계열을 쓴다 —
+  // "카드 전체가 눌린다"는 신호를 화면마다 다르게 주지 않기 위해서다.
+  if (href) {
+    return (
+      <Link href={href} className="block px-5 py-5 transition hover:border-[#111111] hover:bg-[#fbfbfb]">
+        {body}
+      </Link>
+    );
+  }
+
+  return <div className="px-5 py-5">{body}</div>;
 }
 
 interface BusinessStatGridProps {

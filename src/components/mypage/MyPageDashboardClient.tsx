@@ -18,6 +18,7 @@ import {
   mockApplications,
   type JobApplication,
 } from "@/data/mockApplications";
+import { mockUserPreferences } from "@/data/mockUserPreferences";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { useNotificationReadState } from "@/hooks/useNotificationReadState";
@@ -32,6 +33,27 @@ import {
 // ─── mock data ─────────────────────────────────────────────────────────────────
 
 const USER_NAME = myPageUser.name;
+
+// ─── 관심 조건 요약 ────────────────────────────────────────────────────────────
+
+/**
+ * 대시보드 요약은 산업 트랙 하나만 보여준다 — 전 트랙을 합치면(캘린더 사이드바 방식) 직무 칩이
+ * 분야를 넘나들어 "내가 무엇을 설정했는지"가 오히려 흐려진다. 트랙별 수정은 /mypage/preferences 몫이다.
+ */
+const INTEREST_PREFERENCE = mockUserPreferences.industry;
+
+function toOptionLabels(ids: string[], mapKey: string): string[] {
+  return ids
+    .map((id) => optionLabelMaps[mapKey]?.get(id))
+    .filter((label): label is string => Boolean(label));
+}
+
+const interestJobLabels = toOptionLabels(INTEREST_PREFERENCE?.jobSubcategoryIds ?? [], "jobSubcategory");
+const interestExperienceLabel = INTEREST_PREFERENCE?.experienceId
+  ? optionLabelMaps.experience?.get(INTEREST_PREFERENCE.experienceId)
+  : undefined;
+const interestRegionLabel = toOptionLabels(INTEREST_PREFERENCE?.regionIds ?? [], "region").join("·");
+const interestEmailAlertOn = INTEREST_PREFERENCE?.emailAlertEnabled ?? false;
 
 /** D-day 배지는 점 없이 텍스트 색만 쓴다 — 프로젝트 규칙상 D-day에는 상태 점을 붙이지 않는다. */
 const DDAY_BADGE_STYLE: Record<DdayTier, { className: string }> = {
@@ -187,30 +209,33 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
   const { day, monthLabel, time } = formatScheduleDayParts(date);
   const badge = resolveScheduleBadge(badgeInput, date);
   return (
-    <div className="flex items-start gap-4 px-6 py-4 max-[760px]:px-4">
-      <div className="w-12 shrink-0 text-center">
-        <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
-        <p className="mt-1 text-[13px] text-[#8a94a3]">{monthLabel}</p>
-        {time ? (
-          <p className="mt-1 text-[13px] font-semibold text-status-urgent">{time}</p>
-        ) : null}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[16px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
-        <p className="mt-1.5 text-[13px] text-[#8a94a3]">{jobTitle} · {company}</p>
-        <div className="mt-2 flex items-center justify-between gap-3">
-          <span className="inline-flex w-fit items-center gap-[8px]">
-            <span className={clsx("text-[13px] font-medium", badge.className)}>
-              {badge.label}
-            </span>
+    // 좌측 날짜 칸과 우측 본문을 3줄 격자로 묶는다 — 2칼럼 flex로 각자 쌓던 때는 줄이 아래로 갈수록 어긋났다.
+    // 기업 InterviewRow와 같은 구조·같은 클래스 문자열을 쓴다. 한쪽만 고치면 갈라진다.
+    <div className="grid grid-cols-[48px_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 px-6 py-4 max-[760px]:px-4">
+      <p className="text-center text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
+      <p className="text-[16px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
+
+      <p className="text-center text-[13px] text-[#8a94a3]">{monthLabel}</p>
+      <p className="text-[13px] text-[#8a94a3]">{jobTitle} · {company}</p>
+
+      {/* "오늘"은 일정이 오늘일 때만 붙는다 — 없을 때도 격자 칸 순서가 밀리지 않게 빈 칸을 채운다. */}
+      {time ? (
+        <p className="text-center text-[13px] font-semibold text-status-urgent">{time}</p>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex w-fit items-center gap-[8px]">
+          <span className={clsx("text-[13px] font-medium", badge.className)}>
+            {badge.label}
           </span>
-          <Link
-            href="/mypage/applications"
-            className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-          >
-            지원 보기
-          </Link>
-        </div>
+        </span>
+        <Link
+          href="/mypage/applications"
+          className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+        >
+          지원 보기
+        </Link>
       </div>
     </div>
   );
@@ -267,9 +292,6 @@ export function MyPageDashboardClient() {
             </div>
             <div className="text-right">
               <p className="text-[13px] text-[#8a94a3]">{formatKoreanDate(MYPAGE_MOCK_TODAY)}</p>
-              <p className="mt-0.5 text-[13px] font-medium text-[#4f5967]">
-                제안 받기 켜짐 · 공개 이력서 1건
-              </p>
             </div>
           </div>
         </div>
@@ -377,17 +399,43 @@ export function MyPageDashboardClient() {
                   수정 ›
                 </Link>
               </div>
-              <div className="px-6 py-4 max-[760px]:px-4">
-                {hasPreferences ? (
-                  <p className="text-[15px] leading-[1.7] text-[#68717e]">
-                    RA 외 2개 / 3~5년 · 서울·경기
-                    <br />
-                    이메일 알림 꺼짐{" "}
-                    <Link href="/mypage/preferences" className="text-[13px] text-[#8a94a3] transition hover:text-[#111111]">
-                      알림 켜기
-                    </Link>
-                  </p>
-                ) : (
+              {hasPreferences ? (
+                <>
+                  <div className="px-6 py-4 max-[760px]:px-4">
+                    {/* 칩은 '내 이력서' 행과 같은 JobTagChip을 쓴다 — 한 화면에서 직무 칩이 두 모양이 되지 않게. */}
+                    {interestJobLabels.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {interestJobLabels.map((label) => (
+                          <JobTagChip key={label}>{label}</JobTagChip>
+                        ))}
+                      </div>
+                    ) : null}
+                    <p className="mt-3 text-[13px]">
+                      <span className="text-[#8a94a3]">경력</span>{" "}
+                      <span className="text-[#17202c]">{interestExperienceLabel}</span>
+                      <span className="text-[#8a94a3]"> · 지역 </span>
+                      <span className="text-[#17202c]">{interestRegionLabel}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-4 max-[760px]:px-4">
+                    <span className="inline-flex items-center gap-[8px]">
+                      <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-[#9ca3af]" />
+                      <span className="text-[13px] text-[#68717e]">
+                        {interestEmailAlertOn ? "이메일 알림 사용 중" : "이메일 알림 꺼짐"}
+                      </span>
+                    </span>
+                    {!interestEmailAlertOn ? (
+                      <Link
+                        href="/mypage/preferences"
+                        className="text-[13px] font-medium text-[#17202c] transition hover:text-[#111111]"
+                      >
+                        알림 켜기 ›
+                      </Link>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <div className="px-6 py-4 max-[760px]:px-4">
                   <p className="text-[15px] leading-[1.7] text-[#68717e]">
                     아직 설정한 관심 조건이 없습니다.
                     <br />
@@ -395,8 +443,8 @@ export function MyPageDashboardClient() {
                       관심 조건 설정 ›
                     </Link>
                   </p>
-                )}
-              </div>
+                </div>
+              )}
             </section>
           </div>
 
