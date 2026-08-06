@@ -8,10 +8,13 @@ import { useId, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
+import { AiFillModal, type AiFillPatch } from "@/components/job-registration/AiFillModal";
 import { IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
+import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { getRecommendedKeywords } from "@/config/coreKeywords";
 import {
@@ -254,6 +257,12 @@ export function IndustryJobPostingForm() {
   const [imageAttachments, setImageAttachments] = useState<AttachmentItem[]>([]);
   const [fileAttachments, setFileAttachments] = useState<AttachmentItem[]>([]);
 
+  // AI 채우기 — 모달 열림 / 사용 여부(게시 전 확인창 조건) / 채운 개수 토스트
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiFillUsed, setAiFillUsed] = useState(false);
+  const [toast, setToast] = useState("");
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [missingCount, setMissingCount] = useState(0);
@@ -292,20 +301,62 @@ export function IndustryJobPostingForm() {
     return count === 0;
   }
 
+  function showToast(message: string) {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 2400);
+  }
+
   /**
-   * 게시하기 — 필수 항목을 통과했을 때만 등록 완료 화면으로 넘긴다.
-   * 목업 단계라 저장은 하지 않는다(공고 목록에 추가되지 않는 것은 의도된 한계).
+   * AI가 돌려준 patch를 폼 state에 반영한다. patch에 없는 키(undefined)는 건드리지 않는다 —
+   * "원문에 없는 내용은 채우지 않는다"를 세터 호출 단위에서 지킨다.
+   * 채운 개수는 실제로 세터를 호출한 키 수이며, 값이 기존과 같아도(예: 고용형태 기본값) 센다.
+   */
+  function applyAiDraft(patch: AiFillPatch) {
+    let applied = 0;
+    const apply = <T,>(value: T | undefined, setter: (next: T) => void) => {
+      if (value === undefined) return;
+      setter(value);
+      applied += 1;
+    };
+
+    apply(patch.title, setTitle);
+    apply(patch.summary, setSummary);
+    apply(patch.positionIntro, setPositionIntro);
+    apply(patch.mainDuties, setMainDuties);
+    apply(patch.requiredQual, setRequiredQual);
+    apply(patch.preferred, setPreferred);
+    apply(patch.additionalNotes, setAdditionalNotes);
+    apply(patch.workCondDetail, setWorkCondDetail);
+    apply(patch.employmentType, setEmploymentType);
+    apply(patch.careerType, setCareerType);
+    apply(patch.educationType, setEducationType);
+
+    setAiFillUsed(true);
+    showToast(`${applied}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+  }
+
+  /**
+   * 등록 완료 화면으로 이동. 목업 단계라 저장은 하지 않는다(공고 목록에 추가되지 않는 것은 의도된 한계).
    * 완료 화면은 title·deadline·track 쿼리 3개만 읽으므로 그 세 값만 넘긴다 —
    * 조기 마감만 켜고 날짜를 비워둔 경우는 완료 화면이 그대로 이해하는 "채용 시 마감"으로 보낸다.
    */
-  function handlePublish() {
-    if (!validate()) return;
+  function goToComplete() {
     const params = new URLSearchParams({
       title,
       deadline: deadline || "채용 시 마감",
       track: "industry",
     });
     router.push(`/business/jobs/new/complete?${params.toString()}`);
+  }
+
+  /** 게시하기 — 필수 항목을 통과했을 때만 넘긴다. AI가 채운 내용이 섞여 있으면 확인을 한 번 받는다. */
+  function handlePublish() {
+    if (!validate()) return;
+    if (aiFillUsed) {
+      setPublishConfirmOpen(true);
+      return;
+    }
+    goToComplete();
   }
 
   function selectJobCat(cat: JobCat) {
@@ -363,6 +414,25 @@ export function IndustryJobPostingForm() {
               <ArrowUpRight size={12} aria-hidden />
             </Link>
           </p>
+        </div>
+
+        {/* AI 채우기 진입점 — 제목줄 우측. 아이콘 없이 텍스트만 쓴다(브랜드 페이지 미리보기의
+            "부족한 정보 채우기"가 Sparkles를 이미 쓰고 있어 같은 아이콘이 두 기능을 가리키게 된다). */}
+        <div className="flex shrink-0 items-center gap-1.5 pt-1 max-[760px]:pt-0">
+          {/* ⓘ가 버튼보다 앞에 온다 — 툴팁 패널은 트리거 중심 기준(left-1/2 -translate-x-1/2)으로 240px을
+              펼치므로, 버튼 오른쪽에 두면 패널이 뷰포트를 12px 넘겨 페이지에 상시 가로 스크롤이 생긴다.
+              위로 펼치면 브레드크럼에 가려 읽기 어려워 placement는 bottom. */}
+          <InfoTooltip
+            placement="bottom"
+            text="기존 공고문을 붙여넣으면 항목별로 나눠 담습니다. 원문에 없는 내용은 채우지 않으며, 붙여넣은 내용은 이 공고 작성에만 사용됩니다."
+          />
+          <button
+            type="button"
+            onClick={() => setAiModalOpen(true)}
+            className="inline-flex h-9 items-center justify-center border border-[#111111] bg-white px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#f7f8fa]"
+          >
+            AI로 채우기
+          </button>
         </div>
       </div>
 
@@ -846,6 +916,30 @@ export function IndustryJobPostingForm() {
         </div>
 
       </div>
+
+      {aiModalOpen && (
+        <AiFillModal onClose={() => setAiModalOpen(false)} onApply={applyAiDraft} />
+      )}
+
+      {publishConfirmOpen && (
+        <ConfirmDialog
+          title="게시 전에 확인해 주세요"
+          description="AI가 채운 내용이 포함돼 있습니다. 내용을 확인하셨나요?"
+          confirmLabel="게시하기"
+          tone="neutral"
+          onConfirm={() => {
+            setPublishConfirmOpen(false);
+            goToComplete();
+          }}
+          onCancel={() => setPublishConfirmOpen(false)}
+        />
+      )}
+
+      {toast ? (
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+          {toast}
+        </div>
+      ) : null}
     </div>
   );
 }
