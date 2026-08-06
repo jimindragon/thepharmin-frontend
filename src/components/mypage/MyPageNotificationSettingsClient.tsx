@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
-import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import { NotificationSettingList } from "@/components/shared/NotificationSettingList";
 import { PERSONAL_NOTIFICATION_SETTINGS } from "@/types/notifications";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 
@@ -34,28 +34,21 @@ export function MyPageNotificationSettingsClient() {
         면접 확정·최종 결과·제안 수신 등 주요 알림은 카카오톡으로도 발송됩니다.
       </p>
 
-      <div className="mt-7 divide-y divide-[#e5e9ef] border border-border bg-white">
-        {PERSONAL_NOTIFICATION_SETTINGS.map((group) => (
-          <div key={group.id} className="px-6 py-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="text-[16px] font-semibold text-[#17202c]">{group.label}</p>
-                <p className="mt-1 text-[13px] leading-[1.6] text-[#68717e]">{group.description}</p>
-              </div>
-              {group.id === "preference" ? (
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  <p className="text-[13px] font-medium text-[#303946]">{preferenceTrackCount}개 트랙에서 사용 중</p>
-                  <Link href="/mypage/preferences" className="text-[13px] font-medium text-[#111111] underline underline-offset-2">
-                    관심 조건에서 관리
-                  </Link>
-                </div>
-              ) : (
-                <ToggleSwitch checked={Boolean(emailEnabled[group.id])} onChange={() => toggle(group.id)} label={group.label} />
-              )}
+      <NotificationSettingList
+        groups={PERSONAL_NOTIFICATION_SETTINGS}
+        emailEnabled={emailEnabled}
+        onToggle={toggle}
+        renderControl={(group) =>
+          group.id === "preference" ? (
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <p className="text-[13px] font-medium text-[#303946]">{preferenceTrackCount}개 트랙에서 사용 중</p>
+              <Link href="/mypage/preferences" className="text-[13px] font-medium text-[#111111] underline underline-offset-2">
+                관심 조건에서 관리
+              </Link>
             </div>
-          </div>
-        ))}
-      </div>
+          ) : undefined
+        }
+      />
     </MyPageShell>
   );
 }
