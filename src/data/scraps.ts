@@ -38,9 +38,9 @@ export const scrapedJobIds: number[] = [130, 121, 307, 309, 413];
 export const scrapedOrganizations: ScrapedOrganization[] = [
   {
     id: "thepharmin-pharma",
-    name: "더팜인제약(주)",
+    name: "더파마제약(주)",
     type: "company",
-    logoText: "더팜인제약",
+    logoText: "더파마제약",
     logoColor: "#111111",
     summary: "전문의약품 제조업 · 인허가/RA 중심 중견 제약사",
     activeJobCount: 4,

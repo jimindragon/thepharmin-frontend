@@ -157,7 +157,7 @@ export const mockResumes: ResumeItem[] = [
     careers: [
       {
         id: "career-1",
-        company: "더팜인제약(주)",
+        company: "더파마제약(주)",
         role: "RA Specialist",
         period: "2022.03 - 재직중",
         description: "품목허가 및 변경허가, CTD 작성·제출, 규제기관 대응 업무를 담당했습니다.",

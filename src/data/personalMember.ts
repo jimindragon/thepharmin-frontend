@@ -60,7 +60,7 @@ export interface PersonalMember {
  * 시연용 개인 회원 1건.
  *
  * 이력서 목데이터(data/resumes.ts의 resume-ra)와 같은 인물이라 설정을 맞췄다 —
- * RA 직무, 더팜인제약(주) 재직, 약사 면허 보유. 이름·이메일은 myPageUser(config/myPageMenu.ts)가
+ * RA 직무, 더파마제약(주) 재직, 약사 면허 보유. 이름·이메일은 myPageUser(config/myPageMenu.ts)가
  * 이 값을 그대로 파생해 쓰므로 헤더·사이드바 표시와 항상 같다.
  */
 export const mockPersonalMember: PersonalMember = {
@@ -74,7 +74,7 @@ export const mockPersonalMember: PersonalMember = {
   affiliationId: "pharma_bio",
   // industryJobCategoryOptions의 "RA·인허가" 대분류. 이력서의 RA 직무와 같은 축이다.
   secondaryId: "regulatory",
-  orgName: "더팜인제약(주)",
+  orgName: "더파마제약(주)",
   studentGrade: null,
   positionId: "assistant_manager",
 

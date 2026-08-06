@@ -115,7 +115,7 @@ export interface CompanyProfile {
 export const companyProfiles: CompanyProfile[] = [
   {
     id: "thepharmin-pharma",
-    name: "더팜인제약(주)",
+    name: "더파마제약(주)",
     logoText: "PHARMA",
     tagline: "인류의 건강한 삶을 위해 혁신을 연구합니다.",
     tags: ["제약/바이오", "코스닥 123456", "설립 2012년", "사원수 1,250명"],
@@ -150,7 +150,7 @@ export const companyProfiles: CompanyProfile[] = [
       {
         id: "news-1",
         date: "2024.05.20",
-        title: "더팜인제약, 혁신 신약 TP-001 글로벌 임상 2상 진입",
+        title: "더파마제약, 혁신 신약 TP-001 글로벌 임상 2상 진입",
         source: "더파마뉴스",
         category: "임상·R&D",
         summary: "글로벌 임상 확대에 따라 RA, PV, 임상개발 직무 수요가 이어질 수 있습니다.",
@@ -161,7 +161,7 @@ export const companyProfiles: CompanyProfile[] = [
       {
         id: "news-2",
         date: "2024.05.15",
-        title: "더팜인제약, 유럽 제약사와 신약 공동개발 협약 체결",
+        title: "더파마제약, 유럽 제약사와 신약 공동개발 협약 체결",
         source: "더파마뉴스",
         category: "글로벌",
         summary: "해외 파트너십 확대로 글로벌 사업개발과 인허가 협업 경험이 중요해지고 있습니다.",
@@ -172,7 +172,7 @@ export const companyProfiles: CompanyProfile[] = [
       {
         id: "news-3",
         date: "2024.05.10",
-        title: "더팜인제약, 1분기 매출 전년 대비 15% 성장",
+        title: "더파마제약, 1분기 매출 전년 대비 15% 성장",
         source: "더파마뉴스",
         category: "실적",
         summary: "핵심 제품 성장세와 해외 매출 증가가 채용 포지션 확대로 이어지고 있습니다.",
@@ -183,7 +183,7 @@ export const companyProfiles: CompanyProfile[] = [
       {
         id: "news-4",
         date: "2024.05.02",
-        title: "더팜인제약, 글로벌 임상 3상 IND 승인 획득",
+        title: "더파마제약, 글로벌 임상 3상 IND 승인 획득",
         source: "더파마뉴스",
         category: "인허가",
         summary: "인허가와 임상 운영 직무에서 글로벌 규제 경험의 비중이 높아지고 있습니다.",

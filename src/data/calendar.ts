@@ -31,7 +31,7 @@ export const calendarJobs: CalendarJob[] = [
     id: "calendar-ra-specialist",
     jobId: 101,
     href: "/jobs/ra-specialist",
-    companyName: "더팜인제약(주)",
+    companyName: "더파마제약(주)",
     title: "RA Specialist (제약·바이오 인허가 담당)",
     role: "RA",
     track: "industry",

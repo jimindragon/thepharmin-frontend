@@ -53,7 +53,7 @@ const FALLBACK = {
   title: "병원 약제팀 약사 채용",
   jobRole: "약국·임상약학",
   deadline: "2026-08-16",
-  company: "더팜인제약(주)",
+  company: "더파마제약(주)",
   track: "hospital" as JobTrack,
 };
 

@@ -4,15 +4,15 @@ import type { Company, CompanyReview, MyUnlockedInterviewReview, ReviewAccessHis
 export const companies: Company[] = [
   {
     id: "thepharmin-pharma",
-    name: "더팜인제약(주)",
-    logoText: "더팜인제약",
+    name: "더파마제약(주)",
+    logoText: "더파마제약",
     logoColor: "#111111",
     logoAccent: "#5a5a5a",
     coverImage: companyExampleImages.hero,
     defaultImage: companyExampleImages.primary,
     verified: true,
     description:
-      "더팜인제약은 전문의약품과 바이오 의약품을 개발·제조하는 제약 기업입니다. 품질 중심의 연구개발 문화와 규제 대응 역량을 바탕으로 국내외 허가 전략을 고도화하고 있습니다.",
+      "더파마제약은 전문의약품과 바이오 의약품을 개발·제조하는 제약 기업입니다. 품질 중심의 연구개발 문화와 규제 대응 역량을 바탕으로 국내외 허가 전략을 고도화하고 있습니다.",
     industry: "전문의약품 제조업",
     employeeCount: "320명",
     foundedYear: "2012년",
