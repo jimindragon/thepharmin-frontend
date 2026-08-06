@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
+import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { Eyebrow } from "@/components/ui/Typography";
 
 /**
@@ -20,6 +21,10 @@ export function BusinessPublicMockPage({ title, description }: { title: string; 
       <BusinessHeader />
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7] px-11 py-16 max-[760px]:px-7">
         <section className="mx-auto max-w-[880px] border border-border bg-white p-10">
+          {/* 화면 자체가 아직 목업이라는 표시 — 제목보다 위에 둬서 내용을 읽기 전에 알게 한다 */}
+          <div className="mb-6">
+            <InfoNoticeBox>이 화면은 준비 중입니다.</InfoNoticeBox>
+          </div>
           <Eyebrow>기업 서비스</Eyebrow>
           <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
           <p className="mt-4 text-[15px] font-normal leading-[1.75] text-[#68717e]">{description}</p>
@@ -41,6 +46,10 @@ export function BusinessCenterMockPage({ title, description }: { title: string; 
   return (
     <BusinessCenterShell>
       <section className="border border-border bg-white p-10">
+        {/* 화면 자체가 아직 목업이라는 표시 — 제목보다 위에 둬서 내용을 읽기 전에 알게 한다 */}
+        <div className="mb-6">
+          <InfoNoticeBox>이 화면은 준비 중입니다.</InfoNoticeBox>
+        </div>
         <Eyebrow>기업센터</Eyebrow>
         <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
         <p className="mt-4 max-w-[720px] text-[15px] font-normal leading-[1.75] text-[#68717e]">{description}</p>

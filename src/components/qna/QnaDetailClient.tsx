@@ -331,11 +331,11 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
               <ReactionRow
                 likeCount={post.likeCount}
-                onLike={() => notify("공감 기능은 추후 연결될 예정입니다.")}
+                onLike={() => notify("공감 기능은 준비 중입니다.")}
                 onScrap={handleScrapToggle}
                 scrapActive={isScraped}
-                onShare={() => notify("공유 기능은 추후 연결될 예정입니다.")}
-                onReport={() => notify("신고 접수 화면은 추후 연결될 예정입니다.")}
+                onShare={() => notify("공유 기능은 준비 중입니다.")}
+                onReport={() => notify("신고 접수 화면은 준비 중입니다.")}
               />
             </article>
 
@@ -349,7 +349,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                 <CommentComposer
                   isLoggedIn={isLoggedIn}
                   placeholder="댓글을 남겨보세요"
-                  onSubmit={() => notify("댓글 등록 기능은 추후 연결될 예정입니다.")}
+                  onSubmit={() => notify("댓글 등록 기능은 준비 중입니다.")}
                 />
               </div>
 
@@ -366,7 +366,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                         createdAtLabel={comment.createdAtLabel}
                         likeCount={comment.likeCount}
                         body={comment.body}
-                        onReact={() => notify("공감 기능은 추후 연결될 예정입니다.")}
+                        onReact={() => notify("공감 기능은 준비 중입니다.")}
                         onReply={() => setReplyTargetId((current) => (current === comment.id ? null : comment.id))}
                       />
                       {comment.replies.length || replyTargetId === comment.id ? (
@@ -382,7 +382,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                               createdAtLabel={reply.createdAtLabel}
                               likeCount={reply.likeCount}
                               body={reply.body}
-                              onReact={() => notify("공감 기능은 추후 연결될 예정입니다.")}
+                              onReact={() => notify("공감 기능은 준비 중입니다.")}
                             />
                           ))}
                           {replyTargetId === comment.id ? (
@@ -390,7 +390,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                               isLoggedIn={isLoggedIn}
                               placeholder="답글을 입력해 주세요"
                               onSubmit={() => {
-                                notify("답글 작성 기능은 추후 연결될 예정입니다.");
+                                notify("답글 작성 기능은 준비 중입니다.");
                                 setReplyTargetId(null);
                               }}
                             />

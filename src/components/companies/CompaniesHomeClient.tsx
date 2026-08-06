@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Pagination } from "@/components/Pagination";
+import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { Button } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
@@ -341,7 +342,7 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
 
 function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: RecentFeedCompanyItem[]; interviewItems: RecentFeedInterviewItem[] }) {
   const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
-  const [interviewReviewNotice, setInterviewReviewNotice] = useState("");
+  const interviewReviewNotice = usePlaceholderNotice();
 
   const allItems = useMemo(() => buildAllFeedItems(companyItems, interviewItems), [companyItems, interviewItems]);
 
@@ -349,8 +350,7 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
     feedFilter === "all" ? allItems : feedFilter === "company" ? companyItems : interviewItems;
 
   const handleRequestWriteInterviewReview = () => {
-    setInterviewReviewNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
-    window.setTimeout(() => setInterviewReviewNotice(""), 2400);
+    interviewReviewNotice.show("면접 후기 작성 화면은 준비 중입니다.");
   };
 
   return (
@@ -372,7 +372,7 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
         </div>
       )}
 
-      {interviewReviewNotice ? <p className="mt-4 text-[12px] font-medium text-[#596373]">{interviewReviewNotice}</p> : null}
+      <PlaceholderNotice message={interviewReviewNotice.message} className="mt-4" />
     </section>
   );
 }
@@ -555,7 +555,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("리뷰순");
   const [currentPage, setCurrentPage] = useState(1);
-  const [companyReviewNotice, setCompanyReviewNotice] = useState("");
+  const companyReviewNotice = usePlaceholderNotice();
 
   /** 로고 스트립 정렬: FEATURED_COMPANY_IDS 우선 → 프로필 보유 기업(detailHref가 /reviews로 폴백되지 않은 경우) → 나머지 로고 보유 기업 순 */
   const logoStripEntries = useMemo(() => {
@@ -607,8 +607,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
   };
 
   const handleRequestWriteCompanyReview = () => {
-    setCompanyReviewNotice("기업 리뷰 작성 화면은 추후 연결될 예정입니다.");
-    window.setTimeout(() => setCompanyReviewNotice(""), 2400);
+    companyReviewNotice.show("기업 리뷰 작성 화면은 준비 중입니다.");
   };
 
   const handleScrollToDirectory = () => {
@@ -668,7 +667,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
       </section>
 
       <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
-      {companyReviewNotice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{companyReviewNotice}</p> : null}
+      <PlaceholderNotice message={companyReviewNotice.message} />
     </>
   );
 }

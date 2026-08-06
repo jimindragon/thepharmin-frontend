@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { LinkButton } from "@/components/ui/Button";
 import { featuredPackageId, popularResourceIds, resourceCategories, resources, type ResourceCategory, type ResourceFile } from "@/data/resources";
 import { formatResourcePrice } from "@/utils/resourcePrice";
@@ -20,11 +21,6 @@ function PriceBadge({ file, size = "sm" }: { file: ResourceFile; size?: "sm" | "
       {file.isFree ? "무료" : "유료"}
     </span>
   );
-}
-
-function showPlaceholderNotice(setNotice: (message: string) => void, message: string) {
-  setNotice(message);
-  window.setTimeout(() => setNotice(""), 2400);
 }
 
 function FeaturedPackagePanel({ pkg, onPurchaseClick }: { pkg: ResourceFile; onPurchaseClick: () => void }) {
@@ -181,7 +177,7 @@ function MembershipPanel({ onCtaClick }: { onCtaClick: () => void }) {
 
 export function ResourcesHomeClient() {
   const [activeCategory, setActiveCategory] = useState<ResourceCategory>("전체");
-  const [notice, setNotice] = useState("");
+  const notice = usePlaceholderNotice();
 
   const pkg = useMemo(() => resources.find((item) => item.id === featuredPackageId), []);
   const individualResources = useMemo(() => resources.filter((item) => !item.isPackage), []);
@@ -206,7 +202,7 @@ export function ResourcesHomeClient() {
 
         {pkg ? (
           <div className="mt-8">
-            <FeaturedPackagePanel pkg={pkg} onPurchaseClick={() => showPlaceholderNotice(setNotice, "패키지 구매 화면은 추후 연결될 예정입니다.")} />
+            <FeaturedPackagePanel pkg={pkg} onPurchaseClick={() => notice.show("패키지 구매 화면은 준비 중입니다.")} />
           </div>
         ) : null}
 
@@ -230,11 +226,11 @@ export function ResourcesHomeClient() {
 
           <aside className="space-y-5">
             <PopularResourcesPanel items={popularResources} />
-            <MembershipPanel onCtaClick={() => showPlaceholderNotice(setNotice, "멤버십 안내 화면은 추후 연결될 예정입니다.")} />
+            <MembershipPanel onCtaClick={() => notice.show("멤버십 안내 화면은 준비 중입니다.")} />
           </aside>
         </div>
 
-        {notice ? <p className="mt-4 text-[13px] font-medium text-[#596373]">{notice}</p> : null}
+        <PlaceholderNotice message={notice.message} className="mt-4" />
       </div>
     </main>
   );

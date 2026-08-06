@@ -6,18 +6,21 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getEntryCommentCount, getMyQnaComments, getMyQnaPosts, getPopularQnaTags, getQnaPostById, qnaOperationPrinciple } from "@/data/qna";
 import { readQnaScraps } from "@/components/qna/qnaScraps";
+import { PlaceholderNotice, showPlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import type { QnaAuthorType, QnaListEntry, QnaType } from "@/types/qna";
 
-/** 글쓰기/댓글/공감/스크랩/공유/신고 — 백엔드가 없는 동작은 이 토스트로 통일해서 알린다 */
+/**
+ * 글쓰기/댓글/공감/스크랩/공유/신고 — 백엔드가 없는 동작은 이 토스트로 통일해서 알린다.
+ * 마크업·지속시간은 플랫폼 공용 부품(shared/PlaceholderNotice)에 있고, 아래 둘은 QNA 호출부가
+ * 쓰던 이름을 그대로 유지하기 위한 얇은 껍데기다.
+ */
 export function showQnaNotice(setNotice: (message: string) => void, message: string) {
-  setNotice(message);
-  window.setTimeout(() => setNotice(""), 2400);
+  showPlaceholderNotice(setNotice, message);
 }
 
 export function QnaNotice({ message }: { message: string }) {
-  if (!message) return null;
-  return <p className="mt-3 text-[12px] font-medium text-[#596373]">{message}</p>;
+  return <PlaceholderNotice message={message} />;
 }
 
 const avatarToneClassName: Record<QnaAuthorType, string> = {

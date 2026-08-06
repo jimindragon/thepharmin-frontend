@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { LinkButton } from "@/components/ui/Button";
 import type { ResourceFile } from "@/data/resources";
 import { formatResourcePrice } from "@/utils/resourcePrice";
@@ -11,11 +12,6 @@ import { formatResourcePrice } from "@/utils/resourcePrice";
 interface ResourceDetailClientProps {
   resource: ResourceFile;
   relatedResources: ResourceFile[];
-}
-
-function showPlaceholderNotice(setNotice: (message: string) => void, message: string) {
-  setNotice(message);
-  window.setTimeout(() => setNotice(""), 2400);
 }
 
 function InfoBadge({ children }: { children: string }) {
@@ -93,12 +89,12 @@ function PurchasePanel({
 }
 
 export function ResourceDetailClient({ resource, relatedResources }: ResourceDetailClientProps) {
-  const [notice, setNotice] = useState("");
+  const notice = usePlaceholderNotice();
   const ebookCount = resource.isPackage ? resource.packageContents?.length ?? 1 : 1;
 
   const handlePurchaseClick = () =>
-    showPlaceholderNotice(setNotice, resource.isPackage ? "패키지 구매 화면은 추후 연결될 예정입니다." : "구매 화면은 추후 연결될 예정입니다.");
-  const handlePreviewClick = () => showPlaceholderNotice(setNotice, "미리보기 화면은 추후 연결될 예정입니다.");
+    notice.show(resource.isPackage ? "패키지 구매 화면은 준비 중입니다." : "구매 화면은 준비 중입니다.");
+  const handlePreviewClick = () => notice.show("미리보기 화면은 준비 중입니다.");
 
   return (
     <main className="bg-[#f7f8fa] pb-20">
@@ -207,7 +203,7 @@ export function ResourceDetailClient({ resource, relatedResources }: ResourceDet
           <PurchasePanel resource={resource} onPurchaseClick={handlePurchaseClick} onPreviewClick={handlePreviewClick} />
         </div>
 
-        {notice ? <p className="mt-4 text-[12px] font-medium text-[#596373]">{notice}</p> : null}
+        <PlaceholderNotice message={notice.message} className="mt-4" />
       </div>
     </main>
   );

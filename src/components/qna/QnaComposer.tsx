@@ -28,7 +28,7 @@ interface QnaComposerProps {
 
 /**
  * 목록 상단의 프로필 요약 + 글쓰기 유도 영역을 하나로 합친 접힘·펼침형 글쓰기 컴포넌트.
- * 실제 글쓰기 API가 없어 등록은 항상 onNotify로만 안내하고(추후 연결될 예정), 제출 후에는
+ * 실제 글쓰기 API가 없어 등록은 항상 onNotify로만 안내하고(준비 중), 제출 후에는
  * 다시 접힌 기본 상태로 되돌린다. 주제 태그는 목록 카테고리 필터와 동일한 qnaCategoryFilters(=태그 풀)를
  * 그대로 재사용하며, 최대 QNA_TAG_MAX개까지 복수 선택할 수 있다(리뷰 태그 셀렉터와 동일 UX).
  */
@@ -63,7 +63,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
   };
 
   const handleSubmit = () => {
-    onNotify("질문하기 기능은 추후 연결될 예정입니다.");
+    onNotify("질문하기 기능은 준비 중입니다.");
     handleCancel();
   };
 

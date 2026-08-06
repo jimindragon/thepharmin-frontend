@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ReviewFeedCard, type ReviewFeedItem } from "@/components/companies/ReviewFeedCard";
+import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 
 export interface InterviewFeedItem extends ReviewFeedItem {
   companyId: string;
@@ -13,11 +13,10 @@ interface InterviewsFeedClientProps {
 }
 
 export function InterviewsFeedClient({ items, isLoggedIn }: InterviewsFeedClientProps) {
-  const [notice, setNotice] = useState("");
+  const notice = usePlaceholderNotice();
 
   const handleRequestWriteReview = () => {
-    setNotice("면접 후기 작성 화면은 추후 연결될 예정입니다.");
-    window.setTimeout(() => setNotice(""), 2400);
+    notice.show("면접 후기 작성 화면은 준비 중입니다.");
   };
 
   return (
@@ -47,7 +46,7 @@ export function InterviewsFeedClient({ items, isLoggedIn }: InterviewsFeedClient
           <p className="text-[15px] font-medium text-[#303946]">아직 등록된 면접 후기가 없습니다.</p>
         </div>
       )}
-      {notice ? <p className="mt-3 text-[12px] font-medium text-[#596373]">{notice}</p> : null}
+      <PlaceholderNotice message={notice.message} />
     </section>
   );
 }
