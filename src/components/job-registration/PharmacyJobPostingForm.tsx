@@ -1135,6 +1135,7 @@ export function PharmacyJobPostingForm() {
 
       {publishConfirmOpen && (
         <ConfirmDialog
+          ariaLabel="약국 공고 게시 확인"
           title="게시 전에 확인해 주세요"
           description="AI가 채운 내용이 포함돼 있습니다. 내용을 확인하셨나요?"
           confirmLabel="게시하기"

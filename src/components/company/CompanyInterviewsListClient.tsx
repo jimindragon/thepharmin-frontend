@@ -4,7 +4,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import { CompanyReviewCard, type CompanyReviewCardItem, type CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
 import { InterviewAccessStatusCard, type InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
-import { InterviewUnlockConfirmModal } from "@/components/company/InterviewUnlockConfirmModal";
+import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { reviewAccessMock } from "@/data/companies";
 
 interface CompanyInterviewsListClientProps {
@@ -90,8 +90,25 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
         })}
       </div>
 
+      {/* 열람권 1장 사용 확인. 파괴적 동작이 아니라 tone="info"(회색 잠금 아이콘 + 검정 확인 버튼)를 쓴다 */}
       {pendingItem ? (
-        <InterviewUnlockConfirmModal credits={credits} onConfirm={handleConfirmUnlock} onCancel={() => setPendingUnlockId(null)} />
+        <ConfirmDialog
+          ariaLabel="면접 후기 열람 확인"
+          title="면접 후기를 열람할까요?"
+          description={
+            <>
+              열람권 1장이 사용됩니다.
+              <br />
+              열람 후에는 추가 차감 없이 다시 볼 수 있어요.
+            </>
+          }
+          descriptionSize="md"
+          note={`보유 ${credits}장 → ${Math.max(credits - 1, 0)}장`}
+          tone="info"
+          confirmLabel="열람하기"
+          onConfirm={handleConfirmUnlock}
+          onCancel={() => setPendingUnlockId(null)}
+        />
       ) : null}
     </div>
   );

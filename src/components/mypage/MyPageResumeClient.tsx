@@ -207,6 +207,7 @@ export function MyPageResumeClient() {
 
       {pendingDeleteResume ? (
         <ConfirmDialog
+          ariaLabel="이력서 삭제 확인"
           title="이력서를 삭제할까요?"
           description={`'${resumeLabel(pendingDeleteResume)}'을(를) 삭제하면 되돌릴 수 없습니다.`}
           onConfirm={confirmDelete}
