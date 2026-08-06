@@ -69,6 +69,12 @@ export interface AttachmentResume {
   proposalEnabled: boolean;
   updatedAt: string;
   fileSizeLabel: string;
+  /**
+   * 이번 세션에 업로드한 파일의 브라우저 메모리 참조. 저장소가 없어 새로고침하면 사라지므로
+   * 선택 항목이다 — 처음부터 목록에 있던 목데이터에는 없다(파일 실체가 없는 표시용 레코드).
+   * 파일 내용을 읽어야 하는 단계(이력서 변환)가 이 자리를 쓴다.
+   */
+  file?: File;
 }
 
 export type ResumeItem = BuiltResume | AttachmentResume;

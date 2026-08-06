@@ -1,19 +1,22 @@
 "use client";
 
 import clsx from "clsx";
-import { Copy, MoreHorizontal, Star, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, RefreshCw, Star, Trash2 } from "lucide-react";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 export function ResumeActionsMenu({
   label,
   isPrimary,
   onSetPrimary,
+  onConvert,
   onDuplicate,
   onDelete,
 }: {
   label: string;
   isPrimary: boolean;
   onSetPrimary?: () => void;
+  /** 넘긴 카드에만 "구조화 이력서로 변환"이 붙는다 — 첨부형 전용 항목이라 기본은 없음이다. */
+  onConvert?: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
@@ -49,6 +52,20 @@ export function ResumeActionsMenu({
             >
               <Star size={15} />
               대표 이력서로 지정
+            </button>
+          ) : null}
+          {onConvert ? (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                onConvert();
+                setOpen(false);
+              }}
+              className="flex h-9 w-full items-center gap-2 px-3 text-left text-[13px] font-medium text-[#3d4653] hover:bg-[#f5f8fa]"
+            >
+              <RefreshCw size={15} />
+              구조화 이력서로 변환
             </button>
           ) : null}
           <button

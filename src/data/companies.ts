@@ -16,7 +16,7 @@ export const companies: Company[] = [
     industry: "전문의약품 제조업",
     employeeCount: "320명",
     foundedYear: "2012년",
-    website: "https://www.thepharmin.com",
+    website: "https://www.thepharma-pharma.com",
     address: "서울 강남구 테헤란로 123, 8층",
   },
   {

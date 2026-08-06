@@ -7,6 +7,11 @@ import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { JobFilterPanel } from "@/components/SearchFilterPanel";
+import {
+  applyResumeConvertPatch,
+  countPatchedSections,
+  readResumeConvertDraft,
+} from "@/components/mypage/resume/resumeConvertDemo";
 import { ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
 import { FormRow, ResumeSectionCard } from "@/components/ui/FormSection";
@@ -93,6 +98,19 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
   const [draft, setDraft] = useState<BuiltResume>(() => initialResume ?? createEmptyBuiltResume(uid("resume")));
   const [notice, setNotice] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  /**
+   * 첨부 이력서 변환으로 넘어온 경우, 목록 화면이 sessionStorage에 둔 결과를 집어 draft에 얹는다.
+   * 인계분은 읽는 즉시 지워지므로(readResumeConvertDraft) 한 번만 반영된다 — Strict Mode에서
+   * effect가 두 번 돌아도 두 번째는 null이라 중복 채움·중복 알림이 없다.
+   */
+  useEffect(() => {
+    if (mode !== "create") return;
+    const patch = readResumeConvertDraft();
+    if (!patch) return;
+    setDraft((current) => applyResumeConvertPatch(current, patch));
+    setNotice(`${countPatchedSections(patch)}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+  }, [mode]);
 
   useEffect(() => {
     if (!previewOpen) return;

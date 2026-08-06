@@ -9,12 +9,14 @@ import { ResumePrimaryBadge } from "@/components/shared/ResumePrimaryBadge";
 export function AttachmentResumeCard({
   resume,
   onSetPrimary,
+  onConvert,
   onDuplicate,
   onDelete,
   onToggleProposal,
 }: {
   resume: AttachmentResume;
   onSetPrimary: () => void;
+  onConvert: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
   onToggleProposal: (enabled: boolean) => void;
@@ -46,7 +48,14 @@ export function AttachmentResumeCard({
           <span className="text-[13px] font-medium text-[#8a94a3]">제안 받기</span>
           <ToggleSwitch label={`${resume.fileName} 제안 받기`} checked={resume.proposalEnabled} onChange={onToggleProposal} />
         </div>
-        <ResumeActionsMenu label={resume.fileName} isPrimary={resume.isPrimary} onSetPrimary={onSetPrimary} onDuplicate={onDuplicate} onDelete={onDelete} />
+        <ResumeActionsMenu
+          label={resume.fileName}
+          isPrimary={resume.isPrimary}
+          onSetPrimary={onSetPrimary}
+          onConvert={onConvert}
+          onDuplicate={onDuplicate}
+          onDelete={onDelete}
+        />
       </div>
     </article>
   );
