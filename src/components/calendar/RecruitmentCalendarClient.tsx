@@ -10,7 +10,6 @@ import {
   MailCheck,
   Plus,
   RotateCcw,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,6 +23,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
 import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
+import { LoginGateModal } from "@/components/ui/LoginGateModal";
+import { OverlayPanel } from "@/components/ui/OverlayPanel";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
@@ -490,43 +491,6 @@ function ApplicationMoreCard() {
   );
 }
 
-function LoginGateModal({
-  onClose,
-  onLogin,
-}: {
-  onClose: () => void;
-  onLogin: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/45 px-5" role="dialog" aria-modal="true">
-      <div className="w-full max-w-[420px] border border-[#20242b] bg-white p-6 shadow-[0_24px_70px_rgba(0,0,0,0.24)]">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="grid h-10 w-10 place-items-center bg-[#111111] text-white">
-              <Lock size={18} />
-            </div>
-            <h2 className="mt-5 text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#171b20]">로그인이 필요합니다</h2>
-            <p className="mt-3 text-[13px] font-medium leading-6 text-[#7a8490]">
-              내 스크랩한 공고, 지원 현황, 다른 달 이동은 회원 기능입니다. 로그인 후 채용 마감 일정을 이어서 확인할 수 있습니다.
-            </p>
-          </div>
-          <button type="button" className="grid h-8 w-8 place-items-center hover:bg-[#f2f3f5]" onClick={onClose} aria-label="닫기">
-            <X size={18} />
-          </button>
-        </div>
-        <div className="mt-6 grid grid-cols-[1fr_auto] gap-2">
-          <button type="button" className="h-11 bg-[#111111] px-5 text-[13px] font-medium text-white" onClick={onLogin}>
-            로그인하고 보기
-          </button>
-          <button type="button" className="h-11 border border-[#d9dee5] px-5 text-[13px] font-medium text-[#4b5563]" onClick={onClose}>
-            닫기
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function MoreJobsModal({
   dateLabel,
   jobs,
@@ -537,38 +501,39 @@ function MoreJobsModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/45 px-5" role="dialog" aria-modal="true">
-      <div className="w-full max-w-[520px] border border-[#20242b] bg-white p-5 shadow-[0_24px_70px_rgba(0,0,0,0.24)]">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[12px] font-medium text-[#6b7280]">채용 일정</p>
-            <h2 className="mt-1 text-[22px] font-bold tracking-[-0.02em] text-[#171b20]">{dateLabel}</h2>
-          </div>
-          <button type="button" className="grid h-8 w-8 place-items-center hover:bg-[#f2f3f5]" onClick={onClose} aria-label="닫기">
-            <X size={18} />
-          </button>
-        </div>
-        <div className="mt-5 grid gap-2">
-          {jobs.map((job) => (
-            <Link
-              key={job.id}
-              href={resolveJobHref(job)}
-              className={`flex min-w-0 items-center justify-between gap-4 border p-3 transition hover:border-[#111111] ${
-                job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#e4e8ee] bg-white"
-              }`}
-            >
-              <div className="flex min-w-0 items-start gap-2">
-                <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${eventTypeStyles[eventTypeOf(job)].marker}`} />
-                <div className="min-w-0">
-                  <p className="truncate text-[14px] font-medium text-[#222832]">{job.companyName}</p>
-                  <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
-                </div>
+    <OverlayPanel
+      ariaLabel={`${dateLabel} 채용 일정`}
+      onClose={onClose}
+      maxWidth="max-w-[520px]"
+      padding="p-5"
+      headerAlign="center"
+      header={
+        <>
+          <p className="text-[12px] font-medium text-[#6b7280]">채용 일정</p>
+          <h2 className="mt-1 text-[22px] font-bold tracking-[-0.02em] text-[#171b20]">{dateLabel}</h2>
+        </>
+      }
+    >
+      <div className="mt-5 grid gap-2">
+        {jobs.map((job) => (
+          <Link
+            key={job.id}
+            href={resolveJobHref(job)}
+            className={`flex min-w-0 items-center justify-between gap-4 border p-3 transition hover:border-[#111111] ${
+              job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#e4e8ee] bg-white"
+            }`}
+          >
+            <div className="flex min-w-0 items-start gap-2">
+              <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${eventTypeStyles[eventTypeOf(job)].marker}`} />
+              <div className="min-w-0">
+                <p className="truncate text-[14px] font-medium text-[#222832]">{job.companyName}</p>
+                <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
               </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </Link>
+        ))}
       </div>
-    </div>
+    </OverlayPanel>
   );
 }
 
@@ -1130,6 +1095,8 @@ export function RecruitmentCalendarClient() {
 
       {loginModalOpen ? (
         <LoginGateModal
+          ariaLabel="채용 캘린더 로그인 안내"
+          description="내 스크랩한 공고, 지원 현황, 다른 달 이동은 회원 기능입니다. 로그인 후 채용 마감 일정을 이어서 확인할 수 있습니다."
           onClose={() => setLoginModalOpen(false)}
           onLogin={() => {
             login();
