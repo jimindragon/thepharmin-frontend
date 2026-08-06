@@ -128,8 +128,13 @@ export function RecommendedKeywordPicker({
         </div>
       )}
 
+      {/*
+        선택 상한(maxCount=8)과 목록 노출 개수(5)는 서로 다른 값이다 — 5는 JobCard.tsx의
+        coreKeywords.slice(0, 5)에서 온다(홈 카드는 4개, 공고 상세는 6개로 또 다르다).
+        "최대 5개까지 표시됩니다" 한 문장이 둘을 뭉개 선택 상한처럼 읽혔던 것을 갈라 적는다.
+      */}
       <p className="mt-2.5 text-[12px] text-[#a0a9b7]">
-        선택한 키워드는 공고 검색과 추천 공고 노출에 활용되며, 최대 5개까지 표시됩니다.
+        선택한 키워드는 공고 검색과 추천 공고 노출에 활용됩니다. 최대 {maxCount}개까지 선택할 수 있고, 공고 목록 카드에는 앞 5개가 표시됩니다.
       </p>
     </div>
   );

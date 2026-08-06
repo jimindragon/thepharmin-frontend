@@ -1,3 +1,4 @@
+import { MOCK_TODAY } from "@/config/mockToday";
 import type { JobTrack } from "@/types/jobs";
 
 export interface ResumeWorkPreference {
@@ -100,7 +101,9 @@ export function createEmptyBuiltResume(id: string): BuiltResume {
     title: "새 이력서",
     isPrimary: false,
     proposalEnabled: false,
-    updatedAt: new Date().toISOString().slice(0, 10),
+    // 실제 시계를 쓰지 않는다 — 시연 기준일로 고정한다. 카드가 "-"를 "."로 바꿔 그리므로
+    // 저장 형식은 기존 목데이터·업로드분과 같은 하이픈 형식으로 맞춘다.
+    updatedAt: MOCK_TODAY.replaceAll(".", "-"),
     jobSubcategoryIds: [],
     workPreference: { ...emptyWorkPreference },
     education: { ...emptyEducation },

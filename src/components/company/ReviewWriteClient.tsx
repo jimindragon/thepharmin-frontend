@@ -7,6 +7,7 @@ import { FieldLabel, Segmented, TextInput } from "@/components/business/Business
 import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { Button } from "@/components/ui/Button";
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
+import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import { REVIEW_TAG_MAX, interviewDifficultyOptions, interviewFormatOptions } from "@/config/reviewTags";
 import type { CompanyReviewType, JobTrack } from "@/types/jobs";
 
@@ -77,7 +78,8 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const titleLabel = isInterview ? "면접 후기 작성" : "기업 리뷰 작성";
   const contentGuide = isInterview ? "200~350자 권장" : "100~150자 권장";
   const listHref = isInterview ? `/companies/${companyId}/interviews` : `/companies/${companyId}/reviews`;
-  const applyYearOptions = Array.from({ length: 7 }, (_, index) => new Date().getFullYear() - index);
+  // 실제 시계를 쓰지 않는다 — 시연 기준일 연도부터 7년치를 거슬러 만든다.
+  const applyYearOptions = Array.from({ length: 7 }, (_, index) => MOCK_TODAY_DATE.getFullYear() - index);
 
   const pageIntro = isInterview
     ? "실제 경험을 바탕으로 다른 구직자에게 도움이 되는 정보를 공유해 주세요."
