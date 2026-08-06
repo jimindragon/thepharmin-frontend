@@ -7,13 +7,7 @@ import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { PhoneVerificationField } from "@/components/signup/PhoneVerificationField";
 import { Button } from "@/components/ui/Button";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
-import {
-  FieldLabel,
-  FormActionButton,
-  SectionCard,
-  TextInput,
-  PROFILE_TEXT_FIELD_WIDTH,
-} from "@/components/business/BusinessFormControls";
+import { FieldLabel, FormActionButton, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
 import { StatusPill } from "@/components/business/table/StatusPill";
 import { SEL } from "@/components/job-registration/fieldClasses";
@@ -32,12 +26,33 @@ import {
 } from "@/config/memberAffiliation";
 import { mockPersonalMember } from "@/data/personalMember";
 
-/** 라벨-값 한 줄. 기업 "계정·노출 설정"(BusinessCompanyProfileClient §6)과 같은 규격으로,
- * 좁은 화면에서는 라벨이 값 위로 올라간다. 읽기 전용 칸과 편집 칸이 섞여도 줄 간격이 흐트러지지 않는다. */
-function AccountRow({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * 짧은 입력칸 2개를 나란히 놓는 그리드. 기업 기관정보 관리(BusinessCompanyProfileClient)의
+ * 같은 이름 상수와 값이 같다 — 그쪽이 모듈 내부 상수라 import할 수 없어 여기 둔다.
+ * 칸이 홀수로 남으면 왼쪽만 차고 오른쪽은 빈다(의도된 모습).
+ */
+const FIELD_GRID_2COL = "grid grid-cols-2 gap-4 max-[640px]:grid-cols-1";
+
+/**
+ * 라벨 위 · 입력칸 아래 한 덩어리. 이 화면의 모든 섹션이 같은 배치를 쓰므로
+ * 입력칸의 좌측 시작점이 섹션을 건너뛰어도 어긋나지 않는다.
+ */
+function Field({
+  label,
+  required,
+  htmlFor,
+  children,
+}: {
+  label: ReactNode;
+  required?: boolean;
+  htmlFor?: string;
+  children: ReactNode;
+}) {
   return (
-    <div className="grid grid-cols-[120px_1fr] items-center gap-4 max-[480px]:grid-cols-1 max-[480px]:items-start max-[480px]:gap-2">
-      <FieldLabel>{label}</FieldLabel>
+    <div className="space-y-2">
+      <FieldLabel required={required} htmlFor={htmlFor}>
+        {label}
+      </FieldLabel>
       {children}
     </div>
   );
@@ -211,84 +226,66 @@ export function MyPageAccountClient() {
       <div className="mt-7 space-y-5">
         {/* §1 계정 정보 */}
         <SectionCard id="account" title="계정 정보">
-          <div className={`${PROFILE_TEXT_FIELD_WIDTH} space-y-4`}>
-            <AccountRow label="아이디">
+          <div className={FIELD_GRID_2COL}>
+            <Field label="아이디">
               <TextInput value={mockPersonalMember.accountId} disabled />
-            </AccountRow>
-            <AccountRow label="이름">
+            </Field>
+            <Field label="이름">
               <TextInput value={name} onChange={setName} placeholder="이름을 입력해 주세요" />
-            </AccountRow>
-            <AccountRow label="이메일">
+            </Field>
+            <Field label="이메일">
               <TextInput value={email} onChange={setEmail} placeholder="example@email.com" />
-            </AccountRow>
-            <AccountRow label="비밀번호">
+            </Field>
+            <Field label="비밀번호">
               <div className="flex items-center gap-2">
                 <TextInput value="••••••••" disabled />
                 <FormActionButton onClick={handleChangePassword}>비밀번호 변경</FormActionButton>
               </div>
-            </AccountRow>
+            </Field>
           </div>
         </SectionCard>
 
         {/* §2 본인 확인 */}
         <SectionCard id="identity" title="본인 확인">
-          <div className={PROFILE_TEXT_FIELD_WIDTH}>
-            <PhoneVerificationField
-              value={phone}
-              onChange={updatePhone}
-              isVerified={phoneVerified}
-              onVerified={() => setPhoneVerified(true)}
-            />
+          {/* 번호 하나뿐인 섹션이라 2열 그리드의 왼쪽 칸에 맞춘다 — 다른 섹션의 첫 칸과 폭·좌우 끝이 같아진다.
+              입력칸과 "인증번호 받기" 버튼은 PhoneVerificationField가 한 행으로 묶어 두므로 그 칸 안에서 나뉜다. */}
+          <div className={FIELD_GRID_2COL}>
+            <div>
+              <PhoneVerificationField
+                value={phone}
+                onChange={updatePhone}
+                isVerified={phoneVerified}
+                onVerified={() => setPhoneVerified(true)}
+              />
             {/*
               PhoneVerificationField는 인증이 끝나면 입력칸과 "인증번호 받기"를 함께 잠근다 — 가입 폼에서는
               방금 인증한 번호를 되돌릴 이유가 없어 맞는 동작이지만, 회원정보에서는 그대로 두면 번호를
               영영 바꿀 수 없다. 잠금을 푸는 버튼을 이 화면 쪽에 둔다(공유 컴포넌트는 그대로).
             */}
-            {phoneVerified ? (
-              <div className="mt-3">
-                <FormActionButton onClick={() => setPhoneVerified(false)}>번호 변경</FormActionButton>
-              </div>
-            ) : null}
+              {phoneVerified ? (
+                <div className="mt-3">
+                  <FormActionButton onClick={() => setPhoneVerified(false)}>번호 변경</FormActionButton>
+                </div>
+              ) : null}
+            </div>
           </div>
         </SectionCard>
 
-        {/* §3 광고성 정보 수신. 서비스 알림 수신 설정은 /mypage/notifications/settings가 따로 소유한다 */}
-        <SectionCard id="marketing" title="광고성 정보 수신">
-          <div className={`${PROFILE_TEXT_FIELD_WIDTH} divide-y divide-[#eef1f4]`}>
-            <MarketingRow
-              label="이메일 수신"
-              description="채용 소식, 이벤트 등 광고성 정보를 이메일로 받아봅니다."
-              checked={marketingEmail}
-              onChange={setMarketingEmail}
-            />
-            <MarketingRow
-              label="문자·알림톡 수신"
-              description="채용 소식, 이벤트 등 광고성 정보를 문자·알림톡으로 받아봅니다."
-              checked={marketingSms}
-              onChange={setMarketingSms}
-            />
-          </div>
-          <p className="mt-4 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">
-            지원 결과, 마감 안내 등 서비스 이용에 꼭 필요한 알림은 동의 여부와 관계없이 발송됩니다.
-          </p>
-        </SectionCard>
-
-        {/* §4 소속 정보. 어떤 칸이 나오는지는 memberAffiliation.ts의 affiliationConfig가 전부 정한다 */}
+        {/* §3 소속 정보. 어떤 칸이 나오는지는 memberAffiliation.ts의 affiliationConfig가 전부 정한다 */}
         <SectionCard id="affiliation" title="소속 정보" description="소속이 바뀌면 수정해 주세요. 공고 추천에 활용됩니다.">
-          <div className={`${PROFILE_TEXT_FIELD_WIDTH} space-y-5`}>
-            <div className="space-y-2">
-              <FieldLabel required>소속 유형</FieldLabel>
+          <div className="space-y-5">
+            {/* 칩 그룹은 선택지가 13개·14개라 카드 안쪽 폭을 다 쓴다 — 좁히면 줄 수만 늘어난다. */}
+            <Field label="소속 유형" required>
               <OptionButtonGroup
                 options={memberAffiliationOptions}
                 value={affiliationId}
                 onChange={(id) => changeAffiliation(id as MemberAffiliationId)}
                 ariaLabel="소속 유형"
               />
-            </div>
+            </Field>
 
             {config?.secondary ? (
-              <div className="space-y-2">
-                <FieldLabel required>{config.secondary.label}</FieldLabel>
+              <Field label={config.secondary.label} required>
                 {config.secondary.hint ? (
                   <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">{config.secondary.hint}</p>
                 ) : null}
@@ -298,19 +295,44 @@ export function MyPageAccountClient() {
                   onChange={changeSecondary}
                   ariaLabel={config.secondary.label}
                 />
-              </div>
+              </Field>
             ) : null}
 
-            {config?.orgNameLabel ? (
-              <div className="space-y-2">
-                <FieldLabel required>{config.orgNameLabel}</FieldLabel>
-                <TextInput value={orgName} onChange={setOrgName} placeholder={`${config.orgNameLabel}을 입력해 주세요`} />
+            {/*
+              소속명과 직급을 한 줄에 둔다. 학년(학생 전용)이 사이에 끼지 않는 이유는 두 값이 배타적이기
+              때문이다 — 학년이 나오는 소속은 학생뿐이고 학생은 showPosition이 false다. 그래서 학생일 때
+              이 그리드에는 학교명만 남아 왼쪽 칸을 차지하고, 학년은 아래 줄에 이어진다.
+            */}
+            {config?.orgNameLabel || config?.showPosition ? (
+              <div className={FIELD_GRID_2COL}>
+                {config.orgNameLabel ? (
+                  <Field label={config.orgNameLabel} required>
+                    <TextInput value={orgName} onChange={setOrgName} placeholder={`${config.orgNameLabel}을 입력해 주세요`} />
+                  </Field>
+                ) : null}
+
+                {config.showPosition ? (
+                  <Field label="직급" required htmlFor="account-position">
+                    <select
+                      id="account-position"
+                      value={positionId}
+                      onChange={(event) => setPositionId(event.target.value)}
+                      className={SEL}
+                    >
+                      <option value="">선택해 주세요</option>
+                      {memberPositionOptions.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                ) : null}
               </div>
             ) : null}
 
             {config?.showGrade ? (
-              <div className="space-y-2">
-                <FieldLabel required>학년</FieldLabel>
+              <Field label="학년" required>
                 <OptionButtonGroup
                   options={memberGradeOptions}
                   value={studentGrade ? String(studentGrade.grade) : ""}
@@ -320,33 +342,12 @@ export function MyPageAccountClient() {
                 <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
                   {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
                 </p>
-              </div>
-            ) : null}
-
-            {config?.showPosition ? (
-              <div className="space-y-2">
-                <FieldLabel required htmlFor="account-position">
-                  직급
-                </FieldLabel>
-                <select
-                  id="account-position"
-                  value={positionId}
-                  onChange={(event) => setPositionId(event.target.value)}
-                  className={SEL}
-                >
-                  <option value="">선택해 주세요</option>
-                  {memberPositionOptions.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              </Field>
             ) : null}
           </div>
         </SectionCard>
 
-        {/* §5 약사 인증. 면허 칸도 예비약사 칸도 나오지 않는 상태에서는 섹션 자체를 렌더하지 않는다 */}
+        {/* §4 약사 인증. 면허 칸도 예비약사 칸도 나오지 않는 상태에서는 섹션 자체를 렌더하지 않는다 */}
         {showLicenseSection ? (
           <SectionCard
             id="license"
@@ -358,7 +359,7 @@ export function MyPageAccountClient() {
                 : "약사 면허 정보를 등록하면 약사 인증 회원으로 표시됩니다."
             }
           >
-            <div className={`${PROFILE_TEXT_FIELD_WIDTH} space-y-5`}>
+            <div className="space-y-5">
               {config?.licenseMode === "checkbox" ? (
                 <label className="flex items-center gap-2.5 border border-border bg-white px-4 py-3">
                   <input
@@ -372,36 +373,37 @@ export function MyPageAccountClient() {
               ) : null}
 
               {showLicenseField ? (
-                <div className="space-y-2">
-                  {/* 한약사를 골라도 라벨은 "약사 면허번호"로 고정 — 가입 폼과 같은 한계를 그대로 따른다. */}
-                  <FieldLabel required>약사 면허번호</FieldLabel>
-                  <TextInput
-                    value={licenseNumber}
-                    onChange={(v) => setLicenseNumber(v.replace(/\D/g, ""))}
-                    placeholder="숫자만 입력"
-                  />
-                  {licenseNumber.trim() ? (
-                    <div className="pt-0.5">
-                      <StatusPill
-                        tone={licenseFileName ? "progress" : "idle"}
-                        label={licenseFileName ? "검토 대기" : "면허증 미등록"}
+                <>
+                  {/* 면허번호는 짧은 값이라 반쪽 칸에 둔다. 오른쪽이 비는 것은 의도된 모습이다. */}
+                  <div className={FIELD_GRID_2COL}>
+                    {/* 한약사를 골라도 라벨은 "약사 면허번호"로 고정 — 가입 폼과 같은 한계를 그대로 따른다. */}
+                    <Field label="약사 면허번호" required>
+                      <TextInput
+                        value={licenseNumber}
+                        onChange={(v) => setLicenseNumber(v.replace(/\D/g, ""))}
+                        placeholder="숫자만 입력"
                       />
-                    </div>
-                  ) : null}
-                  <div className="pt-1">
-                    <FieldLabel>
-                      면허증 <span className="font-normal text-[#9aa3af]">(선택)</span>
-                    </FieldLabel>
-                    <div className="mt-2">
-                      <FileUploadField
-                        label="면허증 업로드"
-                        hint="등록하시면 약사 인증 검토가 시작됩니다."
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onFileSelected={setLicenseFileName}
-                      />
-                    </div>
+                      {licenseNumber.trim() ? (
+                        <div className="pt-0.5">
+                          <StatusPill
+                            tone={licenseFileName ? "progress" : "idle"}
+                            label={licenseFileName ? "검토 대기" : "면허증 미등록"}
+                          />
+                        </div>
+                      ) : null}
+                    </Field>
                   </div>
-                </div>
+
+                  {/* 업로드 블록은 점선 드롭존이라 반쪽 폭에서는 문구가 끊긴다 — 전체 폭으로 둔다. */}
+                  <Field label={<>면허증 <span className="font-normal text-[#9aa3af]">(선택)</span></>}>
+                    <FileUploadField
+                      label="면허증 업로드"
+                      hint="등록하시면 약사 인증 검토가 시작됩니다."
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onFileSelected={setLicenseFileName}
+                    />
+                  </Field>
+                </>
               ) : null}
 
               {showPreliminaryPharmacist ? (
@@ -432,6 +434,29 @@ export function MyPageAccountClient() {
             </div>
           </SectionCard>
         ) : null}
+
+        {/* §5 광고성 정보 수신. 서비스 알림 수신 설정은 /mypage/notifications/settings가 따로 소유한다 */}
+        <SectionCard id="marketing" title="광고성 정보 수신">
+          {/* 토글 행·구분선은 카드 안쪽 폭을 채운다 — 토글이 다른 섹션 입력칸의 우측 끝과 같은 x에 선다. */}
+          <div className="divide-y divide-[#eef1f4]">
+            <MarketingRow
+              label="이메일 수신"
+              description="채용 소식, 이벤트 등 광고성 정보를 이메일로 받아봅니다."
+              checked={marketingEmail}
+              onChange={setMarketingEmail}
+            />
+            <MarketingRow
+              label="문자·알림톡 수신"
+              description="채용 소식, 이벤트 등 광고성 정보를 문자·알림톡으로 받아봅니다."
+              checked={marketingSms}
+              onChange={setMarketingSms}
+            />
+          </div>
+          {/* 보조 문구만 폭을 제한한다 — 전체 폭으로 두면 한 줄로 길게 늘어져 읽기 어렵다. */}
+          <p className="mt-4 max-w-[560px] text-[13px] font-normal leading-[1.6] text-[#8a94a3]">
+            지원 결과, 마감 안내 등 서비스 이용에 꼭 필요한 알림은 동의 여부와 관계없이 발송됩니다.
+          </p>
+        </SectionCard>
 
         <div className="flex justify-end">
           <Button type="button" variant="gradient" onClick={handleSave}>
