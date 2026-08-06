@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentResumeCard } from "@/components/mypage/resume/AttachmentResumeCard";
-import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ResumeCard } from "@/components/mypage/resume/ResumeCard";
 import { ResumeConvertModal } from "@/components/mypage/resume/ResumeConvertModal";
 import { analyzeResumeDemo, saveResumeConvertDraft } from "@/components/mypage/resume/resumeConvertDemo";

@@ -13,7 +13,7 @@ import { analyzeDemo, HOSPITAL_AI_FILL_DEMO, type HospitalAiFillPatch } from "@/
 import { IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
-import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";

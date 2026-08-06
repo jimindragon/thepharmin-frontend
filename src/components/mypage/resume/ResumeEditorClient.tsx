@@ -15,6 +15,7 @@ import {
 import { ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
 import { FormRow, ResumeSectionCard } from "@/components/ui/FormSection";
+import { ModalShell } from "@/components/ui/ModalShell";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   educationOptions,
@@ -112,21 +113,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
     setNotice(`${countPatchedSections(patch)}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
   }, [mode]);
 
-  useEffect(() => {
-    if (!previewOpen) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setPreviewOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [previewOpen]);
-
-  useEffect(() => {
-    document.body.style.overflow = previewOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [previewOpen]);
+  // 미리보기의 Escape·body 스크롤 잠금은 ModalShell이 맡는다(previewOpen이 마운트를 결정한다).
 
   const completion = calculateResumeCompletion(draft);
   const sections = getSectionCompletion(draft);
@@ -637,36 +624,19 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
       </div>
 
       {previewOpen ? (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
-          role="dialog"
-          aria-modal="true"
-          aria-label="이력서 미리보기"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setPreviewOpen(false);
-          }}
+        <ModalShell
+          title={draft.title || "제목 없는 이력서"}
+          headerVariant="caption"
+          description="기업·헤드헌터에게 보이는 내용을 미리 확인합니다"
+          /* 제목이 이력서 이름이라 스크린리더에는 이 창이 무엇인지 따로 알린다 */
+          ariaLabel="이력서 미리보기"
+          onClose={() => setPreviewOpen(false)}
+          maxWidth="max-w-[720px]"
         >
-          <div className="flex w-full max-w-[720px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:self-end">
-            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-4">
-              <div>
-                <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{draft.title || "제목 없는 이력서"}</h2>
-                <p className="mt-1 text-[13px] font-normal text-[#8a94a3]">기업·헤드헌터에게 보이는 내용을 미리 확인합니다</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPreviewOpen(false)}
-                aria-label="닫기"
-                className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto bg-[#f7f8fa] px-6 py-6">
-              <ResumeContentView content={draft} />
-            </div>
+          <div className="overflow-y-auto bg-[#f7f8fa] px-6 py-6">
+            <ResumeContentView content={draft} />
           </div>
-        </div>
+        </ModalShell>
       ) : null}
     </MyPageShell>
   );

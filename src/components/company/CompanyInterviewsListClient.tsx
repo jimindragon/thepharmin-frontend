@@ -4,7 +4,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import { CompanyReviewCard, type CompanyReviewCardItem, type CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
 import { InterviewAccessStatusCard, type InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
-import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { reviewAccessMock } from "@/data/companies";
 
 interface CompanyInterviewsListClientProps {

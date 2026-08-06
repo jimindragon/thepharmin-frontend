@@ -1,9 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ModalShell } from "@/components/ui/ModalShell";
 import { jobTracks } from "@/config/jobTracks";
 import {
   hospitalJobCategoryOptions,
@@ -89,23 +89,8 @@ export function InterestPromptModal({
     setCategoryIds(defaultCategoryIds ?? []);
   }, [open, defaultTracks, defaultCategoryIds]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  // body 스크롤 잠금
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
+  // 오버레이·패널·헤더·닫기 X·Escape·body 스크롤 잠금은 ModalShell이 맡는다.
+  // ModalShell은 열림 여부를 갖지 않으므로 아래 조기 반환이 마운트/언마운트를 결정한다.
   if (!open) return null;
 
   // 분야를 끄면 그 분야의 직무 선택도 함께 거둔다 — 화면에서 사라진 항목이 값에만 남으면 안 된다.
@@ -134,99 +119,78 @@ export function InterestPromptModal({
   const canSubmit = tracks.length > 0;
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
-      role="dialog"
-      aria-modal="true"
-      aria-label="관심 분야를 알려주세요"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+    <ModalShell
+      title="관심 분야를 알려주세요"
+      headerVariant="emphasis"
+      description="선택하신 분야의 공고를 먼저 보여드립니다."
+      onClose={onClose}
+      maxWidth="max-w-[520px]"
     >
-      <div className="flex w-full max-w-[520px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end">
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5">
-          <div>
-            <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#17202c]">관심 분야를 알려주세요</h2>
-            <p className="mt-2 text-[14px] font-normal leading-[1.6] text-[#68717e]">
-              선택하신 분야의 공고를 먼저 보여드립니다.
-            </p>
+      <div className="overflow-y-auto px-6 py-6">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <FieldHead label="분야" note="여러 개 선택 가능" />
+            <div className="flex flex-wrap gap-2" role="group" aria-label="분야">
+              {jobTracks.map((track) => (
+                <ChoiceButton
+                  key={track.id}
+                  label={track.label}
+                  selected={tracks.includes(track.id)}
+                  onClick={() => toggleTrack(track.id)}
+                />
+              ))}
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
-          >
-            <X size={16} />
-          </button>
-        </div>
 
-        <div className="overflow-y-auto px-6 py-6">
-          <div className="space-y-6">
+          {/* 분야를 고르기 전에는 직무 영역 자체를 내보내지 않는다 — 고를 것이 없는 빈 칸이 된다. */}
+          {selectedTracks.length > 0 ? (
             <div className="space-y-2">
-              <FieldHead label="분야" note="여러 개 선택 가능" />
-              <div className="flex flex-wrap gap-2" role="group" aria-label="분야">
-                {jobTracks.map((track) => (
-                  <ChoiceButton
-                    key={track.id}
-                    label={track.label}
-                    selected={tracks.includes(track.id)}
-                    onClick={() => toggleTrack(track.id)}
-                  />
+              <FieldHead label="직무" note="선택 사항" />
+              <div className="space-y-3">
+                {selectedTracks.map((track) => (
+                  <div key={track.id}>
+                    {showGroupHeadings ? (
+                      <p className="mb-1.5 text-[12px] font-medium text-[#8a94a3]">{track.label}</p>
+                    ) : null}
+                    <div className="flex flex-wrap gap-2" role="group" aria-label={`${track.label} 직무`}>
+                      {CATEGORY_OPTIONS_BY_TRACK[track.id].map((option) => (
+                        <ChoiceButton
+                          key={option.id}
+                          label={option.label}
+                          selected={categoryIds.includes(option.id)}
+                          onClick={() => toggleCategory(option.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-
-            {/* 분야를 고르기 전에는 직무 영역 자체를 내보내지 않는다 — 고를 것이 없는 빈 칸이 된다. */}
-            {selectedTracks.length > 0 ? (
-              <div className="space-y-2">
-                <FieldHead label="직무" note="선택 사항" />
-                <div className="space-y-3">
-                  {selectedTracks.map((track) => (
-                    <div key={track.id}>
-                      {showGroupHeadings ? (
-                        <p className="mb-1.5 text-[12px] font-medium text-[#8a94a3]">{track.label}</p>
-                      ) : null}
-                      <div className="flex flex-wrap gap-2" role="group" aria-label={`${track.label} 직무`}>
-                        {CATEGORY_OPTIONS_BY_TRACK[track.id].map((option) => (
-                          <ChoiceButton
-                            key={option.id}
-                            label={option.label}
-                            selected={categoryIds.includes(option.id)}
-                            onClick={() => toggleCategory(option.id)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="shrink-0 border-t border-border px-6 py-5">
-          <Button
-            type="button"
-            variant="gradient"
-            className="w-full"
-            disabled={!canSubmit}
-            onClick={() => onSubmit(tracks, categoryIds)}
-          >
-            맞춤 공고 보기
-          </Button>
-          {/* 건너뛸 수는 있되 눈에 먼저 띄지 않게 — 버튼이 아니라 작은 링크. */}
-          <p className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-[13px] font-normal text-[#8a94a3] underline underline-offset-2 transition hover:text-[#4f5967]"
-            >
-              나중에 설정하기
-            </button>
-          </p>
+          ) : null}
         </div>
       </div>
-    </div>
+
+      <div className="shrink-0 border-t border-border px-6 py-5">
+        <Button
+          type="button"
+          variant="gradient"
+          className="w-full"
+          disabled={!canSubmit}
+          onClick={() => onSubmit(tracks, categoryIds)}
+        >
+          맞춤 공고 보기
+        </Button>
+        {/* 건너뛸 수는 있되 눈에 먼저 띄지 않게 — 버튼이 아니라 작은 링크. */}
+        <p className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[13px] font-normal text-[#8a94a3] underline underline-offset-2 transition hover:text-[#4f5967]"
+          >
+            나중에 설정하기
+          </button>
+        </p>
+      </div>
+    </ModalShell>
   );
 }

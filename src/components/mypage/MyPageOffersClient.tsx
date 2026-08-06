@@ -1,11 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { Button } from "@/components/ui/Button";
+import { ModalShell } from "@/components/ui/ModalShell";
 
 type OfferType = "job" | "headhunting";
 type OfferStatus = "new" | "read" | "accepted" | "declined";
@@ -163,20 +164,7 @@ function OfferResponseModal({
   const isAccept = mode === "accept";
   const canConfirm = isAccept ? Boolean(method && time) : true;
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
+  // 오버레이·패널·헤더·닫기 X·Escape·body 스크롤 잠금은 ModalShell이 맡는다.
 
   function handleConfirm() {
     if (isAccept) {
@@ -188,100 +176,77 @@ function OfferResponseModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6"
-      role="dialog"
-      aria-modal="true"
-      aria-label={isAccept ? "제안 수락" : "제안 거절"}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div className="flex w-full max-w-[440px] flex-col border border-border bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[100dvh] max-[480px]:max-w-none max-[480px]:self-end">
-        {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
-          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{isAccept ? "제안 수락" : "제안 거절"}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
-          >
-            <X size={16} />
-          </button>
-        </div>
+    <ModalShell title={isAccept ? "제안 수락" : "제안 거절"} onClose={onClose} maxWidth="max-w-[440px]">
+      {/* 스크롤 영역 */}
+      <div className="overflow-y-auto px-6 py-5">
+        <p className="text-[13px] font-normal leading-relaxed text-[#6b7280]">
+          {isAccept
+            ? "수락하시면 담당자가 등록된 연락처로 연락드립니다. 제안 수락은 지원이나 입사 확정을 의미하지 않습니다."
+            : "거절 의사만 기업에 전달되며, 선택하신 사유는 전달되지 않습니다."}
+        </p>
 
-        {/* 스크롤 영역 */}
-        <div className="overflow-y-auto px-6 py-5">
-          <p className="text-[13px] font-normal leading-relaxed text-[#6b7280]">
-            {isAccept
-              ? "수락하시면 담당자가 등록된 연락처로 연락드립니다. 제안 수락은 지원이나 입사 확정을 의미하지 않습니다."
-              : "거절 의사만 기업에 전달되며, 선택하신 사유는 전달되지 않습니다."}
-          </p>
-
-          {isAccept ? (
-            <>
-              <div className="mt-5">
-                <p className="text-[15px] font-medium text-[#303946]">연락 방법</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {CONTACT_METHOD_OPTIONS.map((option) => (
-                    <OfferChip
-                      key={option.id}
-                      label={option.label}
-                      selected={method === option.id}
-                      onClick={() => setMethod(option.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="mt-5">
-                <p className="text-[15px] font-medium text-[#303946]">연락 가능 시간</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {CONTACT_TIME_OPTIONS.map((option) => (
-                    <OfferChip
-                      key={option.id}
-                      label={option.label}
-                      selected={time === option.id}
-                      onClick={() => setTime(option.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
+        {isAccept ? (
+          <>
             <div className="mt-5">
-              <p className="text-[15px] font-medium text-[#303946]">거절 사유 (선택)</p>
+              <p className="text-[15px] font-medium text-[#303946]">연락 방법</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {DECLINE_REASON_OPTIONS.map((option) => (
+                {CONTACT_METHOD_OPTIONS.map((option) => (
                   <OfferChip
                     key={option.id}
                     label={option.label}
-                    selected={reason === option.id}
-                    onClick={() => setReason((prev) => (prev === option.id ? null : option.id))}
+                    selected={method === option.id}
+                    onClick={() => setMethod(option.id)}
                   />
                 ))}
               </div>
             </div>
-          )}
-        </div>
-
-        {/* 푸터 */}
-        <div className="flex shrink-0 justify-end gap-2 px-6 py-4">
-          <Button type="button" size="sm" variant="secondary" onClick={onClose}>
-            취소
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="primary"
-            disabled={!canConfirm}
-            onClick={handleConfirm}
-          >
-            {isAccept ? "수락 확정" : "거절 확정"}
-          </Button>
-        </div>
+            <div className="mt-5">
+              <p className="text-[15px] font-medium text-[#303946]">연락 가능 시간</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {CONTACT_TIME_OPTIONS.map((option) => (
+                  <OfferChip
+                    key={option.id}
+                    label={option.label}
+                    selected={time === option.id}
+                    onClick={() => setTime(option.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="mt-5">
+            <p className="text-[15px] font-medium text-[#303946]">거절 사유 (선택)</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {DECLINE_REASON_OPTIONS.map((option) => (
+                <OfferChip
+                  key={option.id}
+                  label={option.label}
+                  selected={reason === option.id}
+                  onClick={() => setReason((prev) => (prev === option.id ? null : option.id))}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* 푸터 */}
+      <div className="flex shrink-0 justify-end gap-2 px-6 py-4">
+        <Button type="button" size="sm" variant="secondary" onClick={onClose}>
+          취소
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="primary"
+          disabled={!canConfirm}
+          onClick={handleConfirm}
+        >
+          {isAccept ? "수락 확정" : "거절 확정"}
+        </Button>
+      </div>
+    </ModalShell>
   );
 }
 
