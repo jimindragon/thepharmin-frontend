@@ -8,10 +8,14 @@ import { useId, useMemo, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { AttachmentUploader, type AttachmentItem } from "@/components/business/AttachmentUploader";
 import { FieldLabel, SectionCard } from "@/components/business/BusinessFormControls";
+import { AiFillModal } from "@/components/job-registration/AiFillModal";
+import { analyzeDemo, RESEARCH_AI_FILL_DEMO, type ResearchAiFillPatch } from "@/components/job-registration/aiFillDemo";
 import { HINT, IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import { HiringProcessSelector } from "@/components/job-registration/HiringProcessSelector";
 import { RecommendedKeywordPicker } from "@/components/job-registration/RecommendedKeywordPicker";
+import { ConfirmDialog } from "@/components/mypage/resume/ConfirmDialog";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import {
   contractPeriodOptions,
@@ -340,6 +344,15 @@ export function ResearchJobPostingForm() {
   const [imageAttachments, setImageAttachments] = useState<AttachmentItem[]>([]);
   const [fileAttachments, setFileAttachments] = useState<AttachmentItem[]>([]);
 
+  // AI 채우기 — 모달 열림 / 사용 여부(게시 전 확인창 조건) / 채운 개수 토스트
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiFillUsed, setAiFillUsed] = useState(false);
+  const [toast, setToast] = useState("");
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  // 분석 대기 중 모달이 닫히면(취소·Escape·배경 클릭) 결과를 반영하지 않는다.
+  // 분석 타이머는 부모가 들고 있어 모달 unmount로는 멈추지 않으므로, 여기서 최신 열림 상태를 본다.
+  const aiModalOpenRef = useRef(false);
+
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [missingCount, setMissingCount] = useState(0);
@@ -386,20 +399,83 @@ export function ResearchJobPostingForm() {
     return count === 0;
   }
 
+  function showToast(message: string) {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 2400);
+  }
+
+  function openAiModal() {
+    aiModalOpenRef.current = true;
+    setAiModalOpen(true);
+  }
+
+  function closeAiModal() {
+    aiModalOpenRef.current = false;
+    setAiModalOpen(false);
+  }
+
+  /** 모달에 넘기는 분석기. 대기 중 모달이 닫혔으면 반영을 건너뛴다. */
+  async function handleAiAnalyze(text: string) {
+    const patch = await analyzeDemo(RESEARCH_AI_FILL_DEMO, text);
+    if (!aiModalOpenRef.current) return;
+    applyAiDraft(patch);
+  }
+
   /**
-   * 게시하기 — 필수 항목을 통과했을 때만 등록 완료 화면으로 넘긴다.
-   * 목업 단계라 저장은 하지 않는다(공고 목록에 추가되지 않는 것은 의도된 한계).
+   * AI가 돌려준 patch를 폼 state에 반영한다. patch에 없는 키(undefined)는 건드리지 않는다 —
+   * "원문에 없는 내용은 채우지 않는다"를 세터 호출 단위에서 지킨다.
+   * 채운 개수는 실제로 세터를 호출한 키 수이며, 값이 기존과 같아도 센다.
+   */
+  function applyAiDraft(patch: ResearchAiFillPatch) {
+    let applied = 0;
+    const apply = <T,>(value: T | undefined, setter: (next: T) => void) => {
+      if (value === undefined) return;
+      setter(value);
+      applied += 1;
+    };
+
+    apply(patch.title, setTitle);
+    apply(patch.summary, setSummary);
+    apply(patch.researchTopics, setResearchTopics);
+    apply(patch.responsibilities, setResponsibilities);
+    apply(patch.requirements, setRequirements);
+    apply(patch.preferred, setPreferred);
+    apply(patch.additionalNotes, setAdditionalNotes);
+    apply(patch.workCondDetail, setWorkCondDetail);
+    apply(patch.labName, setLabName);
+    apply(patch.labPi, setLabPi);
+    apply(patch.labIntro, setLabIntro);
+    apply(patch.employmentType, setEmploymentType);
+    apply(patch.careerType, setCareerType);
+    apply(patch.educationType, setEducationType);
+    apply(patch.salary, setSalary);
+
+    setAiFillUsed(true);
+    showToast(`${applied}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+  }
+
+  /**
+   * 등록 완료 화면으로 이동. 목업 단계라 저장은 하지 않는다(공고 목록에 추가되지 않는 것은 의도된 한계).
    * 완료 화면은 title·deadline·track 쿼리 3개만 읽으므로 그 세 값만 넘긴다 —
    * 조기 마감만 켜고 날짜를 비워둔 경우는 완료 화면이 그대로 이해하는 "채용 시 마감"으로 보낸다.
    */
-  function handlePublish() {
-    if (!validate()) return;
+  function goToComplete() {
     const params = new URLSearchParams({
       title,
       deadline: deadline || "채용 시 마감",
       track: "research",
     });
     router.push(`/business/jobs/new/complete?${params.toString()}`);
+  }
+
+  /** 게시하기 — 필수 항목을 통과했을 때만 넘긴다. AI가 채운 내용이 섞여 있으면 확인을 한 번 받는다. */
+  function handlePublish() {
+    if (!validate()) return;
+    if (aiFillUsed) {
+      setPublishConfirmOpen(true);
+      return;
+    }
+    goToComplete();
   }
 
   function toggleJob(id: string) {
@@ -446,6 +522,23 @@ export function ResearchJobPostingForm() {
               <ArrowUpRight size={12} aria-hidden />
             </Link>
           </p>
+        </div>
+
+        {/* AI 채우기 진입점 — 산업 트랙과 같은 구성. ⓘ가 버튼보다 앞에 온다(툴팁 패널이 트리거 중심에서
+            240px 펼쳐지므로 버튼 오른쪽에 두면 뷰포트를 넘겨 페이지에 상시 가로 스크롤이 생긴다).
+            아이콘 없는 텍스트 버튼 — 브랜드 페이지 미리보기가 Sparkles를 이미 쓰고 있다. */}
+        <div className="flex shrink-0 items-center gap-1.5 pt-1 max-[760px]:pt-0">
+          <InfoTooltip
+            placement="bottom"
+            text="기존 공고문을 붙여넣으면 항목별로 나눠 담습니다. 원문에 없는 내용은 채우지 않으며, 붙여넣은 내용은 이 공고 작성에만 사용됩니다."
+          />
+          <button
+            type="button"
+            onClick={openAiModal}
+            className="inline-flex h-9 items-center justify-center border border-[#111111] bg-white px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#f7f8fa]"
+          >
+            AI로 채우기
+          </button>
         </div>
       </div>
 
@@ -968,6 +1061,28 @@ export function ResearchJobPostingForm() {
         </div>
 
       </div>
+
+      {aiModalOpen && <AiFillModal onClose={closeAiModal} onAnalyze={handleAiAnalyze} />}
+
+      {publishConfirmOpen && (
+        <ConfirmDialog
+          title="게시 전에 확인해 주세요"
+          description="AI가 채운 내용이 포함돼 있습니다. 내용을 확인하셨나요?"
+          confirmLabel="게시하기"
+          tone="neutral"
+          onConfirm={() => {
+            setPublishConfirmOpen(false);
+            goToComplete();
+          }}
+          onCancel={() => setPublishConfirmOpen(false)}
+        />
+      )}
+
+      {toast ? (
+        <div className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]">
+          {toast}
+        </div>
+      ) : null}
     </div>
   );
 }

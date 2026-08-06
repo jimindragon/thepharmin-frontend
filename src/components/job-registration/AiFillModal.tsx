@@ -5,74 +5,49 @@ import { TA } from "@/components/job-registration/fieldClasses";
 import { ModalShell } from "@/components/ui/ModalShell";
 
 /**
- * AI가 채울 수 있는 산업 트랙 필드의 부분집합. 폼의 세터와 1:1로 대응하며,
- * 값이 undefined인 키는 "원문에 없어 채우지 않음"을 뜻한다(빈 문자열로 덮어쓰지 않는다).
+ * AI 공고 채우기 모달. 분석은 하지 않고 UI 상태(대기·오류)만 담당한다 —
+ * 실제 분석·폼 반영·토스트는 부모가 넘긴 onAnalyze가 전부 책임진다.
+ * 덕분에 4트랙이 같은 모달을 쓰고, 실제 API가 붙어도 이 파일은 바뀌지 않는다.
  *
- * 셀렉트 3종은 라벨이 아니라 옵션 id를 담는다 — jobFilters/shared.ts의 값과 정확히 같아야 한다.
- */
-export interface AiFillPatch {
-  title?: string;
-  summary?: string;
-  positionIntro?: string;
-  mainDuties?: string;
-  requiredQual?: string;
-  preferred?: string;
-  additionalNotes?: string;
-  workCondDetail?: string;
-  /** employmentTypeOptions의 id */
-  employmentType?: string;
-  /** experienceOptions의 id */
-  careerType?: string;
-  /** educationOptions의 id */
-  educationType?: string;
-}
-
-/**
- * 1차 데모용 고정 응답. 실제 AI 호출은 아직 없고, 붙여넣은 원문과 무관하게 이 값이 적용된다.
+ * onAnalyze가 resolve되면 모달을 닫고, reject되면 오류 줄을 띄우고 열린 채 재시도를 받는다.
  *
- * 모집 직무·급여·근무지·마감일·지원 방식은 의도적으로 비워 둔다 — "원문에 없는 건 채우지 않는다"를
- * 보여주는 동시에, 채운 뒤에도 필수 검증이 정상으로 걸리는지 확인하는 용도다.
+ * 로딩 중 취소(또는 Escape·배경 클릭)로 닫히는 경우, 이미 진행 중인 onAnalyze를 여기서 멈출 수는
+ * 없다 — 부모가 "닫혔으면 반영하지 않는다"를 판단한다.
  */
-const DEMO_PATCH: AiFillPatch = {
-  title: "품질관리(QC) 분석 담당자 채용",
-  summary: "의약품 품질 분석을 담당할 QC 담당자를 찾습니다.",
-  mainDuties: "완제·원료 의약품 품질 분석\n시험법 밸리데이션 수행\n시험 기록서 작성 및 관리",
-  requiredQual: "화학·생명과학 계열 학사 이상\nHPLC 등 분석 장비 사용 경험",
-  preferred: "GMP 환경 근무 경험\n의약품 QC 실무 경험",
-  employmentType: "permanent", // 정규직
-  careerType: "1-3", // 1~3년
-  educationType: "bachelor", // 학사 (4년제)
-};
-
-/** 분석 흉내 시간(ms). 실제 호출이 붙으면 이 상수와 setTimeout이 함께 사라진다. */
-const FAKE_ANALYZE_MS = 1200;
-
 export function AiFillModal({
   onClose,
-  onApply,
+  onAnalyze,
 }: {
   onClose: () => void;
-  onApply: (patch: AiFillPatch) => void;
+  onAnalyze: (text: string) => Promise<void>;
 }) {
   const [source, setSource] = useState("");
-  const [analyzing, setAnalyzing] = useState(false);
-  const timerRef = useRef<number | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  // 닫힌 뒤에 도착한 결과로 상태를 만지지 않기 위한 표식
+  const mountedRef = useRef(true);
 
-  // 분석 중에 닫히면(Escape·배경 클릭·X) 적용을 취소한다 — 닫힌 모달이 폼을 채우면 안 된다.
-  useEffect(() => () => {
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+  // 마운트에서 true로 되돌리는 것이 중요하다 — Strict Mode(dev)는 effect를 mount→cleanup→mount로
+  // 두 번 돌리므로, cleanup만 false를 쓰면 살아 있는 모달이 계속 false인 채로 남아
+  // 결과가 와도 닫히지도 오류를 띄우지도 못한다.
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
   }, []);
 
-  const canApply = source.trim().length > 0 && !analyzing;
+  const loading = status === "loading";
+  const canAnalyze = source.trim().length > 0 && !loading;
 
-  function handleApply() {
-    if (!canApply) return;
-    setAnalyzing(true);
-    timerRef.current = window.setTimeout(() => {
-      timerRef.current = null;
-      onApply(DEMO_PATCH);
+  async function handleAnalyze() {
+    if (!canAnalyze) return;
+    setStatus("loading"); // 재시도면 오류 줄이 여기서 사라진다
+    try {
+      await onAnalyze(source);
+      if (!mountedRef.current) return;
       onClose();
-    }, FAKE_ANALYZE_MS);
+    } catch {
+      if (!mountedRef.current) return;
+      setStatus("error");
+    }
   }
 
   return (
@@ -85,15 +60,27 @@ export function AiFillModal({
           value={source}
           onChange={(e) => setSource(e.target.value)}
           rows={8}
-          disabled={analyzing}
+          disabled={loading}
           aria-label="공고 원문 붙여넣기"
           placeholder="채용 사이트나 사내 문서에 있는 공고문을 그대로 붙여넣어 주세요."
           className={`${TA} mt-3`}
         />
-        <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">
-          붙여넣은 내용은 이 공고 작성에만 사용됩니다.
-        </p>
+        {loading ? (
+          <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">
+            공고문을 항목별로 나누고 있습니다. 잠시만 기다려 주세요.
+          </p>
+        ) : (
+          <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">
+            붙여넣은 내용은 이 공고 작성에만 사용됩니다.
+          </p>
+        )}
       </div>
+
+      {status === "error" ? (
+        <p role="alert" className="shrink-0 px-6 text-[13px] font-medium text-status-error">
+          분석에 실패했습니다. 잠시 후 다시 시도해 주세요.
+        </p>
+      ) : null}
 
       <div className="flex shrink-0 justify-end gap-2 px-6 pb-6 pt-2">
         <button
@@ -105,11 +92,11 @@ export function AiFillModal({
         </button>
         <button
           type="button"
-          onClick={handleApply}
-          disabled={!canApply}
+          onClick={handleAnalyze}
+          disabled={!canAnalyze}
           className="h-10 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:bg-[#f5f6f7] disabled:text-[#aeb6c0]"
         >
-          {analyzing ? "분석 중…" : "항목에 나눠 담기"}
+          {loading ? "분석 중…" : "항목에 나눠 담기"}
         </button>
       </div>
     </ModalShell>
