@@ -1,8 +1,8 @@
 "use client";
 
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TrackBadge } from "@/components/business/table/TrackBadge";
+import { ModalShell } from "@/components/ui/ModalShell";
 import { boostTrackLabel, type BillingRecord } from "@/data/businessBilling";
 import { initialBusinessCompanyProfile } from "@/data/businessCompanyProfile";
 
@@ -51,18 +51,8 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
     if (open) setShowNotice(false);
   }, [open, record?.id, variant]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
-
+  // 오버레이·패널·헤더·닫기 X·Escape·body 스크롤 잠금은 ModalShell이 맡는다.
+  // ModalShell은 열림 여부를 갖지 않으므로 아래 조기 반환이 마운트/언마운트를 결정한다.
   if (!open || !record) return null;
 
   const isCancelled = record.status === "cancelled";
@@ -78,120 +68,99 @@ export function BillingDocumentModal({ open, variant, record, onClose }: Billing
     variant === "receipt" ? (isCancelled ? "취소 영수증" : "결제 영수증") : "세금계산서 발행 내역";
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="flex w-full max-w-[440px] flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)] max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end">
-        {/* 헤더 */}
-        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
-          <h2 className="text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="grid h-8 w-8 shrink-0 place-items-center text-[#8a94a3] hover:bg-[#f4f5f6]"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* 스크롤 영역 */}
-        <div className="overflow-y-auto px-6 py-6">
-          {variant === "receipt" ? (
+    <ModalShell title={title} onClose={onClose} maxWidth="max-w-[440px]">
+      {/* 스크롤 영역 */}
+      <div className="overflow-y-auto px-6 py-6">
+        {variant === "receipt" ? (
+          <div>
+            {/* 상품/공고 */}
             <div>
-              {/* 상품/공고 */}
-              <div>
-                <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                  <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
-                  {/* 이 모달은 결제 내역 표에서 바로 열리므로 표 배지와 크기가 어긋나면 한 동작 안에서 드러난다 */}
-                  <TrackBadge label={boostTrackLabel(record.track)} />
-                </div>
-              </div>
-
-              {/* 표 */}
-              <div className="mt-5">
-                <DocRow label="결제번호" value={record.paymentNo} />
-                <DocRow label="결제일시" value={`${record.paidAt} ${record.paidAtTime}`} />
-                <DocRow
-                  label="결제수단"
-                  value={
-                    record.cardInfo
-                      ? `${record.cardInfo.issuer} · ${record.cardInfo.maskedNo} · ${record.cardInfo.installment}`
-                      : record.paymentMethod
-                  }
-                />
-                <DocRow label="이용 기간" value={`${record.servicePeriod.from} ~ ${record.servicePeriod.to}`} />
-                <DocRow label="공급가액" value={formatKrw(record.amountKrw)} />
-                <DocRow label="VAT (10%)" value={formatKrw(vatKrw)} last />
-                <DocTotal label="합계" value={formatKrw(totalKrw)} />
-              </div>
-
-              {/* 취소 정보 */}
-              {isCancelled && (
-                <div className="mt-4 border border-[#e5e9ef] bg-[#f7f8fa] px-4">
-                  <DocRow label="상태" value="취소 완료" />
-                  <DocRow label="취소일" value={record.canceledAt ?? "-"} />
-                  <DocRow label="환불액" value={formatKrw(totalKrw)} />
-                  <DocRow label="환불수단" value={record.refundMethod ?? "-"} last />
-                </div>
-              )}
-
-              {/* 하단 소자 */}
-              <div className="mt-6 border-t border-border pt-4">
-                <p className="text-[12px] font-normal text-[#a0aab6]">{RECEIPT_FOOTER}</p>
-                <p className="mt-0.5 text-[12px] font-normal text-[#a0aab6]">본 영수증은 결제 내역 확인용입니다.</p>
+              <p className="text-[16px] font-semibold text-[#17202c]">{record.jobTitle}</p>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className="text-[13px] font-normal text-[#596373]">{record.productName}</span>
+                {/* 이 모달은 결제 내역 표에서 바로 열리므로 표 배지와 크기가 어긋나면 한 동작 안에서 드러난다 */}
+                <TrackBadge label={boostTrackLabel(record.track)} />
               </div>
             </div>
-          ) : (
-            <div>
-              {/* 품목 + 발행 상태 */}
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-[16px] font-semibold text-[#17202c]">{record.productName}</p>
-                <div className="shrink-0 text-right">
-                  <p className="text-[13px] font-semibold text-status-positive">발행 완료</p>
-                  <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{record.paidAt} 작성</p>
-                </div>
-              </div>
 
-              {/* 표 */}
-              <div className="mt-5">
-                <DocRow label="공급자" value={PLATFORM_SUPPLIER} />
-                <DocRow
-                  label="공급받는자"
-                  value={`${initialBusinessCompanyProfile.displayName} · ${initialBusinessCompanyProfile.businessNumber}`}
-                />
-                <DocRow label="공급가액" value={formatKrw(record.amountKrw)} />
-                <DocRow label="세액" value={formatKrw(vatKrw)} last />
-                <DocTotal label="합계" value={formatKrw(totalKrw)} />
-              </div>
-
-              {/* 하단 안내 */}
-              <p className="mt-6 text-[12px] font-normal leading-[1.6] text-[#a0aab6]">
-                발행 완료된 세금계산서의 정보는 변경되지 않습니다. 수정한 기업 정보는 다음 발행 건부터 적용됩니다.
-              </p>
+            {/* 표 */}
+            <div className="mt-5">
+              <DocRow label="결제번호" value={record.paymentNo} />
+              <DocRow label="결제일시" value={`${record.paidAt} ${record.paidAtTime}`} />
+              <DocRow
+                label="결제수단"
+                value={
+                  record.cardInfo
+                    ? `${record.cardInfo.issuer} · ${record.cardInfo.maskedNo} · ${record.cardInfo.installment}`
+                    : record.paymentMethod
+                }
+              />
+              <DocRow label="이용 기간" value={`${record.servicePeriod.from} ~ ${record.servicePeriod.to}`} />
+              <DocRow label="공급가액" value={formatKrw(record.amountKrw)} />
+              <DocRow label="VAT (10%)" value={formatKrw(vatKrw)} last />
+              <DocTotal label="합계" value={formatKrw(totalKrw)} />
             </div>
-          )}
-        </div>
 
-        {/* CTA */}
-        <div className="shrink-0 px-6 pb-6 pt-2">
-          {showNotice && (
-            <p className="mb-2 text-center text-[12px] font-medium text-[#8a94a3]">{UNSUPPORTED_NOTICE}</p>
-          )}
-          <button
-            type="button"
-            onClick={handleUnsupportedAction}
-            className="w-full border border-[#cfd8e3] py-3.5 text-[14px] font-semibold text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-          >
-            {variant === "receipt" ? "영수증 인쇄" : "PDF 다운로드"}
-          </button>
-        </div>
+            {/* 취소 정보 */}
+            {isCancelled && (
+              <div className="mt-4 border border-[#e5e9ef] bg-[#f7f8fa] px-4">
+                <DocRow label="상태" value="취소 완료" />
+                <DocRow label="취소일" value={record.canceledAt ?? "-"} />
+                <DocRow label="환불액" value={formatKrw(totalKrw)} />
+                <DocRow label="환불수단" value={record.refundMethod ?? "-"} last />
+              </div>
+            )}
+
+            {/* 하단 소자 */}
+            <div className="mt-6 border-t border-border pt-4">
+              <p className="text-[12px] font-normal text-[#a0aab6]">{RECEIPT_FOOTER}</p>
+              <p className="mt-0.5 text-[12px] font-normal text-[#a0aab6]">본 영수증은 결제 내역 확인용입니다.</p>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {/* 품목 + 발행 상태 */}
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-[16px] font-semibold text-[#17202c]">{record.productName}</p>
+              <div className="shrink-0 text-right">
+                <p className="text-[13px] font-semibold text-status-positive">발행 완료</p>
+                <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">{record.paidAt} 작성</p>
+              </div>
+            </div>
+
+            {/* 표 */}
+            <div className="mt-5">
+              <DocRow label="공급자" value={PLATFORM_SUPPLIER} />
+              <DocRow
+                label="공급받는자"
+                value={`${initialBusinessCompanyProfile.displayName} · ${initialBusinessCompanyProfile.businessNumber}`}
+              />
+              <DocRow label="공급가액" value={formatKrw(record.amountKrw)} />
+              <DocRow label="세액" value={formatKrw(vatKrw)} last />
+              <DocTotal label="합계" value={formatKrw(totalKrw)} />
+            </div>
+
+            {/* 하단 안내 */}
+            <p className="mt-6 text-[12px] font-normal leading-[1.6] text-[#a0aab6]">
+              발행 완료된 세금계산서의 정보는 변경되지 않습니다. 수정한 기업 정보는 다음 발행 건부터 적용됩니다.
+            </p>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* CTA */}
+      <div className="shrink-0 px-6 pb-6 pt-2">
+        {showNotice && (
+          <p className="mb-2 text-center text-[12px] font-medium text-[#8a94a3]">{UNSUPPORTED_NOTICE}</p>
+        )}
+        <button
+          type="button"
+          onClick={handleUnsupportedAction}
+          className="w-full border border-[#cfd8e3] py-3.5 text-[14px] font-semibold text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+        >
+          {variant === "receipt" ? "영수증 인쇄" : "PDF 다운로드"}
+        </button>
+      </div>
+    </ModalShell>
   );
 }
