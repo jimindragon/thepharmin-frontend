@@ -15,7 +15,7 @@ import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
 
-type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "hospital" | "pharmacy";
+type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "research" | "hospital" | "pharmacy";
 type SortOption = "리뷰순" | "관심순" | "채용중순";
 type FeedFilter = "all" | "interview" | "company";
 
@@ -72,6 +72,7 @@ const trackFilterTabs: { id: TrackFilter; label: string }[] = [
   { id: "all", label: "전체" },
   { id: "pharma_bio", label: "제약·바이오" },
   { id: "cro_cdmo", label: "CRO·CDMO" },
+  { id: "research", label: "연구" },
   { id: "hospital", label: "병원" },
   { id: "pharmacy", label: "약국" },
 ];
@@ -85,8 +86,9 @@ const feedFilterTabs: { id: FeedFilter; label: string }[] = [
 const sortOptions: SortOption[] = ["리뷰순", "관심순", "채용중순"];
 
 /** 사이드바 "업종별 탐색"의 산업(JobTrack) 클릭을 하단 리스트의 큐레이션 탭(TrackFilter)으로 잇는 매핑.
- * 산업/연구는 큐레이션 탭이 세분화(제약·바이오/CRO·CDMO)되어 있거나 아예 탭이 없어 "전체"로 스크롤만 한다. */
+ * 산업은 큐레이션 탭이 세분화(제약·바이오/CRO·CDMO)되어 있어 대응하는 단일 탭이 없으므로 "전체"로 스크롤만 한다. */
 const trackToDirectoryFilter: Partial<Record<JobTrack, TrackFilter>> = {
+  research: "research",
   hospital: "hospital",
   pharmacy: "pharmacy",
 };
