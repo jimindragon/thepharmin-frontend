@@ -102,9 +102,13 @@ export function BusinessHeadhuntingManageClient() {
   const filteredCandidates = scopedCandidates.filter((c) =>
     matchesCandidateTab(c.status, candidateTab),
   );
+  const candidateTotalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
+  // 의뢰·탭 필터로 목록이 짧아졌는데 candidatePage가 아직 뒤 페이지에 남아 있는 경우를 막는다
+  // — 슬라이스와 Pagination이 같은 값을 써야 빈 표가 뜨지 않는다.
+  const safeCandidatePage = Math.min(candidatePage, candidateTotalPages);
   const pagedCandidates = filteredCandidates.slice(
-    (candidatePage - 1) * PAGE_SIZE,
-    candidatePage * PAGE_SIZE,
+    (safeCandidatePage - 1) * PAGE_SIZE,
+    safeCandidatePage * PAGE_SIZE,
   );
 
   const requestTitleById = new Map(headhuntingRequests.map((r) => [r.id, r.positionTitle]));
@@ -471,7 +475,12 @@ export function BusinessHeadhuntingManageClient() {
             pagination={
               filteredCandidates.length > 0 ? (
                 <div className="pb-6">
-                  <Pagination currentPage={candidatePage} onPageChange={setCandidatePage} />
+                  <Pagination
+                    currentPage={safeCandidatePage}
+                    totalPages={candidateTotalPages}
+                    onPageChange={setCandidatePage}
+                    ariaLabel="후보자 목록 페이지"
+                  />
                 </div>
               ) : undefined
             }

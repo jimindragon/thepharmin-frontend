@@ -51,7 +51,7 @@ export const companyLogos: Record<string, string> = {
   "휴젤(주)": "/images/companies/휴젤.jpg",
   "(주)종근당": "/images/companies/종근당.svg",
   국립소방병원: "/images/companies/국립소방병원.png",
-  국립중앙병원: "/images/companies/국립중앙병원.svg",
+  국립중앙의료원: "/images/companies/국립중앙병원.svg",
   무주군립요양병원: "/images/companies/무주군립요양병원.png",
   미래요양병원: "/images/companies/미래요양병원.png",
   성애병원: "/images/companies/성애병원.jpeg",

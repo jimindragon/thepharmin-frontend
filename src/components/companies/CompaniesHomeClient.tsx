@@ -595,11 +595,14 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     setCurrentPage(1);
   }, [trackFilter, sortOption, searchKeyword]);
 
-  const visibleDirectory = useMemo(() => {
-    if (sortedDirectory.length === 0) return [];
-    const pageOffset = ((currentPage - 1) * PAGE_SIZE) % sortedDirectory.length;
-    return [...sortedDirectory.slice(pageOffset), ...sortedDirectory.slice(0, pageOffset)].slice(0, PAGE_SIZE);
-  }, [sortedDirectory, currentPage]);
+  const totalPages = Math.max(1, Math.ceil(sortedDirectory.length / PAGE_SIZE));
+  // 필터로 목록이 짧아졌는데 currentPage가 아직 뒤 페이지에 남아 있는 경우를 막는다 — 슬라이스와 Pagination이 같은 값을 쓴다.
+  const safePage = Math.min(currentPage, totalPages);
+
+  const visibleDirectory = useMemo(
+    () => sortedDirectory.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [sortedDirectory, safePage],
+  );
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -666,7 +669,12 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
         )}
       </section>
 
-      <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+      <Pagination
+        currentPage={safePage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        ariaLabel="기업·기관 목록 페이지"
+      />
       <PlaceholderNotice message={companyReviewNotice.message} />
     </>
   );

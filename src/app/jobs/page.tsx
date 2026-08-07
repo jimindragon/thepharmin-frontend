@@ -21,6 +21,8 @@ import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
 import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
+const PAGE_SIZE = 8;
+
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
     if (sortOption === "최신순") {
@@ -63,13 +65,14 @@ export default function JobsPage() {
     return filterJobsByFilters(jobs, filterState.filters);
   }, [filterState.filters]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
+  // 필터로 목록이 짧아졌는데 currentPage가 아직 뒤 페이지에 남아 있는 경우를 막는다 — 슬라이스와 Pagination이 같은 값을 쓴다.
+  const safePage = Math.min(currentPage, totalPages);
+
   const visibleJobs = useMemo(() => {
     const sorted = sortJobs(filteredJobs, sortOption);
-    if (sorted.length === 0) return [];
-
-    const pageOffset = ((currentPage - 1) * 8) % sorted.length;
-    return [...sorted.slice(pageOffset), ...sorted.slice(0, pageOffset)].slice(0, 8);
-  }, [currentPage, filteredJobs, sortOption]);
+    return sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  }, [safePage, filteredJobs, sortOption]);
 
   const applyPreference = (nextPreference: UserJobPreference) => {
     setPreferenceState(nextPreference);
@@ -151,7 +154,7 @@ export default function JobsPage() {
                 </div>
               )}
 
-              <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+              <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
 
             <SidebarQuickLinks

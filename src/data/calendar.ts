@@ -200,7 +200,7 @@ export const calendarJobs: CalendarJob[] = [
     id: "calendar-nch-pharmacy-dept-manager",
     jobId: 410,
     href: "/jobs/nch-pharmacy-dept-manager",
-    companyName: "국립중앙병원",
+    companyName: "국립중앙의료원",
     title: "약제부 관리 약사",
     role: "약제부 관리",
     track: "hospital",

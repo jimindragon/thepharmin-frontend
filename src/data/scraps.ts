@@ -65,7 +65,7 @@ export const scrapedOrganizations: ScrapedOrganization[] = [
     logoUrl: companyLogos["서울대학교병원"],
     summary: "상급종합병원 · 임상시험센터(CRC·CRA) 채용",
     activeJobCount: 3,
-    href: fallbackHref("서울대학교병원", "hospital"),
+    href: "/companies/snuh",
   },
   {
     id: "onnuri-jongno",
