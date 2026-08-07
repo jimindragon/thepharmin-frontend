@@ -405,10 +405,184 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
   },
 };
 
+// ---- 한국뇌연구원 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const kbriDementiaPostdocJobDetail: ResearchJobDetail = {
+  id: "kbri-dementia-postdoc",
+  slug: "kbri-dementia-postdoc",
+  companyId: "kbri",
+
+  job: {
+    id: "kbri-dementia-postdoc",
+    title: "치매연구그룹 박사후 연수연구원 모집",
+
+    jobCategory: { main: "연구직", sub: "박사후연구원·포닥" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "doctor",
+
+    summary: "치매 연구를 함께할 박사후 연수연구원을 모집합니다.",
+    responsibilities: [
+      "뇌질환 관련 연구 과제 수행",
+      "조직·분자 실험(IHC, Western blot, Real-time PCR) 및 데이터 분석",
+      "연구 결과 정리와 논문 작성",
+      "그룹 세미나 및 공동 연구 참여",
+    ],
+    requirements: ["생명과학·신경과학 등 관련 분야 박사 학위 소지자(또는 취득 예정자)"],
+    preferred: ["뇌질환 동물모델 실험 경험자", "환경 요인과 뇌질환 연관성 연구 경험자"],
+
+    workMode: "연구실 근무",
+    address: "대구 동구 첨단로 61 한국뇌연구원",
+    // 폼 SALARY_OPTS는 기관 내규/3,000만↑/5,000만↑/7,000만↑/9,000만↑ 5종뿐이라
+    // jobs.ts 212의 실값(연봉 4,500만원)을 담을 수 있는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "1~2년",
+    // benefitIds: 없음 — jobs.ts 212의 benefits는 "4대 보험" 1종뿐인데 연구 WELFARE_OPTS에 대응 값이 없다
+    workConditionDetail: "계약 기간은 1~2년이며 연구 성과에 따라 갱신을 협의합니다.",
+
+    coreKeywords: ["PM2.5", "미세플라스틱", "뇌질환", "IHC", "Western blot", "Real-time PCR"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서", "연구 실적 목록"],
+
+    apply: {
+      method: "email",
+      email: "dementia-recruit@kbri.example",
+      phone: "",
+      notice: "이력서와 연구 실적 목록을 이메일로 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "한국뇌연구원",
+    logoText: "한국뇌연구원",
+    logoColor: "#1e3a5f",
+    logoUrl: companyLogos["한국뇌연구원"],
+
+    institutionTypeId: "government_research_institute",
+    foundedYear: "2011",
+    homepageUrl: "https://www.kbri.re.kr",
+
+    shortIntro: "뇌연구촉진법에 따라 설립된 국가 뇌연구 거점 정부출연연구기관입니다.",
+    fullIntro:
+      "과학기술정보통신부 산하 정부출연연구기관으로, 기초 뇌과학부터 뇌질환 중개연구까지 35개 이상의 독립 연구그룹이 활동하고 있습니다. 한국뇌은행과 공동 연구 인프라를 운영하며 DGIST 등 협력 대학과 학연 프로그램을 두고 있습니다.",
+    keywords: ["정부출연연구기관", "뇌과학", "중개연구"],
+
+    researchFields: ["neuroscience", "translational-research"],
+    staffScaleId: "over_100",
+
+    labName: "치매연구그룹",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "치매를 비롯한 퇴행성 뇌질환의 기전을 연구하는 그룹입니다. 환경 요인과 뇌질환의 연관성을 조직·분자 수준에서 분석합니다.",
+
+    equipmentInfra:
+      "한국뇌은행, 뇌영상·전기생리 장비센터, 실험동물센터, 뇌데이터센터를 공동 연구 인프라로 운영합니다.",
+    achievements: "기초·중개 뇌연구 분야의 학술 성과와 국가 연구개발 과제를 지속 수행하고 있습니다.",
+
+    location: {
+      address: "대구 동구 첨단로 61",
+      detailAddress: "한국뇌연구원",
+    },
+  },
+};
+
+// ---- 강원대학교 천연물의약합성 연구실 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const kangwonNaturalProductPostdocJobDetail: ResearchJobDetail = {
+  id: "kangwon-univ-natural-product-postdoc",
+  slug: "kangwon-univ-natural-product-postdoc",
+  companyId: "kangwon-univ-natural-product",
+
+  job: {
+    id: "kangwon-univ-natural-product-postdoc",
+    title: "천연물·의약합성 연구 박사후연구원·석사급 연구원 모집",
+
+    jobCategory: { main: "연구직", sub: "박사후연구원·포닥" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "천연물 유래 의약 후보물질 연구를 함께할 박사후연구원·석사급 연구원을 모집합니다.",
+    responsibilities: [
+      "천연물 유래 유효성분·유도체 합성 연구",
+      "유기합성 및 구조분석",
+      "국가연구개발과제 수행과 보고서 작성",
+      "논문·특허 작성",
+    ],
+    requirements: ["화학·약학·생명과학 등 관련 분야 석사 이상", "유기합성 실험 수행 가능자"],
+    preferred: [
+      "천연물 기반 생리활성 물질 연구 경험자",
+      "카나비노이드 유도체 연구 경험자",
+      "정부과제 수행 경험자",
+    ],
+
+    workMode: "연구실 근무",
+    address: "강원 춘천시 강원대학길 1 생명과학관 B303호",
+    // kbri와 동일 — jobs.ts 210의 실값(연봉 4,000만~7,000만원) 하한을 담는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "1~2년",
+    benefitIds: ["연차·휴가", "주거 지원", "건강검진", "교육 지원"],
+    workConditionDetail: "1년 단위 계약으로 연장 가능하며, 주 5일 근무입니다. 기숙사 입주를 지원합니다.",
+
+    coreKeywords: ["천연물화학", "의약화학", "전기합성", "신약 후보물질", "카나비노이드", "구조분석"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접", "최종합격"],
+    requiredDocuments: ["이력서", "자기소개서", "논문·연구 실적 목록", "학위증명서"],
+
+    apply: {
+      method: "email",
+      email: "np-lab-recruit@kangwon.example",
+      phone: "",
+      notice:
+        "이력서와 연구 실적 목록을 이메일로 제출해 주세요. 학내 벤처기업 소속 지원도 함께 안내드립니다.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "강원대학교 천연물의약합성 연구실",
+    logoText: "강원대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["강원대학교 천연물의약합성 연구실"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 프로필·companies.ts 모두 "-"라 값이 없다
+    homepageUrl: "https://bismuth.kangwon.ac.kr",
+
+    shortIntro: "천연물 유래 의약 후보물질과 촉매 합성법을 연구하는 대학 연구실입니다.",
+    fullIntro:
+      "강원대학교 춘천캠퍼스의 유기합성 연구실로, 전이금속 촉매를 이용한 효율적 합성법 개발과 천연물 유래 생리활성물질 연구를 수행합니다. 학내 벤처기업과 연계해 기초연구와 응용연구를 병행하고 있습니다.",
+    keywords: ["유기합성", "천연물화학", "의약화학"],
+
+    researchFields: ["medicinal-chemistry"],
+    staffScaleId: "10_30",
+
+    labName: "천연물의약합성 연구실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "전이금속 촉매를 이용한 새로운 합성법 개발과 천연물 유래 생리활성물질 합성을 연구하는 실험실입니다.",
+
+    equipmentInfra:
+      "유기합성 실험 공간과 HPLC 등 분리·분석 장비를 갖추고 있으며, 학내 공동기기 인프라를 활용합니다.",
+    achievements: "촉매 기반 합성 방법론과 천연물 유도체 관련 연구 논문을 발표하고 있습니다.",
+
+    location: {
+      address: "강원 춘천시 강원대학길 1",
+      detailAddress: "생명과학관 B303호",
+    },
+  },
+};
+
 export const researchJobDetails: ResearchJobDetail[] = [
   kistNeurochannelPostdocJobDetail,
   amcColorectalSurgeryResearcherJobDetail,
   kistNeurophysiologyInternJobDetail,
+  kbriDementiaPostdocJobDetail,
+  kangwonNaturalProductPostdocJobDetail,
 ];
 
 export function getResearchJobDetail(slug: string): ResearchJobDetail | undefined {

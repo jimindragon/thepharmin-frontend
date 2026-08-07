@@ -509,11 +509,178 @@ export const buldangCentralPharmacyJobDetail: PharmacyJobDetail = {
   },
 };
 
+// ---- 365열린영동약국 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const yeongdong365PharmacyJobDetail: PharmacyJobDetail = {
+  id: "yeongdong-365-pharmacy-311",
+  slug: "yeongdong-365-pharmacy-wed-parttime",
+  companyId: "yeongdong-365-pharmacy",
+
+  job: {
+    title: "주 1회 수요일 약사님 구합니다",
+    jobCategoryLabel: "약국 > 파트타임약사",
+    workTypeIds: ["part_time"],
+    employmentTypeId: "part-time",
+    experienceId: "1-3",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "주 1회 수요일 근무하실 파트타임 약사님을 모십니다.",
+    responsibilities: [
+      "처방 조제 및 검수",
+      "복약지도 및 투약 상담",
+      "일반의약품·동물의약품 판매 상담",
+      "약품 재고 확인과 조제실 정리",
+    ],
+    requirements: ["약사 면허 소지자", "약국 조제 경력 1년 이상"],
+    preferred: ["이팜 사용 경험자", "자동조제기(ATC) 사용 경험자"],
+    workConditionDetail:
+      "매주 수요일 하루 근무입니다. 연중무휴로 운영하는 약국이라 근무일 변경이 필요한 경우 사전 협의로 조정합니다.",
+
+    workSchedule: [{ days: ["수"], time: "08:30–20:30" }],
+
+    salary: { kind: "일급", amount: "일급 500,000원", note: "식대 별도 지원" },
+    benefits: ["중식 제공", "석식 제공(필요 시)"],
+
+    coreKeywords: ["조제 검수", "복약지도", "일반약 판매", "이팜", "JVM ATC", "이비인후과", "파트타임"],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편 지원 후 근무 가능 여부를 확인해 연락드립니다.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "365열린영동약국",
+    logoText: "영동",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "충북 영동군 영동읍 중앙로 29",
+      detailAddress: "1층 102호",
+      parkingTransit: "영동읍 중앙로 대로변 1층으로 도보 접근이 쉽습니다.",
+    },
+    businessHours: "매일 08:30–20:30, 일요일 09:00–20:00",
+
+    pharmacyTypeId: "local",
+    pharmacyFeatureId: "mixed",
+
+    shortIntro: "연중무휴로 운영하는 영동읍 중심가 약국입니다.",
+    fullIntro:
+      "영동읍 중심가 중앙로 대로변 건물 1층에 자리한 약국입니다. 평일과 주말, 공휴일까지 연중 운영하며 처방 조제와 일반의약품 판매를 함께 합니다. 동물약국으로 정식 등록되어 동물용의약품도 취급합니다.",
+    features: [
+      "평일·주말·공휴일 연중 운영으로 근무 요일 협의 폭이 넓습니다.",
+      "정식 등록된 동물용의약품 취급 약국입니다.",
+    ],
+    keywords: ["연중무휴", "동물약국", "영동읍 중심가"],
+
+    avgDailyPrescriptions: "",
+    mainDepartments: "",
+    software: "이팜",
+    dispensingEquipment: ["자동조제기(JVM ATC)"],
+    mainHospitals: [],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+  },
+};
+
+// ---- 신중앙약국 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const shinJungangPharmacyJobDetail: PharmacyJobDetail = {
+  id: "shin-jungang-pharmacy-314",
+  slug: "shin-jungang-pharmacy-saturday-parttime",
+  companyId: "shin-jungang-pharmacy",
+
+  job: {
+    title: "토요일 오후 약사님 구합니다",
+    jobCategoryLabel: "약국 > 파트타임약사",
+    workTypeIds: ["part_time", "weekend"],
+    employmentTypeId: "freelance",
+    experienceId: "1-3",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "토요일 오후 근무하실 약사님을 모십니다.",
+    responsibilities: ["처방 조제·검수 및 투약", "복약지도", "일반의약품·동물의약품 판매"],
+    requirements: ["약사 면허 소지자", "약국 조제 경력 1년 이상"],
+    preferred: ["팜IT3000 사용 경험자", "병원 문전 약국 근무 경험자"],
+    workConditionDetail:
+      "토요일 오후 시간대 근무입니다. 중앙대학교병원 처방과 일반의약품 판매가 함께 있는 환경입니다.",
+
+    // jobs.ts 314에 토요일 구체 근무 시각이 없어(oneLineIntro·introduction의 "오후 5시까지 타 약사 동시 근무",
+    // responsibilitiesContent의 "13~14시 위주"는 시간대 범위가 아니다) 시각을 창작하지 않고 협의 표기로 둔다.
+    workSchedule: [{ days: ["토"], time: "오후 시간대(협의)" }],
+
+    salary: { kind: "시급", amount: "시급 32,000~35,000원", note: "평일 32,000원·주말 35,000원 기준" },
+    benefits: [],
+
+    coreKeywords: ["소량 검수·투약", "일반의약품 판매", "토요일 파트타임", "팜IT 3000", "흑석역", "중앙대학교병원"],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+    mainPrescribingHospital: "중앙대학교병원",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편 지원 후 근무 가능 여부를 확인해 연락드립니다.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "신중앙약국",
+    logoText: "신중앙",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "서울 동작구 흑석로 103",
+      detailAddress: "",
+      parkingTransit: "흑석역 도보 5분 거리입니다.",
+    },
+    businessHours: "월–토 08:30–24:00, 일·공휴일 13:00–24:00",
+
+    pharmacyTypeId: "clinic-front",
+    pharmacyFeatureId: "prescription_focused",
+
+    shortIntro: "중앙대학교병원 정문 앞에서 자정까지 운영하는 문전 약국입니다.",
+    fullIntro:
+      "2013년 개국해 중앙대학교병원 정문 앞에서 운영 중인 약국입니다. 흑석역에서 도보 5분 거리로, 병원 처방 환자와 인근 대학생·직장인이 주로 찾습니다. 자정까지 운영하며 처방 조제와 일반의약품, 동물용의약품을 취급합니다.",
+    features: [
+      "평일·토요일 자정까지 문을 엽니다.",
+      "중앙대학교병원 정문 앞, 흑석역 도보 5분입니다.",
+    ],
+    keywords: ["병원 문전", "심야 운영", "동물약국"],
+
+    avgDailyPrescriptions: "",
+    mainDepartments: "",
+    software: "팜IT3000",
+    dispensingEquipment: [],
+    mainHospitals: ["중앙대학교병원"],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+  },
+};
+
 export const pharmacyJobDetails: PharmacyJobDetail[] = [
   eunhaengPharmacyJobDetail,
   hyundaiPharmacyJobDetail,
   hwagokGibeumPharmacyJobDetail,
   buldangCentralPharmacyJobDetail,
+  yeongdong365PharmacyJobDetail,
+  shinJungangPharmacyJobDetail,
 ];
 
 export function getPharmacyJobDetail(slug: string): PharmacyJobDetail | undefined {

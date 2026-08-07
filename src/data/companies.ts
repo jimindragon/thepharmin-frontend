@@ -577,7 +577,7 @@ export const companies: Company[] = [
     employeeCount: "501명 이상",
     foundedYear: "1958년",
     website: "",
-    address: "서울 중구 퇴계로 245 국립중앙의료원",
+    address: "서울 중구 을지로 245 국립중앙의료원",
   },
   {
     id: "jeil-orthopedic-hospital",

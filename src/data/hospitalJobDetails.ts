@@ -475,11 +475,173 @@ export const sungaeHospitalJobDetail: HospitalJobDetail = {
   },
 };
 
+// ---- 국립중앙의료원 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const nationalCentralHospitalJobDetail: HospitalJobDetail = {
+  id: "national-central-hospital-410",
+  slug: "nch-pharmacy-dept-manager",
+  companyId: "national-central-hospital",
+
+  job: {
+    id: "national-central-hospital-410",
+    companyId: "national-central-hospital",
+    title: "약제부 관리 약사",
+
+    jobCategory: { main: "관리·행정", sub: "약제부 관리" },
+    headcount: "1명",
+    employmentTypeId: "permanent",
+    experienceId: "5-10",
+    educationId: "pharmacy",
+
+    summary: "약제부 운영과 의약품 관리를 총괄할 관리 약사님을 모십니다.",
+    responsibilities: [
+      "병동·응급실 처방 감사와 조제 운영 관리",
+      "의약품 구매·재고와 마약류 관리 체계 운영",
+      "DUR·처방 심사 및 약사위원회 업무 지원",
+      "약제부 인력 근무 편성과 교육 관리",
+    ],
+    requirements: ["약사 면허 소지자", "병원 약제부 경력 5년 이상"],
+    preferred: ["공공의료기관 근무 경험자", "약제부 관리·행정 업무 경험자"],
+
+    shiftTypeIds: ["day_shift"],
+    workDays: ["월", "화", "수", "목", "금"],
+    address: "서울 중구 을지로 245 국립중앙의료원",
+    salary: "기관 내규",
+    benefitIds: ["연차·휴가", "의료비 지원", "구내식당", "교육 지원", "경조사 지원", "직원 주차"],
+    workConditionDetail:
+      "주간 근무(월–금 09:00–18:00) 중심이며, 보수는 공무원 보수 체계를 준용해 근속·호봉 기준으로 산정합니다.",
+
+    coreKeywords: ["약제부 관리", "의약품 구매", "DUR", "처방심사", "공공기관"],
+    additionalNotes:
+      "본 채용은 블라인드 채용으로, 편견을 유발할 수 있는 요소를 지원서에 기재하지 않도록 유의해 주세요.",
+    // detailImages/attachments: 없음
+    hiringProcess: ["서류심사 (블라인드)", "NCS 기반 직무역량 면접", "최종합격"],
+    requiredDocuments: ["이력서", "약사 면허증 사본", "경력증명서"],
+
+    apply: {
+      method: "homepage",
+      email: "",
+      phone: "",
+      notice: "채용 홈페이지에서 온라인 지원해 주세요. 블라인드 전형으로 진행됩니다.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "national-central-hospital",
+    hospitalName: "국립중앙의료원",
+    logoUrl: companyLogos["국립중앙의료원"],
+
+    hospitalTypeId: "general",
+    hospitalOperatorId: "public",
+    foundedYear: "1958",
+    homepageUrl: "https://www.nmc.or.kr",
+
+    shortIntro: "공공보건의료를 선도하는 국가중심병원입니다.",
+    fullIntro:
+      "1958년 설립된 국가중심병원으로, 메르스와 코로나19 등 국가 감염병 위기 대응의 중심 역할을 해왔습니다. 공공의료 격차 해소를 사명으로 하며, 중앙감염병병원 건립과 신축·이전을 추진하고 있습니다.",
+    keywords: ["공공의료", "국가중심병원", "감염병 대응"],
+
+    // bedCount/pharmacyStaffCount/medicalDepartments/specialistPharmacists: 없음 — 프로필에도 미등록이라 비워 둔다
+    dutySystem:
+      "야간은 3개 근무조가 3일 간격으로 교대하며, 주말·공휴일에는 단시간 약사가 별도 근무합니다.",
+    pharmacyEnvironmentDescription:
+      "병동 입원환자와 응급실 환자의 처방 감사·조제·투약, 복약지도, 반납약품 처리와 해외유입감염병 치료제 투약 업무를 수행합니다.",
+
+    location: {
+      address: "서울 중구 을지로 245",
+      detailAddress: "약제부",
+    },
+  },
+};
+
+// ---- 서울대학교병원 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const snuhPharmacyStaffJobDetail: HospitalJobDetail = {
+  id: "snuh-417",
+  slug: "snuh-pharmacy-staff",
+  companyId: "snuh",
+
+  job: {
+    id: "snuh-417",
+    companyId: "snuh",
+    title: "약무직 신규 직원 채용",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "15명",
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "pharmacy",
+
+    summary: "약제부에서 근무할 약무직 신규 직원을 모집합니다.",
+    responsibilities: [
+      "입원·외래 처방 조제 및 감사",
+      "주사조제·복약상담 등 배치 파트별 약제 업무",
+      "의약품 관리 및 약제 행정 지원",
+    ],
+    requirements: [
+      "약사 면허 소지자 또는 취득 예정자(졸업예정자 지원 가능)",
+      "국내 시행 공인영어성적 제출 가능자",
+    ],
+    preferred: ["병원 약제 실무 실습 경험자", "영어 의사소통 가능자"],
+
+    shiftTypeIds: ["day_shift", "shift_work"],
+    address: "서울 종로구 대학로 101 서울대학교병원",
+    salary: "기관 내규",
+    benefitIds: ["교육 지원", "학회·연수 지원", "전문약사 교육 지원"],
+    workConditionDetail:
+      "주간 근무 중심이며, 직무 특성에 따라 야간·휴일 근무와 교대 근무가 운영됩니다. 임용후보자 등록(유효기간 1년) 후 결원 발생 시 정규직으로 임용됩니다.",
+
+    coreKeywords: ["상급종합병원", "전공약사", "블라인드 채용", "신입가능", "임상약료"],
+    additionalNotes:
+      "본 채용은 블라인드 공개채용입니다. 출신학교 등 편견 요소를 기재하지 않도록 유의해 주세요.",
+    // detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "실무면접", "최종면접", "신체검사"],
+    requiredDocuments: ["졸업(예정)증명서", "성적증명서", "공인영어성적표", "약사 면허증 사본(해당자)"],
+
+    apply: {
+      method: "homepage",
+      email: "",
+      phone: "",
+      notice: "채용 홈페이지에서 온라인 지원해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "snuh",
+    hospitalName: "서울대학교병원",
+    logoUrl: companyLogos["서울대학교병원"],
+
+    hospitalTypeId: "tertiary",
+    hospitalOperatorId: "university",
+    foundedYear: "1978",
+    homepageUrl: "https://www.snuh.org",
+
+    shortIntro: "국가중앙병원 역할을 수행하는 상급종합병원입니다.",
+    fullIntro:
+      "서울 연건동에 위치한 상급종합병원으로, 본원과 어린이병원·암병원을 함께 운영합니다. 약제부는 입원·외래·주사조제, 임상약료, 의약정보, 소아·암병원 전담 파트로 나뉘어 있으며 조제 자동화 등 약제 업무 선진화를 추진하고 있습니다.",
+    keywords: ["상급종합병원", "전공약사", "임상약료"],
+
+    // bedCount/pharmacyStaffCount/medicalDepartments/specialistPharmacists: 없음 — 프로필에도 미등록이라 비워 둔다
+    dutySystem: "직무 특성에 따라 야간·휴일 근무와 교대 근무가 운영됩니다.",
+    pharmacyEnvironmentDescription:
+      "약제부는 입원·외래·주사조제 파트와 임상약료, 의약정보, 소아·암병원 전담 파트로 구분되어 있으며, 1983년부터 전공약사 수련 제도를 운영하고 있습니다.",
+
+    location: {
+      address: "서울 종로구 대학로 101",
+      detailAddress: "본관 지하 1층 약제부",
+    },
+  },
+};
+
 export const hospitalJobDetails: HospitalJobDetail[] = [
   osanHospitalJobDetail,
   armedForcesSeoulDistrictHospitalJobDetail,
   nationalFireHospitalJobDetail,
   sungaeHospitalJobDetail,
+  nationalCentralHospitalJobDetail,
+  snuhPharmacyStaffJobDetail,
 ];
 
 export function getHospitalJobDetail(slug: string): HospitalJobDetail | undefined {
