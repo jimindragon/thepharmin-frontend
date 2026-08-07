@@ -78,6 +78,18 @@ export const BOOST_PRICING: Record<BoostGrade, Record<PricingCat, BoostPricePoin
   },
 };
 
+/**
+ * 기간 할인율(%) — 표에 적힌 정가/할인가에서 파생한다. 할인이 없으면(1주) null.
+ *
+ * 랜딩(BusinessPricingClient)과 부스트 모달(BoostModal)이 각자 "30%↓"·"30%" 같은 라벨을
+ * 손으로 들고 있던 것을 이 함수로 모았다. 가격을 고치면 라벨이 따라오게 하기 위한 것이므로,
+ * 표시 문자열을 여기서 만들지 않는다 — 화살표·기호는 화면마다 다르니 호출부가 붙인다.
+ */
+export function discountPercent(p: BoostPricePoint): number | null {
+  if (p.originalKrw === p.discountedKrw) return null;
+  return Math.round((1 - p.discountedKrw / p.originalKrw) * 100);
+}
+
 export function trackToPricingCat(track: JobTrack): PricingCat {
   if (track === "research") return "industry";
   return track;

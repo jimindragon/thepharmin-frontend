@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { ModalShell } from "@/components/ui/ModalShell";
 import { jobPostings, jobTrackLabel } from "@/data/businessJobs";
-import { BOOST_PRICING, trackToPricingCat, type BoostGrade } from "@/data/boostPricing";
+import { BOOST_PRICING, discountPercent, trackToPricingCat, type BoostGrade, type PricingCat } from "@/data/boostPricing";
 
 type PaymentMethod = "신용카드" | "계좌이체" | "간편결제";
 const PAYMENT_METHODS: PaymentMethod[] = ["신용카드", "계좌이체", "간편결제"];
@@ -21,12 +21,22 @@ const GRADE_OPTIONS: GradeOption[] = [
   { id: "standard", name: "STANDARD", badge: "추천 공고 영역" },
 ];
 
-const WEEK_OPTS: { weeks: 1 | 2 | 3 | 4; label: string; discountLabel: string | null }[] = [
-  { weeks: 1, label: "1주", discountLabel: null },
-  { weeks: 2, label: "2주", discountLabel: "30%" },
-  { weeks: 3, label: "3주", discountLabel: "40%" },
-  { weeks: 4, label: "4주", discountLabel: "50%" },
+const WEEK_OPTS: { weeks: 1 | 2 | 3 | 4; label: string }[] = [
+  { weeks: 1, label: "1주" },
+  { weeks: 2, label: "2주" },
+  { weeks: 3, label: "3주" },
+  { weeks: 4, label: "4주" },
 ];
+
+/**
+ * 할인율 배지용 가격 포인트. 공고를 아직 고르지 않아 분류(pricingCat)가 없을 때도 배지는
+ * 그대로 보여야 하므로(금액만 빈칸으로 두는 것이 원래 동작) 대표 계열에서 할인율만 읽는다.
+ * 세 분류의 할인율은 현재 0/30/40/50%로 같아 어느 계열을 써도 결과가 같다 — 분류마다
+ * 할인율을 다르게 가져갈 일이 생기면 이 대체 경로부터 걷어내야 한다.
+ */
+function discountLabelPoint(grade: BoostGrade, cat: PricingCat | null, weeks: 1 | 2 | 3 | 4) {
+  return BOOST_PRICING[grade][cat ?? "industry"].find((p) => p.weeks === weeks) ?? null;
+}
 
 function formatKrw(n: number) {
   return n.toLocaleString("ko-KR") + "원";
@@ -167,6 +177,8 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
                 const point = pricingCat
                   ? BOOST_PRICING[selectedGrade][pricingCat].find((p) => p.weeks === opt.weeks) ?? null
                   : null;
+                const labelPoint = discountLabelPoint(selectedGrade, pricingCat, opt.weeks);
+                const discountLabel = labelPoint ? discountPercent(labelPoint) : null;
                 return (
                   <label
                     key={opt.weeks}
@@ -189,9 +201,9 @@ export function BoostModal({ open, onClose, preselectedJobId, initialJobId, init
                       <span className="whitespace-nowrap text-[14px] font-bold text-[#17202c]">{opt.label}</span>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      {opt.discountLabel && (
+                      {discountLabel !== null && (
                         <span className="inline-flex h-6 items-center border border-[#e2998a] px-1.5 text-[12px] font-medium text-[#c0523b]">
-                          {opt.discountLabel}
+                          {discountLabel}%
                         </span>
                       )}
                       {point && (

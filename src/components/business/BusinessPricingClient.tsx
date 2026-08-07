@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
 import { LinkButton } from "@/components/ui/Button";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
-import { BOOST_PRICING, type BoostGrade, type BoostPricePoint, type PricingCat } from "@/data/boostPricing";
+import { BOOST_PRICING, discountPercent, type BoostGrade, type BoostPricePoint, type PricingCat } from "@/data/boostPricing";
 
 // ── 가격 데이터 ─────────────────────────────────────────────
 type Cat = PricingCat;
@@ -44,12 +44,25 @@ const PRICES = GRADES.reduce((acc, grade) => {
   return acc;
 }, {} as Record<BoostGrade, Record<Cat, [PP, PP, PP, PP]>>);
 
-const PERIOD_OPTS = [
-  { label: "1주", discount: "" },
-  { label: "2주", discount: "30%↓" },
-  { label: "3주", discount: "40%↓" },
-  { label: "4주", discount: "50%↓" },
-] as const;
+/** 기간 드롭다운 라벨 — 할인율은 가격 데이터에서 파생한다(boostPricing의 discountPercent). */
+function periodLabel(p: BoostPricePoint): string {
+  const pct = discountPercent(p);
+  return pct === null ? `${p.weeks}주` : `${p.weeks}주 (${pct}%↓)`;
+}
+
+/**
+ * 가격 카드 배지 2종. 브랜드 그라데이션·초록은 핵심 CTA("신청하기")에만 쓰는 규칙이라
+ * 배지는 전부 모노크롬으로 둔다 — 한 카드 안에 초록이 여러 채도로 겹치면 CTA가 묻힌다.
+ * 네 장이 같은 문자열을 공유해야 하므로 각 카드에 인라인으로 흩지 말 것.
+ */
+const AREA_BADGE = "border border-[#e5e5e5] px-2 py-[3px] text-[11px] font-semibold text-[#737373]";
+const ACCENT_BADGE = "bg-[#0a0a0a] px-2 py-[3px] text-[10.5px] font-bold text-white";
+
+const CAT_LABEL: Record<Cat, string> = {
+  industry: "산업·연구기관",
+  hospital: "병원",
+  pharmacy: "약국",
+};
 
 // ── 공용 서브 컴포넌트 ──────────────────────────────────────
 function BlackIc() {
@@ -73,7 +86,7 @@ function TpCheck() {
 }
 
 // ── 카드 내장 기간 선택 드롭다운 ────────────────────────────
-function PeriodSelect({ value, onChange }: { value: number; onChange: (i: number) => void }) {
+function PeriodSelect({ value, onChange, points }: { value: number; onChange: (i: number) => void; points: BoostPricePoint[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -85,11 +98,12 @@ function PeriodSelect({ value, onChange }: { value: number; onChange: (i: number
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  const opt = PERIOD_OPTS[value];
-  const label = opt.discount ? `${opt.label} (${opt.discount})` : opt.label;
+  const label = periodLabel(points[value]);
 
   return (
-    <div ref={ref} className="relative mb-[14px]">
+    // 카드 전체가 미리보기 하이라이트 고정용 onClick을 갖고 있다 — 기간을 고르는 것은
+    // 등급 선택이 아니므로 여기서 전파를 끊어 드롭다운 조작이 고정을 건드리지 않게 한다.
+    <div ref={ref} className="relative mb-[14px]" onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -100,9 +114,9 @@ function PeriodSelect({ value, onChange }: { value: number; onChange: (i: number
       </button>
       {open && (
         <div className="absolute right-0 top-[calc(100%+4px)] z-20 w-[210px] border border-[#e5e5e5] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.12)]">
-          {PERIOD_OPTS.map((o, idx) => (
+          {points.map((p, idx) => (
             <button
-              key={idx}
+              key={p.weeks}
               type="button"
               onClick={() => { onChange(idx); setOpen(false); }}
               className={clsx(
@@ -110,12 +124,102 @@ function PeriodSelect({ value, onChange }: { value: number; onChange: (i: number
                 value === idx ? "font-semibold text-[#0a0a0a]" : "text-[#404040]",
               )}
             >
-              <span>{o.label}{o.discount ? ` (${o.discount})` : ""}</span>
-              {value === idx && <Check size={14} className="text-[#17A68C]" />}
+              <span>{periodLabel(p)}</span>
+              {value === idx && <Check size={14} className="text-[#0a0a0a]" />}
             </button>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── 노출 위치 미리보기 (추상 스켈레톤) ──────────────────────
+/**
+ * 실제 추천 공고 구좌(RecommendedJobs.tsx의 RecommendedJobsGrid)의 축소 재현이다.
+ * 실컴포넌트·실데이터는 일부러 쓰지 않는다 — 저 그리드는 1240px 폭을 전제로 만들어져
+ * 이 535px 박스에 넣으면 반응형 분기가 걸려 열 수가 무너지고, 그러면 카드 크기 사다리가
+ * 뒤집혀(STANDARD가 PREMIUM보다 넓어짐) 구좌 위계라는 안내 목적 자체가 깨진다.
+ *
+ * 대신 실제 구좌에서 위계를 만드는 세 가지만 그대로 가져온다:
+ *   - 열 수 3 / 4 / 5 (RecommendedJobsGrid의 존별 grid-cols)
+ *   - 카드 높이 사다리: 커버 이미지 있음 → 헤더 띠 → 납작한 한 줄
+ *   - 존 라벨 타이포(11px · tracking 0.12em · #c2c2c2 대문자)
+ * 이 셋 중 하나라도 바꾸려면 RecommendedJobs.tsx와 함께 봐야 한다.
+ */
+type PreviewTier = BoostGrade | "basic";
+
+const PREVIEW_ZONE_LABEL = "mb-[7px] text-[11px] font-semibold uppercase tracking-[0.12em]";
+
+function PreviewZone({
+  label,
+  active,
+  muted,
+  children,
+}: {
+  label: string;
+  active: boolean;
+  muted?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    // 테두리는 평시에도 2px 투명으로 잡아 둔다 — 강조 시에만 두르면 레이아웃이 밀린다.
+    <div
+      className={clsx(
+        "border-2 px-[10px] pb-[11px] pt-[9px] transition-colors duration-150",
+        active ? "border-[#2c6f63] bg-[#eef6f2]" : "border-transparent",
+      )}
+    >
+      <p className={clsx(PREVIEW_ZONE_LABEL, muted ? "text-[#dcdcdc]" : "text-[#c2c2c2]")}>{label}</p>
+      {children}
+    </div>
+  );
+}
+
+function PreviewBar({ w, tone = "strong" }: { w: string; tone?: "strong" | "weak" }) {
+  return (
+    <span
+      className={clsx("block", tone === "strong" ? "h-[5px] bg-[#d9d9d9]" : "h-[4px] bg-[#ececec]")}
+      style={{ width: w }}
+    />
+  );
+}
+
+function PreviewPremiumCard() {
+  return (
+    <div className="border border-[#e5e5e5] bg-white">
+      {/* 커버 이미지 자리 — PREMIUM만 갖는 19:6 배너 */}
+      <div className="aspect-[19/6] bg-[linear-gradient(160deg,#0D7369,#17A68C)]" />
+      <div className="flex flex-col gap-[5px] p-[8px]">
+        <PreviewBar w="78%" />
+        <PreviewBar w="46%" tone="weak" />
+      </div>
+    </div>
+  );
+}
+
+function PreviewFeaturedCard() {
+  return (
+    <div className="border border-[#e5e5e5] bg-white">
+      <div className="flex items-center gap-[4px] bg-[#fafafa] px-[6px] py-[5px]">
+        {/* 흰 로고 패치 자리 */}
+        <span className="block h-[11px] w-[22px] shrink-0 rounded-[2px] border border-[#ececec] bg-white" />
+        <span className="block h-[4px] flex-1 bg-[#e5e5e5]" />
+      </div>
+      <div className="flex flex-col gap-[5px] p-[7px]">
+        <PreviewBar w="84%" />
+        <PreviewBar w="52%" tone="weak" />
+      </div>
+    </div>
+  );
+}
+
+function PreviewStandardCard() {
+  return (
+    <div className="flex items-center gap-[4px] border border-[#e5e5e5] bg-white px-[5px] py-[7px]">
+      {/* 로고 사각 */}
+      <span className="block h-[11px] w-[11px] shrink-0 bg-[#ececec]" />
+      <span className="block h-[4px] flex-1 bg-[#d9d9d9]" />
     </div>
   );
 }
@@ -129,6 +233,18 @@ export function BusinessPricingClient() {
   const [premPeriod, setPremPeriod] = useState(1);
   const [featPeriod, setFeatPeriod] = useState(1);
   const [stdPeriod,  setStdPeriod]  = useState(1);
+
+  // 미리보기 하이라이트 — hover는 스쳐가는 강조, click은 고정.
+  // hover가 풀리면 고정해 둔 등급으로 돌아간다(둘 다 없으면 무강조).
+  const [hoveredTier, setHoveredTier] = useState<PreviewTier | null>(null);
+  const [pinnedTier, setPinnedTier] = useState<PreviewTier | null>(null);
+  const activeTier = hoveredTier ?? pinnedTier;
+
+  const tierHighlight = (tier: PreviewTier) => ({
+    onMouseEnter: () => setHoveredTier(tier),
+    onMouseLeave: () => setHoveredTier(null),
+    onClick: () => setPinnedTier((current) => (current === tier ? null : tier)),
+  });
 
   // 스크롤 페이드인
   useEffect(() => {
@@ -417,8 +533,8 @@ export function BusinessPricingClient() {
             {/* 분류 탭 — 중앙 정렬 */}
             <div className="mt-9 flex justify-center">
               <div className="flex gap-2">
-                {(["industry","hospital","pharmacy"] as const).map((cat) => {
-                  const label = cat === "industry" ? "산업·연구기관" : cat === "hospital" ? "병원" : "약국";
+                {CATS.map((cat) => {
+                  const label = CAT_LABEL[cat];
                   return (
                     <button
                       key={cat}
@@ -442,39 +558,58 @@ export function BusinessPricingClient() {
             <div className="mt-[44px] grid grid-cols-[0.95fr_1.05fr] items-start gap-8 max-[980px]:grid-cols-1">
               {/* 브라우저 목업 */}
               <div className="sticky top-[88px] border border-[#e5e5e5] bg-white max-[980px]:hidden">
-                <div className="flex items-center gap-2 border-b border-[#e5e5e5] px-4 py-[14px]">
+                <div className="flex items-center gap-2 border-b border-[#e5e5e5] px-4 py-[7px]">
                   {[0,1,2].map((i) => <span key={i} className="h-[11px] w-[11px] rounded-full bg-[#d4d4d4]" />)}
-                  <span className="ml-[10px] text-[12.5px] text-[#a3a3a3]">thepharma.com/jobs</span>
                 </div>
-                <div className="p-[18px]">
-                  <div className="mb-[14px] flex items-center gap-[10px] border border-dashed border-[#a7d3c4] bg-[#f1f8f5] px-[14px] py-3 text-[12.5px]">
-                    <span className="bg-[#d7ede5] px-[7px] py-[3px] text-[10px] font-bold text-[#0D7369]">POPUP</span>
-                    이주의 추천 공고 팝업으로도 노출돼요
-                  </div>
-                  <div className="mb-[14px] border-2 border-[#2c6f63] bg-[#eef6f2] px-[14px] py-3">
-                    <div className="mb-[10px] flex items-center justify-between text-[12.5px] font-semibold">
-                      <span><span className="mr-[6px] bg-[#3c7d6f] px-[7px] py-[3px] text-[10px] font-bold text-white">프리미엄</span>최상단 추천 배너</span>
-                      <span className="font-semibold text-[#0D7369]">↑ 내 공고</span>
+                <div className="px-[12px] pb-[12px] pt-[14px]">
+                  {/* 이주의 추천 공고 팝업 — 화면을 덮는 상품이라 띠가 아니라 창 모양으로 그린다.
+                      PREMIUM 전용 상품(비교표에서 PREMIUM만 7일)이라 PREMIUM일 때만 존과 함께 켠다. */}
+                  <div
+                    className={clsx(
+                      // 테두리는 평시에도 2px로 잡고 색만 바꾼다 — 굵기를 바꾸면 강조될 때 창 내부가 1px 밀린다(존과 같은 방식).
+                      "mx-auto mb-[12px] w-[54%] border-2 bg-white transition-colors duration-150",
+                      activeTier === "premium" ? "border-[#2c6f63]" : "border-[#e5e5e5]",
+                    )}
+                  >
+                    <div className="flex items-center justify-between border-b border-[#e5e5e5] px-[8px] py-[5px]">
+                      <span className="text-[11px] text-[#a3a3a3]">이주의 추천 공고</span>
+                      <span aria-hidden="true" className="text-[11px] leading-none text-[#c2c2c2]">×</span>
                     </div>
-                    <div className="flex gap-2">
-                      <div className="h-[30px] flex-[1.6] bg-[linear-gradient(160deg,#0D7369,#17A68C)]" />
-                      <div className="h-[30px] flex-1 bg-[#e5e5e5]" />
-                    </div>
-                  </div>
-                  {[
-                    { label: "상단 추천", cols: 3 },
-                    { label: "추천 공고", cols: 4 },
-                    { label: "일반 공고", cols: 4 },
-                  ].map((b) => (
-                    <div key={b.label} className="mb-[10px] border border-[#e5e5e5] p-3 last:mb-0">
-                      <p className="mb-[9px] text-[12px] font-semibold">{b.label}</p>
-                      <div className="flex gap-2">
-                        {Array.from({ length: b.cols }).map((_, i) => (
-                          <div key={i} className="h-[28px] flex-1 border border-[#e5e5e5] bg-[#f5f5f5]" />
-                        ))}
+                    <div className="flex items-center gap-[8px] p-[8px]">
+                      <span className="h-[26px] w-[42px] shrink-0 bg-[linear-gradient(160deg,#0D7369,#17A68C)]" />
+                      <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
+                        <PreviewBar w="86%" />
+                        <PreviewBar w="54%" tone="weak" />
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  <PreviewZone label="PREMIUM" active={activeTier === "premium"}>
+                    <div className="grid grid-cols-3 gap-[7px]">
+                      {[0, 1, 2].map((i) => <PreviewPremiumCard key={i} />)}
+                    </div>
+                  </PreviewZone>
+
+                  <PreviewZone label="FEATURED" active={activeTier === "featured"}>
+                    <div className="grid grid-cols-4 gap-[6px]">
+                      {[0, 1, 2, 3].map((i) => <PreviewFeaturedCard key={i} />)}
+                    </div>
+                  </PreviewZone>
+
+                  <PreviewZone label="STANDARD" active={activeTier === "standard"}>
+                    <div className="grid grid-cols-5 gap-[6px]">
+                      {[0, 1, 2, 3, 4].map((i) => <PreviewStandardCard key={i} />)}
+                    </div>
+                  </PreviewZone>
+
+                  {/* BASIC 대응 — 유료 구좌 밖의 전체 목록이라 라벨·행 모두 한 단계 죽인다 */}
+                  <PreviewZone label="전체 공고" active={activeTier === "basic"} muted>
+                    <div className="flex flex-col gap-[5px]">
+                      {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-[11px] border border-[#efefef] bg-[#fafafa]" />
+                      ))}
+                    </div>
+                  </PreviewZone>
                 </div>
                 <p className="border-t border-[#e5e5e5] py-3 text-center text-[12px] text-[#a3a3a3]">
                   상품을 선택하면 노출 위치가 미리보기에 표시돼요.
@@ -483,22 +618,26 @@ export function BusinessPricingClient() {
 
               {/* 가격 카드 */}
               <div className="flex flex-col gap-4">
-                {/* PREMIUM */}
-                <div className="border-2 border-[#2c6f63] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(13,115,105,0.3)]">
+                {/* PREMIUM — 2px 검정 테두리로 다른 세 장과 급을 가른다.
+                    초록은 CTA와 미리보기 존 하이라이트(선택 연동 신호) 몫이라 카드 프레임에 쓰지 않는다. */}
+                <div
+                  {...tierHighlight("premium")}
+                  className="cursor-default border-2 border-[#0a0a0a] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(0,0,0,0.2)]"
+                >
                   <div className="grid grid-cols-[1fr_auto] items-start gap-5 max-[640px]:grid-cols-1">
                     <div>
                       <div className="mb-[6px] flex flex-wrap items-center gap-[9px]">
                         <b className="text-[18px] font-bold">PREMIUM</b>
-                        <span className="bg-[#3c7d6f] px-2 py-[3px] text-[11px] font-bold text-white">최상단 추천 영역</span>
+                        <span className={AREA_BADGE}>최상단 추천 영역</span>
                       </div>
-                      <div className="mb-3"><span className="bg-[#17A68C] px-2 py-[3px] text-[10.5px] font-bold text-white">빠른 채용</span></div>
+                      <div className="mb-3"><span className={ACCENT_BADGE}>빠른 채용</span></div>
                       <div>
                         <p className="text-[15px] font-medium text-[#0a0a0a]">{premCopy.subtitle}</p>
                         <p className="mt-[4px] text-[13px] text-[#a3a3a3]">{premCopy.desc}</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
-                      <PeriodSelect value={premPeriod} onChange={setPremPeriod} />
+                      <PeriodSelect value={premPeriod} onChange={setPremPeriod} points={BOOST_PRICING.premium[activeCat]} />
                       {prem.original && <p className="text-[12.5px] text-[#a3a3a3] line-through">정상가 {prem.original}</p>}
                       <p className="my-[3px] text-[26px] font-bold tracking-[-0.02em] text-[#0a0a0a]">{prem.price}</p>
                       <LinkButton href={applyHref} variant="gradient" size="md" className="mt-[14px] w-full justify-center">신청하기</LinkButton>
@@ -507,21 +646,24 @@ export function BusinessPricingClient() {
                 </div>
 
                 {/* FEATURED */}
-                <div className="border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]">
+                <div
+                  {...tierHighlight("featured")}
+                  className="cursor-default border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]"
+                >
                   <div className="grid grid-cols-[1fr_auto] items-start gap-5 max-[640px]:grid-cols-1">
                     <div>
                       <div className="mb-[6px] flex flex-wrap items-center gap-[9px]">
                         <b className="text-[18px] font-bold">FEATURED</b>
-                        <span className="border border-[#e5e5e5] bg-[#f5f5f5] px-2 py-[3px] text-[11px] font-semibold text-[#737373]">상단 추천 영역</span>
+                        <span className={AREA_BADGE}>상단 추천 영역</span>
                       </div>
-                      <div className="mb-3"><span className="bg-[#0a0a0a] px-2 py-[3px] text-[10.5px] font-bold text-white">BEST</span></div>
+                      <div className="mb-3"><span className={ACCENT_BADGE}>BEST</span></div>
                       <div>
                         <p className="text-[15px] font-medium text-[#0a0a0a]">{featCopy.subtitle}</p>
                         <p className="mt-[4px] text-[13px] text-[#a3a3a3]">{featCopy.desc}</p>
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
-                      <PeriodSelect value={featPeriod} onChange={setFeatPeriod} />
+                      <PeriodSelect value={featPeriod} onChange={setFeatPeriod} points={BOOST_PRICING.featured[activeCat]} />
                       {feat.original && <p className="text-[12.5px] text-[#a3a3a3] line-through">정상가 {feat.original}</p>}
                       <p className="my-[3px] text-[26px] font-bold tracking-[-0.02em] text-[#0a0a0a]">{feat.price}</p>
                       <a href={applyHref} className="mt-[14px] block w-full bg-[#0a0a0a] py-3 text-center text-[14px] font-semibold text-white transition-opacity hover:opacity-[.88]">신청하기</a>
@@ -530,12 +672,15 @@ export function BusinessPricingClient() {
                 </div>
 
                 {/* STANDARD */}
-                <div className="border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]">
+                <div
+                  {...tierHighlight("standard")}
+                  className="cursor-default border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]"
+                >
                   <div className="grid grid-cols-[1fr_auto] items-start gap-5 max-[640px]:grid-cols-1">
                     <div>
                       <div className="mb-[6px] flex flex-wrap items-center gap-[9px]">
                         <b className="text-[18px] font-bold">STANDARD</b>
-                        <span className="border border-[#e5e5e5] bg-[#f5f5f5] px-2 py-[3px] text-[11px] font-semibold text-[#737373]">추천 공고 영역</span>
+                        <span className={AREA_BADGE}>추천 공고 영역</span>
                       </div>
                       <div className="mt-[6px]">
                         <p className="text-[15px] font-medium text-[#0a0a0a]">웹사이트 추천 노출</p>
@@ -543,7 +688,7 @@ export function BusinessPricingClient() {
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
-                      <PeriodSelect value={stdPeriod} onChange={setStdPeriod} />
+                      <PeriodSelect value={stdPeriod} onChange={setStdPeriod} points={BOOST_PRICING.standard[activeCat]} />
                       {std.original && <p className="text-[12.5px] text-[#a3a3a3] line-through">정상가 {std.original}</p>}
                       <p className="my-[3px] text-[26px] font-bold tracking-[-0.02em] text-[#0a0a0a]">{std.price}</p>
                       <a href={applyHref} className="mt-[14px] block w-full bg-[#0a0a0a] py-3 text-center text-[14px] font-semibold text-white transition-opacity hover:opacity-[.88]">신청하기</a>
@@ -552,12 +697,15 @@ export function BusinessPricingClient() {
                 </div>
 
                 {/* BASIC — 무료, 드롭다운 없음 */}
-                <div className="border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]">
+                <div
+                  {...tierHighlight("basic")}
+                  className="cursor-default border border-[#e5e5e5] p-[24px_26px] transition-[transform,box-shadow] duration-[220ms] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-18px_rgba(0,0,0,0.2)]"
+                >
                   <div className="grid grid-cols-[1fr_auto] items-start gap-5 max-[640px]:grid-cols-1">
                     <div>
                       <div className="mb-[6px] flex flex-wrap items-center gap-[9px]">
                         <b className="text-[18px] font-bold">BASIC</b>
-                        <span className="border border-[#e5e5e5] bg-[#f5f5f5] px-2 py-[3px] text-[11px] font-semibold text-[#737373]">전체 공고 목록</span>
+                        <span className={AREA_BADGE}>전체 공고 목록</span>
                       </div>
                       <div className="mt-[6px]">
                         <p className="text-[15px] font-medium text-[#0a0a0a]">공고 등록·게시 무료</p>
@@ -594,6 +742,10 @@ export function BusinessPricingClient() {
             <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373]">
               추천 · 상단 · 최상단 노출까지, 상품별로 한눈에 비교하세요.
             </p>
+            {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다 */}
+            <p className="mt-[10px] text-center text-[13px] font-semibold text-[#0D7369]">
+              {CAT_LABEL[activeCat]} 기준
+            </p>
             <div className="mt-[18px] overflow-x-auto">
               <table className="w-full min-w-[760px] border-collapse">
                 <thead>
@@ -616,37 +768,52 @@ export function BusinessPricingClient() {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* pharmacyExcluded: 약국 상품은 웹사이트 노출만 묶은 구성이라 채널·팝업이 빠진다.
+                      가격 카드 문구(premCopy·featCopy의 약국 분기)가 이미 SNS·카카오톡을 빼고 말하는데
+                      이 표만 제공한다고 적혀 있던 것을 맞춘 것 — 셀마다 분기하지 말고 이 플래그로만 다룰 것. */}
                   {([
-                    { label: "더파마 리크루트 공고 등록",   b: true,  s: true,    f: true,    p: true,  gap: false },
-                    { label: "웹사이트 추천 공고 노출",      b: false, s: "14일",  f: "14일",  p: "14일", gap: false },
-                    { label: "웹사이트 상단 추천 노출",      b: false, s: false,   f: "14일",  p: "14일", gap: false },
-                    { label: "웹사이트 최상단 추천 노출",    b: false, s: false,   f: false,   p: "14일", gap: false },
-                    { label: "SNS 주간 추천 공고",  sub: "업계 타깃 채널 묶음 노출",        b: false, s: false, f: "1회", p: "1회", gap: true },
-                    { label: "카카오톡 주간 추천 공고", sub: "4,000명 대상 노출",              b: false, s: false, f: "1회", p: "1회", gap: false },
-                    { label: "이주의 추천 공고 팝업",        b: false, s: false,   f: false,   p: "7일",  gap: true },
-                    { label: "SNS 단독 공고 노출",   sub: "평균 조회수 3~4만 회",             b: false, s: false, f: false, p: "1회", gap: false },
-                    { label: "카카오톡 단독 공고 노출", sub: "4,000명 대상 노출",              b: false, s: false, f: false, p: "1회", gap: false },
-                    { label: "더파마뉴스 사이드 배너",       b: false, s: false,   f: false,   p: "7일",  gap: false },
-                  ] as const).map((row, ri) => (
-                    <tr key={ri} className={row.gap ? "border-t-[8px] border-[#f5f5f5]" : ""}>
-                      <td className="border-t border-[#e5e5e5] py-[18px] pl-6 text-[15px] font-semibold text-[#0a0a0a]">
-                        {row.label}
-                        {"sub" in row && row.sub && <small className="mt-[3px] block text-[12px] font-normal text-[#a3a3a3]">{row.sub}</small>}
-                      </td>
-                      {([row.b, row.s, row.f, row.p] as const).map((val, ci) => (
-                        <td key={ci} className={clsx("border-t border-[#e5e5e5] py-[18px] text-center text-[15px] font-semibold", ci === 3 && "bg-[rgba(23,166,140,0.05)]")}>
-                          {val === true  ? <span className="inline-flex justify-center"><Check size={18} strokeWidth={2} className="text-[#17A68C]" /></span>
-                          : val === false ? <span className="text-[#d4d4d4]">—</span>
-                          : val}
+                    { label: "더파마 리크루트 공고 등록",   b: true,  s: true,        f: true,        p: true,  gap: false },
+                    // 웹사이트 노출 3행은 기간이 상품마다 다른 게 아니라 "구매한 이용 기간만큼"이라 제공/미제공만 남긴다(각주로 보충).
+                    { label: "웹사이트 추천 공고 노출",      b: false, s: true,  f: true,  p: true, gap: false },
+                    { label: "웹사이트 상단 추천 노출",      b: false, s: false, f: true,  p: true, gap: false },
+                    { label: "웹사이트 최상단 추천 노출",    b: false, s: false, f: false, p: true, gap: false },
+                    { label: "SNS 주간 추천 공고",  sub: "업계 타깃 채널 묶음 노출",        b: false, s: false, f: "1회", p: "1회", gap: true,  pharmacyExcluded: true },
+                    { label: "카카오톡 주간 추천 공고", sub: "4,000명 대상 노출",              b: false, s: false, f: "1회", p: "1회", gap: false, pharmacyExcluded: true },
+                    { label: "이주의 추천 공고 팝업",        b: false, s: false,   f: false,   p: "7일",  gap: true,  pharmacyExcluded: true },
+                    { label: "SNS 단독 공고 노출",   sub: "평균 조회수 3~4만 회",             b: false, s: false, f: false, p: "1회", gap: false, pharmacyExcluded: true },
+                    { label: "카카오톡 단독 공고 노출", sub: "4,000명 대상 노출",              b: false, s: false, f: false, p: "1회", gap: false, pharmacyExcluded: true },
+                    { label: "더파마뉴스 사이드 배너",       b: false, s: false,   f: false,   p: "7일",  gap: false, pharmacyExcluded: true },
+                  ] as const).map((row, ri) => {
+                    const excluded = activeCat === "pharmacy" && "pharmacyExcluded" in row && row.pharmacyExcluded;
+                    return (
+                      <tr key={ri} className={row.gap ? "border-t-[8px] border-[#f5f5f5]" : ""}>
+                        <td className="border-t border-[#e5e5e5] py-[18px] pl-6 text-[15px] font-semibold text-[#0a0a0a]">
+                          {row.label}
+                          {"sub" in row && row.sub && <small className="mt-[3px] block text-[12px] font-normal text-[#a3a3a3]">{row.sub}</small>}
                         </td>
-                      ))}
-                    </tr>
-                  ))}
+                        {([row.b, row.s, row.f, row.p] as const).map((val, ci) => {
+                          // 제외되는 것은 유료 상단 두 등급(FEATURED·PREMIUM)뿐 — BASIC·STANDARD는 원래 미제공이라 그대로 둔다
+                          const shown = excluded && ci >= 2 ? false : val;
+                          return (
+                            <td key={ci} className={clsx("border-t border-[#e5e5e5] py-[18px] text-center text-[15px] font-semibold", ci === 3 && "bg-[rgba(23,166,140,0.05)]")}>
+                              {shown === true  ? <span className="inline-flex justify-center"><Check size={18} strokeWidth={2} className="text-[#17A68C]" /></span>
+                              : shown === false ? <span className="text-[#d4d4d4]">—</span>
+                              : shown}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
             <p className="mt-6 text-center text-[12.5px] text-[#a3a3a3]">
               * 노출 기간·횟수는 상품 기준이며, 직무·시기에 따라 달라질 수 있습니다. 모든 금액은 부가세 별도입니다.
+              <br />
+              * 웹사이트 노출은 구매한 이용 기간 동안 적용됩니다.
+              <br />
+              * 약국 상품은 웹사이트 노출 중심으로 구성되며 SNS·카카오톡·미디어 노출이 포함되지 않습니다.
             </p>
           </div>
         </section>

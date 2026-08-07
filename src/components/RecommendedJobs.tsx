@@ -1,13 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import type { RecommendedJob } from "@/types/jobs";
 
-interface RecommendedJobsProps {
+/**
+ * 존 배치 옵션. 기본값은 "아무것도 하지 않음"이라 옵션을 넘기지 않는 소비처
+ * (트랙 랜딩·/jobs 캐러셀)는 예전 렌더 그대로다.
+ */
+export interface RecommendedJobsGridOptions {
+  /** FEATURED와 STANDARD 사이에 헤드헌팅 안내 행을 넣는다. 홈에서만 켠다. */
+  showHeadhuntingBanner?: boolean;
+  /** STANDARD 존에 노출할 최대 장수. 없으면 전량. */
+  standardLimit?: number;
+}
+
+interface RecommendedJobsProps extends RecommendedJobsGridOptions {
   jobs: RecommendedJob[];
   onPrev: () => void;
   onNext: () => void;
@@ -241,7 +252,14 @@ function StandardCard({ job }: { job: RecommendedJob }) {
   );
 }
 
-const ZONE_LABEL_CLASS = "mb-3 text-[11px] font-semibold tracking-[0.12em] text-[#c2c2c2]";
+/**
+ * 존과 존 사이 구분선. 등급명(PREMIUM/FEATURED/STANDARD)을 구직자에게 그대로 보이던 라벨을
+ * 걷어낸 자리라, 위아래 여백 합(30+30)이 예전 "라벨 + 여백"이 차지하던 높이와 맞도록 잡혀 있다.
+ * 존 경계에만 들어가야 하므로 첫 존에는 붙이지 않는다 — 아래 zones 배열이 그 순서를 관리한다.
+ */
+const ZONE_DIVIDER_CLASS = "mt-[30px] border-t border-[#eeeeee] pt-[30px]";
+/** 헤드헌팅 안내 행이 낀 경계 — 행 자신의 테두리가 경계를 대신하므로 선 없이 간격만 준다. */
+const ZONE_GAP_CLASS = "mt-[30px]";
 const LINK_CLASS = "block cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]";
 const onSpaceKey = (e: React.KeyboardEvent<HTMLAnchorElement>) => {
   if (e.key === " ") { e.preventDefault(); e.currentTarget.click(); }
@@ -258,49 +276,107 @@ function cardLink(id: number, slug: string | undefined, children: React.ReactNod
 }
 
 /**
+ * 유료 구좌 사이에 끼는 헤드헌팅 안내 행. 광고 카드가 아니라 안내 톤이라
+ * 흰 배경 + 1px 테두리로만 두고 그라데이션·초록·차콜 솔리드·그림자를 쓰지 않는다.
+ * 행 자신의 테두리가 존 경계를 대신하므로 구분선을 겹쳐 넣지 않는다(호출부의 ZONE_GAP_CLASS).
+ *
+ * 홈 "채용을 준비 중인 담당자이신가요?" 띠(HomePageClient의 RecruiterSolutionBanner)와
+ * 한 쌍이다 — 한 줄 문구 + 우측 아웃라인 버튼, px-6 py-5까지 같은 문법으로 맞춰 두 안내 행이
+ * 같은 종류로 읽히게 한다. 그쪽이 인라인이라 클래스를 공유하지 못하니 한쪽을 고치면 함께 볼 것.
+ */
+function HeadhuntingNoticeRow() {
+  return (
+    <div className="flex items-center justify-between gap-6 border border-border bg-[#fafafa] px-6 py-5 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
+      <p className="min-w-0 text-[15px] font-medium text-[#333333]">내 경력에 맞는 포지션을 제안받아 보세요</p>
+      <Link
+        href="/headhunting"
+        className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white"
+      >
+        헤드헌팅 알아보기
+        <ArrowRight size={14} />
+      </Link>
+    </div>
+  );
+}
+
+/**
  * 존별 열 수(premium 3 / featured 4 / standard 5)는 `useFeaturedJobs`의 `ZONE_PAGE_SIZE`와
  * 같은 값이어야 한다 — /jobs처럼 페이지를 나눠 넘기는 화면에서 한쪽만 바꾸면 마지막 행에
  * 빈 칸이 남는다. Tailwind JIT가 동적 클래스명을 못 만들어 열 수는 리터럴로 둘 수밖에 없으니,
  * 바꿀 때는 두 파일을 반드시 함께 고칠 것.
  */
-export function RecommendedJobsGrid({ jobs }: { jobs: RecommendedJob[] }) {
+export function RecommendedJobsGrid({
+  jobs,
+  showHeadhuntingBanner = false,
+  standardLimit,
+}: { jobs: RecommendedJob[] } & RecommendedJobsGridOptions) {
   const premiumJobs = jobs.filter((j) => j.adTier === "premium");
   const featuredJobs = jobs.filter((j) => j.adTier === "featured");
-  const standardJobs = jobs.filter((j) => j.adTier === "standard");
+  // slice는 표시만 줄인다 — orderedSlugs가 만든 순서를 그대로 앞에서부터 자르고 원본은 건드리지 않는다.
+  const allStandardJobs = jobs.filter((j) => j.adTier === "standard");
+  const standardJobs = standardLimit === undefined ? allStandardJobs : allStandardJobs.slice(0, standardLimit);
+
+  // 비어 있는 존은 배열에 담기지 않는다 — 구분선을 "첫 항목을 제외한 모든 항목"에 붙이는 것만으로
+  // 존 사이에만 선이 들어간다. 약국처럼 FEATURED가 0건인 트랙에서도 맨 위에 선이 생기지 않는다.
+  const zones: { key: string; node: React.ReactNode; isNotice?: boolean }[] = [];
+
+  if (premiumJobs.length > 0) {
+    zones.push({
+      key: "premium",
+      node: (
+        <div className="grid grid-cols-3 gap-[14px] max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+          {premiumJobs.map((job) => cardLink(job.id, job.jobSlug, <PremiumCard job={job} />))}
+        </div>
+      ),
+    });
+  }
+
+  if (featuredJobs.length > 0) {
+    zones.push({
+      key: "featured",
+      node: (
+        <div className="grid grid-cols-4 gap-[14px] max-[1024px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
+          {featuredJobs.map((job) => cardLink(job.id, job.jobSlug, <FeaturedCard job={job} />))}
+        </div>
+      ),
+    });
+  }
+
+  // FEATURED가 없는 데이터(약국형)에서는 끼울 경계 자체가 없으므로 넣지 않는다.
+  if (showHeadhuntingBanner && featuredJobs.length > 0) {
+    zones.push({ key: "headhunting-notice", node: <HeadhuntingNoticeRow />, isNotice: true });
+  }
+
+  if (standardJobs.length > 0) {
+    zones.push({
+      key: "standard",
+      node: (
+        <div className="grid grid-cols-5 gap-[14px] max-[1180px]:grid-cols-4 max-[900px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
+          {standardJobs.map((job) => cardLink(job.id, job.jobSlug, <StandardCard job={job} />))}
+        </div>
+      ),
+    });
+  }
 
   return (
     <div>
-      {premiumJobs.length > 0 && (
-        <div>
-          <p className={ZONE_LABEL_CLASS}>PREMIUM</p>
-          <div className="grid grid-cols-3 gap-[14px] max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
-            {premiumJobs.map((job) => cardLink(job.id, job.jobSlug, <PremiumCard job={job} />))}
+      {zones.map((zone, i) => {
+        // 안내 행이 걸친 두 경계(위·아래)는 선을 빼고 간격만 준다 — 행의 테두리와 구분선이 겹쳐 보이지 않게.
+        const spacing =
+          i === 0 ? undefined
+          : zone.isNotice || zones[i - 1].isNotice ? ZONE_GAP_CLASS
+          : ZONE_DIVIDER_CLASS;
+        return (
+          <div key={zone.key} className={spacing}>
+            {zone.node}
           </div>
-        </div>
-      )}
-
-      {featuredJobs.length > 0 && (
-        <div className="mt-[34px]">
-          <p className={ZONE_LABEL_CLASS}>FEATURED</p>
-          <div className="grid grid-cols-4 gap-[14px] max-[1024px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
-            {featuredJobs.map((job) => cardLink(job.id, job.jobSlug, <FeaturedCard job={job} />))}
-          </div>
-        </div>
-      )}
-
-      {standardJobs.length > 0 && (
-        <div className="mt-[34px]">
-          <p className={ZONE_LABEL_CLASS}>STANDARD</p>
-          <div className="grid grid-cols-5 gap-[14px] max-[1180px]:grid-cols-4 max-[900px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
-            {standardJobs.map((job) => cardLink(job.id, job.jobSlug, <StandardCard job={job} />))}
-          </div>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }
 
-export function RecommendedJobs({ jobs, onPrev, onNext, canGoPrev, canGoNext }: RecommendedJobsProps) {
+export function RecommendedJobs({ jobs, onPrev, onNext, canGoPrev, canGoNext, showHeadhuntingBanner, standardLimit }: RecommendedJobsProps) {
   return (
     <section className="mt-[18px]" aria-label="주목할 만한 공고">
       <div className="mb-3 flex items-center gap-2">
@@ -313,7 +389,7 @@ export function RecommendedJobs({ jobs, onPrev, onNext, canGoPrev, canGoNext }: 
           <CarouselControl onPrev={onPrev} onNext={onNext} canGoPrev={canGoPrev} canGoNext={canGoNext} />
         ) : null}
       </div>
-      <RecommendedJobsGrid jobs={jobs} />
+      <RecommendedJobsGrid jobs={jobs} showHeadhuntingBanner={showHeadhuntingBanner} standardLimit={standardLimit} />
     </section>
   );
 }

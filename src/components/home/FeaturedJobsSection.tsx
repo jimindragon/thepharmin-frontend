@@ -1,11 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { JobNoticePopover, RecommendedJobsGrid } from "@/components/RecommendedJobs";
+import { JobNoticePopover, RecommendedJobsGrid, type RecommendedJobsGridOptions } from "@/components/RecommendedJobs";
 import { typeScale } from "@/components/ui/Typography";
 import type { RecommendedJob } from "@/types/jobs";
 
-interface FeaturedJobsSectionProps {
+/** 존 배치 옵션은 그대로 그리드에 흘려보낸다 — 이 섹션은 제목 줄만 책임진다. */
+interface FeaturedJobsSectionProps extends RecommendedJobsGridOptions {
   jobs: RecommendedJob[];
 }
 
@@ -14,7 +15,7 @@ interface FeaturedJobsSectionProps {
  * 공유하는 독립 "주목할 만한 공고" 섹션. adTier별 세 존(premium/featured/standard)을
  * 정적으로 모두 렌더링한다.
  */
-export function FeaturedJobsSection({ jobs }: FeaturedJobsSectionProps) {
+export function FeaturedJobsSection({ jobs, showHeadhuntingBanner, standardLimit }: FeaturedJobsSectionProps) {
   return (
     <section className="mt-16" aria-label="주목할 만한 공고">
       <div className="mb-5 flex items-center gap-2">
@@ -23,7 +24,7 @@ export function FeaturedJobsSection({ jobs }: FeaturedJobsSectionProps) {
           <JobNoticePopover />
         </span>
       </div>
-      <RecommendedJobsGrid jobs={jobs} />
+      <RecommendedJobsGrid jobs={jobs} showHeadhuntingBanner={showHeadhuntingBanner} standardLimit={standardLimit} />
     </section>
   );
 }

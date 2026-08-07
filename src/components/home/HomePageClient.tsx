@@ -96,9 +96,9 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 
 function RecruiterSolutionBanner() {
   return (
-    <section className="mt-6 border border-[#e0e0e0] bg-[#fbfbfb] px-6 py-5">
+    <section className="mt-6 border border-border bg-[#fafafa] px-6 py-5">
       <Link href="/business" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
-        <p className="text-[15px] font-normal text-[#666666]">채용을 준비 중인 담당자이신가요?</p>
+        <p className="text-[15px] font-medium text-[#333333]">채용을 준비 중인 담당자이신가요?</p>
         <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white">
           채용 솔루션 알아보기
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -278,7 +278,9 @@ export function HomePageClient() {
           <RecruiterSolutionBanner />
           <ThemeCuration />
           <PersonalRecommendationSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
-          <FeaturedJobsSection jobs={homeFeaturedJobs} />
+          {/* 홈에서만 STANDARD를 2줄(10장)로 줄이고 그 앞에 헤드헌팅 안내 행을 둔다 —
+              트랙 랜딩은 해당 트랙 전량을 보여주는 자리라 옵션을 넘기지 않는다. */}
+          <FeaturedJobsSection jobs={homeFeaturedJobs} showHeadhuntingBanner standardLimit={10} />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>
