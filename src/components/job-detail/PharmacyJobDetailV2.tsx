@@ -51,16 +51,8 @@ import {
 } from "@/data/pharmacyJobDetails";
 import { getSimilarJobs } from "@/data/similarJobs";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
+import { getPharmacyJobCoverImage } from "@/utils/pharmacyImage";
 import type { Job } from "@/types/jobs";
-
-// ── Static data ────────────────────────────────────────────────────────────────
-
-const PHARMACY_HERO_IMAGES = [
-  "/images/pharmacy/pharmacy_pic_example.jpg",
-  "/images/pharmacy/pharmacy_pic_example_1.jpg",
-  "/images/pharmacy/pharmacy_pic_example_2.jpg",
-  "/images/pharmacy/pharmacy_pic_example_3.jpg",
-];
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -117,8 +109,7 @@ export function PharmacyJobDetailV2({
 
   const similarJobs = getSimilarJobs(data.slug, 3);
 
-  const heroIdx = [...data.id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % PHARMACY_HERO_IMAGES.length;
-  const heroImage = org.coverImageUrl ?? PHARMACY_HERO_IMAGES[heroIdx];
+  const heroImage = org.coverImageUrl ?? getPharmacyJobCoverImage(data.id);
 
   const pharmacyFeatureLabel = pharmacyFeatureLabelMap[org.pharmacyFeatureId] ?? org.pharmacyFeatureId;
   const pharmacyTypeLabel = pharmacyTypeLabelMap[org.pharmacyTypeId] ?? org.pharmacyTypeId;

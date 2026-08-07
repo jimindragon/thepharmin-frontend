@@ -102,7 +102,9 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
             <Pencil size={14} className="shrink-0" aria-hidden="true" />
             <span className="truncate">커리어·이직·전형 경험을 나눠보세요</span>
           </button>
-          <Button type="button" variant="gradient" size="sm" onClick={handleExpand} className="shrink-0">
+          {/* 목록 상단의 글쓰기 진입 CTA — 페이지 대표 CTA라 어두운 변형.
+              펼친 뒤의 등록 버튼은 폼 제출이므로 기존 gradient를 유지한다. */}
+          <Button type="button" variant="gradient-dark" size="sm" onClick={handleExpand} className="shrink-0">
             질문하기
           </Button>
         </div>

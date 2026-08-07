@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, CSSProperties, ReactNode } from "react";
 
-export type ButtonVariant = "gradient" | "primary" | "secondary";
+export type ButtonVariant = "gradient" | "gradient-dark" | "primary" | "secondary";
 export type ButtonTone = "light" | "dark";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -17,13 +17,18 @@ interface ButtonStyle {
  * variant="gradient" is reserved for the single primary conversion CTA per
  * page (see design plan) — never use it for more than one button at a time
  * on the same screen.
+ *
+ * variant="gradient-dark"는 같은 규칙의 어두운 변형 — 사진 히어로 위 CTA와
+ * 페이지 대표 진입 CTA에 쓴다. 폼 제출·본문 CTA는 "gradient"를 유지한다.
  */
 function getButtonStyle(variant: ButtonVariant, tone: ButtonTone, size: ButtonSize, disabled?: boolean): ButtonStyle {
   const height = size === "lg" ? "h-12" : size === "sm" ? "h-9" : "h-11";
   const paddingAndText = size === "sm" ? "px-4 text-[13px]" : "px-6 text-[14px]";
   const base = clsx(height, paddingAndText, "inline-flex shrink-0 items-center justify-center gap-2 font-medium transition-colors whitespace-nowrap");
 
-  if (variant === "gradient") {
+  // gradient-dark는 배경 그라데이션만 다른 변형이라 분기를 공유한다 — 따로 두면
+  // hover/transition/text-shadow가 시간이 지나며 어긋난다.
+  if (variant === "gradient" || variant === "gradient-dark") {
     if (disabled) {
       return {
         className: clsx(base, "cursor-not-allowed"),
@@ -36,7 +41,7 @@ function getButtonStyle(variant: ButtonVariant, tone: ButtonTone, size: ButtonSi
       // text-shadow: 우측 끝 #23D9A5 대비(≈1.7:1) 보완용 미세 그림자
       className: clsx(base, "text-white hover:brightness-110 active:brightness-90"),
       style: {
-        backgroundImage: "var(--gradient-cta)",
+        backgroundImage: variant === "gradient-dark" ? "var(--gradient-hero-cta)" : "var(--gradient-cta)",
         transition: "filter 160ms ease",
         textShadow: "0 1px 3px rgba(5,60,55,0.28)",
       },

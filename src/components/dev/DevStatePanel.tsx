@@ -8,9 +8,9 @@
  *   2. src/app/layout.tsx 의 import 한 줄과 렌더 한 줄
  * 다른 파일에는 아무것도 넣지 않았습니다.
  *
- * 상태를 바꾸는 방법은 기존 함수 호출뿐입니다 — 판정 로직을 여기서 다시 쓰지 않습니다.
- * 기존 개발용 쿼리(?resetMigration·?orgStatus·?track)는 그대로 살아 있고, 이 패널은 그 대체가
- * 아니라 자주 오가는 3종(개인 로그인·기업 로그인·계정 전환)만 버튼으로 꺼낸 것입니다.
+ * 상태를 바꾸는 방법은 기존 함수 호출뿐입니다 — 판정 로직도, 저장소 키도 여기서 다시 쓰지 않습니다.
+ * 기존 개발용 쿼리(?resetMigration·?orgStatus·?resetInterestPrompt·?track)는 그대로 살아 있고,
+ * 이 패널은 그 대체가 아니라 자주 오가는 것들을 버튼으로 꺼낸 것입니다.
  *
  * 시각 스타일은 기존 데모 UI(기업 인사이트의 "데모: 상태 전환" 바)가 쓰던 border-dashed를 따라
  * 실제 UI와 확실히 구분되게 했습니다.
@@ -21,6 +21,15 @@ import { useState } from "react";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { clearBusinessMember, markBusinessMember, useBusinessMember } from "@/hooks/useBusinessMember";
 import { useMemberMigration } from "@/hooks/useMemberMigration";
+import { setOrgVerificationStatus, useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
+import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
+import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
+
+/**
+ * 임시: Vercel 배포에서도 DEV 패널을 노출한다.
+ * 제거 시 false로 변경하거나 이 상수 기준 분기를 삭제할 것.
+ */
+const DEV_PANEL_ENABLED = true;
 
 /**
  * 모달(z-[70])보다 낮게 둔다 — 개발용 장치가 실제 화면을 가리면 확인하려던 것을 못 본다.
@@ -85,16 +94,98 @@ function StateRow({
   );
 }
 
-export function DevStatePanel() {
-  // 레이아웃에서도 한 번 거르지만, 이 컴포넌트만 어딘가에 잘못 붙어도 프로덕션에 뜨지 않도록 한 겹 더 둔다.
-  const isDev = process.env.NODE_ENV === "development";
+/**
+ * 켜기/끄기 짝이 아닌 행(선택지가 2개거나 동작이 하나뿐인 행)이 쓰는 버튼.
+ * 클래스는 StateRow의 버튼과 같은 값을 쓴다 — 한 패널 안에서 버튼 생김새가 갈라지지 않게 한다.
+ */
+function RowButton({
+  label,
+  onClick,
+  disabled,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        "h-6 px-2 text-[11px] font-medium transition",
+        DASHED,
+        disabled ? "cursor-not-allowed text-[#c7cdd6]" : "text-[#4f5967] hover:border-[#111111] hover:text-[#111111]",
+      )}
+    >
+      {label}
+    </button>
+  );
+}
 
+/**
+ * StateRow와 같은 껍데기(점 + 라벨 + 현재값 + 버튼들). 버튼 구성만 행마다 다르다.
+ * valueLabel은 생략할 수 있다 — 선택지가 3개인 행은 현재값 글자까지 넣으면 268px 폭을 넘겨,
+ * 대신 고른 값의 버튼을 비활성(회색)으로 두어 현재 상태를 드러낸다.
+ */
+function Row({
+  label,
+  on,
+  valueLabel,
+  children,
+}: {
+  label: string;
+  on: boolean;
+  valueLabel?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-1.5">
+      <span className="flex items-center gap-1.5 text-[12px] font-medium text-[#4f5967]">
+        <span
+          aria-hidden
+          className={clsx("h-1.5 w-1.5 rounded-full", on ? "bg-[#16a34a]" : "bg-[#c7cdd6]")}
+        />
+        {label}
+      </span>
+      <span className="flex items-center gap-1">
+        {valueLabel ? (
+          <span className={clsx("mr-1 text-[11px] font-medium", on ? "text-[#16a34a]" : "text-[#a0a9b7]")}>
+            {valueLabel}
+          </span>
+        ) : null}
+        {children}
+      </span>
+    </div>
+  );
+}
+
+export function DevStatePanel() {
   const [open, setOpen] = useState(false);
   const { isLoggedIn: personalOn, login: personalLogin, logout: personalLogout } = usePersonalLoginState();
   const businessOn = useBusinessMember();
   const { isMigrated, markMigrated, resetMigration } = useMemberMigration();
+  const orgStatus = useOrgVerificationStatus();
+  const { hasSeen: interestPromptSeen, resetSeen: resetInterestPrompt } = useInterestPromptSeen();
+  const { demoState: reviewAccessDemo, setDemoState: setReviewAccessDemo } = useReviewAccessDemo();
 
-  if (!isDev) return null;
+  /**
+   * 후기 목록이 프리셋을 정하는 규칙(패널이 고른 값 없으면 로그인 여부)을 그대로 따라 계산한다 —
+   * 패널이 보여주는 "지금 고른 값"과 실제 화면이 어긋나지 않게 한다.
+   */
+  const reviewAccessState = reviewAccessDemo ?? (personalOn ? "hasCredits" : "loggedOut");
+
+  /**
+   * 인증 상태를 읽는 화면(사이드바 잠금·헤더 드롭다운·대시보드 안내)은 모두 마운트 때 한 번만
+   * localStorage를 읽는다. 값만 바꾸면 지금 보고 있는 화면이 그대로라 리로드로 반영한다 —
+   * ?orgStatus= 쿼리로 이동했을 때와 같은 상태가 된다.
+   */
+  const applyOrgStatus = (status: "pending" | "approved") => {
+    setOrgVerificationStatus(status);
+    window.location.reload();
+  };
+
+  if (!DEV_PANEL_ENABLED) return null;
 
   if (!open) {
     return (
@@ -133,6 +224,28 @@ export function DevStatePanel() {
         <StateRow label="개인 로그인" on={personalOn} onTurnOn={personalLogin} onTurnOff={personalLogout} />
         <StateRow label="기업 로그인" on={businessOn} onTurnOn={markBusinessMember} onTurnOff={clearBusinessMember} />
         <StateRow label="계정 전환" on={isMigrated} onTurnOn={markMigrated} onTurnOff={resetMigration} />
+
+        <Row label="기업 인증" on={orgStatus === "approved"} valueLabel={orgStatus === "approved" ? "승인 완료" : "검토 중"}>
+          <RowButton label="검토중" onClick={() => applyOrgStatus("pending")} disabled={orgStatus === "pending"} />
+          <RowButton label="승인" onClick={() => applyOrgStatus("approved")} disabled={orgStatus === "approved"} />
+        </Row>
+
+        {/* 초기화만 하고 리로드하지 않는다 — 안내 창(InterestPromptGate)은 채용 페이지로 이동할 때
+            새로 마운트되며 읽으므로, 지금 보고 있는 화면을 날릴 이유가 없다. */}
+        <Row label="관심조건 안내" on={interestPromptSeen} valueLabel={interestPromptSeen ? "봤음" : "안 봤음"}>
+          <RowButton label="다시 보기" onClick={resetInterestPrompt} disabled={!interestPromptSeen} />
+        </Row>
+
+        {/* 리로드하지 않는다 — 훅이 발행하는 이벤트로 후기 목록이 같은 탭에서 즉시 따라온다. */}
+        <Row label="면접후기 열람" on={reviewAccessState === "hasCredits"}>
+          <RowButton
+            label="비로그인"
+            onClick={() => setReviewAccessDemo("loggedOut")}
+            disabled={reviewAccessState === "loggedOut"}
+          />
+          <RowButton label="0장" onClick={() => setReviewAccessDemo("noCredits")} disabled={reviewAccessState === "noCredits"} />
+          <RowButton label="2장" onClick={() => setReviewAccessDemo("hasCredits")} disabled={reviewAccessState === "hasCredits"} />
+        </Row>
       </div>
     </div>
   );

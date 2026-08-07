@@ -16,7 +16,7 @@ import { FEATURED_COMPANY_IDS, getActiveJobCount } from "@/data/companyDirectory
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { jobs } from "@/data/jobs";
-import { recommendedJobs } from "@/data/recommendedJobs";
+import { homeSpotlightSlugs, recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
@@ -250,6 +250,16 @@ function PersonalRecommendationSection({
   );
 }
 
+/**
+ * 홈의 "주목할 만한 공고"는 네 트랙을 한데 모아 보여주므로 P·F를 전량 노출하면
+ * 유료 구좌 존이 여러 줄로 늘어져 위계가 무너진다. P·F는 `homeSpotlightSlugs` 선별분만
+ * 남겨 각 한 줄로 끊고, STANDARD는 그대로 둔다. 트랙 랜딩(`TrackLandingClient`)은
+ * 트랙 하나만 다루므로 이 필터를 쓰지 않고 전량 노출한다.
+ */
+const homeFeaturedJobs = recommendedJobs.filter(
+  (job) => job.adTier === "standard" || homeSpotlightSlugs.has(job.jobSlug ?? ""),
+);
+
 export function HomePageClient() {
   const activeTrack: HomeTrackFilter = "all";
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([101]);
@@ -268,7 +278,7 @@ export function HomePageClient() {
           <RecruiterSolutionBanner />
           <ThemeCuration />
           <PersonalRecommendationSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
-          <FeaturedJobsSection jobs={recommendedJobs} />
+          <FeaturedJobsSection jobs={homeFeaturedJobs} />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>

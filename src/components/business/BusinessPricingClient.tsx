@@ -195,7 +195,8 @@ export function BusinessPricingClient() {
               통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.<br />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <LinkButton href="#pricing" variant="gradient" size="lg">
+              {/* 사진 히어로 위 주 CTA — 어두운 변형(보조 버튼·하단 CTA는 기존 유지) */}
+              <LinkButton href="#pricing" variant="gradient-dark" size="lg">
                 노출 상품 보기
                 <ChevronRight size={17} />
               </LinkButton>

@@ -86,7 +86,8 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                   {slide.subtitle}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-5">
-                  <LinkButton href={slide.href} variant="gradient" size="lg">
+                  {/* 사진 위 단독 CTA — 어두운 변형 */}
+                  <LinkButton href={slide.href} variant="gradient-dark" size="lg">
                     {getHeroSlideCtaLabel(slide)}
                   </LinkButton>
                 </div>

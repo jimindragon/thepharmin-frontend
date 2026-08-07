@@ -208,8 +208,8 @@ export function BusinessHeader() {
                 <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden border-[#d4d4d4] text-[#555555]">
                   헤드헌팅 의뢰
                 </LinkButton>
-                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼 */}
-                <LinkButton href="/business/jobs/new" variant="gradient" size="sm">
+                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼(어두운 변형) */}
+                <LinkButton href="/business/jobs/new" variant="gradient-dark" size="sm">
                   <Plus size={15} />
                   <span className="max-[520px]:sr-only">공고 등록</span>
                 </LinkButton>

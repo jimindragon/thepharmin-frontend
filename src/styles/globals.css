@@ -68,6 +68,11 @@
   /* 브랜드 강조 CTA 전용 그라데이션 — 버튼·탭·배지의 brand-emphasis 요소가 이 값을 공유.
      기능적 녹색(#00746C 탭 밑줄·billing 상태 등)과는 별도 토큰으로 구분해 사용할 것. */
   --gradient-cta: linear-gradient(90deg, #0d7369 0%, #17a68c 40%, #1fbf92 75%, #23d9a5 100%);
+  /* 주요 CTA용 어두운 변형(짙은 틸→밝은 민트). Button variant='gradient-dark'가 참조.
+     직접 참조 금지 — 새 소비처는 variant를 쓸 것.
+     사용처: 히어로 배너(홈·4트랙), 기업 랜딩 히어로 주 CTA, 기업 헤더 공고 등록, QNA 글쓰기.
+     폼 제출·본문 CTA는 --gradient-cta 유지. */
+  --gradient-hero-cta: linear-gradient(135deg, #0C4A45 0%, #1FB598 100%);
   /* hover/active 상태는 filter: brightness()로 처리 — 별도 토큰 불필요 */
   /* disabled 상태: 그라데이션 없이 회색 계열 유지 */
   --color-disabled-bg: #c0c8d2;

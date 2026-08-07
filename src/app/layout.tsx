@@ -31,8 +31,9 @@ export default async function RootLayout({
         <SessionProvider isPersonalLoggedIn={isPersonalLoggedIn} isBusinessLoggedIn={isBusinessLoggedIn}>
           <MigrationGuard>{children}</MigrationGuard>
           <Footer />
-          {/* 개발용 상태 전환 패널 — 임시 장치. 삭제 방법은 components/dev/DevStatePanel.tsx 상단 주석 참고. */}
-          {process.env.NODE_ENV === "development" ? <DevStatePanel /> : null}
+          {/* 개발용 상태 전환 패널 — 임시 장치. 노출 여부는 DevStatePanel 내부 상수 한 곳에서만 정한다.
+              삭제 방법은 components/dev/DevStatePanel.tsx 상단 주석 참고. */}
+          <DevStatePanel />
         </SessionProvider>
       </body>
     </html>
