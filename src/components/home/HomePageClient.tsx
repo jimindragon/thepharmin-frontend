@@ -97,9 +97,11 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 function RecruiterSolutionBanner() {
   return (
     <section className="mt-6 border border-border bg-[#fafafa] px-6 py-5">
-      <Link href="/business" className="flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
+      {/* 행 전체가 링크라 반전도 행 전체에서 걸리게 한다 — 버튼 span에만 hover를 두면
+          문구 쪽에 커서를 올렸을 때 클릭은 되는데 버튼은 반응하지 않아 어긋나 보인다. */}
+      <Link href="/business" className="group flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
         <p className="text-[15px] font-medium text-[#333333]">채용을 준비 중인 담당자이신가요?</p>
-        <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white">
+        <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors group-hover:bg-[#111111] group-hover:text-white">
           채용 솔루션 알아보기
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </span>
