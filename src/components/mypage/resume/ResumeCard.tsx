@@ -34,13 +34,15 @@ export function ResumeCard({
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
             {resume.isPrimary ? <ResumePrimaryBadge /> : null}
-            <span className="inline-flex items-center gap-[8px]">
-              <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-pending-dot"}`} />
-              {/* 퍼센트는 붙이지 않는다 — 선택 항목까지 분모에 넣은 수치라 "지원 가능한가"와 어긋났다. */}
-              <span className={`text-[13px] font-medium ${complete ? "text-status-positive" : "text-status-pending"}`}>
-                {complete ? "작성완료" : "작성 중"}
+            {/* 완료는 표시하지 않는다 — 목록의 기본 상태라 알릴 것이 없고, 색 텍스트가 카드마다 붙으면
+                정작 손봐야 할 "작성 중" 카드가 묻힌다. 미완료일 때만 말한다.
+                (퍼센트도 붙이지 않는다 — 선택 항목까지 분모에 넣은 수치라 "지원 가능한가"와 어긋났다.) */}
+            {complete ? null : (
+              <span className="inline-flex items-center gap-[8px]">
+                <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-pending-dot" />
+                <span className="text-[13px] font-medium text-status-pending">작성 중</span>
               </span>
-            </span>
+            )}
           </div>
         </div>
 

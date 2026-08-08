@@ -119,6 +119,11 @@ export function FormRow({
     <div
       className={clsx(
         "grid grid-cols-[124px_minmax(0,1fr)] items-start gap-4 border-b border-border py-2.5 last:border-b-0 max-[760px]:grid-cols-1 max-[760px]:gap-2",
+        // 카드 패딩(18px)과 행 패딩(10px)이 겹쳐 위아래만 28px로 벌어져 있었다.
+        // 첫/마지막 행의 바깥쪽 패딩을 음수 마진으로 상쇄해 18px로 맞춘다 — 행을 통째로 옮기므로
+        // 라벨·컨트롤의 상대 위치와 행과 행 사이 간격은 그대로다.
+        // (패딩을 0으로 만들면 라벨의 pt만 남아 첫 행의 기준선이 어긋난다.)
+        "first:-mt-2.5 last:-mb-2.5",
       )}
     >
       <ResumeFieldLabel required={required} align={align}>

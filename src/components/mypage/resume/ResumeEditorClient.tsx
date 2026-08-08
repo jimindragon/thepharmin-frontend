@@ -1,18 +1,19 @@
 "use client";
 
-import clsx from "clsx";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
-import { JobFilterPanel } from "@/components/SearchFilterPanel";
+import { JobFilterPanel, OptionChip } from "@/components/SearchFilterPanel";
+import { Segmented } from "@/components/business/BusinessFormControls";
+import { IN, SEL, TA } from "@/components/job-registration/fieldClasses";
 import {
   applyResumeConvertPatch,
   countPatchedSections,
   readResumeConvertDraft,
 } from "@/components/mypage/resume/resumeConvertDemo";
-import { ResumeContentView } from "@/components/shared/ResumeContentView";
+import { EmptyNotice, ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
 import { FormRow, ResumeSectionCard } from "@/components/ui/FormSection";
 import { ModalShell } from "@/components/ui/ModalShell";
@@ -83,6 +84,23 @@ function uid(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+/**
+ * 한 줄 입력·셀렉트의 공통 폭. 리스트 행 안에서 나란히 놓이는 입력(자격 3칸 등)은
+ * 행 레이아웃이 폭을 정하므로 여기서 제외한다.
+ */
+const FIELD_WIDTH = "max-w-[420px]";
+
+/**
+ * 여러 줄 입력의 폭. 기관정보 관리의 720px보다 넓게 잡는다 — 이력서의 자기소개·경력 상세는
+ * 문단 단위로 길게 쓰는 칸이라 한 줄이 더 길어도 읽힌다.
+ * 공용 상수(PROFILE_TEXT_FIELD_WIDTH)는 다른 화면도 쓰므로 건드리지 않고 여기서만 덮는다.
+ */
+const TEXTAREA_WIDTH = "max-w-[800px]";
+
+/**
+ * SEL은 화살표 자리(pr-8)만 비워 두고 아이콘은 그리지 않는다 — 공고 등록 폼도 같다.
+ * 이력서 폼은 아이콘을 유지하기로 해서, 그 위치를 잡을 relative 컨테이너만 남긴다.
+ */
 function SelectShell({
   value,
   onChange,
@@ -93,12 +111,8 @@ function SelectShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative max-w-[320px]">
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full appearance-none border border-[#dce4ec] bg-white px-3.5 pr-9 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
-      >
+    <div className={`relative ${FIELD_WIDTH}`}>
+      <select value={value} onChange={(event) => onChange(event.target.value)} className={SEL}>
         {children}
       </select>
       <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
@@ -106,8 +120,28 @@ function SelectShell({
   );
 }
 
-function ListEmptyRow({ children }: { children: React.ReactNode }) {
-  return <p className="text-[13px] font-normal text-[#a0a9b7]">{children}</p>;
+/** 자격·경력·어학 세 목록이 공유하는 행 삭제 버튼. */
+function RowRemoveButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="grid h-9 w-9 shrink-0 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
+    >
+      <Trash2 size={15} />
+    </button>
+  );
+}
+
+/** 자격·경력·어학 세 목록이 공유하는 행 추가 버튼. */
+function RowAddButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className="subtle-button inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-medium">
+      <Plus size={15} />
+      {label}
+    </button>
+  );
 }
 
 export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "edit"; initialResume?: BuiltResume }) {
@@ -282,13 +316,16 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
       ) : null}
 
       <div className="mt-6 min-w-0 space-y-5">
-        <section className="surface px-7 py-6">
+        {/* 세로 패딩은 섹션 카드 본문(ResumeSectionCard의 py-[18px])에 맞춘다 — 헤더가 없는 카드라
+            이 패딩이 곧 첫 행 위 여백이고, py-6이면 아래 카드들보다 6px 더 떠 보였다.
+            가로는 px-7 유지(줄이면 라벨·컨트롤 x좌표가 밀린다). */}
+        <section className="surface px-7 py-[18px]">
           <FormRow label="이력서 제목" required align="center">
             <input
               value={draft.title}
               onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
               placeholder="예: RA 이직용 (2026 상반기), 메디컬 마케팅 도전용"
-              className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[15px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
+              className={`${IN} ${FIELD_WIDTH}`}
             />
           </FormRow>
           <FormRow label="대표 이력서" align="center">
@@ -303,7 +340,10 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
             </label>
           </FormRow>
           <FormRow label="제안 받기" align="center">
-            <div className="flex items-center gap-3">
+            {/* FormRow가 items-start라 컨트롤 스스로 높이를 가져야 라벨과 기준선이 맞는다.
+                44px은 위 두 행(입력칸·체크박스 라벨)과 같은 값 — 세 행의 중심이 일치한다.
+                고정 h-11이 아니라 최소 높이인 이유는 좁은 폭에서 옆 설명이 3줄로 접히면 넘치기 때문이다. */}
+            <div className="flex min-h-[44px] items-center gap-3">
               <ToggleSwitch
                 label="제안 받기"
                 checked={draft.proposalEnabled}
@@ -332,23 +372,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
             status={sections.workPreference ? "완료" : "필수"}
           >
             <FormRow label="희망 분야" required align="center">
-              <div className="flex flex-wrap gap-2">
-                {jobTracks.map((track) => (
-                  <button
-                    key={track.id}
-                    type="button"
-                    onClick={() => selectTrack(track.id)}
-                    className={clsx(
-                      "h-10 min-w-[88px] border px-4 text-[13px] font-medium transition-colors",
-                      draft.workPreference.track === track.id
-                        ? "border-[#111111] bg-[#111111] text-white"
-                        : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:text-[#111111]",
-                    )}
-                  >
-                    {track.label}
-                  </button>
-                ))}
-              </div>
+              <Segmented value={draft.workPreference.track} options={jobTracks} onChange={selectTrack} />
             </FormRow>
             <FormRow label="경력 구분" required align="center">
               <SelectShell value={draft.workPreference.experienceId ?? ""} onChange={(value) => updateWorkPreference("experienceId", value || null)}>
@@ -362,22 +386,14 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
             </FormRow>
             <FormRow label="희망 지역" required>
               <div className="flex flex-wrap gap-2">
-                {regionsForTrack.map((option) => {
-                  const active = draft.workPreference.regionIds.includes(option.id);
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => toggleRegion(option.id)}
-                      className={clsx(
-                        "h-9 border px-3 text-[13px] font-medium transition-colors",
-                        active ? "border-brand bg-[var(--color-brand-soft)] text-brand" : "border-[#dfe4ea] bg-white text-[#424b57] hover:border-brand hover:text-brand",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
+                {regionsForTrack.map((option) => (
+                  <OptionChip
+                    key={option.id}
+                    option={option}
+                    active={draft.workPreference.regionIds.includes(option.id)}
+                    onClick={() => toggleRegion(option.id)}
+                  />
+                ))}
               </div>
             </FormRow>
             <FormRow label="희망 연봉" align="center">
@@ -413,7 +429,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 value={draft.education.school}
                 onChange={(event) => setDraft((current) => ({ ...current, education: { ...current.education, school: event.target.value } }))}
                 placeholder="예: 서울대학교"
-                className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
+                className={`${IN} ${FIELD_WIDTH}`}
               />
             </FormRow>
             <FormRow label="학위" required align="center">
@@ -436,7 +452,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                 value={draft.education.major}
                 onChange={(event) => setDraft((current) => ({ ...current, education: { ...current.education, major: event.target.value } }))}
                 placeholder="예: 약학"
-                className="h-11 w-full max-w-[420px] border border-[#dce4ec] px-3.5 text-[14px] font-medium text-[#333c49] outline-none transition hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
+                className={`${IN} ${FIELD_WIDTH}`}
               />
             </FormRow>
             <p className="mt-3 text-[12px] font-normal text-[#8a94a3]">학위·전공은 제약·바이오 공고 매칭에 우선 반영됩니다.</p>
@@ -449,41 +465,32 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               {draft.certificates.length ? (
                 draft.certificates.map((certificate) => (
                   <div key={certificate.id} className="flex flex-wrap items-center gap-2 border border-border bg-[#fbfcfd] p-3">
+                    {/* 행 안의 폭은 width 대신 flex-basis로 준다 — IN의 w-full과 부딪히지 않는다. */}
                     <input
                       value={certificate.name}
                       onChange={(event) => updateCertificate(certificate.id, { name: event.target.value })}
                       placeholder="자격·면허명"
-                      className="h-9 flex-1 min-w-[160px] border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} flex-1 min-w-[160px]`}
                     />
                     <input
                       value={certificate.issuedYear}
                       onChange={(event) => updateCertificate(certificate.id, { issuedYear: event.target.value })}
                       placeholder="취득년도"
-                      className="h-9 w-[100px] border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} shrink-0 grow-0 basis-[100px]`}
                     />
                     <input
                       value={certificate.issuer}
                       onChange={(event) => updateCertificate(certificate.id, { issuer: event.target.value })}
                       placeholder="발급기관"
-                      className="h-9 w-[140px] border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} shrink-0 grow-0 basis-[140px]`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeCertificate(certificate.id)}
-                      aria-label="자격·면허 삭제"
-                      className="grid h-9 w-9 shrink-0 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    <RowRemoveButton label="자격·면허 삭제" onClick={() => removeCertificate(certificate.id)} />
                   </div>
                 ))
               ) : (
-                <ListEmptyRow>등록된 자격·면허가 없습니다.</ListEmptyRow>
+                <EmptyNotice />
               )}
-              <button type="button" onClick={addCertificate} className="subtle-button inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-medium">
-                <Plus size={15} />
-                자격·면허 추가
-              </button>
+              <RowAddButton label="자격·면허 추가" onClick={addCertificate} />
             </div>
           </ResumeSectionCard>
         </div>
@@ -525,46 +532,36 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                           value={career.company}
                           onChange={(event) => updateCareer(career.id, { company: event.target.value })}
                           placeholder="회사명"
-                          className="h-9 border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                          className={IN}
                         />
                         <input
                           value={career.role}
                           onChange={(event) => updateCareer(career.id, { role: event.target.value })}
                           placeholder="직무·역할"
-                          className="h-9 border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                          className={IN}
                         />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeCareer(career.id)}
-                        aria-label="경력 삭제"
-                        className="grid h-9 w-9 shrink-0 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                      <RowRemoveButton label="경력 삭제" onClick={() => removeCareer(career.id)} />
                     </div>
                     <input
                       value={career.period}
                       onChange={(event) => updateCareer(career.id, { period: event.target.value })}
                       placeholder="근무기간 (예: 2022.03 - 재직중)"
-                      className="mt-2 h-9 w-full border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} mt-2`}
                     />
                     <textarea
                       value={career.description}
                       onChange={(event) => updateCareer(career.id, { description: event.target.value })}
                       placeholder="주요 업무를 간단히 작성해 주세요."
                       rows={2}
-                      className="mt-2 w-full resize-y border border-[#dce4ec] bg-white px-3 py-2 text-[13px] font-normal leading-[1.6] outline-none focus:border-brand"
+                      className={`${TA} mt-2 ${TEXTAREA_WIDTH}`}
                     />
                   </div>
                 ))
               ) : (
-                <ListEmptyRow>등록된 경력이 없습니다.</ListEmptyRow>
+                <EmptyNotice />
               )}
-              <button type="button" onClick={addCareer} className="subtle-button inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-medium">
-                <Plus size={15} />
-                경력 추가
-              </button>
+              <RowAddButton label="경력 추가" onClick={addCareer} />
             </div>
           </ResumeSectionCard>
         </div>
@@ -579,31 +576,21 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                       value={language.name}
                       onChange={(event) => updateLanguage(language.id, { name: event.target.value })}
                       placeholder="언어 (예: 영어)"
-                      className="h-9 w-[140px] border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} shrink-0 grow-0 basis-[140px]`}
                     />
                     <input
                       value={language.level}
                       onChange={(event) => updateLanguage(language.id, { level: event.target.value })}
                       placeholder="수준 (예: 비즈니스 회화 가능)"
-                      className="h-9 flex-1 min-w-[160px] border border-[#dce4ec] bg-white px-3 text-[13px] font-medium outline-none focus:border-brand"
+                      className={`${IN} flex-1 min-w-[160px]`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeLanguage(language.id)}
-                      aria-label="어학 삭제"
-                      className="grid h-9 w-9 shrink-0 place-items-center text-[#a0a9b7] hover:bg-[#fff0f0] hover:text-danger"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    <RowRemoveButton label="어학 삭제" onClick={() => removeLanguage(language.id)} />
                   </div>
                 ))
               ) : (
-                <ListEmptyRow>등록된 어학 정보가 없습니다.</ListEmptyRow>
+                <EmptyNotice />
               )}
-              <button type="button" onClick={addLanguage} className="subtle-button inline-flex h-9 items-center gap-1.5 px-3 text-[13px] font-medium">
-                <Plus size={15} />
-                어학 추가
-              </button>
+              <RowAddButton label="어학 추가" onClick={addLanguage} />
             </div>
           </ResumeSectionCard>
         </div>
@@ -622,9 +609,11 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               placeholder="직무 경험과 강점을 간단히 소개해 주세요."
               rows={5}
               maxLength={1000}
-              className="w-full resize-y border border-[#dce4ec] px-3.5 py-3 text-[14px] font-normal leading-[1.7] outline-none transition placeholder:text-[#a4adba] hover:border-brand focus:border-brand focus:ring-4 focus:ring-[#111111]/[0.08]"
+              className={`${TA} ${TEXTAREA_WIDTH}`}
             />
-            <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">{draft.selfIntroduction.length} / 1000</p>
+            <p className={`mt-2 text-right text-[12px] font-medium text-[#98a2b0] ${TEXTAREA_WIDTH}`}>
+              {draft.selfIntroduction.length} / 1000
+            </p>
           </ResumeSectionCard>
         </div>
 

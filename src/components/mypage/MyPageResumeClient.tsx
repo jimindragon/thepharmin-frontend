@@ -160,12 +160,18 @@ export function MyPageResumeClient() {
       </div>
 
       <div className="mt-7">
+        {/* 서로 다른 두 규칙이라 한 문단으로 흘리지 않고 문장별로 끊는다 — 훑을 때 어느 쪽 설명인지 바로 잡힌다.
+            InfoNoticeBox의 아이콘은 mt-0.5로 첫 줄에 맞춰져 있어, 행이 늘어도 위쪽 정렬 그대로다. */}
         <InfoNoticeBox>
-          <p className="text-[13px] font-normal leading-[1.7] text-[#68717e]">
-            <strong className="font-medium text-[#3d4653]">대표 이력서</strong>는 간편지원 시 기본으로 첨부됩니다.{" "}
-            <strong className="font-medium text-[#3d4653]">제안 받기</strong>를 켜면 헤드헌팅·기업 담당자에게 해당 이력서가 공개되어 포지션 제안을 받을 수
-            있습니다.
-          </p>
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[13px] font-normal leading-[1.7] text-[#68717e]">
+              <strong className="font-medium text-[#3d4653]">대표 이력서</strong>는 간편지원 시 기본으로 첨부됩니다.
+            </p>
+            <p className="text-[13px] font-normal leading-[1.7] text-[#68717e]">
+              <strong className="font-medium text-[#3d4653]">제안 받기</strong>를 켜면 헤드헌팅·기업 담당자에게 해당 이력서가 공개되어 포지션 제안을 받을 수
+              있습니다.
+            </p>
+          </div>
         </InfoNoticeBox>
       </div>
 

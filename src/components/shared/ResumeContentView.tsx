@@ -18,7 +18,8 @@ function ContentSection({ title, children }: { title: string; children: ReactNod
   );
 }
 
-function EmptyNotice() {
+/** 목록이 비었을 때의 안내 한 줄. 읽기 전용 뷰와 이력서 편집 폼이 같은 문구·같은 톤을 쓴다. */
+export function EmptyNotice() {
   return <p className="text-[13px] font-normal text-[#a0a9b7]">입력된 내용이 없습니다</p>;
 }
 
