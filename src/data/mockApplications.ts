@@ -100,7 +100,7 @@ export const mockApplications: JobApplication[] = [
     company: "삼성바이오로직스",
     applyChannel: "external",
     applyChannelLabel: "홈페이지 지원",
-    resumeUsed: "RA 직무용",
+    resumeUsed: "RA 이직용 (2026 상반기)",
     appliedDate: "05.22",
     isClosed: true,
     currentStage: "result",

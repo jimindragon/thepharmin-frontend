@@ -131,7 +131,10 @@ function parseTrack(value: string | null): JobTrack {
   return value && trackIds.includes(value as JobTrack) ? (value as JobTrack) : "industry";
 }
 
-function normalizeRegionIdsForTrack(track: JobTrack, regionIds: string[]) {
+/** 약국·병원 트랙에는 "해외"가 없다(각 filters config가 domesticRegionOptions를 쓴다).
+ * 트랙을 바꿨을 때 화면에 칩이 없어 해제할 수 없는 값이 남지 않도록 떨군다.
+ * 공고 필터 외에 이력서 편집(ResumeEditorClient)의 희망 지역도 같은 규칙을 쓴다. */
+export function normalizeRegionIdsForTrack(track: JobTrack, regionIds: string[]) {
   return track === "pharmacy" || track === "hospital" ? regionIds.filter((id) => id !== "overseas") : regionIds;
 }
 

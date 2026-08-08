@@ -128,7 +128,7 @@ export function MyPageResumeClient() {
         <div>
           <h1 className="text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">이력서 관리</h1>
           <p className="mt-2.5 max-w-[560px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
-            직무별로 이력서를 따로 관리하고, 대표 이력서를 간편지원에 바로 첨부합니다.
+            직무별로 이력서를 따로 관리해 보세요.
           </p>
         </div>
         {/* 작성이 주경로라 검정 채움을 유지하고, 업로드는 테두리형으로 한 단계 낮춘다. */}

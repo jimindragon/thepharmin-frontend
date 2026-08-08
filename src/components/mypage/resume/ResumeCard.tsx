@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { optionLabelMaps } from "@/config/jobFilters/index";
-import { calculateResumeCompletion, isResumeComplete, type BuiltResume } from "@/data/resumes";
+import { isResumeUsable, type BuiltResume } from "@/data/resumes";
 import { ResumeActionsMenu } from "@/components/mypage/resume/ResumeActionsMenu";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
-import { JobTagChip } from "@/components/shared/JobTagChip";
 import { ResumePrimaryBadge } from "@/components/shared/ResumePrimaryBadge";
 
 export function ResumeCard({
@@ -21,64 +19,56 @@ export function ResumeCard({
   onDelete: () => void;
   onToggleProposal: (enabled: boolean) => void;
 }) {
-  const completion = calculateResumeCompletion(resume);
-  const complete = isResumeComplete(resume);
-  const tagLabels = resume.jobSubcategoryIds.map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id).slice(0, 3);
+  /* 완료 판정은 필수 3영역(관문)만 본다 — 자격·경력·자기소개는 매칭 품질을 올릴 뿐
+     비어 있어도 지원에는 쓸 수 있어서, 이들 때문에 "작성 중"으로 남지 않는다. */
+  const complete = isResumeUsable(resume);
 
+  /* 직무 태그 칩 줄은 정보 다이어트로 뺐다 — jobSubcategoryIds 자체는 편집 화면·매칭에서 계속 쓰이니 데이터는 그대로다.
+     대시보드 "내 이력서" 행은 아직 칩을 유지한다(별도 판단). */
   return (
     <article className="border border-border bg-white p-6 max-[640px]:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* 액션이 가로 한 줄이라 좌우 높이 차가 10px뿐이다 — items-center로 제목·버튼 글자 중심을 맞춘다.
+          좁은 폭에서는 flex-wrap으로 액션 그룹이 제목 아래로 내려간다(한 줄 고집 금지). */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[#1c2128]">{resume.title}</h3>
             {resume.isPrimary ? <ResumePrimaryBadge /> : null}
             <span className="inline-flex items-center gap-[8px]">
               <span className={`h-[8px] w-[8px] rounded-full shrink-0 ${complete ? "bg-status-positive-dot" : "bg-status-pending-dot"}`} />
+              {/* 퍼센트는 붙이지 않는다 — 선택 항목까지 분모에 넣은 수치라 "지원 가능한가"와 어긋났다. */}
               <span className={`text-[13px] font-medium ${complete ? "text-status-positive" : "text-status-pending"}`}>
                 {complete ? "작성완료" : "작성 중"}
               </span>
             </span>
           </div>
-
-          {tagLabels.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {tagLabels.map((label) => (
-                <JobTagChip key={label}>{label}</JobTagChip>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3 text-[13px] font-normal text-[#a0a9b7]">직무 태그가 아직 없습니다.</p>
-          )}
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2.5">
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
+          {/* 라벨과 토글은 한 덩이의 컨트롤이라 안쪽 간격만 8px로 좁게 두고, 액션끼리는 12px로 띄운다. */}
           <div className="flex items-center gap-2">
             <span className="text-[13px] font-medium text-[#8a94a3]">제안 받기</span>
             <ToggleSwitch label={`${resume.title} 제안 받기`} checked={resume.proposalEnabled} onChange={onToggleProposal} />
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/mypage/resume/${resume.id}`}
-              className="inline-flex h-9 items-center border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#44505f] hover:border-[#111111] hover:text-[#111111]"
-            >
-              {complete ? "편집" : "이어 작성"}
-            </Link>
-            <ResumeActionsMenu
-              label={resume.title}
-              isPrimary={resume.isPrimary}
-              onSetPrimary={onSetPrimary}
-              onDuplicate={onDuplicate}
-              onDelete={onDelete}
-            />
-          </div>
+          {/* 주 버튼은 고정폭 슬롯이다 — 첨부형 카드의 "첨부형" 표시가 같은 자리에 오므로
+              토글·⋯의 x좌표가 카드마다 어긋나지 않는다. 폭은 대시보드 "내 이력서" 행 CTA와 같은 120px.
+              단 640px 아래에서는 액션 줄 폭이 모자라 120px가 카드 밖으로 삐져나온다 — 첨부형 쪽 슬롯과 함께
+              모바일에서는 정렬을 포기하고 내용 폭으로 되돌린다.
+              문구는 완료·작성 중 구분 없이 "수정하기"로 통일한다(이동 대상은 아래 링크 하나로 동일). */}
+          <Link
+            href={`/mypage/resume/${resume.id}`}
+            className="inline-flex h-9 w-[120px] items-center justify-center border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#44505f] hover:border-[#111111] hover:text-[#111111] max-[640px]:w-auto"
+          >
+            수정하기
+          </Link>
+          <ResumeActionsMenu
+            label={resume.title}
+            isPrimary={resume.isPrimary}
+            onSetPrimary={onSetPrimary}
+            onDuplicate={onDuplicate}
+            onDelete={onDelete}
+          />
         </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3">
-        <div className="h-1.5 max-w-[260px] flex-1 overflow-hidden bg-[#edf0f3]">
-          <span className="block h-full bg-[#111111]" style={{ width: `${completion}%` }} />
-        </div>
-        <span className="shrink-0 text-[13px] font-medium text-[#596373]">{completion}%</span>
       </div>
 
       <p className="mt-3 text-[13px] font-normal text-[#8a94a3]">

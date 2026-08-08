@@ -115,9 +115,11 @@ export function createEmptyBuiltResume(id: string): BuiltResume {
 }
 
 /**
- * 이력서의 항목 작성 여부를 7개 영역(필수 3 + 선택 4) 동일 비중으로 환산한 완성도.
- * 저장된 숫자를 그대로 믿지 않고 실제 입력 내용에서 매번 계산해, 에디터에서 값을
- * 바꾸는 즉시 완성도·상태 배지가 함께 갱신되도록 한다.
+ * 이력서 7개 영역의 항목 작성 여부. 저장된 값을 믿지 않고 실제 입력 내용에서 매번
+ * 계산해, 에디터에서 값을 바꾸는 즉시 배지가 함께 갱신되도록 한다.
+ *
+ * "항목이 존재하는가"만 본다 — 내용이 비어 있어도 참이다. 매칭에 쓸 수 있는지는
+ * 이보다 엄격해야 하므로 getMatchReadiness가 따로 판정한다.
  */
 export function getSectionCompletion(resume: BuiltResume) {
   return {
@@ -131,22 +133,44 @@ export function getSectionCompletion(resume: BuiltResume) {
   };
 }
 
-export function calculateResumeCompletion(resume: BuiltResume) {
+/** 이력서를 지원에 쓸 수 있게 하는 필수 3영역. 나머지 4개는 매칭 품질에만 관여한다. */
+export const requiredSectionKeys = ["workPreference", "education", "jobSubcategory"] as const;
+
+/** 아직 채워지지 않은 필수 영역. 관문 판정과 "N개 남았어요" 문구가 같은 값을 본다. */
+export function getMissingRequiredSections(resume: BuiltResume) {
   const sections = getSectionCompletion(resume);
-  const values = Object.values(sections);
-  const doneCount = values.filter(Boolean).length;
-  return Math.round((doneCount / values.length) * 100);
+  return requiredSectionKeys.filter((key) => !sections[key]);
 }
 
-export function isResumeComplete(resume: BuiltResume) {
-  return calculateResumeCompletion(resume) === 100;
+/** 관문 — 필수 3영역이 모두 충족되면 지원·간편지원에 쓸 수 있다. */
+export function isResumeUsable(resume: BuiltResume) {
+  return getMissingRequiredSections(resume).length === 0;
+}
+
+export type ResumeMatchReadiness = "basic" | "medium" | "full";
+
+/**
+ * 매칭에 실제로 반영되는 3영역(자격·경력·자기소개)이 몇 개나 채워졌는지로 매기는 3단계.
+ *
+ * getSectionCompletion과 달리 항목 수가 아니라 내용을 본다 — "추가" 버튼만 눌러 만든
+ * 빈 행으로는 단계가 오르지 않는다. 어학은 매칭 산정에 쓰이지 않아 세지 않는다.
+ */
+export function getMatchReadiness(resume: BuiltResume): ResumeMatchReadiness {
+  const filled = [
+    resume.certificates.some((item) => item.name.trim()),
+    resume.careers.some((item) => item.company.trim() || item.role.trim()),
+    resume.selfIntroduction.trim().length > 0,
+  ].filter(Boolean).length;
+
+  if (filled === 0) return "basic";
+  return filled === 3 ? "full" : "medium";
 }
 
 export const mockResumes: ResumeItem[] = [
   {
     id: "resume-ra",
     kind: "built",
-    title: "RA 직무용",
+    title: "RA 이직용 (2026 상반기)",
     isPrimary: true,
     proposalEnabled: true,
     updatedAt: "2026-06-20",
@@ -179,7 +203,7 @@ export const mockResumes: ResumeItem[] = [
   {
     id: "resume-medical-marketing",
     kind: "built",
-    title: "메디컬 마케팅용",
+    title: "메디컬 마케팅 도전용",
     isPrimary: false,
     proposalEnabled: false,
     updatedAt: "2026-06-10",

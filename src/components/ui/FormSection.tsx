@@ -14,11 +14,17 @@ import { useState, type ReactNode } from "react";
  * 이력서 편집 전용. 공고 등록·기업 프로필은 BusinessFormControls의
  * SectionCard(별개 구현)를 사용 — 그쪽과 구분하려고 이름을 분리했다.
  */
+/**
+ * 배지 어휘는 이 둘뿐이다 — 필수 영역에만 붙고, 선택 영역은 배지를 달지 않는다(status 생략).
+ * "선택 사항"·"작성 중" 같은 중립 배지는 정보량 없이 필수 배지의 주목도만 깎아서 없앴다.
+ */
+export type ResumeSectionStatus = "필수" | "완료";
+
 export function ResumeSectionCard({
   title,
   description,
   index: _index,
-  status = "작성 중",
+  status,
   collapsible = false,
   defaultOpen = true,
   children,
@@ -26,7 +32,7 @@ export function ResumeSectionCard({
   title: ReactNode;
   description?: ReactNode;
   index?: number;
-  status?: string;
+  status?: ResumeSectionStatus;
   collapsible?: boolean;
   defaultOpen?: boolean;
   children: ReactNode;
@@ -51,17 +57,18 @@ export function ResumeSectionCard({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2.5">
-          <span
-            className={clsx(
-              "mt-1 shrink-0 whitespace-nowrap border px-2.5 py-[5px] text-[11px] font-medium",
-              status === "완료" && "border-border bg-[#f4f5f6] text-[#252d39]",
-              status === "작성 중" && "border-border bg-white text-[#5f6876]",
-              status === "필수 입력 필요" && "border-status-error-border bg-status-error-subtle text-status-error",
-              status === "선택 사항" && "border-border bg-[#f8f9fa] text-[#7a8493]",
-            )}
-          >
-            {status}
-          </span>
+          {status ? (
+            <span
+              className={clsx(
+                "mt-1 shrink-0 whitespace-nowrap border px-2.5 py-[5px] text-[11px] font-medium",
+                status === "완료"
+                  ? "border-border bg-[#f4f5f6] text-[#252d39]"
+                  : "border-status-error-border bg-status-error-subtle text-status-error",
+              )}
+            >
+              {status}
+            </span>
+          ) : null}
           {collapsible ? (
             <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center text-[#8a94a3]">
               {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

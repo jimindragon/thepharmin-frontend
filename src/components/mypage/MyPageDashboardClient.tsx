@@ -12,7 +12,7 @@ import { ResumePrimaryBadge } from "@/components/shared/ResumePrimaryBadge";
 import { DashboardMiniCalendar } from "@/components/mypage/DashboardMiniCalendar";
 import { myPageUser } from "@/config/myPageMenu";
 import { optionLabelMaps } from "@/config/jobFilters/index";
-import { calculateResumeCompletion, mockResumes, type BuiltResume } from "@/data/resumes";
+import { isResumeUsable, mockResumes, type BuiltResume } from "@/data/resumes";
 import {
   MYPAGE_MOCK_TODAY,
   mockApplications,
@@ -340,8 +340,8 @@ export function MyPageDashboardClient() {
               </div>
               <div className="divide-y divide-[#e5e9ef]">
                 {builtResumes.map((resume) => {
-                  const completion = calculateResumeCompletion(resume);
-                  const isComplete = completion === 100;
+                  // 이력서 관리 카드와 같은 관문 판정을 쓴다 — 두 화면이 다른 상태를 보이지 않게.
+                  const isComplete = isResumeUsable(resume);
                   const tagLabels = resume.jobSubcategoryIds
                     .map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id)
                     .slice(0, 3);
@@ -372,7 +372,7 @@ export function MyPageDashboardClient() {
                               isComplete ? "text-status-positive" : "text-status-pending",
                             )}
                           >
-                            {isComplete ? "작성 완료" : `작성 중 · ${completion}%`}
+                            {isComplete ? "작성 완료" : "작성 중"}
                           </span>
                         </span>
                       </div>
