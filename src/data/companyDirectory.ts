@@ -59,6 +59,8 @@ const trackById: Record<string, JobTrack> = {
   snubh: "hospital",
   "hanbit-general-hospital": "hospital",
   "mirae-care-hospital": "hospital",
+  "national-special-medical-center": "hospital",
+  "hmcseoul-hospital": "hospital",
   "national-central-hospital": "hospital",
   "jeil-orthopedic-hospital": "hospital",
   "muju-county-care-hospital": "hospital",

@@ -563,6 +563,43 @@ export const companies: Company[] = [
     address: "경기 수원시 팔달구 매산로 88 미래요양병원",
   },
   {
+    id: "national-special-medical-center",
+    name: "국립특수의료원",
+    // logoText/logoColor는 jobs.ts 407 레코드 값을 그대로 쓴다.
+    // logoUrl: companyLogos에 키가 없어 생략 — CompanyLogo가 logoText 텍스트로 폴백한다.
+    logoText: "NSMC",
+    logoColor: "#0f172a",
+    verified: false,
+    description:
+      "국립특수의료원은 서울 중구 소재 상급종합병원으로, 감염병·종양·중환자 분야 전문 의료를 제공하며 임상약사 훈련 지정기관으로 운영되고 있습니다.",
+    // industry는 국립중앙의료원("공공·종합병원")과 같은 "{운영주체}·{유형}" 표기 규칙을 따랐다.
+    industry: "공공·상급종합병원",
+    hospitalType: "tertiary",
+    hospitalOperator: "public",
+    // employeeCount/foundedYear: jobs.ts 407에 근거가 없어 다른 미상 기관과 같은 "-" 표기를 쓴다.
+    employeeCount: "-",
+    foundedYear: "-",
+    website: "",
+    address: "서울 중구 을지로 245 국립특수의료원",
+  },
+  {
+    id: "hmcseoul-hospital",
+    name: "한강상급종합병원",
+    logoText: "HMC",
+    logoColor: "#1e293b",
+    verified: false,
+    description:
+      "한강상급종합병원은 서울 용산구에 위치한 상급종합병원으로, 응급·중환자·외상 분야에 특화된 24시간 운영 체계를 갖추고 있습니다.",
+    // 민간 운영이라 hospitalTypeLabels.tertiary 라벨을 그대로 쓴다(운영주체 접두 없음).
+    industry: "상급종합병원",
+    hospitalType: "tertiary",
+    hospitalOperator: "private",
+    employeeCount: "-",
+    foundedYear: "-",
+    website: "",
+    address: "서울 용산구 이촌로 340 한강상급종합병원",
+  },
+  {
     id: "national-central-hospital",
     name: "국립중앙의료원",
     logoText: "국립",
