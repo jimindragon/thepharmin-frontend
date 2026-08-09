@@ -3,14 +3,25 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode, type Ref } from "react";
 import { Header } from "@/components/Header";
 import { SidebarHelpCard } from "@/components/ui/SidebarHelpCard";
 import { myPageMenuGroups, myPageUser } from "@/config/myPageMenu";
 
-function SidebarLink({ label, href, active }: { label: string; href: string; active: boolean }) {
+function SidebarLink({
+  label,
+  href,
+  active,
+  linkRef,
+}: {
+  label: string;
+  href: string;
+  active: boolean;
+  linkRef?: Ref<HTMLAnchorElement>;
+}) {
   return (
     <Link
+      ref={linkRef}
       href={href}
       className={clsx(
         // ≤1040px에서는 그룹이 해체되고 링크가 nav의 직계 flex 아이템(칩)이 된다 —
@@ -30,6 +41,18 @@ function SidebarLink({ label, href, active }: { label: string; href: string; act
 export function MyPageSidebar() {
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href;
+  const activeLinkRef = useRef<HTMLAnchorElement>(null);
+
+  /**
+   * ≤1040px에서 nav는 칩 11개짜리 가로 스크롤 한 행이라, 활성 항목이 6번째쯤이면
+   * 초기 상태에서 화면 밖에 있어 "지금 어느 메뉴인지"가 보이지 않는다.
+   * block: "nearest"가 필수다 — 기본값(start)이면 세로 스크롤까지 함께 움직여
+   * 페이지가 사이드바 위치로 튄다. 데스크톱 세로 사이드바에서는 불필요하므로 건너뛴다.
+   */
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 1040px)").matches) return;
+    activeLinkRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [pathname]);
 
   return (
     <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5 max-[1040px]:py-4">
@@ -57,7 +80,12 @@ export function MyPageSidebar() {
             <p className="text-[17px] font-bold text-[#222a35] max-[1040px]:hidden">{group.title}</p>
             <div className="mt-2 space-y-1 max-[1040px]:contents max-[1040px]:space-y-0">
               {group.items.map((item) => (
-                <SidebarLink key={item.href} {...item} active={isActive(item.href)} />
+                <SidebarLink
+                  key={item.href}
+                  {...item}
+                  active={isActive(item.href)}
+                  linkRef={isActive(item.href) ? activeLinkRef : undefined}
+                />
               ))}
             </div>
           </div>
