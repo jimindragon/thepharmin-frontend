@@ -19,13 +19,30 @@ interface JobCardProps {
   onToggleBookmark: (jobId: number) => void;
   /** 약국 시급 필터가 활성화된 상태에서 환산 시급이 조건을 충족할 때 표시하는 배지. */
   showHourlyBadge?: boolean;
+  /**
+   * flush: 모바일 풀블리드 목록용 — 테두리는 목록 컨테이너의 divide-y가 담당.
+   * ≤760px에서만 다르게 그리고 761px 이상에서는 default와 같은 모습이다.
+   */
+  variant?: "default" | "flush";
 }
+
+/**
+ * .surface(globals.css)는 @tailwind utilities보다 뒤에 출력돼 같은 특이도의 border 유틸리티를
+ * 이긴다 — 바깥에서 className으로 테두리를 지울 수 없다. 그래서 flush는 .surface를 붙이지 않고
+ * 같은 값(border 1px var(--color-border) / background #ffffff)을 유틸리티로 직접 쓴다.
+ * !important를 피하는 유일한 경로다.
+ */
+const ROOT_CLASS = {
+  default: "surface group relative shadow-none transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc]",
+  flush:
+    "group relative bg-white shadow-none transition-colors hover:bg-[#fbfcfc] min-[761px]:border min-[761px]:border-[var(--color-border)] min-[761px]:hover:border-[#111111]/55",
+} as const;
 
 /**
  * 가로형 일반 공고 카드. 홈/트랙별 목록/검색·둘러보기/스크랩 화면이 모두 이 컴포넌트 하나를 공유한다.
  * 페이지별로 다른 변형을 만들지 말고 이 컴포넌트를 확장할 것.
  */
-export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }: JobCardProps) {
+export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, variant = "default" }: JobCardProps) {
   const danger = isJobDeadlineUrgent(job);
   const deadlineText = formatJobDeadlineLabel(job);
   const applyLabel = APPLY_METHOD_SHORT_LABELS[job.applyMethod];
@@ -34,7 +51,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
 
   return (
-    <article className="surface group relative shadow-none transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc]">
+    <article className={clsx(ROOT_CLASS[variant])}>
       {job.slug && hasJobDetail(job.slug) ? (
         <Link
           href={`/jobs/${job.slug}`}
