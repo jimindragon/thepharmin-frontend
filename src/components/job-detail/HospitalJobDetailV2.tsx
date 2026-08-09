@@ -24,7 +24,6 @@ import {
 import { useState } from "react";
 import {
   ApplyCard,
-  type ApplyMethodId,
   CompanyCtaButtons,
   CompanyLogo,
   firstWords,
@@ -356,13 +355,7 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
               style={{ top: sidebarTop }}
               className="sticky self-start h-fit space-y-3 max-[1120px]:static max-[720px]:hidden"
             >
-              <ApplyCard
-                job={jobRecord}
-                method={job.apply.method as ApplyMethodId}
-                target={job.apply.email}
-                notice={job.apply.notice}
-                isLoggedIn={isLoggedIn}
-              />
+              <ApplyCard job={jobRecord} apply={job.apply} isLoggedIn={isLoggedIn} />
 
               <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
                 <div className="space-y-2.5">

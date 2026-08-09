@@ -329,7 +329,8 @@ const APPLY_METHOD_LABELS: Record<ApplyMethodId, string> = {
   guide: "별도 안내",
 };
 
-const APPLY_BUTTON_LABELS: Record<ApplyMethodId, string> = {
+/** 모바일 하단 바도 사이드바 카드와 같은 문구를 써야 하므로 export한다. */
+export const APPLY_BUTTON_LABELS: Record<ApplyMethodId, string> = {
   quick: "간편지원하기",
   homepage: "지원하기",
   email: "이메일 지원하기",
@@ -351,15 +352,59 @@ const APPLY_GATED_MESSAGES: Partial<Record<ApplyMethodId, string>> = {
 };
 
 /**
+ * 4트랙 상세 데이터의 apply 블록이 공유하는 형태. 트랙별 타입은 각 데이터 파일에 있고
+ * 여기서는 ApplyCard가 읽는 필드만 구조적으로 받는다(트랙 고유 필드가 더 있어도 무방).
+ */
+export interface JobApply {
+  method: string;
+  url?: string;
+  email?: string;
+  phone?: string;
+  notice?: string;
+}
+
+/**
+ * method가 실제로 쓰는 값 하나를 고른다 — 지원 방식마다 값이 들어 있는 필드가 다르기 때문이다.
+ * homepage는 지원 페이지 주소, email은 지원 이메일, phone·sms는 연락처를 쓴다(문자 연락처는
+ * 전화번호와 같은 값이라 전용 필드를 두지 않는다). quick·guide는 값 없이 동작한다.
+ */
+export function getApplyValue(apply: JobApply): string {
+  switch (apply.method as ApplyMethodId) {
+    case "homepage":
+      return apply.url ?? "";
+    case "email":
+      return apply.email ?? "";
+    case "phone":
+    case "sms":
+      return apply.phone ?? "";
+    default:
+      return "";
+  }
+}
+
+/**
+ * 지원 버튼을 눌렀을 때 실행할 동작. 지금은 homepage만 이동 동작이 있다.
+ * 주소가 비어 있으면 undefined를 돌려준다 — window.open("")이 빈 창(about:blank)을 여는 것을 막는다.
+ * 모바일 하단 바도 같은 규칙을 써야 하므로 카드 밖에서 재사용할 수 있게 분리해 둔다.
+ */
+export function getApplyAction(apply: JobApply): (() => void) | undefined {
+  if ((apply.method as ApplyMethodId) !== "homepage") return undefined;
+  const url = getApplyValue(apply);
+  if (!url) return undefined;
+  return () => window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/**
  * 사이드바 지원 카드. method별로 버튼 문구와 하단 게이트/안내 영역만 분기하고,
  * 껍데기(카드 톤·타이포)는 PharmacyJobDetailV2/IndustryJobDetailClient가 쓰던 것을 그대로 계승한다.
  * 저장/공유는 JobDetailActionRow(히어로)로 옮겨졌으므로 이 카드는 순수 지원 CTA만 담당한다.
+ *
+ * apply를 통째로 받아 값 선택을 카드 안에서 끝낸다 — 호출부가 트랙마다 다른 필드를 골라
+ * 넘기던 때는 어느 트랙이 어떤 필드를 넘기는지가 화면 코드에 흩어져 있었다.
  */
 export function ApplyCard({
   job,
-  method,
-  target,
-  notice,
+  apply,
   isLoggedIn,
 }: {
   /**
@@ -367,11 +412,13 @@ export function ApplyCard({
    * jobs.ts에 조인할 레코드가 없는 미리보기 등 예외 경로를 위해 optional — 없으면 마감 표시를 생략한다.
    */
   job?: Job;
-  method: ApplyMethodId;
-  target: string;
-  notice?: string;
+  apply: JobApply;
+  /** 약국 상세가 미리보기에서 강제로 false를 내리므로 훅을 직접 부르지 않고 prop으로 받는다. */
   isLoggedIn: boolean;
 }) {
+  const method = apply.method as ApplyMethodId;
+  const value = getApplyValue(apply);
+  const onActivate = getApplyAction(apply);
   const gatedLabel = APPLY_GATED_LABELS[method];
   const gatedMessage = APPLY_GATED_MESSAGES[method];
   const deadlineLabel = job ? formatJobDeadlineLabel(job) : null;
@@ -387,13 +434,14 @@ export function ApplyCard({
 
       <button
         type="button"
-        onClick={method === "homepage" ? () => window.open(target, "_blank", "noopener,noreferrer") : undefined}
+        onClick={onActivate}
         className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-brand text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(17,17,17,0.2)] transition hover:bg-[var(--color-brand-dark)]"
       >
         {APPLY_BUTTON_LABELS[method]}
       </button>
 
-      {method === "homepage" ? (
+      {/* 실제로 이동이 일어날 때만 안내한다 — 주소가 없어 버튼이 아무 동작도 안 하는 상태에서 이 문구가 남으면 거짓말이 된다 */}
+      {method === "homepage" && onActivate ? (
         <p className="mt-3 text-center text-[12px] font-normal text-[#a0a9b7]">외부 기업 채용 페이지로 이동합니다.</p>
       ) : null}
 
@@ -401,7 +449,7 @@ export function ApplyCard({
         isLoggedIn ? (
           <div className="mt-4 border-t border-[#e6ecf1] pt-4">
             <p className="text-[12px] font-medium text-[#8993a1]">{gatedLabel}</p>
-            <p className="mt-1 break-all text-[13px] font-normal text-[#3f4855]">{target}</p>
+            <p className="mt-1 break-all text-[13px] font-normal text-[#3f4855]">{value}</p>
           </div>
         ) : (
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-normal text-[#a0a9b7]">
@@ -411,8 +459,8 @@ export function ApplyCard({
         )
       ) : null}
 
-      {notice ? (
-        <p className="mt-4 bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">{notice}</p>
+      {apply.notice ? (
+        <p className="mt-4 bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">{apply.notice}</p>
       ) : null}
     </section>
   );
