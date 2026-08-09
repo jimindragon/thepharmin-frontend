@@ -110,7 +110,8 @@ export function MyPageShell({ children }: { children: ReactNode }) {
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
         <div className="sidebar-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <MyPageSidebar />
-          <div className="min-w-0 px-8 py-8 max-[760px]:px-4 max-[760px]:py-6">{children}</div>
+          {/* 좌우 여백은 shell-gutter가 담당 — 본문 자체 px는 이중 여백 */}
+          <div className="min-w-0 px-8 py-8 max-[760px]:px-0 max-[760px]:py-6">{children}</div>
         </div>
       </main>
     </>
