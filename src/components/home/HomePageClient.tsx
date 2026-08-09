@@ -11,6 +11,7 @@ import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { typeScale } from "@/components/ui/Typography";
+import { APPLY_METHOD_SHORT_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
 import { FEATURED_COMPANY_IDS, getActiveJobCount } from "@/data/companyDirectory";
 import { homeRecommendationJobIds, premiumCompanies, themeCurationCards, type HomeTrackFilter } from "@/data/home";
@@ -208,7 +209,7 @@ function HomeRecommendationCard({
               <span className="bg-[#111111] px-2.5 py-1 text-[13px] font-medium text-white">헤드헌팅</span>
             ) : null}
             <span className="text-[13px] font-medium text-[#6b7481]">
-              {job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원"}
+              {APPLY_METHOD_SHORT_LABELS[job.applyMethod]}
             </span>
           </div>
           <strong className="text-[13px] font-medium text-danger">{formatJobDeadlineLabel(job)}</strong>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { APPLY_METHOD_SHORT_LABELS } from "@/config/applyMethods";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { getCompanyInitial } from "@/utils/companyInitial";
@@ -168,12 +169,7 @@ function LogoPatch({
   );
 }
 
-// D-day / 지원방법 축약 유틸
-function shortApplyMethod(method: string): string {
-  if (method.includes("홈페이지")) return "홈페이지";
-  if (method.includes("간편")) return "간편";
-  return method;
-}
+// D-day 축약 유틸
 function shortDDay(dDay: string): string {
   if (dDay === "상시채용") return "상시";
   return dDay;
@@ -200,7 +196,7 @@ function PremiumCard({ job }: { job: RecommendedJob }) {
           ))}
         </div>
         <div className="mt-auto flex items-center justify-between pt-3">
-          <span className="text-[11px] font-medium text-[#6b7481]">{job.applyMethod}</span>
+          <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
           <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
         </div>
       </div>
@@ -223,7 +219,7 @@ function FeaturedCard({ job }: { job: RecommendedJob }) {
         <h3 className="line-clamp-2 text-[17px] font-bold text-[#202734]">{job.title}</h3>
         <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
         <div className="mt-auto flex items-center justify-between pt-3">
-          <span className="text-[11px] font-medium text-[#6b7481]">{job.applyMethod}</span>
+          <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
           <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
         </div>
       </div>
@@ -242,7 +238,7 @@ function StandardCard({ job }: { job: RecommendedJob }) {
         </div>
         <h3 className="truncate text-[15px] font-bold text-[#202734]">{job.title}</h3>
         <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-[11px] font-medium text-[#6b7481]">{shortApplyMethod(job.applyMethod)}</span>
+          <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
           <strong className={`text-[13px] font-medium ${isJangsi ? "text-[#6b7280]" : "text-danger"}`}>
             {dDayShort}
           </strong>

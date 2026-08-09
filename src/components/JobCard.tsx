@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
+import { APPLY_METHOD_SHORT_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
 import type { Job } from "@/types/jobs";
 import { EntityLogo } from "@/components/ui/EntityLogo";
@@ -27,8 +28,8 @@ interface JobCardProps {
 export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge }: JobCardProps) {
   const danger = isJobDeadlineUrgent(job);
   const deadlineText = formatJobDeadlineLabel(job);
-  const applyLabel = job.applyMethod === "간편 지원" ? "간편지원" : "홈페이지 지원";
-  const easyApply = job.applyMethod === "간편 지원";
+  const applyLabel = APPLY_METHOD_SHORT_LABELS[job.applyMethod];
+  const easyApply = job.applyMethod === "quick";
   const companyDetailHref = getCompanyDetailHref(job.companyId);
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
 

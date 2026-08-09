@@ -746,7 +746,7 @@ export function filterJobsByFilters(items: Job[], filters: JobFilters, options: 
     if (matchTrack && job.track !== filters.track) return false;
     if (filters.leaderOnly && (job.experienceMin ?? 0) < 5) return false;
     if (filters.headhuntingOnly && job.postingSource !== "headhunting") return false;
-    if (filters.quickApplyOnly && job.applyMethod !== "간편 지원" && job.applyMethod !== "더파마 간편지원") return false;
+    if (filters.quickApplyOnly && job.applyMethod !== "quick") return false;
     if (!jobCategoryMatches(job, filters)) return false;
     if (!researchFieldMatches(job, filters)) return false;
     if (filters.regionIds.length && !filters.regionIds.includes(job.regionId)) return false;

@@ -31,16 +31,7 @@ export type SortOption = "추천순" | "최신순" | "마감임박순" | "시급
 
 export type ClosingStatus = "dDay" | "today" | "always";
 
-/** 목록(jobs.ts)이 카드에 그대로 노출하는 한글 라벨. 상세의 ApplyMethodId와는 별개 체계다. */
-export type ApplyMethod =
-  | "기업 홈페이지 지원"
-  | "간편 지원"
-  | "더파마 간편지원"
-  | "이메일 지원"
-  | "전화 지원"
-  | "별도 안내";
-
-/** 상세 데이터(4트랙 공용)의 지원 방식 id. 라벨·버튼 문구는 job-detail/shared.tsx가 이 id로 고른다. */
+/** 지원 방식 id. 목록·상세가 같이 쓰며, 화면 문구는 config/applyMethods.ts의 라벨 맵이 고른다. */
 export type ApplyMethodId = "quick" | "homepage" | "email" | "phone" | "sms" | "guide";
 
 /**
@@ -353,7 +344,7 @@ export interface Job {
   deadline?: string;
   deadlineDate: string;
   closingStatus: ClosingStatus;
-  applyMethod: ApplyMethod;
+  applyMethod: ApplyMethodId;
   applicationUrl?: string;
   applicationNotice?: string;
   applicationGuide?: string;
@@ -538,7 +529,7 @@ export interface RecommendedJob {
   condition: string;
   tags: string[];
   dDay: string;
-  applyMethod: ApplyMethod;
+  applyMethod: ApplyMethodId;
   image: string;
   track: JobTrack;
   postingSource?: PostingSource;
