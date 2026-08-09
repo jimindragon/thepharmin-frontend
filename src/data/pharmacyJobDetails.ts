@@ -948,7 +948,7 @@ export const hyeongangPharmacyJobDetail: PharmacyJobDetail = {
     mainPrescribingHospital: "",
 
     apply: {
-      // jobs.ts 310은 applyMethod가 "이메일 지원"인데 applicationEmail이 없어 목업용 주소를 새로 지정했다
+      // jobs.ts 310에는 지원 이메일이 없어 목업용 주소를 새로 지정했다
       method: "email",
       email: "hyeongang-recruit@pharmacy.example",
       notice: "이메일로 지원해 주세요.",

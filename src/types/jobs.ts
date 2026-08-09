@@ -345,10 +345,6 @@ export interface Job {
   deadlineDate: string;
   closingStatus: ClosingStatus;
   applyMethod: ApplyMethodId;
-  applicationUrl?: string;
-  applicationNotice?: string;
-  applicationGuide?: string;
-  applicationEmail?: string;
   category: Category;
   jobSubcategoryIds: string[];
   employmentTypeIds?: string[];

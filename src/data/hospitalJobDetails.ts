@@ -504,7 +504,8 @@ export const nationalCentralHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "homepage",
       url: "https://recruit.nch.example",
-      notice: "채용 홈페이지에서 온라인 지원해 주세요. 블라인드 전형으로 진행됩니다.",
+      notice:
+        "블라인드 채용으로 진행되며, 지원서에 출신학교·가족관계·외모 관련 사항을 기재하지 마세요. 지정 양식은 채용 홈페이지에서 다운로드하세요.",
     },
     isRolling: false,
   },
@@ -976,7 +977,7 @@ export const hmcseoulHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "email",
       email: "pharmrecruit@hmcseoul.example",
-      // jobs.ts 408에 applicationGuide가 없어 지원 방법만 안내한다
+      // jobs.ts 408에는 별도 지원 안내 문구가 없어 지원 방법만 안내한다
       notice: "이메일로 지원해 주세요.",
     },
     isRolling: false,

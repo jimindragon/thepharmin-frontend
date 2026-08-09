@@ -87,7 +87,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/ra-specialist",
-        notice: "지원 시 기업 채용 페이지로 이동합니다. 지원 결과와 전형 진행은 해당 기업에서 관리됩니다.",
+        notice: "기업 채용 홈페이지에서 지원서를 제출합니다. 이력서와 경력기술서를 함께 첨부해 주세요.",
       },
       deadline: { date: "2026-09-08", label: "마감 D-51", status: "dDay" },
       postingSource: "direct",
