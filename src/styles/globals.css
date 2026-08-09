@@ -305,8 +305,8 @@ input:focus-visible {
 
 @media (max-width: 760px) {
   :root {
-    /* 모바일 좌우 여백 28px씩 — mobile-guidelines 간격 규칙 */
-    --shell-gutter: 56px;
+    /* 모바일 좌우 여백 24px씩 — 실기기 확인 후 축소 확정 (48px가 바닥) */
+    --shell-gutter: 48px;
   }
 
   .app-shell {
