@@ -97,7 +97,7 @@ export default function JobsPage() {
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 
-          <PageTitle>{siteConfig.pageTitle}</PageTitle>
+          <PageTitle className="max-[760px]:mt-0">{siteConfig.pageTitle}</PageTitle>
 
           <CategoryTabs activeTrack={activeTrack} onChange={filterState.setTrack} />
 

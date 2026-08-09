@@ -151,8 +151,10 @@ export function QnaActivityClient() {
     <main className="bg-[#f7f8fa] pb-20">
       <div className="app-shell pt-8">
         <PageBreadcrumb className="mb-5" items={[{ label: "QNA", href: "/qna" }, { label: "내 활동" }]} />
-        <Eyebrow>THE PHARMA QNA</Eyebrow>
-        <PageTitle>내 활동</PageTitle>
+        <div className="max-[760px]:hidden">
+          <Eyebrow>THE PHARMA QNA</Eyebrow>
+        </div>
+        <PageTitle className="max-[760px]:mt-0">내 활동</PageTitle>
         <p className={clsx("mt-3 max-w-[640px]", typeScale.body, "text-[#596373]")}>내 QNA 활동을 한곳에서 확인할 수 있습니다.</p>
 
         <div className="mt-8">
