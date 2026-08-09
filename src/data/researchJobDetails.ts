@@ -577,12 +577,605 @@ export const kangwonNaturalProductPostdocJobDetail: ResearchJobDetail = {
   },
 };
 
+// ---- University of North Texas 정본 — 유일한 해외(J-1 파견) 케이스 ----
+
+export const untBrainOrganoidPostdocJobDetail: ResearchJobDetail = {
+  id: "unt-brain-organoid-postdoc",
+  slug: "unt-brain-organoid-postdoc",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "unt-brain-organoid-postdoc",
+    title: "뇌 오가노이드 박사후연구원(J-1) 모집",
+
+    jobCategory: { main: "연구직", sub: "박사후연구원·포닥" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "doctor",
+
+    summary: "인간 iPSC 기반 뇌 오가노이드 연구를 수행할 박사후연구원을 모집합니다. (J-1 비자 파견)",
+    responsibilities: [
+      "인간 iPSC 유지·확장, Forebrain/Cortical organoid 분화",
+      "오가노이드 재현성 품질 관리",
+      "면역염색(Neuronal/Synaptic marker), 공초점 현미경 운용",
+      "Calcium imaging, Synaptic function 분석",
+      "qPCR, Western blot",
+      "CRISPR activation/interference용 recombinant lentivirus 증폭, Guide RNA 디자인",
+    ],
+    requirements: [
+      "신경과학·줄기세포생물학·바이오 분야 박사 학위 취득자 또는 취득 예정자",
+      "영어로 연구 커뮤니케이션 가능한 분",
+      "J-1 비자 취득 가능 조건을 갖춘 분(한국인)",
+    ],
+    preferred: ["신진 박사(Fresh Ph.D.) 적극 지원 환영"],
+
+    workMode: "연구실 근무",
+    // jobs.ts 213의 researchLab에는 address가 없어 명세의 소재지 표기를 그대로 쓴다
+    address: "University of North Texas (UNT), Denton, TX, USA",
+    // jobs.ts 213의 실값(연봉 6,000만~6,800만원) 하한을 담는 유효 구간은 "5,000만↑"이다.
+    salary: "5,000만↑",
+    contractPeriod: "1~2년",
+    // 명세 복리후생 중 연구 WELFARE_OPTS에 대응하는 값은 "주거 지원" 하나뿐이다
+    // (4대 보험·주 5일 근무·민간 건강보험·퇴직금·비자 지원은 대응 항목이 없어 근무조건 상세로 옮겼다)
+    benefitIds: ["주거 지원"],
+    workConditionDetail:
+      "주 5일 근무이며 4대 보험과 민간 건강보험, 퇴직금이 적용됩니다. 비한국인 지원자에게는 주거를 지원합니다. J-1 비자로 미국 현지 파견되며, 세종대학교 단기 파견을 병행할 수 있습니다. 비자 발급을 지원합니다.",
+
+    coreKeywords: ["iPSC", "brain organoid", "Calcium imaging", "CRISPR", "Confocal imaging", "Western blot"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서(CV)", "성적증명서", "학위증명서", "졸업논문 요약", "Cover letter", "추천인 2인 연락처"],
+
+    apply: {
+      method: "email",
+      email: "brain-organoid-recruit@unt.example",
+      phone: "",
+      notice:
+        "이력서(CV)와 Cover letter, 추천인 2인 연락처를 이메일로 제출해 주세요. 채용이 확정되면 마감됩니다.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "University of North Texas",
+    logoText: "UNT",
+    logoColor: "#374151",
+    logoUrl: companyLogos["University of North Texas"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    homepageUrl: "https://engineering.unt.edu/bme/research/labs/bioprinting/",
+
+    shortIntro: "인간 iPSC와 뇌 오가노이드를 기반으로 신경생물학·기능 분석 연구를 수행하는 대학 연구실입니다.",
+    fullIntro:
+      "University of North Texas(UNT)의 연구실로, 인간 iPSC 유지·확장과 Forebrain/Cortical organoid 분화를 기반으로 신경생물학 및 기능 분석 연구를 수행합니다. CRISPR 기반 유전자 조절 연구를 병행하며, 세종대학교와 단기 파견 형태의 연구 협력을 두고 있습니다.",
+    keywords: ["뇌 오가노이드", "iPSC", "신경생물학"],
+
+    researchFields: ["organoid", "neuroscience", "stem-cell-regenerative"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    // labName: 없음 — 원본에 연구실명이 별도로 없다(Bioprinting Lab 페이지만 존재)
+    // piName: 없음 — 개인 실명 미기재 방침
+    // labIntro: 없음 — 연구실 단위 소개가 원본에 없어 fullIntro로 갈음한다
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "Denton, TX, USA",
+      detailAddress: "University of North Texas",
+    },
+  },
+};
+
+// ---- 포항공과대학교 생명과학과 정본 ----
+
+export const postechStructuralBiologyResearcherJobDetail: ResearchJobDetail = {
+  id: "postech-life-sciences-structural-biology-researcher",
+  slug: "postech-life-sciences-structural-biology-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "postech-life-sciences-structural-biology-researcher",
+    title: "생명과학과 연구계약직 연구원 채용",
+
+    jobCategory: { main: "연구직", sub: "연구원" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "구조생물학 연구를 위한 클로닝·단백질 정제 실험을 담당할 연구계약직 연구원을 모집합니다.",
+    responsibilities: ["클로닝, cell culture", "단백질 분리·정제", "연구 참여 및 보조 업무"],
+    requirements: ["석사 이상 학위 소지자", "신입/경력 무관"],
+    preferred: ["관련 분야 경력자"],
+
+    workMode: "연구실 근무",
+    address: "경북 포항시 남구 지곡로 47 포항공과대학교 바이오오픈이노베이션(BOIC) 3202호",
+    // jobs.ts 214의 실값(연봉 2,600만~3,000만원) 하한을 담는 유효 구간이 SALARY_OPTS에 없어 "기관 내규"로 둔다.
+    salary: "기관 내규",
+    contractPeriod: "1~2년",
+    // benefitIds: 명세 복리후생이 "4대 보험" 1종뿐인데 연구 WELFARE_OPTS에 대응 값이 없어 비운다
+    benefitIds: [],
+    workConditionDetail:
+      "4대 보험이 적용됩니다. 연봉은 협의 후 결정하며, 최초 임용일로부터 3개월의 수습 기간을 운영할 수 있습니다.",
+
+    coreKeywords: ["구조생물학", "cloning", "protein purification", "cell culture"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: [
+      "입사지원서",
+      "자기소개서",
+      "졸업증명서",
+      "성적증명서",
+      "경력증명서(해당자)",
+      "자격증 사본(해당자)",
+    ],
+
+    apply: {
+      method: "email",
+      email: "bio-recruit@postech.example",
+      phone: "",
+      notice: "입사지원서와 자기소개서를 이메일로 제출해 주세요. 채용이 확정되면 마감됩니다.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "포항공과대학교",
+    logoText: "포스텍",
+    logoColor: "#374151",
+    logoUrl: companyLogos["포항공과대학교"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본에 기관·연구실 홈페이지 없음
+
+    shortIntro: "구조생물학을 기반으로 단백질의 구조와 기능을 연구하는 대학 생명과학과입니다.",
+    fullIntro:
+      "포항공과대학교 생명과학과의 연구실로, 클로닝과 세포배양, 단백질 분리·정제를 기반으로 구조생물학 연구를 수행합니다. 바이오오픈이노베이션센터(BOIC)에 연구 공간을 두고 있습니다.",
+    keywords: ["구조생물학", "단백질 정제", "생명과학"],
+
+    researchFields: ["molecular-cell-biology"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "생명과학과 구조생물학 연구실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro: "클로닝·세포배양·단백질 분리 정제를 통해 단백질의 구조와 기능을 규명하는 실험실입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "경북 포항시 남구 지곡로 47",
+      detailAddress: "포항공과대학교 바이오오픈이노베이션(BOIC) 3202호",
+    },
+  },
+};
+
+// ---- 동국대학교 약학대학 약물학/약동학 실험실 정본 ----
+
+export const donggukDmpkResearcherJobDetail: ResearchJobDetail = {
+  id: "dongguk-pharmacy-dmpk-researcher",
+  slug: "dongguk-pharmacy-dmpk-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "dongguk-pharmacy-dmpk-researcher",
+    title: "약물학/약동학 실험실 연구원 모집 (생체시료 분석 경험자 우대)",
+
+    jobCategory: { main: "연구직", sub: "연구원" },
+    // 원본 "00명" → 인원 미정
+    headcount: "○명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "PK-PD 모델링과 생체시료 분석 기반 DMPK 연구를 함께할 연구원을 모집합니다.",
+    responsibilities: [
+      "in vitro/in vivo PK-PD 실험",
+      "data analysis (network pharmacology, PD modeling)",
+      "LC-MS/MS 및 TOF 분석을 통한 생체시료 분석 및 PD 마커 발굴",
+    ],
+    requirements: ["분석학·약동학/약물학 관련 전공자 (교육을 통한 실험업무 가능자도 지원 가능)"],
+    preferred: ["LC-MS/MS 및 q-TOF 사용 경험자", "랩노트·결과보고서 작성 경험자"],
+
+    workMode: "연구실 근무",
+    address: "경기 고양시 일산동구 식사동 동국대학교 약학대학 635호",
+    // jobs.ts 215의 실값(연봉 2,600만~3,600만원) 하한을 담는 유효 구간이 SALARY_OPTS에 없어 "기관 내규"로 둔다.
+    salary: "기관 내규",
+    contractPeriod: "1~2년",
+    // benefitIds: 명세 복리후생(4대 보험·주 5일 근무)에 대응하는 연구 WELFARE_OPTS 값이 없어 비운다
+    benefitIds: [],
+    workConditionDetail:
+      "주 5일 근무이며 4대 보험이 적용됩니다. 경력에 따라 2~3개월 인턴 기간이 있을 수 있으며, 연봉은 경력과 근무조건에 따라 협의합니다.",
+
+    coreKeywords: ["PK-PD", "DMPK", "LC-MS/MS", "network pharmacology", "생체시료 분석"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
+
+    apply: {
+      method: "email",
+      email: "dmpk-recruit@dongguk.example",
+      phone: "",
+      notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "동국대학교",
+    logoText: "동국대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["동국대학교"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본 채용 웹페이지 값이 "http://"뿐이라 유효하지 않다
+
+    shortIntro: "저분자·천연물·펩타이드·miRNA의 체내동태와 약효를 평가하는 대학 약학대학 실험실입니다.",
+    fullIntro:
+      "동국대학교 약학대학의 약물학/약동학 실험실로, 저분자·천연물 성분·펩타이드·miRNA 등의 체내동태-약효 평가와 기전 연구를 수행합니다. 난치성 만성 질환의 정량적 치료효과와 기전을 규명해 예측 가능한 단일·병용 요법 개발을 목표로 합니다.",
+    keywords: ["약동학", "약물학", "생체시료 분석"],
+
+    researchFields: ["pharmacology-toxicology", "pharmaceutics"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "약학대학 약물학/약동학 실험실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "PKPD 모델링 기반 병용요법 모델을 구축하고, 난치성 질환의 발병·치료 기전과 약물 DMPK의 상관성을 평가하는 실험실입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "경기 고양시 일산동구 식사동",
+      detailAddress: "동국대학교 약학대학 635호",
+    },
+  },
+};
+
+// ---- 부산대학교 구강점막면역 연구실 정본 ----
+
+export const pnuOralMucosalImmunologyResearcherJobDetail: ResearchJobDetail = {
+  id: "pnu-oral-mucosal-immunology-researcher",
+  slug: "pnu-oral-mucosal-immunology-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "pnu-oral-mucosal-immunology-researcher",
+    title: "구강점막면역 연구실 연구원 모집",
+
+    jobCategory: { main: "연구직", sub: "연구원" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "점막 조직에서 미생물-숙주 상호작용을 규명할 연구원을 모집합니다.",
+    responsibilities: ["세포·분자생물학, 면역학, 미생물학 기반 기초 연구", "질환 실험 동물모델 개발 및 구축"],
+    requirements: [
+      "생명과학·치의학·의학·약학 등 관련 분야 석사 졸업자",
+      "세포분자생물학·면역학·미생물학 등 기초(치)의학 연구에 관심 있는 자",
+      "실험 동물모델 개발·구축에 관심 있는 자",
+    ],
+    // preferred: 없음 — 원본에 우대 사항이 별도로 구분되어 있지 않다
+
+    workMode: "연구실 근무",
+    address: "경남 양산시 물금읍 부산대학로 49 치의학관 613호",
+    // jobs.ts 216의 실값(연봉 2,600만~3,000만원) 하한을 담는 유효 구간이 SALARY_OPTS에 없어 "기관 내규"로 둔다.
+    salary: "기관 내규",
+    contractPeriod: "1~2년",
+    // benefitIds: 명세 복리후생(4대 보험·성과급·주 5일 근무)에 대응하는 연구 WELFARE_OPTS 값이 없어 비운다
+    benefitIds: [],
+    workConditionDetail: "주 5일 근무이며 4대 보험이 적용되고 성과급(인센티브)을 운영합니다.",
+
+    coreKeywords: ["점막면역", "숙주-미생물 상호작용", "염증", "미생물총", "동물모델"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
+
+    apply: {
+      method: "email",
+      email: "lomi-recruit@pusan.example",
+      phone: "",
+      notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "부산대학교",
+    logoText: "부산대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["부산대학교"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    homepageUrl: "https://lomi.pusan.ac.kr/sites/lomi/index.do",
+
+    shortIntro: "점막 조직의 미생물-숙주 세포 상호작용을 분자생물학적으로 규명하는 대학 연구실입니다.",
+    fullIntro:
+      "부산대학교의 구강점막면역 연구실로, 구강·피부·장 등 점막 조직에서 미생물과 숙주 세포의 상호작용을 연구합니다. 미생물 불균형이 조직 염증과 질병으로 이어지는 기전을 규명하고 새로운 치료·진단 전략 개발을 목표로 합니다.",
+    keywords: ["점막면역", "미생물총", "감염·염증"],
+
+    researchFields: ["immunology"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "구강점막면역 연구실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "숙주-미생물 상호작용과 염증 반응 조절 기전, 병원체의 인체 침투 및 병인 기전을 연구하며, 인체 미생물총과 전신질환의 연관성을 함께 살펴봅니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "경남 양산시 물금읍 부산대학로 49",
+      detailAddress: "치의학관 613호",
+    },
+  },
+};
+
+// ---- 건양대학교 명곡안연구소 정본 ----
+
+export const konyangMyunggokEyeResearcherJobDetail: ResearchJobDetail = {
+  id: "konyang-myunggok-eye-researcher",
+  slug: "konyang-myunggok-eye-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "konyang-myunggok-eye-researcher",
+    title: "명곡안연구소 연구원 모집",
+
+    jobCategory: { main: "연구직", sub: "연구원" },
+    headcount: "2명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "망막재생·망막오가노이드 기반 안질환 치료기술 연구를 함께할 연구원을 모집합니다.",
+    responsibilities: [
+      "줄기세포연구: 환자 유래 iPS Cells 제작·배양, 망막오가노이드 제작",
+      "전임상연구: 마우스·랫을 이용한 세포/조직 이식 효능 분석",
+    ],
+    requirements: ["석사 이상 (생물학 관련 모든 분야)"],
+    // preferred: 없음 — 원본에 우대 사항 표기 없음
+
+    workMode: "연구실 근무",
+    address: "대전 서구 관저동로 158 L보건학관 명곡안연구소",
+    // jobs.ts 217의 실값(연봉 3,400만~4,400만원) 하한을 담는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "1~2년",
+    // benefitIds: 명세 복리후생(4대 보험·퇴직금·주 5일 근무)에 대응하는 연구 WELFARE_OPTS 값이 없어 비운다
+    benefitIds: [],
+    workConditionDetail:
+      "주 5일 근무이며 4대 보험과 퇴직금이 적용됩니다. 급여는 석사급 기준이며 경력에 따라 산정하고 협상할 수 있습니다.",
+
+    coreKeywords: ["망막재생", "iPS Cells", "망막오가노이드", "줄기세포", "전임상"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서", "학위증명서(또는 졸업예정증명서)", "성적증명서"],
+
+    apply: {
+      method: "email",
+      email: "myunggok-recruit@konyang.example",
+      phone: "",
+      notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서(또는 졸업예정증명서)를 함께 첨부해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "건양대학교 명곡안연구소",
+    logoText: "건양대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["건양대학교 명곡안연구소"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본에 기관 홈페이지 없음
+
+    shortIntro: "망막재생과 망막오가노이드를 기반으로 안질환 치료기술을 연구하는 대학의료원 산하 연구소입니다.",
+    fullIntro:
+      "건양대학교의료원 산하의 명곡안연구소로, 내인성 줄기세포를 이용한 망막재생 유도기술과 iPS Cells 유래 망막오가노이드 제조·이식용 시트 개발을 연구합니다. 망막질환 첨단융복합치료제의 비임상 유효성·안전성 평가도 함께 수행합니다.",
+    keywords: ["망막재생", "망막오가노이드", "안질환"],
+
+    researchFields: ["organoid", "stem-cell-regenerative", "cell-gene-therapy"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    // labName: 없음 — 기관명에 연구소가 포함되어 별도 연구실명이 없다
+    // piName: 없음 — 개인 실명 미기재 방침
+    // labIntro: 없음 — 연구실 단위 소개가 원본에 없어 fullIntro로 갈음한다
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "대전 서구 관저동로 158",
+      detailAddress: "L보건학관 명곡안연구소",
+    },
+  },
+};
+
+// ---- 한림대학교 의과대학 미생물학교실 정본 ----
+
+export const hallymMicrobiologyLabManagerJobDetail: ResearchJobDetail = {
+  id: "hallym-microbiology-lab-manager",
+  slug: "hallym-microbiology-lab-manager",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "hallym-microbiology-lab-manager",
+    title: "의과대학 미생물학교실 랩매니저 모집",
+
+    jobCategory: { main: "연구지원·운영", sub: "연구실 운영·장비관리" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "bachelor",
+
+    summary: "호흡기·인수공통 바이러스 연구실의 운영과 연구행정을 담당할 랩매니저를 모집합니다.",
+    responsibilities: [
+      "실험실 운영 및 유지(안전점검, 비품 주문·관리)",
+      "과제 관련 행정서류 작성·관리(협약서류, 연구원 등록, 인건비 변경, 연구비 정산·결제)",
+      "연구실 운영 행정(IBC/IACUC 계획서 작성·제출, LMO 수입신고, 병원체 분양)",
+    ],
+    requirements: ["학사 졸업 이상", "경력 단절 여성(과학자) 지원 가능"],
+    // preferred: 없음 — 원본에 우대 사항 표기 없음
+
+    workMode: "연구실 근무",
+    address: "강원특별자치도 춘천시 한림대학길 1 의학관 3512호",
+    // jobs.ts 218의 실값(연봉 2,600만~3,600만원) 하한을 담는 유효 구간이 SALARY_OPTS에 없어 "기관 내규"로 둔다.
+    salary: "기관 내규",
+    contractPeriod: "1~2년",
+    // 명세 복리후생 중 연구 WELFARE_OPTS에 대응하는 값은 연차 항목 하나뿐이다
+    // (4대 보험·성과급·주 5일 근무는 대응 항목이 없어 근무조건 상세로 옮겼다)
+    benefitIds: ["연차·휴가"],
+    workConditionDetail:
+      "주 5일 근무이며 4대 보험이 적용되고 성과 인센티브를 운영합니다. 연차는 12일이며 매년 1일씩 추가됩니다.",
+
+    coreKeywords: ["바이러스", "NGS", "Virome", "항바이러스", "랩매니저", "연구행정"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서(CV)", "자기소개서"],
+
+    apply: {
+      method: "email",
+      email: "microbiology-recruit@hallym.example",
+      phone: "",
+      notice: "이력서(CV)와 자기소개서를 이메일로 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "한림대학교 의과대학",
+    logoText: "한림대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["한림대학교 의과대학"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    homepageUrl: "https://www.hallym.ac.kr/hallym_univ/sub01/cP7/sCP1/tab1",
+
+    shortIntro: "호흡기·인수공통 바이러스의 감시·진단·치료제 개발을 연구하는 의과대학 교실입니다.",
+    fullIntro:
+      "한림대학교 의과대학 미생물학교실로, 호흡기 및 인수공통 바이러스에 대한 감시·진단·치료제·대응책 개발 연구를 수행합니다. 광범위 항바이러스 치료제 개발과 NGS 기반 바이러스 유전체 분석을 함께 진행합니다.",
+    keywords: ["바이러스", "감염의학", "연구행정"],
+
+    researchFields: ["genetics-genomics"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "미생물학교실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "Coronavirus·Paramyxovirus·Flavivirus·Hantavirus를 대상으로 광범위 항바이러스 치료제를 개발하고, Metagenomic sequencing 기반 Virome 연구로 신종 바이러스를 발굴하며 바이러스-숙주 상호작용을 연구합니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "강원특별자치도 춘천시 한림대학길 1",
+      detailAddress: "의학관 3512호",
+    },
+  },
+};
+
+// ---- 인제대학교 심혈관 및 대사질환 핵심연구지원센터 정본 ----
+
+export const injeCardiovascularCoreFacilityResearcherJobDetail: ResearchJobDetail = {
+  id: "inje-cardiovascular-core-facility-researcher",
+  slug: "inje-cardiovascular-core-facility-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "inje-cardiovascular-core-facility-researcher",
+    title: "심혈관 및 대사질환 핵심연구지원센터 전담운영인력 채용",
+
+    jobCategory: { main: "연구지원·운영", sub: "연구실 운영·장비관리" },
+    // 원본 "0명" → 인원 미정
+    headcount: "○명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "bachelor",
+
+    summary: "심혈관·대사질환 연구지원 인프라의 연구장비 운영과 전임상 실험을 담당할 연구원을 모집합니다.",
+    responsibilities: ["연구장비 운영 및 관리", "전임상 및 실험 수행"],
+    requirements: ["학사 이상"],
+    // preferred: 없음 — 원본에 우대 사항 표기 없음
+
+    workMode: "연구실 근무",
+    address: "부산 부산진구 진사로83번길 81 미래의생명센터 1층",
+    // jobs.ts 219의 실값(연봉 2,600만~3,000만원) 하한을 담는 유효 구간이 SALARY_OPTS에 없어 "기관 내규"로 둔다.
+    salary: "기관 내규",
+    contractPeriod: "1~2년",
+    // benefitIds: 명세 복리후생(4대 보험·주 5일 근무)에 대응하는 연구 WELFARE_OPTS 값이 없어 비운다
+    benefitIds: [],
+    workConditionDetail: "주 5일 근무이며 4대 보험이 적용됩니다.",
+
+    coreKeywords: ["심혈관질환", "대사질환", "전임상", "연구장비", "영상장비"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서", "학위증명서", "성적증명서"],
+
+    apply: {
+      method: "email",
+      email: "coredream-recruit@inje.example",
+      phone: "",
+      notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "인제대학교 심혈관 및 대사질환 핵심연구지원센터",
+    logoText: "인제대",
+    logoColor: "#374151",
+    logoUrl: companyLogos["인제대학교 심혈관 및 대사질환 핵심연구지원센터"],
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    homepageUrl: "https://www.coredream.kr/",
+
+    shortIntro: "심혈관질환·대사질환 전임상 연구를 장비와 분석으로 지원하는 대학 핵심연구지원센터입니다.",
+    fullIntro:
+      "인제대학교의 심혈관 및 대사질환 핵심연구지원센터로, 소동물 MRI·CT와 Echocardiography 등 첨단 영상장비와 분자·세포 분석장비를 갖추고 심혈관질환·대사질환 전임상 연구를 지원합니다.",
+    keywords: ["심혈관질환", "대사질환", "연구지원"],
+
+    researchFields: ["disease-model"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "인프라고도화시설",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro: "첨단 연구장비를 기반으로 심혈관·대사질환의 기능평가와 분석을 지원하는 시설입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "부산 부산진구 진사로83번길 81",
+      detailAddress: "미래의생명센터 1층",
+    },
+  },
+};
+
 export const researchJobDetails: ResearchJobDetail[] = [
   kistNeurochannelPostdocJobDetail,
   amcColorectalSurgeryResearcherJobDetail,
   kistNeurophysiologyInternJobDetail,
   kbriDementiaPostdocJobDetail,
   kangwonNaturalProductPostdocJobDetail,
+  untBrainOrganoidPostdocJobDetail,
+  postechStructuralBiologyResearcherJobDetail,
+  donggukDmpkResearcherJobDetail,
+  pnuOralMucosalImmunologyResearcherJobDetail,
+  konyangMyunggokEyeResearcherJobDetail,
+  hallymMicrobiologyLabManagerJobDetail,
+  injeCardiovascularCoreFacilityResearcherJobDetail,
 ];
 
 export function getResearchJobDetail(slug: string): ResearchJobDetail | undefined {
