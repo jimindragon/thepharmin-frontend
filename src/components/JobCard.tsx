@@ -39,6 +39,27 @@ const ROOT_CLASS = {
 } as const;
 
 /**
+ * flush는 목록 컨테이너가 --shell-gutter만큼 좌우로 빠져나가 카드가 화면 끝에 붙는다 —
+ * 카드 안쪽 패딩이 그대로 화면 여백이 되므로, 같은 화면의 h1·탭이 서 있는
+ * --shell-gutter/2(=24px, ≤760px) 선에 맞춘다. default는 app-shell 안에 있어 이미 그 선을
+ * 확보한 상태라 종전 값을 그대로 둔다.
+ *
+ * flush가 px 대신 pl/pr을 쓰는 이유: 왼쪽만 24px로 올리고 오른쪽은 종전대로 두어야 하는데,
+ * px 단축형과 pl을 섞으면 어느 쪽이 이기는지가 Tailwind 출력 순서에 달린다. 축을 나눠 쓰면
+ * 같은 축 안에서 "변형 없는 유틸리티 < 변형 붙은 유틸리티"만 남아 순서에 기대지 않는다.
+ */
+const LOGO_COL_CLASS = {
+  default: "px-5 max-[640px]:px-3",
+  flush: "pl-5 pr-5 max-[760px]:pl-6 max-[640px]:pr-3",
+} as const;
+
+/** ≤480px에서는 로고 칸이 숨어 이 칸의 좌측 패딩이 곧 카드 왼쪽 여백이 된다. */
+const INFO_COL_CLASS = {
+  default: "max-[480px]:px-4",
+  flush: "max-[480px]:px-6",
+} as const;
+
+/**
  * 가로형 일반 공고 카드. 홈/트랙별 목록/검색·둘러보기/스크랩 화면이 모두 이 컴포넌트 하나를 공유한다.
  * 페이지별로 다른 변형을 만들지 말고 이 컴포넌트를 확장할 것.
  */
@@ -72,10 +93,16 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
       <div className="flex">
         {/* 로고 컬럼 — ≤480px에서는 숨긴다. 회사명이 바로 옆에 텍스트로 중복 표시되므로
             정보 칸 폭을 확보하는 쪽이 우선 */}
-        <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[640px]:w-[96px] max-[640px]:px-3 max-[480px]:hidden">
+        <div
+          className={clsx(
+            "flex w-[130px] shrink-0 items-center justify-center max-[640px]:w-[96px] max-[480px]:hidden",
+            LOGO_COL_CLASS[variant],
+          )}
+        >
           {/* 폭은 칸이 정한다 — EntityLogo가 인라인 style로 넣는 width를 !w-full로 덮어야
-              칸의 ≤640px 축소(콘텐츠 폭 90→72)를 그대로 따라간다. 인라인 style은 클래스보다
-              세므로 important 없이는 이길 수 없다.
+              칸의 축소(default 기준 ≤640px에서 콘텐츠 폭 90→72)를 그대로 따라간다. 인라인 style은
+              클래스보다 세므로 important 없이는 이길 수 없다.
+              flush는 좌측 정렬 보정(LOGO_COL_CLASS) 때문에 값이 다르다 — 641~760px 86, 481~640px 60.
               height 40 + padding 0은 종전 `max-h-10 w-full object-contain`과 같은 렌더 결과다.
               폴백은 건물 아이콘이 아니라 이니셜이다 — 로고 없는 항목이 여러 줄 연속으로
               깔리는 화면(약국 탭)에서 전부 같은 아이콘이 되면 행 구분이 사라진다. */}
@@ -95,7 +122,7 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
 
         {/* 정보 컬럼 */}
         {/* ≤640px: flex-wrap + 메인 basis-full → 우측 side가 둘째 줄로 내려간다 */}
-        <div className="flex min-w-0 flex-1 px-[22px] py-4 max-[640px]:flex-wrap max-[480px]:px-4">
+        <div className={clsx("flex min-w-0 flex-1 px-[22px] py-4 max-[640px]:flex-wrap", INFO_COL_CLASS[variant])}>
           {/* 정보 메인 */}
           <div className="min-w-0 flex-1 max-[640px]:basis-full">
             {companyDetailHref ? (

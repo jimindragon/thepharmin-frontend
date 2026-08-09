@@ -20,7 +20,10 @@ const typeLabels: Record<ScrapedOrganization["type"], string> = {
  */
 const ROOT_CLASS = {
   default: "border border-[#dfe4ea] hover:border-[#111111]/55",
-  flush: "min-[761px]:border min-[761px]:border-[#dfe4ea] min-[761px]:hover:border-[#111111]/55",
+  flush:
+    // 카드가 화면 끝에 붙는 구간에서는 p-5(20px)가 곧 화면 여백이 된다 —
+    // 같은 화면의 h1·탭이 선 --shell-gutter/2(=24px, ≤760px)에 좌우만 맞춘다(상하는 20px 유지).
+    "max-[760px]:px-6 min-[761px]:border min-[761px]:border-[#dfe4ea] min-[761px]:hover:border-[#111111]/55",
 } as const;
 
 export function ScrapedOrganizationCard({
