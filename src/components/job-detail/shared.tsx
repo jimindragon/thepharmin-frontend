@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, ChevronRight, Layers, Lock, MapPin, Share2, type LucideIcon } from "lucide-react";
+import { Bookmark, ChevronRight, Layers, Lock, MapPin, Send, Share2, type LucideIcon } from "lucide-react";
 import { JobCard } from "@/components/JobCard";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
@@ -402,6 +402,62 @@ export function getApplyButtonLabel(apply: JobApply): string {
 }
 
 /**
+ * 지원 연락처를 로그인 뒤로 잠그는 method인지. email·phone·sms만 해당하며,
+ * quick·homepage·guide는 노출할 연락처 자체가 없다.
+ */
+function hasApplyContactGate(apply: JobApply): boolean {
+  return Boolean(APPLY_GATED_LABELS[apply.method as ApplyMethodId]);
+}
+
+/**
+ * 지원 연락처(이메일·전화·문자) 게이트. 로그인 상태면 값을, 아니면 잠금 안내를 보여준다.
+ * 사이드바 카드와 모바일 본문 섹션이 같은 내용을 써야 해서 분리했다 —
+ * 바깥 여백·구분선은 놓이는 자리마다 달라서 호출부에 남긴다.
+ */
+export function ApplyContactGate({ apply, isLoggedIn }: { apply: JobApply; isLoggedIn: boolean }) {
+  const method = apply.method as ApplyMethodId;
+  const gatedLabel = APPLY_GATED_LABELS[method];
+  const gatedMessage = APPLY_GATED_MESSAGES[method];
+  if (!gatedLabel || !gatedMessage) return null;
+
+  if (!isLoggedIn) {
+    return (
+      <p className="flex items-center justify-center gap-1.5 text-[12px] font-normal text-[#a0a9b7]">
+        <Lock size={12} />
+        {gatedMessage}
+      </p>
+    );
+  }
+
+  return (
+    <div>
+      <p className="text-[12px] font-medium text-[#8993a1]">{gatedLabel}</p>
+      <p className="mt-1 break-all text-[13px] font-normal text-[#3f4855]">{getApplyValue(apply)}</p>
+    </div>
+  );
+}
+
+/**
+ * 720px 이하 전용 지원 정보 섹션. 이 폭에서는 사이드바(ApplyCard)가 숨겨져 지원 이메일·연락처에
+ * 닿을 방법이 없어, 본문에 게이트만 따로 놓는다.
+ *
+ * 연락처가 없는 method(quick·homepage·guide)에서는 null을 돌려준다 — 보여줄 값이 없고,
+ * homepage는 하단 고정 바 버튼이 이미 이동을 담당한다. 반응형 클래스를 이 컴포넌트 안에 두는 이유도
+ * 같다: 본문이 space-y-5라 바깥에 래퍼를 두면 null일 때 빈 div가 남아 20px 죽은 여백이 생긴다.
+ */
+export function MobileApplyInfoSection({ apply, isLoggedIn }: { apply: JobApply; isLoggedIn: boolean }) {
+  if (!hasApplyContactGate(apply)) return null;
+
+  return (
+    <div className="min-[721px]:hidden">
+      <IconSectionShell id="apply-info" icon={Send} title="지원 정보">
+        <ApplyContactGate apply={apply} isLoggedIn={isLoggedIn} />
+      </IconSectionShell>
+    </div>
+  );
+}
+
+/**
  * 사이드바 지원 카드. method별로 버튼 문구와 하단 게이트/안내 영역만 분기하고,
  * 껍데기(카드 톤·타이포)는 PharmacyJobDetailV2/IndustryJobDetailClient가 쓰던 것을 그대로 계승한다.
  * 저장/공유는 JobDetailActionRow(히어로)로 옮겨졌으므로 이 카드는 순수 지원 CTA만 담당한다.
@@ -424,10 +480,7 @@ export function ApplyCard({
   isLoggedIn: boolean;
 }) {
   const method = apply.method as ApplyMethodId;
-  const value = getApplyValue(apply);
   const onActivate = getApplyAction(apply);
-  const gatedLabel = APPLY_GATED_LABELS[method];
-  const gatedMessage = APPLY_GATED_MESSAGES[method];
   const deadlineLabel = job ? formatJobDeadlineLabel(job) : null;
   const urgent = job ? isJobDeadlineUrgent(job) : false;
 
@@ -452,18 +505,11 @@ export function ApplyCard({
         <p className="mt-3 text-center text-[12px] font-normal text-[#a0a9b7]">외부 기업 채용 페이지로 이동합니다.</p>
       ) : null}
 
-      {gatedLabel && gatedMessage ? (
-        isLoggedIn ? (
-          <div className="mt-4 border-t border-[#e6ecf1] pt-4">
-            <p className="text-[12px] font-medium text-[#8993a1]">{gatedLabel}</p>
-            <p className="mt-1 break-all text-[13px] font-normal text-[#3f4855]">{value}</p>
-          </div>
-        ) : (
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-normal text-[#a0a9b7]">
-            <Lock size={12} />
-            {gatedMessage}
-          </p>
-        )
+      {/* 바깥 여백·구분선은 카드 리듬이라 여기 남기고, 안쪽 내용만 ApplyContactGate가 그린다 */}
+      {hasApplyContactGate(apply) ? (
+        <div className={isLoggedIn ? "mt-4 border-t border-[#e6ecf1] pt-4" : "mt-3"}>
+          <ApplyContactGate apply={apply} isLoggedIn={isLoggedIn} />
+        </div>
       ) : null}
 
       {apply.notice ? (
