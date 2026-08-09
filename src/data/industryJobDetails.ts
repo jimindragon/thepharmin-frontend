@@ -21,14 +21,10 @@ export interface IndustryJobBlock {
   location: { address: string; workMode: string };
   coreKeywords: string[];
   /**
-   * 지원 정보. url은 method가 "homepage"일 때 지원 페이지 주소로 쓰며, 산업의 target(자유 슬롯)과
-   * 병원·약국·연구가 URL을 넣어 쓰던 email 자리를 함께 대체한다.
-   *
-   * target은 제거 예정이지만 아직 필수로 남긴다 — IndustryJobDetailClient가 이 값을 ApplyCard의
-   * 필수 prop(target: string)에 그대로 넘기고 있어, 지금 옵셔널로 내리면 그 호출부가 타입 에러가 난다.
-   * ApplyCard가 apply 객체를 받도록 바꾸는 단계에서 함께 지운다.
+   * 지원 정보. method가 고르는 값이 필드마다 다르다 — homepage는 url, email은 email, phone은 phone.
+   * 선택 규칙은 ApplyCard의 getApplyValue 한 곳에 있다(shared.tsx).
    */
-  apply: { method: string; url?: string; email?: string; phone?: string; target: string; notice?: string };
+  apply: { method: string; url?: string; email?: string; phone?: string; notice?: string };
   deadline: { date: string | null; label: string; status: "dDay" | "always" };
   postingSource: "direct" | "headhunting";
   introduction?: string;
@@ -94,7 +90,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/ra-specialist",
-        target: "",
         notice: "지원 시 기업 채용 페이지로 이동합니다. 지원 결과와 전형 진행은 해당 기업에서 관리됩니다.",
       },
       deadline: { date: "2026-09-08", label: "마감 D-51", status: "dDay" },
@@ -177,7 +172,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/dentium-device-ra",
-        target: "",
       },
       deadline: { date: "2026-07-08", label: "마감 D-12", status: "dDay" },
       postingSource: "direct",
@@ -267,7 +261,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/samsungbio-bioprocess",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -351,7 +344,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/yuhan-ra-regulatory-strategy",
-        target: "",
       },
       deadline: { date: "2026-08-09", label: "마감 D-28", status: "dDay" },
       postingSource: "direct",
@@ -422,7 +414,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/medicoa-senior-cra",
-        target: "",
       },
       deadline: { date: "2026-07-31", label: "마감 D-19", status: "dDay" },
       postingSource: "direct",
@@ -491,7 +482,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/celltrionph-ra",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -562,7 +552,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/celltrionph-clinical",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -633,7 +622,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/celltrionph-bd",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -707,7 +695,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/gsk-vaccine-msl-cvmd",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -777,7 +764,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/gsk-oncology-msl",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -847,7 +833,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/roche-cmc-qa",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -917,7 +902,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/otsuka-mi-pv",
-        target: "",
       },
       deadline: { date: "2026-08-21", label: "마감 D-33", status: "dDay" },
       postingSource: "direct",
@@ -982,7 +966,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["BD", "라이선싱", "기술이전", "파트너십", "신약 파이프라인", "계약 협상"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1046,7 +1029,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/lgchem-mfg-pharmacist",
-        target: "",
       },
       deadline: { date: "2026-08-25", label: "마감 D-37", status: "dDay" },
       postingSource: "direct",
@@ -1113,7 +1095,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["제제연구", "Medical Affairs", "학술", "제품 개발", "처방 설계"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1178,7 +1159,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/cellbion-qaqc",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1243,7 +1223,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/samsung-pharma-qc",
-        target: "",
       },
       deadline: { date: "2026-08-28", label: "마감 D-40", status: "dDay" },
       postingSource: "direct",
@@ -1305,7 +1284,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["RA", "QA", "QC", "ISO13485", "CE MDR", "FDA", "GC/LC"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: "2026-09-01", label: "마감 D-44", status: "dDay" },
       postingSource: "direct",
@@ -1379,7 +1357,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["임상PM", "GCP", "임상시험", "제제개선", "건강기능식품"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: "2026-09-04", label: "마감 D-47", status: "dDay" },
       postingSource: "direct",
@@ -1442,7 +1419,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/samo-bd",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1501,7 +1477,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       apply: {
         method: "homepage",
         url: "https://example.com/careers/kolonbiotech-qaqc",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1566,7 +1541,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["AOC", "항체", "Oligonucleotide", "Conjugation", "신약연구", "차세대 모달리티"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "headhunting",
@@ -1635,7 +1609,6 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["비임상", "독성", "ADME/T", "PK/PD", "ADC", "Pharmacology"],
       apply: {
         method: "quick",
-        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "headhunting",
