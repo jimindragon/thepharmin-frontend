@@ -36,6 +36,7 @@ import {
   InfoRowList,
   JobDetailActionRow,
   MapPlaceholder,
+  MobileApplyInfoSection,
   SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
@@ -354,6 +355,9 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
                 {/* CTA 버튼 3개 — 기업 인사이트로 연결. companyId가 없는(미승격) 기관은 렌더하지 않는다 */}
                 {data.companyId ? <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" /> : null}
               </IconSectionShell>
+
+              {/* 지원 정보 — 720px 이하에서만. 이 폭에선 사이드바가 숨겨져 연락처에 닿을 길이 없다 */}
+              <MobileApplyInfoSection apply={job.apply} isLoggedIn={isLoggedIn} />
 
               {/* 비슷한 공고 */}
               <SimilarJobsSection jobs={similarJobs} track="research" />

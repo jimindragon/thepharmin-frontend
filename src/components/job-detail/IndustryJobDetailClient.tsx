@@ -36,6 +36,7 @@ import {
   IconSectionShell,
   JobDetailActionRow,
   MapPlaceholder,
+  MobileApplyInfoSection,
   SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
@@ -435,6 +436,9 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   </div>
                 </IconSectionShell>
               ) : null}
+
+              {/* 지원 정보 — 720px 이하에서만. 이 폭에선 사이드바가 숨겨져 연락처에 닿을 길이 없다 */}
+              <MobileApplyInfoSection apply={job.apply} isLoggedIn={isLoggedIn} />
 
               {/* 비슷한 공고 */}
               <SimilarJobsSection jobs={similarJobs} track="industry" />
