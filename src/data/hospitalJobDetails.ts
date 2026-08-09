@@ -635,6 +635,143 @@ export const snuhPharmacyStaffJobDetail: HospitalJobDetail = {
   },
 };
 
+// ---- 제일정형외과병원 정본 ----
+
+export const jeilOrthopedicHospitalJobDetail: HospitalJobDetail = {
+  id: "jeil-orthopedic-hospital-411",
+  slug: "jeil-orthopedic-hospital-parttime-pharmacist",
+  companyId: "jeil-orthopedic-hospital",
+
+  job: {
+    id: "jeil-orthopedic-hospital-411",
+    companyId: "jeil-orthopedic-hospital",
+    title: "평일 단시간 근무 약사 모집 (수·목·금 오후)",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "1명",
+    employmentTypeId: "part-time",
+    experienceId: "3-5",
+    educationId: "bachelor",
+
+    summary: "수·목·금 오후 3시간 근무할 파트타임 약사를 모집합니다.",
+    responsibilities: ["외래 처방 조제 및 감사", "의약품 재고 관리"],
+    requirements: ["약사 면허 소지자", "경력 3년 이상"],
+    preferred: ["인근 거주자"],
+
+    shiftTypeIds: ["day_shift"],
+    workDays: ["수", "목", "금"],
+    address: "서울 강남구 영동대로 726 제일정형외과병원",
+    salary: "시급 30,000원",
+    // benefitIds: 없음 — jobs.ts 411의 benefits가 비어 있고 원본에도 복리후생 기재가 없다
+    workConditionDetail: "주 3일 (수~금) 15:00~18:00 근무이며, 급여는 시급 30,000원입니다.",
+
+    coreKeywords: ["파트타임", "단시간", "오후근무", "전문병원", "외래조제"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "1차 면접", "최종합격"],
+    requiredDocuments: ["이력서", "자기소개서"],
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요. 이력서와 자기소개서를 함께 제출해 주세요.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    companyId: "jeil-orthopedic-hospital",
+    hospitalName: "제일정형외과병원",
+    logoUrl: companyLogos["제일정형외과병원"],
+
+    hospitalTypeId: "hospital",
+    hospitalOperatorId: "private",
+    // foundedYear/homepageUrl: 없음 — 원본에 근거 없음
+
+    shortIntro: "서울 강남구 청담동에 위치한 정형외과 전문병원입니다.",
+    fullIntro: "제일정형외과병원은 서울 강남구 청담동에 위치한 정형외과 전문병원입니다.",
+    keywords: ["전문병원", "정형외과", "강남구 청담동"],
+
+    // bedCount/pharmacyStaffCount/dutySystem/specialistPharmacists: 없음 — 원본에 근거 없음
+    medicalDepartments: ["orthopedics"],
+    pharmacyEnvironmentDescription: "외래 처방 조제와 의약품 재고 관리를 담당합니다.",
+
+    location: {
+      address: "서울 강남구 영동대로 726 제일정형외과병원",
+      detailAddress: "",
+    },
+  },
+};
+
+// ---- 무주군립요양병원 정본 ----
+
+export const mujuCountyCareHospitalJobDetail: HospitalJobDetail = {
+  id: "muju-county-care-hospital-412",
+  slug: "muju-county-care-hospital-twice-weekly-pharmacist",
+  companyId: "muju-county-care-hospital",
+
+  job: {
+    id: "muju-county-care-hospital-412",
+    companyId: "muju-county-care-hospital",
+    title: "요양병원 약사 모집 (주 2회 근무)",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "1명",
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "bachelor",
+
+    summary: "주 2회 근무할 요양병원 약사를 모집합니다. 기숙사 또는 교통비 지원을 협의할 수 있습니다.",
+    responsibilities: ["입원환자 처방 조제 및 감사", "의약품 재고 및 관리"],
+    requirements: ["약사 면허 소지자", "신입·경력 1년 이상 지원 가능"],
+    // preferred: 없음 — 원본에 우대 사항 표기 없음
+
+    shiftTypeIds: ["day_shift"],
+    // workDays: 없음 — 주 2회라는 횟수만 있고 요일이 특정되지 않았다
+    address: "전북 무주군 무주읍 당산강변로 284 무주군립요양병원",
+    salary: "월급 300만원",
+    benefitIds: ["기숙사·사택"],
+    workConditionDetail:
+      "주 2회 09:00~18:00, 16시간 근무입니다. 기숙사 제공 또는 교통비 실비 지원을 협의할 수 있으며, 약무보조 1명과 자동약 포장기를 갖추고 있습니다.",
+
+    coreKeywords: ["요양병원", "주2회", "기숙사", "지방근무", "유연근무"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "1차 면접", "최종합격"],
+    requiredDocuments: ["이력서", "약사 면허증 사본"],
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요. 이력서와 약사 면허증 사본을 함께 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "muju-county-care-hospital",
+    hospitalName: "무주군립요양병원",
+    logoUrl: companyLogos["무주군립요양병원"],
+
+    hospitalTypeId: "long-term",
+    hospitalOperatorId: "public",
+    // foundedYear/homepageUrl: 없음 — 원본에 근거 없음
+
+    shortIntro: "전북 무주군 무주읍에 위치한 요양병원입니다.",
+    fullIntro:
+      "무주군립요양병원은 전북 무주군 무주읍에 위치한 요양병원으로, 사단법인 소산이 운영하고 있습니다.",
+    keywords: ["요양병원", "군립", "지방근무"],
+
+    // bedCount/medicalDepartments/pharmacyStaffCount/dutySystem/specialistPharmacists: 없음 — 원본에 근거 없음
+    pharmacyEnvironmentDescription: "약무보조 1명과 자동약 포장기를 갖추고 입원환자 조제 업무를 담당합니다.",
+
+    location: {
+      address: "전북 무주군 무주읍 당산강변로 284 무주군립요양병원",
+      detailAddress: "",
+    },
+  },
+};
+
 export const hospitalJobDetails: HospitalJobDetail[] = [
   osanHospitalJobDetail,
   armedForcesSeoulDistrictHospitalJobDetail,
@@ -642,6 +779,8 @@ export const hospitalJobDetails: HospitalJobDetail[] = [
   sungaeHospitalJobDetail,
   nationalCentralHospitalJobDetail,
   snuhPharmacyStaffJobDetail,
+  jeilOrthopedicHospitalJobDetail,
+  mujuCountyCareHospitalJobDetail,
 ];
 
 export function getHospitalJobDetail(slug: string): HospitalJobDetail | undefined {
