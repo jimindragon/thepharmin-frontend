@@ -199,7 +199,6 @@ export const eunhaengPharmacyJobDetail: PharmacyJobDetail = {
     apply: {
       method: "email",
       email: "recruit@eunhaeng-pharmacy.example",
-      phone: "",
       notice: "이메일 지원을 우선 확인합니다. 경력과 근무 가능 요일을 함께 남겨 주세요.",
     },
     isRolling: true,
@@ -285,8 +284,6 @@ export const hyundaiPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요. 경력과 근무 가능 요일을 함께 남겨 주세요.",
     },
     isRolling: true,
@@ -367,8 +364,6 @@ export const hwagokGibeumPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요. 졸업년도와 경력사항을 함께 남겨 주세요.",
     },
     isRolling: true,
@@ -452,8 +447,6 @@ export const buldangCentralPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요. 간단한 이력을 문자로 남겨 주시면 연락드립니다.",
     },
     isRolling: true,
@@ -539,8 +532,6 @@ export const yeongdong365PharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편 지원 후 근무 가능 여부를 확인해 연락드립니다.",
     },
     isRolling: true,
@@ -620,8 +611,6 @@ export const shinJungangPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편 지원 후 근무 가능 여부를 확인해 연락드립니다.",
     },
     isRolling: true,
@@ -703,8 +692,6 @@ export const bichinaPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "자유양식 지원서로 접수합니다.",
     },
     isRolling: true,
@@ -785,7 +772,6 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "phone",
-      email: "",
       // 기존 6건에 phone 방식 레코드가 없어 표기 관례가 없다 — 자리표시자 번호를 둔다(원본 안심번호는 마스킹 값이라 옮기지 않는다).
       phone: "0507-1234-5678",
       notice: "간단한 자기소개와 이력을 약국장에게 문자로 남겨주시면 연락드립니다.",
@@ -869,8 +855,6 @@ export const munmuPharmacyJobDetail: PharmacyJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간략한 경력과 함께 문자로 문의해 주세요.",
     },
     isRolling: false,
@@ -966,7 +950,6 @@ export const hyeongangPharmacyJobDetail: PharmacyJobDetail = {
       // jobs.ts 310은 applyMethod가 "이메일 지원"인데 applicationEmail이 없어 목업용 주소를 새로 지정했다
       method: "email",
       email: "hyeongang-recruit@pharmacy.example",
-      phone: "",
       notice: "이메일로 지원해 주세요.",
     },
     isRolling: true,

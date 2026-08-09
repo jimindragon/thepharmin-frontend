@@ -191,7 +191,6 @@ export const osanHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "email",
       email: "pharmacy-recruit@osan-hankook-hospital.example",
-      phone: "",
       notice: "이력서와 약사 면허증 사본을 이메일로 보내 주세요. 당직 가능 요일을 함께 기재해 주세요.",
     },
     isRolling: true,
@@ -273,7 +272,6 @@ export const armedForcesSeoulDistrictHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "email",
       email: "pharmacy-recruit@afsdh-hospital.example",
-      phone: "",
       notice: "이력서와 경력증명서를 이메일로 제출해 주세요. 서류 검토 후 순차 안내드립니다.",
     },
     isRolling: false,
@@ -356,8 +354,6 @@ export const nationalFireHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "homepage",
       url: "https://recruit.nfh.example",
-      email: "",
-      phone: "",
       notice: "채용 공고문을 확인한 후 병원 홈페이지 채용 페이지에서 접수해 주세요.",
     },
     isRolling: false,
@@ -430,8 +426,6 @@ export const sungaeHospitalJobDetail: HospitalJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요.",
     },
     isRolling: true,
@@ -510,8 +504,6 @@ export const nationalCentralHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "homepage",
       url: "https://recruit.nch.example",
-      email: "",
-      phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요. 블라인드 전형으로 진행됩니다.",
     },
     isRolling: false,
@@ -592,8 +584,6 @@ export const snuhPharmacyStaffJobDetail: HospitalJobDetail = {
     apply: {
       method: "homepage",
       url: "https://recruit.snuh.example",
-      email: "",
-      phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요.",
     },
     isRolling: false,
@@ -663,8 +653,6 @@ export const jeilOrthopedicHospitalJobDetail: HospitalJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요. 이력서와 자기소개서를 함께 제출해 주세요.",
     },
     isRolling: true,
@@ -732,8 +720,6 @@ export const mujuCountyCareHospitalJobDetail: HospitalJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요. 이력서와 약사 면허증 사본을 함께 제출해 주세요.",
     },
     isRolling: false,
@@ -821,7 +807,6 @@ export const hanbitGeneralHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "email",
       email: "recruit@hanbit-hospital.example",
-      phone: "",
       notice: "이메일 제목에 '지원부문_성명'을 기재해 주세요. (예: 입원조제파트_홍길동)",
     },
     isRolling: false,
@@ -915,8 +900,6 @@ export const nationalSpecialMedicalCenterJobDetail: HospitalJobDetail = {
     apply: {
       method: "homepage",
       url: "https://recruit.nsmc.example",
-      email: "",
-      phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요.",
     },
     isRolling: false,
@@ -993,7 +976,6 @@ export const hmcseoulHospitalJobDetail: HospitalJobDetail = {
     apply: {
       method: "email",
       email: "pharmrecruit@hmcseoul.example",
-      phone: "",
       // jobs.ts 408에 applicationGuide가 없어 지원 방법만 안내한다
       notice: "이메일로 지원해 주세요.",
     },
@@ -1062,8 +1044,6 @@ export const miraeCareHospitalJobDetail: HospitalJobDetail = {
 
     apply: {
       method: "quick",
-      email: "",
-      phone: "",
       notice: "간편지원으로 접수해 주세요.",
     },
     isRolling: true,

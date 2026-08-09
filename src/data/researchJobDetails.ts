@@ -197,7 +197,6 @@ export const kistNeurochannelPostdocJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "neurochannel-recruit@kist.re.kr",
-      phone: "",
       notice: "이력서(연구 실적 목록 포함)와 영문 자기소개서를 이메일로 제출해 주세요.",
     },
     isRolling: true,
@@ -276,7 +275,6 @@ export const kistNeurophysiologyInternJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "neurochannel-recruit@kist.re.kr",
-      phone: "",
       notice: "이력서와 재학증명서를 이메일로 제출해 주세요.",
     },
     isRolling: false,
@@ -354,7 +352,6 @@ export const amcColorectalSurgeryResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "colorectal-lab-recruit@amc.seoul.kr",
-      phone: "",
       notice: "이력서와 학위증명서를 이메일로 제출해 주세요.",
     },
     isRolling: true,
@@ -437,7 +434,6 @@ export const kbriDementiaPostdocJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "dementia-recruit@kbri.example",
-      phone: "",
       notice: "이력서와 연구 실적 목록을 이메일로 제출해 주세요.",
     },
     isRolling: false,
@@ -524,7 +520,6 @@ export const kangwonNaturalProductPostdocJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "np-lab-recruit@kangwon.example",
-      phone: "",
       notice:
         "이력서와 연구 실적 목록을 이메일로 제출해 주세요. 학내 벤처기업 소속 지원도 함께 안내드립니다.",
     },
@@ -619,7 +614,6 @@ export const untBrainOrganoidPostdocJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "brain-organoid-recruit@unt.example",
-      phone: "",
       notice:
         "이력서(CV)와 Cover letter, 추천인 2인 연락처를 이메일로 제출해 주세요. 채용이 확정되면 마감됩니다.",
     },
@@ -705,7 +699,6 @@ export const postechStructuralBiologyResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "bio-recruit@postech.example",
-      phone: "",
       notice: "입사지원서와 자기소개서를 이메일로 제출해 주세요. 채용이 확정되면 마감됩니다.",
     },
     isRolling: false,
@@ -788,7 +781,6 @@ export const donggukDmpkResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "dmpk-recruit@dongguk.example",
-      phone: "",
       notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
     },
     isRolling: false,
@@ -870,7 +862,6 @@ export const pnuOralMucosalImmunologyResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "lomi-recruit@pusan.example",
-      phone: "",
       notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
     },
     isRolling: false,
@@ -952,7 +943,6 @@ export const konyangMyunggokEyeResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "myunggok-recruit@konyang.example",
-      phone: "",
       notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서(또는 졸업예정증명서)를 함께 첨부해 주세요.",
     },
     isRolling: false,
@@ -1035,7 +1025,6 @@ export const hallymMicrobiologyLabManagerJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "microbiology-recruit@hallym.example",
-      phone: "",
       notice: "이력서(CV)와 자기소개서를 이메일로 제출해 주세요.",
     },
     isRolling: false,
@@ -1114,7 +1103,6 @@ export const injeCardiovascularCoreFacilityResearcherJobDetail: ResearchJobDetai
     apply: {
       method: "email",
       email: "coredream-recruit@inje.example",
-      phone: "",
       notice: "이력서와 자기소개서를 이메일로 제출해 주세요. 학위증명서와 성적증명서를 함께 첨부해 주세요.",
     },
     isRolling: false,
@@ -1204,7 +1192,6 @@ export const koreaUnivPlasticSurgeryResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "ps-lab-recruit@korea.example",
-      phone: "",
       notice: "이력서(CV)·경력소개서·자기소개서와 학위·경력증명서를 이메일로 제출해 주세요.",
     },
     isRolling: false,
@@ -1294,7 +1281,6 @@ export const knuHospitalOmicsBioinformaticsResearcherJobDetail: ResearchJobDetai
     apply: {
       method: "email",
       email: "omics-recruit@knuh.example",
-      phone: "",
       notice: "이력서(CV)와 자기소개서, 학위증명서를 이메일로 제출해 주세요.",
     },
     isRolling: false,
@@ -1383,7 +1369,6 @@ export const snuhNeurologyDataResearcherJobDetail: ResearchJobDetail = {
     apply: {
       method: "email",
       email: "neurology-research@snuh.example",
-      phone: "",
       notice: "이력서와 자기소개서(자유 양식, 지원동기·연구경력 중심)를 이메일로 제출해 주세요.",
     },
     isRolling: false,
