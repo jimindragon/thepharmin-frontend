@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bookmark, ChevronRight, Layers, Lock, MapPin, Send, Share2, type LucideIcon } from "lucide-react";
 import { JobCard } from "@/components/JobCard";
 import { EntityLogo } from "@/components/ui/EntityLogo";
+import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
 import type { ApplyMethodId, FormattedContent, Job, JobApply, JobTrack } from "@/types/jobs";
@@ -317,15 +318,6 @@ export function InfoRowList({ children }: { children: React.ReactNode }) {
 }
 
 // ── 지원 CTA 공통 카드 ──────────────────────────────────────────────────────────
-
-const APPLY_METHOD_LABELS: Record<ApplyMethodId, string> = {
-  quick: "간편지원",
-  homepage: "기업 홈페이지 지원",
-  email: "이메일 지원",
-  phone: "전화 지원",
-  sms: "문자 지원",
-  guide: "별도 안내",
-};
 
 const APPLY_BUTTON_LABELS: Record<ApplyMethodId, string> = {
   quick: "간편지원하기",
