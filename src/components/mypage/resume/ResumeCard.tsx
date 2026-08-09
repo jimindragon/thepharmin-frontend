@@ -26,7 +26,15 @@ export function ResumeCard({
   /* 직무 태그 칩 줄은 정보 다이어트로 뺐다 — jobSubcategoryIds 자체는 편집 화면·매칭에서 계속 쓰이니 데이터는 그대로다.
      대시보드 "내 이력서" 행은 아직 칩을 유지한다(별도 판단). */
   return (
-    <article className="border border-border bg-white p-6 max-[640px]:p-5">
+    <article className="relative border border-border bg-white p-6 transition-colors hover:bg-[#fbfcfc] max-[640px]:p-5">
+      {/* 카드 전체를 눌러도 수정 화면으로 간다 — JobCard와 같은 전면 링크 방식이다.
+          토글·⋯ 메뉴처럼 카드 안에서 따로 동작하는 요소는 z-20으로 이 링크 위에 올려 보호한다. */}
+      <Link
+        href={`/mypage/resume/${resume.id}`}
+        aria-label={`${resume.title} 수정하기`}
+        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
+      />
+
       {/* 액션이 가로 한 줄이라 좌우 높이 차가 10px뿐이다 — items-center로 제목·버튼 글자 중심을 맞춘다.
           좁은 폭에서는 flex-wrap으로 액션 그룹이 제목 아래로 내려간다(한 줄 고집 금지). */}
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -48,7 +56,7 @@ export function ResumeCard({
 
         <div className="flex shrink-0 flex-wrap items-center gap-3">
           {/* 라벨과 토글은 한 덩이의 컨트롤이라 안쪽 간격만 8px로 좁게 두고, 액션끼리는 12px로 띄운다. */}
-          <div className="flex items-center gap-2">
+          <div className="relative z-20 flex items-center gap-2">
             <span className="text-[13px] font-medium text-[#8a94a3]">제안 받기</span>
             <ToggleSwitch label={`${resume.title} 제안 받기`} checked={resume.proposalEnabled} onChange={onToggleProposal} />
           </div>
@@ -57,19 +65,25 @@ export function ResumeCard({
               단 640px 아래에서는 액션 줄 폭이 모자라 120px가 카드 밖으로 삐져나온다 — 첨부형 쪽 슬롯과 함께
               모바일에서는 정렬을 포기하고 내용 폭으로 되돌린다.
               문구는 완료·작성 중 구분 없이 "수정하기"로 통일한다(이동 대상은 아래 링크 하나로 동일). */}
+          {/* 전면 링크와 목적지가 같아 탭 순서에서는 뺀다(포커스 2회 방지) — 눌리는 것은 그대로라
+              z-20으로 올려 두고, 시각적으로는 "여기가 주 동작"이라는 힌트 역할만 남긴다. */}
           <Link
             href={`/mypage/resume/${resume.id}`}
-            className="inline-flex h-9 w-[120px] items-center justify-center border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#44505f] hover:border-[#111111] hover:text-[#111111] max-[640px]:w-auto"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="relative z-20 inline-flex h-9 w-[120px] items-center justify-center border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#44505f] hover:border-[#111111] hover:text-[#111111] max-[640px]:w-auto"
           >
             수정하기
           </Link>
-          <ResumeActionsMenu
-            label={resume.title}
-            isPrimary={resume.isPrimary}
-            onSetPrimary={onSetPrimary}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
-          />
+          <div className="relative z-20">
+            <ResumeActionsMenu
+              label={resume.title}
+              isPrimary={resume.isPrimary}
+              onSetPrimary={onSetPrimary}
+              onDuplicate={onDuplicate}
+              onDelete={onDelete}
+            />
+          </div>
         </div>
       </div>
 
