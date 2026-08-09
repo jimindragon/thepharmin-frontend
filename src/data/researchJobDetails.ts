@@ -16,6 +16,7 @@
 import { companyLogos } from "@/config/companyImages";
 import { educationOptions, employmentTypeOptions, experienceOptions, workModeOptions } from "@/config/jobFilters/shared";
 import { researchInstitutionTypeOptions, researchStaffScaleOptions } from "@/config/jobFilters/researchFilters";
+import type { JobApply } from "@/types/jobs";
 
 export const employmentTypeLabelMap: Record<string, string> = Object.fromEntries(
   employmentTypeOptions.map((option) => [option.id, option.label]),
@@ -104,18 +105,8 @@ export interface ResearchJobPosting {
   hiringProcess?: string[];
   requiredDocuments?: string[];
 
-  /**
-   * 지원 정보: method 단일 id(applyMethodLabelMap). 로그인 잠금은 렌더 단계.
-   * url은 method가 "homepage"일 때 지원 페이지 주소로 쓴다 — 전용 필드가 없어 URL을 email 자리에
-   * 넣어 쓰던 관례를 대체하며, 산업의 target과 같은 자리다(4트랙 공통 형태로 맞추는 중).
-   */
-  apply: {
-    method: string;
-    url?: string;
-    email: string;
-    phone: string;
-    notice: string;
-  };
+  /** 4트랙 공통 형태. 로그인 잠금은 렌더 단계(ApplyContactGate)가 맡는다. */
+  apply: JobApply;
   isRolling: boolean;
 }
 

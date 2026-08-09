@@ -1,5 +1,5 @@
 import { companyLogos } from "@/config/companyImages";
-import type { FormattedContent } from "@/types/jobs";
+import type { FormattedContent, JobApply } from "@/types/jobs";
 
 export interface IndustryJobCore {
   main: string;
@@ -20,11 +20,8 @@ export interface IndustryJobBlock {
   education: string;
   location: { address: string; workMode: string };
   coreKeywords: string[];
-  /**
-   * 지원 정보. method가 고르는 값이 필드마다 다르다 — homepage는 url, email은 email, phone은 phone.
-   * 선택 규칙은 ApplyCard의 getApplyValue 한 곳에 있다(shared.tsx).
-   */
-  apply: { method: string; url?: string; email?: string; phone?: string; notice?: string };
+  /** 4트랙 공통 형태. 어떤 필드를 읽을지는 shared.tsx의 getApplyValue 한 곳에서만 판단한다. */
+  apply: JobApply;
   deadline: { date: string | null; label: string; status: "dDay" | "always" };
   postingSource: "direct" | "headhunting";
   introduction?: string;

@@ -8,7 +8,7 @@ import { JobCard } from "@/components/JobCard";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
-import type { FormattedContent, Job, JobTrack } from "@/types/jobs";
+import type { ApplyMethodId, FormattedContent, Job, JobApply, JobTrack } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
 import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
 
@@ -318,8 +318,6 @@ export function InfoRowList({ children }: { children: React.ReactNode }) {
 
 // ── 지원 CTA 공통 카드 ──────────────────────────────────────────────────────────
 
-export type ApplyMethodId = "quick" | "homepage" | "email" | "phone" | "sms" | "guide";
-
 const APPLY_METHOD_LABELS: Record<ApplyMethodId, string> = {
   quick: "간편지원",
   homepage: "기업 홈페이지 지원",
@@ -351,24 +349,12 @@ const APPLY_GATED_MESSAGES: Partial<Record<ApplyMethodId, string>> = {
 };
 
 /**
- * 4트랙 상세 데이터의 apply 블록이 공유하는 형태. 트랙별 타입은 각 데이터 파일에 있고
- * 여기서는 ApplyCard가 읽는 필드만 구조적으로 받는다(트랙 고유 필드가 더 있어도 무방).
- */
-export interface JobApply {
-  method: string;
-  url?: string;
-  email?: string;
-  phone?: string;
-  notice?: string;
-}
-
-/**
  * method가 실제로 쓰는 값 하나를 고른다 — 지원 방식마다 값이 들어 있는 필드가 다르기 때문이다.
  * homepage는 지원 페이지 주소, email은 지원 이메일, phone·sms는 연락처를 쓴다(문자 연락처는
  * 전화번호와 같은 값이라 전용 필드를 두지 않는다). quick·guide는 값 없이 동작한다.
  */
 export function getApplyValue(apply: JobApply): string {
-  switch (apply.method as ApplyMethodId) {
+  switch (apply.method) {
     case "homepage":
       return apply.url ?? "";
     case "email":
@@ -387,7 +373,7 @@ export function getApplyValue(apply: JobApply): string {
  * 모바일 하단 바도 같은 규칙을 써야 하므로 카드 밖에서 재사용할 수 있게 분리해 둔다.
  */
 export function getApplyAction(apply: JobApply): (() => void) | undefined {
-  if ((apply.method as ApplyMethodId) !== "homepage") return undefined;
+  if (apply.method !== "homepage") return undefined;
   const url = getApplyValue(apply);
   if (!url) return undefined;
   return () => window.open(url, "_blank", "noopener,noreferrer");
@@ -398,7 +384,7 @@ export function getApplyAction(apply: JobApply): (() => void) | undefined {
  * 데이터의 method가 아직 string이라 여기서 한 번만 좁힌다(호출부에 캐스트를 퍼뜨리지 않는다).
  */
 export function getApplyButtonLabel(apply: JobApply): string {
-  return APPLY_BUTTON_LABELS[apply.method as ApplyMethodId];
+  return APPLY_BUTTON_LABELS[apply.method];
 }
 
 /**
@@ -406,7 +392,7 @@ export function getApplyButtonLabel(apply: JobApply): string {
  * quick·homepage·guide는 노출할 연락처 자체가 없다.
  */
 function hasApplyContactGate(apply: JobApply): boolean {
-  return Boolean(APPLY_GATED_LABELS[apply.method as ApplyMethodId]);
+  return Boolean(APPLY_GATED_LABELS[apply.method]);
 }
 
 /**
@@ -415,7 +401,7 @@ function hasApplyContactGate(apply: JobApply): boolean {
  * 바깥 여백·구분선은 놓이는 자리마다 달라서 호출부에 남긴다.
  */
 export function ApplyContactGate({ apply, isLoggedIn }: { apply: JobApply; isLoggedIn: boolean }) {
-  const method = apply.method as ApplyMethodId;
+  const method = apply.method;
   const gatedLabel = APPLY_GATED_LABELS[method];
   const gatedMessage = APPLY_GATED_MESSAGES[method];
   if (!gatedLabel || !gatedMessage) return null;
@@ -479,7 +465,7 @@ export function ApplyCard({
   /** 약국 상세가 미리보기에서 강제로 false를 내리므로 훅을 직접 부르지 않고 prop으로 받는다. */
   isLoggedIn: boolean;
 }) {
-  const method = apply.method as ApplyMethodId;
+  const method = apply.method;
   const onActivate = getApplyAction(apply);
   const deadlineLabel = job ? formatJobDeadlineLabel(job) : null;
   const urgent = job ? isJobDeadlineUrgent(job) : false;
