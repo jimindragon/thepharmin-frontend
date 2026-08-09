@@ -16,9 +16,14 @@ import { ModalShell } from "@/components/ui/ModalShell";
 export function ResumeConvertModal({
   onClose,
   onAnalyze,
+  mode = "create",
+  confirmLabel = "항목에 나눠 담기",
 }: {
   onClose: () => void;
   onAnalyze: (text: string) => Promise<void>;
+  /** 결과를 어디에 담는지에 따라 첫 안내 줄만 갈린다. 나머지 두 줄은 공통이다. */
+  mode?: "create" | "edit";
+  confirmLabel?: string;
 }) {
   const [source, setSource] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -34,6 +39,14 @@ export function ResumeConvertModal({
 
   const loading = status === "loading";
   const canAnalyze = source.trim().length > 0 && !loading;
+
+  // 첫 줄이 "무엇을 만드는가"와 "무엇은 하지 않는가"를 함께 말한다 — 두 줄로 나누면 같은 말을 두 번 읽게 된다.
+  const bullets = [
+    mode === "edit"
+      ? "현재 이력서는 그대로 두고, 붙여넣은 내용으로 새 이력서를 만들어 드려요. 원문에 없는 내용은 추가하지 않아요."
+      : "붙여넣은 내용을 항목별로 나눠 채워 드려요. 원문에 없는 내용은 추가하지 않아요.",
+    "입력한 내용은 이 이력서 작성에만 사용됩니다.",
+  ];
 
   async function handleAnalyze() {
     if (!canAnalyze) return;
@@ -51,27 +64,31 @@ export function ResumeConvertModal({
   return (
     <ModalShell title="구조화 이력서로 변환" onClose={onClose}>
       <div className="overflow-y-auto px-6 py-5">
-        <p className="text-[13px] font-normal leading-[1.6] text-[#68717e]">
-          이력서 내용을 붙여넣으면 항목별로 나눠 담습니다. 원문에 없는 내용은 채우지 않습니다.
-        </p>
+        {/* 안내는 이 박스 하나로 모은다 — 박스·본문 문장·하단 캡션이 따로 놀면
+            같은 말을 세 군데서 나눠 하게 되고, 정작 붙여넣을 칸이 아래로 밀린다. */}
+        <div className="flex flex-col gap-1 border border-border bg-[#fafafa] px-4 py-3">
+          {bullets.map((bullet) => (
+            <p key={bullet} className="flex gap-1.5 text-[13px] font-normal leading-[1.6] text-[#595959]">
+              {/* 리스트 마커가 아니라 텍스트 "·" — 마커는 들여쓰기·줄바꿈 정렬이 브라우저마다 갈린다. */}
+              <span aria-hidden>·</span>
+              <span className="min-w-0 flex-1">{bullet}</span>
+            </p>
+          ))}
+        </div>
         <textarea
           value={source}
           onChange={(e) => setSource(e.target.value)}
           rows={8}
           disabled={loading}
           aria-label="이력서 내용 붙여넣기"
-          placeholder="올려두신 이력서 파일을 열어 내용을 그대로 붙여넣어 주세요."
+          placeholder="이력서 파일의 내용을 그대로 붙여넣어 주세요."
           className={`${TA} mt-3`}
         />
         {loading ? (
           <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#68717e]">
             이력서 내용을 항목별로 나누고 있습니다. 잠시만 기다려 주세요.
           </p>
-        ) : (
-          <p className="mt-2 text-[12px] font-normal text-[#8a94a3]">
-            붙여넣은 내용은 이 이력서 작성에만 사용됩니다.
-          </p>
-        )}
+        ) : null}
       </div>
 
       {status === "error" ? (
@@ -94,7 +111,7 @@ export function ResumeConvertModal({
           disabled={!canAnalyze}
           className="h-10 border border-[#111111] bg-[#111111] px-4 text-[13px] font-semibold text-white transition hover:border-[#303946] hover:bg-[#303946] disabled:cursor-not-allowed disabled:border-[#dfe4ea] disabled:bg-[#f5f6f7] disabled:text-[#aeb6c0]"
         >
-          {loading ? "분석 중…" : "항목에 나눠 담기"}
+          {loading ? "분석 중…" : confirmLabel}
         </button>
       </div>
     </ModalShell>

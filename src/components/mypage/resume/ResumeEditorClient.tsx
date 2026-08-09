@@ -2,19 +2,24 @@
 
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { JobFilterPanel, OptionChip } from "@/components/SearchFilterPanel";
 import { Segmented } from "@/components/business/BusinessFormControls";
 import { IN, SEL, TA } from "@/components/job-registration/fieldClasses";
+import { ResumeConvertModal } from "@/components/mypage/resume/ResumeConvertModal";
 import {
+  analyzeResumeDemo,
   applyResumeConvertPatch,
   countPatchedSections,
   readResumeConvertDraft,
+  saveResumeConvertDraft,
+  toResumeContent,
 } from "@/components/mypage/resume/resumeConvertDemo";
 import { EmptyNotice, ResumeContentView } from "@/components/shared/ResumeContentView";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { FormRow, ResumeSectionCard } from "@/components/ui/FormSection";
 import { ModalShell } from "@/components/ui/ModalShell";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
@@ -91,13 +96,6 @@ function uid(prefix: string) {
 const FIELD_WIDTH = "max-w-[420px]";
 
 /**
- * 여러 줄 입력의 폭. 기관정보 관리의 720px보다 넓게 잡는다 — 이력서의 자기소개·경력 상세는
- * 문단 단위로 길게 쓰는 칸이라 한 줄이 더 길어도 읽힌다.
- * 공용 상수(PROFILE_TEXT_FIELD_WIDTH)는 다른 화면도 쓰므로 건드리지 않고 여기서만 덮는다.
- */
-const TEXTAREA_WIDTH = "max-w-[800px]";
-
-/**
  * SEL은 화살표 자리(pr-8)만 비워 두고 아이콘은 그리지 않는다 — 공고 등록 폼도 같다.
  * 이력서 폼은 아이콘을 유지하기로 해서, 그 위치를 잡을 relative 컨테이너만 남긴다.
  */
@@ -149,18 +147,32 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
   const [draft, setDraft] = useState<BuiltResume>(() => withKnownExperienceId(initialResume ?? createEmptyBuiltResume(uid("resume"))));
   const [notice, setNotice] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [convertOpen, setConvertOpen] = useState(false);
+  /** AI가 채운 내용이 한 번이라도 들어왔는지. 이후 손으로 고쳐도 유지된다 — 완료 전 확인을 한 번 받는다. */
+  const [aiFillUsed, setAiFillUsed] = useState(false);
+  const [aiConfirmOpen, setAiConfirmOpen] = useState(false);
+  /** 대기 중 모달이 닫혔는지 판단하는 표식 — 닫힌 뒤 도착한 결과를 반영하지 않는다(관리 페이지와 같은 방식). */
+  const convertOpenRef = useRef(false);
 
   /**
-   * 첨부 이력서 변환으로 넘어온 경우, 목록 화면이 sessionStorage에 둔 결과를 집어 draft에 얹는다.
+   * 변환 결과로 넘어온 경우, 앞 화면이 sessionStorage에 둔 인계분을 집어 draft에 얹는다.
    * 인계분은 읽는 즉시 지워지므로(readResumeConvertDraft) 한 번만 반영된다 — Strict Mode에서
    * effect가 두 번 돌아도 두 번째는 null이라 중복 채움·중복 알림이 없다.
+   *
+   * base가 있으면 "기존 이력서의 새 버전"이다 — 원본 내용을 먼저 깔고 그 위에 patch를 얹는다.
+   * 원본은 손대지 않으므로 이 화면을 저장하지 않고 나가도 원본은 그대로다.
    */
   useEffect(() => {
     if (mode !== "create") return;
-    const patch = readResumeConvertDraft();
-    if (!patch) return;
-    setDraft((current) => withKnownExperienceId(applyResumeConvertPatch(current, patch)));
-    setNotice(`${countPatchedSections(patch)}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+    const handoff = readResumeConvertDraft();
+    if (!handoff) return;
+    setDraft((current) => {
+      const seeded = handoff.base ? { ...current, ...handoff.base } : current;
+      const titled = handoff.baseTitle ? { ...seeded, title: `${handoff.baseTitle} · AI 수정본` } : seeded;
+      return withKnownExperienceId(applyResumeConvertPatch(titled, handoff.patch));
+    });
+    setNotice(`${countPatchedSections(handoff.patch)}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+    setAiFillUsed(true);
   }, [mode]);
 
   // 미리보기의 Escape·body 스크롤 잠금은 ModalShell이 맡는다(previewOpen이 마운트를 결정한다).
@@ -287,12 +299,50 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
     setPreviewOpen(true);
   };
 
+  const openConvert = () => {
+    convertOpenRef.current = true;
+    setConvertOpen(true);
+  };
+
+  const closeConvert = () => {
+    convertOpenRef.current = false;
+    setConvertOpen(false);
+  };
+
+  /**
+   * 모달에 넘기는 분석기. 모드에 따라 결과를 쓰는 곳이 다르다.
+   *  - 새 작성: 지금 이 폼이 곧 목적지라 sessionStorage를 거치지 않고 바로 얹는다.
+   *  - 편집: 원본을 건드리지 않기 위해 결과를 인계해 새 작성 화면으로 보낸다.
+   */
+  const handleConvertAnalyze = async (text: string) => {
+    const patch = await analyzeResumeDemo(text);
+    if (!convertOpenRef.current) return; // 대기 중 닫혔으면 반영하지 않는다
+
+    if (mode === "create") {
+      setDraft((current) => withKnownExperienceId(applyResumeConvertPatch(current, patch)));
+      setNotice(`${countPatchedSections(patch)}개 항목을 채웠습니다. 내용을 확인해 주세요.`);
+      setAiFillUsed(true);
+      return;
+    }
+
+    saveResumeConvertDraft({ patch, base: toResumeContent(draft), baseTitle: draft.title });
+    router.push("/mypage/resume/new");
+  };
+
+  const finishResume = () => {
+    router.push("/mypage/resume");
+  };
+
   const completeResume = () => {
     if (!draft.title.trim()) {
       setNotice("이력서 제목을 입력해 주세요.");
       return;
     }
-    router.push("/mypage/resume");
+    if (aiFillUsed) {
+      setAiConfirmOpen(true);
+      return;
+    }
+    finishResume();
   };
 
   const pageTitle = mode === "create" ? "이력서 작성" : "이력서 편집";
@@ -303,6 +353,15 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
 
       <div className="mt-5 flex items-center justify-between gap-4">
         <h1 className="text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{pageTitle}</h1>
+        {/* AI 진입점 — 제목줄 우측. 공고 등록 폼과 같은 문법으로 아이콘 없이 텍스트만 쓴다.
+            새 작성은 이 폼을 채우고, 편집은 원본을 두고 새 이력서를 만든다 — 하는 일이 달라 문구를 나눈다. */}
+        <button
+          type="button"
+          onClick={openConvert}
+          className="inline-flex h-9 shrink-0 items-center justify-center border border-[#111111] bg-white px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#f7f8fa]"
+        >
+          {mode === "create" ? "AI로 문서 채우기" : "AI로 새 버전 만들기"}
+        </button>
       </div>
       <p className="mt-2.5 text-[13px] font-normal leading-[1.6] text-[#68717e]">대표 이력서로 지정하면 간편지원에 바로 첨부됩니다.</p>
 
@@ -554,7 +613,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
                       onChange={(event) => updateCareer(career.id, { description: event.target.value })}
                       placeholder="주요 업무를 간단히 작성해 주세요."
                       rows={2}
-                      className={`${TA} mt-2 ${TEXTAREA_WIDTH}`}
+                      className={`${TA} mt-2`}
                     />
                   </div>
                 ))
@@ -609,9 +668,9 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
               placeholder="직무 경험과 강점을 간단히 소개해 주세요."
               rows={5}
               maxLength={1000}
-              className={`${TA} ${TEXTAREA_WIDTH}`}
+              className={TA}
             />
-            <p className={`mt-2 text-right text-[12px] font-medium text-[#98a2b0] ${TEXTAREA_WIDTH}`}>
+            <p className="mt-2 text-right text-[12px] font-medium text-[#98a2b0]">
               {draft.selfIntroduction.length} / 1000
             </p>
           </ResumeSectionCard>
@@ -662,6 +721,33 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
             <ResumeContentView content={draft} />
           </div>
         </ModalShell>
+      ) : null}
+
+      {convertOpen ? (
+        <ResumeConvertModal
+          onClose={closeConvert}
+          onAnalyze={handleConvertAnalyze}
+          mode={mode}
+          confirmLabel={mode === "edit" ? "새 버전 만들기" : undefined}
+        />
+      ) : null}
+
+      {aiConfirmOpen ? (
+        <ConfirmDialog
+          ariaLabel="이력서 작성 완료 확인"
+          title="AI가 채운 내용이 포함되어 있어요."
+          description="실제 경력·자격과 다른 부분이 없는지 확인하셨나요?"
+          confirmLabel="확인했어요"
+          cancelLabel="다시 볼게요"
+          tone="neutral"
+          onConfirm={() => {
+            setAiConfirmOpen(false);
+            // 한 번 확인했으면 다시 묻지 않는다.
+            setAiFillUsed(false);
+            finishResume();
+          }}
+          onCancel={() => setAiConfirmOpen(false)}
+        />
       ) : null}
     </MyPageShell>
   );

@@ -32,6 +32,7 @@ export function ConfirmDialog({
   descriptionSize = "sm",
   note,
   confirmLabel = "삭제",
+  cancelLabel = "취소",
   tone = "danger",
   onConfirm,
   onCancel,
@@ -49,6 +50,8 @@ export function ConfirmDialog({
   /** 설명 아래 한 줄짜리 부가 정보(예: "보유 2장 → 1장"). 없으면 렌더하지 않는다. */
   note?: ReactNode;
   confirmLabel?: string;
+  /** 취소 쪽 문구. 기본값 "취소"라 넘기지 않던 호출부의 렌더는 그대로다. */
+  cancelLabel?: string;
   tone?: "danger" | "neutral" | "info";
   onConfirm: () => void;
   onCancel: () => void;
@@ -99,7 +102,7 @@ export function ConfirmDialog({
             onClick={onCancel}
             className="h-10 border border-[#d8e0e8] bg-white px-4 text-[13px] font-medium text-[#44505f] hover:border-[#111111] hover:text-[#111111]"
           >
-            취소
+            {cancelLabel}
           </button>
           <button type="button" onClick={onConfirm} className={`h-10 border ${confirmColorClass} px-4 text-[13px] font-medium text-white ${confirmHoverClass}`}>
             {confirmLabel}

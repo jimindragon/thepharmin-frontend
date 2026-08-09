@@ -2,6 +2,7 @@ import type {
   BuiltResume,
   ResumeCareerEntry,
   ResumeCertificate,
+  ResumeContent,
   ResumeEducation,
   ResumeLanguage,
   ResumeWorkPreference,
@@ -104,30 +105,57 @@ export function applyResumeConvertPatch(base: BuiltResume, patch: ResumeConvertP
   };
 }
 
+/** 이력서의 내용 필드만 뽑아낸다 — 제목·대표 여부처럼 새 이력서가 새로 정할 값은 넘기지 않는다. */
+export function toResumeContent(resume: BuiltResume): ResumeContent {
+  return {
+    workPreference: resume.workPreference,
+    education: resume.education,
+    certificates: resume.certificates,
+    jobSubcategoryIds: resume.jobSubcategoryIds,
+    careers: resume.careers,
+    languages: resume.languages,
+    selfIntroduction: resume.selfIntroduction,
+  };
+}
+
 /**
- * 변환 결과 인계 — 목록(/mypage/resume)에서 분석하고 에디터(/mypage/resume/new)에서 받는다.
+ * 인계 묶음. base가 없으면 "빈 이력서를 채운다"(관리 페이지에서 첨부 이력서를 변환하는 기존 흐름),
+ * 있으면 "기존 이력서를 바탕으로 새 버전을 만든다"(편집 화면의 AI 새 버전)라는 뜻이다.
+ */
+export interface ResumeConvertHandoff {
+  patch: ResumeConvertPatch;
+  /** 편집 중이던 이력서의 내용 스냅샷. 새 폼이 이 위에 patch를 얹는다. */
+  base?: ResumeContent;
+  /** 원본 제목. 새 이력서 제목의 앞부분이 된다. */
+  baseTitle?: string;
+}
+
+/**
+ * 변환 결과 인계 — 목록(/mypage/resume)이나 편집 화면에서 분석하고 에디터(/mypage/resume/new)에서 받는다.
  * 서로 다른 라우트라 props로 넘길 수 없어 sessionStorage를 쓴다(기관 프로필 미리보기와 같은 방식).
  *
  * 콜론형 키는 개인 회원 데이터(thepharmin:job-preferences 등)의 규칙을 따른다.
  */
 const CONVERT_DRAFT_KEY = "thepharmin:resume-convert-draft";
 
-export function saveResumeConvertDraft(patch: ResumeConvertPatch) {
+export function saveResumeConvertDraft(handoff: ResumeConvertHandoff) {
   if (typeof window === "undefined") return;
-  window.sessionStorage.setItem(CONVERT_DRAFT_KEY, JSON.stringify(patch));
+  window.sessionStorage.setItem(CONVERT_DRAFT_KEY, JSON.stringify(handoff));
 }
 
 /**
  * 인계분을 읽고 **즉시 지운다**. 한 번만 반영되어야 하기 때문이다 —
  * 남겨 두면 이후에 이력서를 새로 작성할 때마다 지난 변환 결과가 다시 채워진다.
  */
-export function readResumeConvertDraft(): ResumeConvertPatch | null {
+export function readResumeConvertDraft(): ResumeConvertHandoff | null {
   if (typeof window === "undefined") return null;
   const raw = window.sessionStorage.getItem(CONVERT_DRAFT_KEY);
   if (!raw) return null;
   window.sessionStorage.removeItem(CONVERT_DRAFT_KEY);
   try {
-    return JSON.parse(raw) as ResumeConvertPatch;
+    const parsed = JSON.parse(raw) as ResumeConvertHandoff | ResumeConvertPatch;
+    // 묶음 형태로 바꾸기 전에 저장된 값(patch 단독)이 남아 있을 수 있다 — 그대로 감싸서 받는다.
+    return "patch" in parsed ? (parsed as ResumeConvertHandoff) : { patch: parsed as ResumeConvertPatch };
   } catch {
     return null;
   }
