@@ -366,8 +366,10 @@ export const nationalFireHospitalJobDetail: HospitalJobDetail = {
     requiredDocuments: ["지원서 (지정 양식, 채용 공고문 참고)"],
 
     apply: {
+      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
+      // window.open에 그대로 넘기므로, jobs.ts 413의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "",
+      email: "https://recruit.nfh.example",
       phone: "",
       notice: "채용 공고문을 확인한 후 병원 홈페이지 채용 페이지에서 접수해 주세요.",
     },
@@ -519,8 +521,10 @@ export const nationalCentralHospitalJobDetail: HospitalJobDetail = {
     requiredDocuments: ["이력서", "약사 면허증 사본", "경력증명서"],
 
     apply: {
+      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
+      // window.open에 그대로 넘기므로, jobs.ts 410의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "",
+      email: "https://recruit.nch.example",
       phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요. 블라인드 전형으로 진행됩니다.",
     },
@@ -600,8 +604,10 @@ export const snuhPharmacyStaffJobDetail: HospitalJobDetail = {
     requiredDocuments: ["졸업(예정)증명서", "성적증명서", "공인영어성적표", "약사 면허증 사본(해당자)"],
 
     apply: {
+      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
+      // window.open에 그대로 넘기므로, jobs.ts 417의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "",
+      email: "https://recruit.snuh.example",
       phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요.",
     },
