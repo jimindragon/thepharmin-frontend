@@ -101,6 +101,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   overflow-x: hidden;
+  /* 한국어 어절 중간 절단 방지 — 어절 단위 줄바꿈 (2026.08 모바일 사이클) */
+  word-break: keep-all;
   font-family:
     Pretendard,
     "Noto Sans KR",
