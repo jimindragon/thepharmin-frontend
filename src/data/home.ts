@@ -218,4 +218,7 @@ export const themeCurationCards: Array<{
   },
 ];
 
-export const homeRecommendationJobIds = [123, 122, 120, 126]; // celltrionph-bd, kolonbiotech-qaqc, samo-bd, gsk-vaccine-msl-cvmd
+// 전부 V2 상세(hasJobDetail)를 보유한 id만 넣는다 — 상세가 없으면 카드 링크가 /jobs 목록으로 폴백해
+// 사용자가 누른 공고와 무관한 화면이 열린다(HomePageClient의 HomeRecommendationCard).
+// 기업이 겹치면 같은 로고가 나란히 서므로 4건 모두 다른 기업으로 고른다.
+export const homeRecommendationJobIds = [123, 121, 130, 126]; // celltrionph-bd, samsungbio-bioprocess, yuhan-ra-regulatory-strategy, gsk-vaccine-msl-cvmd
