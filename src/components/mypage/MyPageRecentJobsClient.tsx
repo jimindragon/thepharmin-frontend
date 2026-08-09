@@ -1,10 +1,11 @@
 "use client";
 
-import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { JobCard } from "@/components/JobCard";
+import { MyPageEmptyState } from "@/components/mypage/MyPageEmptyState";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
+import { TrackFilterChips } from "@/components/mypage/TrackFilterChips";
 import { LinkButton } from "@/components/ui/Button";
 import { readSavedJobs, writeSavedJobs } from "@/components/job-detail/shared";
 import { jobs } from "@/data/jobs";
@@ -22,59 +23,16 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
   { id: "pharmacy", label: "약국" },
 ];
 
-function EmptyState({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="border border-border bg-white p-10 text-center">
-      <p className="text-[15px] font-medium text-[#303946]">{title}</p>
-      <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
-      <LinkButton href="/jobs" variant="secondary" size="sm" className="mt-5">
-        공고 둘러보기
-      </LinkButton>
-    </div>
-  );
-}
+/** 빈 상태에서 공통으로 붙는 행동 — 스크랩과 달리 이 화면은 "둘러보기" 경로를 준다 */
+const browseJobsAction = (
+  <LinkButton href="/jobs" variant="secondary" size="sm" className="mt-5">
+    공고 둘러보기
+  </LinkButton>
+);
 
-/** 스크랩 페이지의 TrackFilterTabs 문법을 그대로 복제한 분야 필터 칩 + 개수 배지 */
-function TrackFilterTabs({
-  options,
-  activeId,
-  onChange,
-}: {
-  options: { id: TrackFilter; label: string; count: number }[];
-  activeId: TrackFilter;
-  onChange: (id: TrackFilter) => void;
-}) {
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1">
-      {options.map((option) => {
-        const active = option.id === activeId;
-        return (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onChange(option.id)}
-            aria-pressed={active}
-            className={clsx(
-              "inline-flex h-9 shrink-0 items-center gap-1.5 border px-4 text-[13px] font-medium transition-colors",
-              active
-                ? "border-[#111111] bg-[#111111] text-white"
-                : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
-            )}
-          >
-            {option.label}
-            <span
-              className={clsx(
-                "inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-[1px] text-[12px] font-medium",
-                active ? "bg-white/20 text-white" : "bg-white text-[#8a93a1]",
-              )}
-            >
-              {option.count}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
+/** 칩 셸이 요구하는 { key, label, count } 모양으로만 바꾼다 — count 계산은 호출부 useMemo가 그대로 소유 */
+function toChipItems(options: { id: TrackFilter; label: string; count: number }[]) {
+  return options.map(({ id, label, count }) => ({ key: id, label, count }));
 }
 
 function emptyFilteredCopy(filter: TrackFilter) {
@@ -139,26 +97,29 @@ export function MyPageRecentJobsClient() {
     <MyPageShell>
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "최근 본 공고" }]} />
 
-      <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">최근 본 공고</h1>
+      <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36] max-[760px]:mt-4 max-[760px]:text-[24px]">최근 본 공고</h1>
       <p className="mt-2.5 max-w-[640px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         최근 확인한 공고를 다시 볼 수 있습니다.
       </p>
 
       {recentJobs.length > 0 ? (
         <>
-          <div className="mt-7 flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <TrackFilterTabs options={filterOptions} activeId={trackFilter} onChange={setTrackFilter} />
+          <div className="mt-7 flex flex-wrap items-center justify-between gap-3 max-[760px]:mt-6">
+            {/* ≤760px basis-full: 칩이 "전체 삭제"와 폭을 나눠 가지면 3줄로 깨진다.
+                칩에 한 줄을 통째로 주고 버튼을 다음 줄로 내려 스크랩과 같은 2줄 wrap을 만든다. */}
+            <div className="min-w-0 flex-1 max-[760px]:basis-full">
+              {/* 이 칩 행은 "전체 삭제"와 같은 flex 행 안에 있어 바깥 마진을 갖지 않는다 */}
+              <TrackFilterChips items={toChipItems(filterOptions)} activeKey={trackFilter} onSelect={setTrackFilter} />
             </div>
             <button
               type="button"
               onClick={clear}
-              className="shrink-0 text-[13px] font-medium text-[#8a94a3] transition hover:text-[#111111]"
+              className="shrink-0 text-[13px] font-medium text-[#8a94a3] transition hover:text-[#111111] max-[760px]:ml-auto"
             >
               전체 삭제
             </button>
           </div>
-          <div className="mt-5">
+          <div className="mt-5 max-[760px]:mt-4">
             {visibleJobs.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {visibleJobs.map((job) => (
@@ -166,13 +127,17 @@ export function MyPageRecentJobsClient() {
                 ))}
               </div>
             ) : (
-              <EmptyState title={emptyCopy.title} description={emptyCopy.description} />
+              <MyPageEmptyState title={emptyCopy.title} description={emptyCopy.description} action={browseJobsAction} />
             )}
           </div>
         </>
       ) : (
-        <div className="mt-7">
-          <EmptyState title="최근 본 공고가 없습니다." description="공고를 열람하면 이곳에 순서대로 표시됩니다." />
+        <div className="mt-7 max-[760px]:mt-6">
+          <MyPageEmptyState
+            title="최근 본 공고가 없습니다."
+            description="공고를 열람하면 이곳에 순서대로 표시됩니다."
+            action={browseJobsAction}
+          />
         </div>
       )}
     </MyPageShell>
