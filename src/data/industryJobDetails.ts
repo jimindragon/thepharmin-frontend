@@ -61,6 +61,90 @@ export interface IndustryJobDetail {
 }
 
 export const industryJobDetails: Record<string, IndustryJobDetail> = {
+  "ra-specialist": {
+    slug: "ra-specialist",
+    companyId: "thepharmin-pharma",
+    job: {
+      title: "RA Specialist (제약·바이오 인허가 담당)",
+      tags: ["전문의약품 제조업", "RA·인허가", "정규직", "경력"],
+      oneLineIntro: "의약품 허가 및 규제 대응을 담당할 RA Specialist를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "RA·인허가", sub: "RA" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: false,
+      career: "경력 3~5년",
+      headcount: "1명",
+      education: "학사 이상",
+      location: {
+        // jobs.ts locationDetail의 건물명(더파마타워 8층)·역세권(2호선 역삼역 도보 약 6분)은
+        // IndustryJobBlock.location에 대응 필드가 없어 옮기지 않는다.
+        address: "서울 강남구 테헤란로 123, 8층",
+        workMode: "사무실 근무",
+      },
+      coreKeywords: ["CTD", "규제기관 대응", "약사 면허", "영어 커뮤니케이션", "IND/NDA", "FDA", "EMA", "글로벌 인허가"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/ra-specialist",
+        notice: "지원 시 기업 채용 페이지로 이동합니다. 지원 결과와 전형 진행은 해당 기업에서 관리됩니다.",
+      },
+      deadline: { date: "2026-09-08", label: "마감 D-51", status: "dDay" },
+      postingSource: "direct",
+      introduction: "의약품 허가 및 규제 대응을 담당할 RA Specialist를 찾습니다.",
+      // 주요업무·자격요건·우대사항은 jobs.ts 101의 4항목 배열(responsibilities/requirements/
+      // preferredQualifications)을 옮긴 것이다. 3항목짜리 *Content 필드는 같은 내용의 축약본이라 쓰지 않는다.
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "의약품 품목 허가, 변경 허가 및 관련 인허가 업무 총괄",
+          "CTD 작성 및 제출, 허가심사 대응",
+          "규제기관 질의 대응 및 문서 관리",
+          "국내외 법규 및 규제 동향 모니터링",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: [
+          "관련 전공 학사 이상",
+          "RA 유관 경력 3년 이상",
+          "의약품 인허가 업무 경험 보유",
+          "문서 작성 및 커뮤니케이션 역량 우수",
+        ],
+      },
+      preferred: {
+        format: "bullet",
+        items: [
+          "약사 면허 보유자",
+          "영어 커뮤니케이션 가능자",
+          "CTD 작성 경험 보유자",
+          "글로벌 허가 경험 보유자",
+        ],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      // positionIntro/additionalNotes/hiringProcess/requiredDocuments: 없음 — jobs.ts 101에 대응 원본이 없다
+    },
+    org: {
+      name: "더파마제약(주)",
+      orgType: "전문의약품 제조업",
+      employeeCount: "320명",
+      shortIntro: "전문의약품과 바이오 의약품을 개발·제조하는 제약 기업입니다.",
+      description:
+        "품질 중심의 연구개발 문화와 규제 대응 역량을 바탕으로 국내외 허가 전략을 고도화하고 있습니다.",
+      keywords: ["신약개발", "글로벌 진출", "R&D 중심", "도전과 혁신", "환자 중심", "전문성 존중"],
+      // logoUrl: companyLogos에 "더파마제약(주)" 키가 없어 생략한다. CompanyLogo가 이름 기반 텍스트로 폴백한다.
+    },
+    // companyProfiles.ts thepharmin-pharma의 businessSummary("주요 사업"·"주요 제품")가 근거다.
+    businessContext: {
+      businessFields: ["전문의약품", "일반의약품", "바이오의약품"],
+      products: [
+        { name: "파마정", description: "전문의약품 제품입니다." },
+        { name: "바이오신", description: "바이오의약품 제품입니다." },
+        { name: "헬스인", description: "일반의약품 제품입니다." },
+      ],
+    },
+  },
+
   "dentium-device-ra": {
     slug: "dentium-device-ra",
     companyId: "dentium",

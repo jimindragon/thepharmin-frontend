@@ -36,7 +36,7 @@ export const calendarJobs: CalendarJob[] = [
     role: "RA",
     track: "industry",
     jobCategoryId: "ra",
-    deadline: "2026-07-03",
+    deadline: "2026-09-08",
     isBookmarked: scrapedJobIds.includes(101),
     isApplied: false,
   },
