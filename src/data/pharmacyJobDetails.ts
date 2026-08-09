@@ -771,8 +771,9 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
     mainPrescribingHospital: "",
 
     apply: {
-      method: "phone",
-      // 기존 6건에 phone 방식 레코드가 없어 표기 관례가 없다 — 자리표시자 번호를 둔다(원본 안심번호는 마스킹 값이라 옮기지 않는다).
+      method: "sms",
+      // sms도 연락처는 phone 필드에서 읽는다(문자 연락처는 전화번호와 같은 값이라 전용 필드가 없다).
+      // 자리표시자 번호다 — 원본 안심번호는 마스킹 값이라 옮기지 않는다.
       phone: "0507-1234-5678",
       notice: "간단한 자기소개와 이력을 약국장에게 문자로 남겨주시면 연락드립니다.",
     },

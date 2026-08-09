@@ -3076,7 +3076,7 @@ export const jobs: Job[] = [
       salary: "시급 45,000원",
       deadlineDate: "채용 시 마감",
       closingStatus: "always",
-      applyMethod: "phone",
+      applyMethod: "sms",
       jobSubcategoryIds: ["staff_pharmacist"],
       experienceMin: 0,
       experienceMax: null,
