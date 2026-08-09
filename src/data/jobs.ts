@@ -128,7 +128,7 @@ export const jobs: Job[] = [
     reviewSummary: "기업 후기는 안정적인 근무 환경과 전문성 있는 RA 조직 문화에 대한 평가가 많습니다.",
     dateOrder: 26,
   }),
-  ...[
+  ...([
     {
       id: 110,
       slug: "roche-cmc-qa",
@@ -1582,8 +1582,8 @@ export const jobs: Job[] = [
       isRecommended: true,
       dateOrder: 48,
     },
-  ].map((job) => withDerivedTrack(job as JobDraft)),
-  ...[
+  ] satisfies JobDraft[]).map((job) => withDerivedTrack(job)),
+  ...([
     {
       id: 206,
       slug: "amc-colorectal-surgery-researcher",
@@ -2678,8 +2678,8 @@ export const jobs: Job[] = [
       isRecommended: true,
       dateOrder: 56,
     },
-  ].map((job) => withDerivedTrack(job as JobDraft)),
-  ...[
+  ] satisfies JobDraft[]).map((job) => withDerivedTrack(job)),
+  ...([
     {
       id: 307,
       slug: "eunhaeng-pharmacy-part-time-pharmacist",
@@ -3308,8 +3308,8 @@ export const jobs: Job[] = [
       similarJobIds: [310, 308, 312],
       dateOrder: 10,
     },
-  ].map((job) => withDerivedTrack(job as JobDraft)),
-  ...[
+  ] satisfies JobDraft[]).map((job) => withDerivedTrack(job)),
+  ...([
     // ── 병원약사 공고 상세페이지 케이스 11종 ──────────────────────────────────
     {
       id: 406,
@@ -4138,5 +4138,5 @@ export const jobs: Job[] = [
       similarJobIds: [410, 413, 415],
       dateOrder: 22,
     },
-  ].map((job) => withDerivedTrack(job as JobDraft)),
+  ] satisfies JobDraft[]).map((job) => withDerivedTrack(job)),
 ];
