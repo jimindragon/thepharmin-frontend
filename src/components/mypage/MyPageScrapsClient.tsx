@@ -6,8 +6,10 @@ import { useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { JobCard } from "@/components/JobCard";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
+import { MyPageEmptyState } from "@/components/mypage/MyPageEmptyState";
 import { ScrapedOrganizationCard } from "@/components/mypage/ScrapedOrganizationCard";
 import { ScrapUndoToast } from "@/components/mypage/ScrapUndoToast";
+import { TrackFilterChips } from "@/components/mypage/TrackFilterChips";
 import { jobs } from "@/data/jobs";
 import { scrapedJobIds, scrapedOrganizationTypeTrack, scrapedOrganizations } from "@/data/scraps";
 import type { Job, JobTrack } from "@/types/jobs";
@@ -28,58 +30,12 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
   { id: "pharmacy", label: "약국" },
 ];
 
-function EmptyState({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="border border-border bg-white p-10 text-center max-[760px]:p-8">
-      <p className="text-[15px] font-medium text-[#303946]">{title}</p>
-      <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
-    </div>
-  );
-}
+/** 스크랩 칩 행은 본문 흐름에 놓이므로 바깥 마진을 여기서 준다 (TrackFilterChips는 마진을 갖지 않는다) */
+const CHIP_ROW_CLASS = "mt-5 max-[760px]:mt-4";
 
-/** 기존 사이트의 트랙 탭(CategoryTabs) 선택/비선택 색상을 그대로 따르는 분야 필터 칩 + 개수 배지 */
-function TrackFilterTabs({
-  options,
-  activeId,
-  onChange,
-}: {
-  options: { id: TrackFilter; label: string; count: number }[];
-  activeId: TrackFilter;
-  onChange: (id: TrackFilter) => void;
-}) {
-  return (
-    // ≤760px에서는 가로 스크롤 대신 2줄로 감는다 — 칩 5개(452px)가 본문 폭(302px)을 넘어
-    // "약국"이 아예 보이지 않았다. 스크롤 힌트가 없는 화면에서는 노출이 확실한 wrap이 낫다.
-    <div className="mt-5 flex gap-2 overflow-x-auto pb-1 max-[760px]:mt-4 max-[760px]:flex-wrap max-[760px]:overflow-x-visible">
-      {options.map((option) => {
-        const active = option.id === activeId;
-        return (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onChange(option.id)}
-            aria-pressed={active}
-            className={clsx(
-              "inline-flex h-9 shrink-0 items-center gap-1.5 border px-4 text-[13px] font-medium transition-colors max-[760px]:h-10",
-              active
-                ? "border-[#111111] bg-[#111111] text-white"
-                : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
-            )}
-          >
-            {option.label}
-            <span
-              className={clsx(
-                "inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-[1px] text-[12px] font-medium",
-                active ? "bg-white/20 text-white" : "bg-white text-[#8a93a1]",
-              )}
-            >
-              {option.count}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
+/** 칩 셸이 요구하는 { key, label, count } 모양으로만 바꾼다 — count 계산은 호출부 useMemo가 그대로 소유 */
+function toChipItems(options: { id: TrackFilter; label: string; count: number }[]) {
+  return options.map(({ id, label, count }) => ({ key: id, label, count }));
 }
 
 function emptyJobCopy(filter: TrackFilter) {
@@ -247,7 +203,12 @@ export function MyPageScrapsClient() {
 
       {activeTab === "jobs" ? (
         <>
-          <TrackFilterTabs options={jobFilterOptions} activeId={jobTrackFilter} onChange={setJobTrackFilter} />
+          <TrackFilterChips
+            items={toChipItems(jobFilterOptions)}
+            activeKey={jobTrackFilter}
+            onSelect={setJobTrackFilter}
+            className={CHIP_ROW_CLASS}
+          />
           <div className="mt-5 max-[760px]:mt-4">
             {visibleJobs.length > 0 ? (
               <div className="flex flex-col gap-3">
@@ -256,13 +217,18 @@ export function MyPageScrapsClient() {
                 ))}
               </div>
             ) : (
-              <EmptyState title={jobEmptyCopy.title} description={jobEmptyCopy.description} />
+              <MyPageEmptyState title={jobEmptyCopy.title} description={jobEmptyCopy.description} />
             )}
           </div>
         </>
       ) : (
         <>
-          <TrackFilterTabs options={organizationFilterOptions} activeId={orgTrackFilter} onChange={setOrgTrackFilter} />
+          <TrackFilterChips
+            items={toChipItems(organizationFilterOptions)}
+            activeKey={orgTrackFilter}
+            onSelect={setOrgTrackFilter}
+            className={CHIP_ROW_CLASS}
+          />
           <div className="mt-5 max-[760px]:mt-4">
             {visibleOrganizations.length > 0 ? (
               <div className="flex flex-col gap-3">
@@ -271,7 +237,7 @@ export function MyPageScrapsClient() {
                 ))}
               </div>
             ) : (
-              <EmptyState title={organizationEmptyCopy.title} description={organizationEmptyCopy.description} />
+              <MyPageEmptyState title={organizationEmptyCopy.title} description={organizationEmptyCopy.description} />
             )}
           </div>
         </>
