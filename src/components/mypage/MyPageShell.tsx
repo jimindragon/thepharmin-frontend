@@ -69,14 +69,16 @@ export function MyPageSidebar() {
           ))}
         </div>
       </div>
-      <div className="mt-5 h-px bg-[#e5e9ef] max-[1040px]:mt-3" />
+      {/* nav가 숨는 ≤1040px에서는 구분할 대상이 없어 이름 밑에 선만 남는다 — 함께 숨긴다 */}
+      <div className="mt-5 h-px bg-[#e5e9ef] max-[1040px]:mt-3 max-[1040px]:hidden" />
+      {/* 모바일에선 계정 메뉴(AccountMenu)가 동일 11항목을 제공 — 중복 nav 숨김. 복원 시 이 클래스만 제거 */}
       {/* ≤1040px: 그룹 3개(제목 + 세로 링크)의 2차원 구조를 CSS만으로 재배치해 칩 2단
           가로 스크롤로 만든다. 마크업과 데이터 소스는 그대로 둔다.
           그룹 래퍼는 각자 독립된 2행 그리드(grid-flow-col)라 세로 채움이 그룹 경계를 넘지 않고,
           그룹 간 gap-5(20px)와 칩 간 gap-2(8px)의 차이가 제목 없이도 묶음을 구분한다.
           안쪽 목록은 display:contents로 상자만 없애 링크가 그룹 그리드의 직계 아이템이 된다 —
           contents는 자식을 남기므로 space-y-1의 margin-top은 살아남는다. 함께 끈다. */}
-      <nav className="mt-5 space-y-7 max-[1040px]:mt-3 max-[1040px]:flex max-[1040px]:items-start max-[1040px]:gap-5 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
+      <nav className="mt-5 space-y-7 max-[1040px]:mt-3 max-[1040px]:hidden max-[1040px]:flex max-[1040px]:items-start max-[1040px]:gap-5 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
         {myPageMenuGroups.map((group) => (
           <div
             key={group.title}
