@@ -37,6 +37,9 @@ const DEV_PANEL_ENABLED = true;
  */
 const PANEL_Z = "z-[60]";
 
+// 모바일에서 하단 탭바(56px+safe-area)를 가리지 않도록 위로 회피
+const PANEL_TABBAR_OFFSET = "max-[760px]:bottom-[calc(76px+env(safe-area-inset-bottom))]";
+
 const DASHED = "border border-dashed border-[#c7cdd6]";
 
 function StateRow({
@@ -197,6 +200,7 @@ export function DevStatePanel() {
           "fixed bottom-4 right-4 h-8 bg-white px-3 text-[11px] font-bold tracking-[0.06em] text-[#8a95a5] shadow-[0_2px_8px_rgba(20,32,46,0.12)] transition hover:border-[#111111] hover:text-[#111111]",
           DASHED,
           PANEL_Z,
+          PANEL_TABBAR_OFFSET,
         )}
       >
         DEV
@@ -206,7 +210,12 @@ export function DevStatePanel() {
 
   return (
     <div
-      className={clsx("fixed bottom-4 right-4 w-[268px] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.16)]", DASHED, PANEL_Z)}
+      className={clsx(
+        "fixed bottom-4 right-4 w-[268px] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.16)]",
+        DASHED,
+        PANEL_Z,
+        PANEL_TABBAR_OFFSET,
+      )}
     >
       <div className="flex items-center justify-between border-b border-dashed border-[#c7cdd6] px-3 py-2">
         <span className="text-[11px] font-bold tracking-[0.06em] text-[#8a95a5]">DEV · 상태 전환</span>
