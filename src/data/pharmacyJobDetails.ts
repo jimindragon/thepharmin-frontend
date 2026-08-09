@@ -674,6 +674,255 @@ export const shinJungangPharmacyJobDetail: PharmacyJobDetail = {
   },
 };
 
+// ---- 빛이나약국 정본 ----
+
+export const bichinaPharmacyJobDetail: PharmacyJobDetail = {
+  id: "bichina-pharmacy-312",
+  slug: "bichina-pharmacy-fulltime",
+  companyId: "bichina-pharmacy",
+
+  job: {
+    title: "청주 방서동 약사님 구인합니다",
+    jobCategoryLabel: "약국 > 풀타임약사",
+    workTypeIds: ["full_time"],
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "any",
+    headcount: "1명",
+
+    summary: "소아과·내과·부인과 처방 약국에서 주 5일 근무할 풀타임 약사를 모십니다. 근무시간 조정 가능.",
+    responsibilities: ["약국 업무 전반", "소아과·내과·부인과 처방 조제 및 복약지도"],
+    requirements: ["약사 면허 소지자", "심평원 등록 필요", "경력 무관", "학력 무관(졸업예정자 가능)"],
+    preferred: [],
+    workConditionDetail:
+      "8월 19일부터 평일 월·수·금 오후, 매주 토요일·격주 일요일로 주 5일 근무하실 약사님을 구합니다. 영업시간이 길어 다른 약사와 근무시간 조정, 근무일수 증감, 투잡 시 출근시간 조정이 어느 정도 가능합니다. 주말 근무 시 건물 내 식당에서 식사를 제공합니다. 풀타임 약사를 우선합니다.",
+
+    workSchedule: [
+      { days: ["월", "수", "금"], time: "17:00–21:00" },
+      { days: ["토"], time: "09:00–18:00" },
+      { days: ["일"], time: "09:00–18:00 (격주)" },
+    ],
+
+    salary: { kind: "월급", amount: "월급 420만원", note: "" },
+    benefits: ["연차·월차", "경조사비", "여름휴가비", "명절보너스", "주말 식사 제공"],
+
+    coreKeywords: ["약국 업무 전반", "소아과", "내과", "부인과", "풀타임", "JVM"],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "자유양식 지원서로 접수합니다.",
+    },
+    isRolling: true,
+
+    hiringProcess: ["서류전형", "1차 면접", "최종 합격"],
+    // requiredDocuments: 없음 — 원본은 자유양식 지원서만 안내한다
+  },
+
+  org: {
+    pharmacyName: "빛이나약국",
+    logoText: "빛이나",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "충북 청주시 상당구 2순환로2031번길 6-20",
+      detailAddress: "104호",
+      parkingTransit: "",
+    },
+    businessHours: "평일 08:00–23:00",
+
+    pharmacyTypeId: "clinic-front",
+    pharmacyFeatureId: "mixed",
+
+    shortIntro: "상당구 방서동 의원층 약국으로 소아과·내과·부인과 처방을 다룹니다.",
+    fullIntro:
+      "상당구 방서동 빛이나약국입니다. 소아과·내과·부인과 처방을 다루는 의원층 약국으로, 도와주는 직원과 동료 약사가 있어 적응이 수월합니다.",
+    features: [
+      "소아과·내과·부인과 처방을 다루는 의원층 약국입니다.",
+      "영업시간이 길어 근무시간·근무일수 조정 폭이 넓습니다.",
+    ],
+    keywords: ["의원층 약국", "방서동", "근무시간 조정"],
+
+    avgDailyPrescriptions: "",
+    mainDepartments: "소아과·내과·부인과",
+    software: "",
+    dispensingEquipment: ["자동조제기(JVM ATC)"],
+    mainHospitals: [],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+  },
+};
+
+// ---- 마산육일약국 정본 ----
+
+export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
+  id: "masan-yugil-pharmacy-313",
+  slug: "masan-yugil-pharmacy-weekend-parttime",
+  companyId: "masan-yugil-pharmacy",
+
+  job: {
+    title: "마산육일약국 주말 파트타임 약사님을 모십니다",
+    jobCategoryLabel: "약국 > 파트타임약사",
+    workTypeIds: ["part_time", "weekend"],
+    employmentTypeId: "freelance",
+    experienceId: "any",
+    educationId: "bachelor",
+    headcount: "2명",
+
+    summary: "마산역 앞 매약 중심 약국에서 주말 파트타임 약사를 모십니다. 매약·케이스 스터디, 개국까지 배울 수 있습니다.",
+    responsibilities: ["주말 파트 약사(매약·상담 중심)"],
+    requirements: ["약사 면허 소지자", "경력 무관", "대졸(4년제, 졸업예정자 가능)"],
+    preferred: ["매약 경험을 쌓고 싶은 분", "약국 경영·개국에 관심 있는 분"],
+    workConditionDetail:
+      "격주 토·일(매주 가능) 12:00~22:00 근무이며 시급 4.5만원(세후)입니다. 마산역 앞에 위치해 출퇴근이 편리하며, 최근 리모델링 환경에서 약사 2명·직원 3명이 근무합니다. 식사 시간 보장·간식·주차 지원이 됩니다. 매약 중심 약국으로 경력이 없어도 지원 가능하며, 매약 기술과 케이스 스터디, 약국 경영까지 배울 수 있습니다.",
+
+    workSchedule: [{ days: ["토", "일"], time: "12:00–22:00 (격주, 매주도 가능)" }],
+
+    salary: { kind: "시급", amount: "시급 45,000원", note: "세후 기준" },
+    benefits: ["식사 시간 보장", "간식 제공", "주차 지원"],
+
+    coreKeywords: ["매약 상담", "케이스 스터디", "주말 파트타임", "유팜", "마산역 앞"],
+
+    staffPharmacistCount: 2,
+    staffSupportCount: 3,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "phone",
+      email: "",
+      // 기존 6건에 phone 방식 레코드가 없어 표기 관례가 없다 — 자리표시자 번호를 둔다(원본 안심번호는 마스킹 값이라 옮기지 않는다).
+      phone: "0507-1234-5678",
+      notice: "간단한 자기소개와 이력을 약국장에게 문자로 남겨주시면 연락드립니다.",
+    },
+    isRolling: true,
+
+    hiringProcess: ["서류전형", "1차 면접", "최종 합격"],
+    // requiredDocuments: 없음 — 원본에 제출서류 목록이 없다
+  },
+
+  org: {
+    pharmacyName: "마산육일약국",
+    logoText: "육일",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "경남 창원시 마산회원구 마산역광장로 2",
+      detailAddress: "1층",
+      parkingTransit: "마산역 앞에 위치하며 주차를 지원합니다.",
+    },
+    businessHours: "",
+
+    pharmacyTypeId: "clinic-front",
+    pharmacyFeatureId: "otc_focused",
+
+    shortIntro: "마산역 앞 매약 중심 약국입니다.",
+    fullIntro:
+      "마산 대표 매약 중심 약국으로, 다양한 학회약을 취급하며 전문 상담과 케이스 스터디를 배울 수 있습니다.",
+    features: [
+      "약사 2명·직원 3명이 젊고 밝은 분위기로 근무합니다.",
+      "최근 리모델링을 마쳤고 식사 시간 보장·간식 제공·주차 지원이 있습니다.",
+    ],
+    keywords: ["매약 중심", "마산역 앞", "주말 파트타임"],
+
+    avgDailyPrescriptions: "",
+    mainDepartments: "",
+    software: "유팜",
+    dispensingEquipment: [],
+    mainHospitals: [],
+
+    staffPharmacistCount: 2,
+    staffSupportCount: 3,
+  },
+};
+
+// ---- 문무약국 정본 ----
+
+export const munmuPharmacyJobDetail: PharmacyJobDetail = {
+  id: "munmu-pharmacy-315",
+  slug: "munmu-pharmacy-oneday-shortterm",
+  companyId: "munmu-pharmacy",
+
+  job: {
+    title: "하루(8/24 월) 근무 약사님 구합니다",
+    jobCategoryLabel: "약국 > 단기약사",
+    workTypeIds: ["temporary_substitute"],
+    employmentTypeId: "part-time",
+    experienceId: "1-3",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "내과 문전약국에서 8월 24일 하루 근무할 단기 약사를 모십니다. 식대 포함 일급 40만원.",
+    responsibilities: ["복약지도 및 단순 매약"],
+    requirements: ["약사 면허 소지자", "경력(1년 이상)", "대졸(4년제)"],
+    preferred: [],
+    workConditionDetail:
+      "근무 08:30~18:00, 별도 점심시간 없음(병원 13~14시 점심). 주처방은 내과로 50~90건이며 대부분 ATC 조제입니다. 조제실 1명·전산 1명이 함께 근무하고 프로그램은 유팜입니다.",
+
+    workSchedule: [{ days: ["월"], time: "08:30–18:00 (8월 24일 하루)" }],
+
+    salary: { kind: "일급", amount: "일급 400,000원", note: "식대 포함" },
+    benefits: ["식대 포함"],
+
+    coreKeywords: ["복약지도", "단순 매약", "ATC 조제", "유팜", "JVM", "내과", "단기대체"],
+
+    // 원본 pharmacyEnv에 staff 항목이 없다 — 조제실·전산 인원은 약사 수가 아니라 workConditionDetail에 서술로 남긴다.
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간략한 경력과 함께 문자로 문의해 주세요.",
+    },
+    isRolling: false,
+
+    hiringProcess: ["서류전형", "1차 면접", "최종 합격"],
+    // requiredDocuments: 없음 — 원본에 제출서류 목록이 없다
+  },
+
+  org: {
+    pharmacyName: "문무약국",
+    logoText: "문무",
+    logoColor: "#111111",
+    coverImageUrl: null,
+
+    location: {
+      address: "경북 경주시 문무대왕면 어일3길 14-5",
+      detailAddress: "1층",
+      parkingTransit: "",
+    },
+    businessHours: "",
+
+    pharmacyTypeId: "local",
+    pharmacyFeatureId: "mixed",
+
+    shortIntro: "내과 처방을 주로 다루는 문전 약국입니다.",
+    fullIntro:
+      "내과 문전약국으로 8월 24일 하루 근무할 단기 약사를 모십니다. 대부분 ATC 조제이며 조제·전산 각 1명이 근무합니다.",
+    features: ["주처방은 내과로 50~90건이며 대부분 ATC 조제입니다."],
+    keywords: ["내과 문전", "ATC 조제", "단기대체"],
+
+    avgDailyPrescriptions: "내과 50~90건",
+    mainDepartments: "내과",
+    software: "유팜",
+    dispensingEquipment: ["자동조제기(JVM ATC)"],
+    mainHospitals: [],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+  },
+};
+
 export const pharmacyJobDetails: PharmacyJobDetail[] = [
   eunhaengPharmacyJobDetail,
   hyundaiPharmacyJobDetail,
@@ -681,6 +930,9 @@ export const pharmacyJobDetails: PharmacyJobDetail[] = [
   buldangCentralPharmacyJobDetail,
   yeongdong365PharmacyJobDetail,
   shinJungangPharmacyJobDetail,
+  bichinaPharmacyJobDetail,
+  masanYugilPharmacyJobDetail,
+  munmuPharmacyJobDetail,
 ];
 
 export function getPharmacyJobDetail(slug: string): PharmacyJobDetail | undefined {
