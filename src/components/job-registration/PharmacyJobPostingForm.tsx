@@ -946,7 +946,7 @@ export function PharmacyJobPostingForm() {
             <div role="radiogroup" aria-labelledby="p-apply-method-label" className="inline-flex max-w-full flex-wrap border-l border-t border-[#d8e0e8]">
               {(
                 [
-                  { value: "quick" as const, label: "더파마 간편지원", badge: "추천" },
+                  { value: "quick" as const, label: "간편지원", badge: "추천" },
                   { value: "phone" as const, label: "전화·문자 지원" },
                   { value: "email" as const, label: "이메일 지원" },
                 ]

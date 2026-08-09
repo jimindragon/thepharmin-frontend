@@ -794,7 +794,7 @@ export function IndustryJobPostingForm() {
               {(
                 [
                   { value: "url" as const, label: "기업 채용페이지 지원" },
-                  { value: "quick" as const, label: "더파마 간편지원", badge: "추천" },
+                  { value: "quick" as const, label: "간편지원", badge: "추천" },
                   { value: "email" as const, label: "이메일 지원" },
                 ]
               ).map(({ value: v, label, badge }) => {
