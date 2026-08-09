@@ -403,7 +403,7 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
       </main>
 
       {/* 모바일 하단 바 */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white px-4 py-3 shadow-[0_-8px_20px_rgba(20,32,46,0.08)] md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white px-4 py-3 shadow-[0_-8px_20px_rgba(20,32,46,0.08)] min-[721px]:hidden">
         <div className="mx-auto grid max-w-[560px] grid-cols-[92px_48px_1fr] gap-2">
           <button
             type="button"
