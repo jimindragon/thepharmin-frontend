@@ -923,6 +923,105 @@ export const munmuPharmacyJobDetail: PharmacyJobDetail = {
   },
 };
 
+// ---- 현강약국 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const hyeongangPharmacyJobDetail: PharmacyJobDetail = {
+  id: "hyeongang-pharmacy-310",
+  slug: "hyeongang-pharmacy-fulltime-pharmacist",
+  companyId: "hyeongang-pharmacy",
+
+  job: {
+    title: "[전주 완주군] 약사님 모십니다 / 숙소 제공",
+    jobCategoryLabel: "약국 > 풀타임근무약사",
+    workTypeIds: ["full_time"],
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "any",
+    headcount: "1명",
+
+    summary:
+      "완주군 중심지 메디컬빌딩 문전약국에서 풀타임 약사를 모집합니다. 약사 전용 숙소 제공, 단기 근무도 협의 가능.",
+    // jobs.ts 310은 responsibilities/requirements 배열 대신 *Content(bullet)만 갖고 있어 items를 그대로 옮겼다
+    responsibilities: ["전주 완주군 근무약사(단기 가능)", "조제·검수"],
+    requirements: ["경력 무관", "학력 무관(졸업예정자 가능)", "약사 면허 소지자", "사회서 등록 필수"],
+    preferred: [
+      "2026년 7월부터 근무 가능하신 분",
+      "조제·검수를 꼼꼼하게 해주실 수 있는 분",
+      "동료 약사·직원과 원만하게 소통하며 근무할 수 있는 분",
+      "다양한 처방을 경험하며 실무 역량을 쌓고 싶은 분",
+    ],
+    workConditionDetail:
+      "일요일과 공휴일은 휴무입니다. 약사 전용 숙소(1인 1실)와 근무시간 중 식사가 제공되며, 연차 15일과 1년 차부터의 퇴직연금 적립이 적용됩니다.",
+
+    // jobs.ts 310에 근무 시각이 없어 companyProfiles.ts의 businessHours(평일 09:00~19:00 · 토 09:00~14:00)로 복원했다
+    workSchedule: [
+      { days: ["월", "화", "수", "목", "금"], time: "09:00–19:00" },
+      { days: ["토"], time: "09:00–14:00" },
+    ],
+
+    salary: {
+      kind: "면접후결정",
+      amount: "면접 후 결정",
+      note: "정원약사 기준 초봉 연봉 7,500만원 · 경력자는 협의",
+    },
+    benefits: ["약사 전용 숙소 제공(1인 1실)", "근무시간 중 식사 제공", "연차 15일", "1년 차부터 퇴직연금 적립"],
+
+    coreKeywords: ["복약지도", "조제·검수", "문전약국", "풀타임", "숙소제공", "JVM 3대"],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+    // mainPrescribingHospital: 메디컬빌딩 내 여러 클리닉 처방이라 대표 병원이 특정되지 않는다
+    mainPrescribingHospital: "",
+
+    apply: {
+      // jobs.ts 310은 applyMethod가 "이메일 지원"인데 applicationEmail이 없어 목업용 주소를 새로 지정했다
+      method: "email",
+      email: "hyeongang-recruit@pharmacy.example",
+      phone: "",
+      notice: "이메일로 지원해 주세요.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "현강약국",
+    logoText: "현강",
+    logoColor: "#111111",
+    // jobs.ts 310의 coverImageMode가 "none"이라 약국 트랙 기본 이미지를 쓴다
+    coverImageUrl: null,
+
+    location: {
+      address: "전주 완주군 덕문로 5 현강약국",
+      // detailAddress/parkingTransit: 없음 — 원본에 근거 없음
+      detailAddress: "",
+      parkingTransit: "",
+    },
+    businessHours: "평일 09:00~19:00 · 토 09:00~14:00 · 일요일·공휴일 휴무",
+
+    pharmacyTypeId: "clinic-front",
+    pharmacyFeatureId: "mixed",
+
+    shortIntro: "여러 진료과 처방을 아우르는 메디컬빌딩 문전약국입니다.",
+    fullIntro: "여러 진료과 처방을 다루며 폭넓은 조제 경험을 쌓고 싶은 분께 적합합니다.",
+    features: [
+      "다진료과 처방조제, 복약지도, 일반의약품 상담",
+      "내과·산부인과·외과 등 진료과별 처방 대응",
+      "문전약국 팀 근무",
+    ],
+    keywords: ["문전약국", "다과 처방", "처방조제"],
+
+    // avgDailyPrescriptions/mainHospitals: 없음 — 원본에 근거 없음
+    avgDailyPrescriptions: "",
+    mainDepartments: "내과·산부인과·외과 등",
+    software: "PM+20",
+    dispensingEquipment: ["전자동 정제 분류기(ATC)", "산제 자동 분포기"],
+    mainHospitals: [],
+
+    staffPharmacistCount: null,
+    staffSupportCount: null,
+  },
+};
+
 export const pharmacyJobDetails: PharmacyJobDetail[] = [
   eunhaengPharmacyJobDetail,
   hyundaiPharmacyJobDetail,
@@ -933,6 +1032,7 @@ export const pharmacyJobDetails: PharmacyJobDetail[] = [
   bichinaPharmacyJobDetail,
   masanYugilPharmacyJobDetail,
   munmuPharmacyJobDetail,
+  hyeongangPharmacyJobDetail,
 ];
 
 export function getPharmacyJobDetail(slug: string): PharmacyJobDetail | undefined {

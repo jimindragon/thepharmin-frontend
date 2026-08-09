@@ -772,6 +772,341 @@ export const mujuCountyCareHospitalJobDetail: HospitalJobDetail = {
   },
 };
 
+// ---- 한빛종합병원 정본 ----
+
+export const hanbitGeneralHospitalJobDetail: HospitalJobDetail = {
+  id: "hanbit-general-hospital-406",
+  slug: "hanbit-hospital-multi-dept-pharmacist",
+  companyId: "hanbit-general-hospital",
+
+  job: {
+    id: "hanbit-general-hospital-406",
+    companyId: "hanbit-general-hospital",
+    title: "약사 (입원조제·임상약사 동시모집)",
+
+    // jobs.ts 406은 jobSubcategoryIds가 hospital_pharmacist·clinical_pharmacist 두 개지만 이 스키마의
+    // jobCategory는 단일 쌍이라 입원·조제 약사로 단일화한다. 잃는 정보는 두 곳에 보존한다 —
+    // 업무 구분은 responsibilities의 (공통)/(입원조제)/(ASP) 접두, 자격·급여 차이는 additionalNotes.
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "총 2명",
+    employmentTypeId: "permanent",
+    // jobs.ts 406은 experienceMin 1·experienceMax null("경력 1년 이상")이라 하한 구간을 쓴다(411과 같은 방식).
+    experienceId: "1-3",
+    educationId: "pharmacy",
+
+    summary: "2026년 하반기 약제부 확장을 앞두고 입원조제파트와 ASP팀 임상약사를 동시모집합니다.",
+    responsibilities: [
+      "(공통) 약사 면허 기반 처방 검토 및 의약품 관리",
+      "(입원조제) 입원환자 처방 조제·감사, 마약·항암제 관리 보조",
+      "(ASP) 중증 환자 약물 최적화 상담, 감염·항응고 프로토콜 모니터링",
+      "(ASP) 처방 데이터 분석 및 약물 정보 제공",
+    ],
+    requirements: [
+      "약사 면허 소지자",
+      "입원조제파트: 경력 1년 이상 (신입 우대 가능)",
+      "ASP팀: 경력 3년 이상, 임상 근무 경험 필수",
+    ],
+    preferred: [
+      "전문약사 자격증 소지자 (심장, 항응고, 감염 등)",
+      "EMR/처방 전산 시스템 운용 경험자",
+      "다학제 팀 활동 경험자",
+    ],
+
+    shiftTypeIds: ["day_shift"],
+    // workDays: 없음 — jobs.ts 406의 근무일정이 "주간 (09:00~18:00)"까지라 요일이 특정되지 않았다
+    address: "서울 마포구 월드컵로 123 한빛종합병원",
+    salary: "직군별 상이 (면접 후 협의)",
+    // 4대보험·퇴직금은 hospitalBenefitLabelMap 12종에 없어 workConditionDetail 문장으로 옮겼다
+    benefitIds: ["연차·휴가", "의료비 지원", "구내식당", "교육 지원", "경조사 지원", "직원 주차"],
+    workConditionDetail:
+      "주간 (09:00~18:00) 근무이며, ASP팀은 비직이 주 2~3회 있습니다. 급여는 직군별 내규 기준으로 면접 후 확정합니다. 4대보험과 퇴직금이 적용됩니다.",
+
+    coreKeywords: ["입원조제", "임상약사", "처방검토", "다직종협업", "복수모집"],
+    additionalNotes:
+      "입원조제파트는 경력 1년 이상, ASP팀은 경력 3년 이상이며 임상 근무 경험이 필요합니다. 급여는 직군별로 상이하며 면접 후 협의합니다.",
+    // detailImages/attachments/requiredDocuments: 없음 — jobs.ts 406에 근거 없음
+    hiringProcess: ["서류심사", "실무면접", "최종합격"],
+
+    apply: {
+      method: "email",
+      email: "recruit@hanbit-hospital.example",
+      phone: "",
+      notice: "이메일 제목에 '지원부문_성명'을 기재해 주세요. (예: 입원조제파트_홍길동)",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "hanbit-general-hospital",
+    hospitalName: "한빛종합병원",
+    logoUrl: companyLogos["한빛종합병원"],
+
+    hospitalTypeId: "general",
+    hospitalOperatorId: "private",
+    foundedYear: "1994년",
+    // homepageUrl: 없음 — companies.ts website가 빈 값이다
+
+    shortIntro: "서울 마포구에 위치한 지역 거점 종합병원입니다.",
+    fullIntro:
+      "한빛종합병원은 서울 마포구에 위치한 종합병원으로, 내과·외과·심장·항암 등 주요 진료과를 운영하며 지역 거점 의료기관 역할을 하고 있습니다.",
+    // keywords/bedCount/pharmacyStaffCount/dutySystem: 없음 — companyProfiles.ts에 프로필이 없다
+    // medicalDepartments: 없음 — companyDescription의 "내과·외과·심장·항암"은 자유서술이라 id로 승격하지 않는다
+    // specialistPharmacists: 없음 — jobs.ts 406의 전문약사 언급은 지원자 우대 자격이지 기관 보유 현황이 아니다
+    pharmacyEnvironmentDescription:
+      "약제부는 이번 인력 확충을 통해 입원 환자 조제 서비스 질 향상과 임상약사 역할 확대를 동시에 추진합니다. 주간 근무 중심이며, ASP팀은 중증 환자 약물 상담·처방 검토·다직종 협업에 집중하는 역할입니다.",
+
+    location: {
+      address: "서울 마포구 월드컵로 123 한빛종합병원",
+      detailAddress: "",
+    },
+  },
+};
+
+// ---- 국립특수의료원 정본 ----
+
+export const nationalSpecialMedicalCenterJobDetail: HospitalJobDetail = {
+  id: "national-special-medical-center-407",
+  slug: "nsmc-clinical-specialist-pharmacist",
+  companyId: "national-special-medical-center",
+
+  job: {
+    id: "national-special-medical-center-407",
+    companyId: "national-special-medical-center",
+    title: "임상·전문약사 (종양·감염 분야)",
+
+    jobCategory: { main: "약사 직무", sub: "임상·전문약사" },
+    headcount: "1명",
+    employmentTypeId: "permanent",
+    // jobs.ts 407은 experienceMin 3·experienceMax null("경력 3년 이상")이라 하한 구간을 쓴다.
+    experienceId: "3-5",
+    educationId: "pharmacy",
+
+    summary: "전문약사 훈련 지정기관에서 종양·감염 분야 임상약사를 모집합니다.",
+    responsibilities: [
+      "종양·감염 환자 약물 모니터링 및 최적화 상담",
+      "처방 검토 및 항생제 스튜어드십 프로그램 운영 참여",
+      "다학제 팀 (의사·간호사·영양사) 협업",
+      "약물 이상반응 보고 및 안전성 데이터 분석",
+      "전공의·간호사 대상 약물 정보 교육",
+    ],
+    requirements: [
+      "약사 면허 소지자",
+      "경력 3년 이상 (병원 임상 근무 필수)",
+      "종양 또는 감염 분야 임상 경험 보유자",
+    ],
+    preferred: [
+      "전문약사 자격증 소지자 (종양, 감염, 중환자 등)",
+      "영어 의학 논문 독해 가능자",
+      "임상 연구 또는 QI 프로젝트 참여 경험자",
+    ],
+
+    shiftTypeIds: ["day_shift"],
+    workDays: ["월", "화", "수", "목", "금"],
+    address: "서울 중구 을지로 245 국립특수의료원",
+    salary: "연봉 6,000만원 이상 (성과급 별도)",
+    benefitIds: [
+      "연차·휴가",
+      "의료비 지원",
+      "구내식당",
+      "교육 지원",
+      "학회·연수 지원",
+      "전문약사 교육 지원",
+      "경조사 지원",
+      "직원 주차",
+    ],
+    workConditionDetail:
+      "주간 (월~금 09:00~18:00) 근무이며, 급여는 연봉 6,000만원 이상 + 성과급 (호봉 기준)입니다. 전문약사 취득 비용 및 학회 참가비를 지원합니다. 4대보험과 퇴직금이 적용됩니다.",
+
+    coreKeywords: ["전문약사", "종양약학", "감염관리", "임상약학", "처방분석"],
+    // additionalNotes/detailImages/attachments/requiredDocuments: 없음 — jobs.ts 407에 근거 없음
+    hiringProcess: ["서류심사", "1차 면접 (실무)", "2차 면접 (임원)", "신체검사 (채용검진)", "최종합격"],
+
+    apply: {
+      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
+      // window.open에 그대로 넘기므로, jobs.ts 407의 applicationUrl을 이 자리에 둔다.
+      method: "homepage",
+      email: "https://recruit.nsmc.example",
+      phone: "",
+      notice: "채용 홈페이지에서 온라인 지원해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "national-special-medical-center",
+    hospitalName: "국립특수의료원",
+    // logoUrl: companyLogos에 "국립특수의료원" 키가 없어 생략 — CompanyLogo가 이름 기반으로 폴백한다
+
+    hospitalTypeId: "tertiary",
+    hospitalOperatorId: "public",
+    // foundedYear/homepageUrl: 없음 — 원본에 근거 없음
+
+    shortIntro: "서울 중구 소재 상급종합병원이자 임상약사 훈련 지정기관입니다.",
+    fullIntro:
+      "국립특수의료원은 서울 중구 소재 상급종합병원으로, 감염병·종양·중환자 분야 전문 의료를 제공하며 임상약사 훈련 지정기관으로 운영되고 있습니다.",
+    // keywords/bedCount/medicalDepartments/pharmacyStaffCount/dutySystem: 없음 — companyProfiles.ts에 프로필이 없다
+    // specialistPharmacists: 없음 — jobs.ts 407의 "종양, 감염, 중환자"는 지원자 우대 자격이지 기관 보유 현황이 아니다
+    pharmacyEnvironmentDescription:
+      "약제팀은 종양, 감염, 중환자 분야의 임상약사 훈련 지정기관으로서, 전문약사 취득을 지원하는 교육 체계를 갖추고 있습니다.",
+
+    location: {
+      address: "서울 중구 을지로 245 국립특수의료원",
+      detailAddress: "",
+    },
+  },
+};
+
+// ---- 한강상급종합병원 정본 ----
+
+export const hmcseoulHospitalJobDetail: HospitalJobDetail = {
+  id: "hmcseoul-hospital-408",
+  slug: "hmcseoul-night-inpatient-pharmacist",
+  companyId: "hmcseoul-hospital",
+
+  job: {
+    id: "hmcseoul-hospital-408",
+    companyId: "hmcseoul-hospital",
+    title: "야간전담 입원·조제 약사",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    // jobs.ts 408은 experienceMin 1·experienceMax 5("경력 1~5년")인데 experienceId는 단일 구간이라
+    // 하한에 맞춘 "1-3"을 쓴다. 상한 5년은 이 필드로 표현되지 않는다.
+    experienceId: "1-3",
+    educationId: "pharmacy",
+
+    summary: "야간 전담 입원조제 약사로서 응급·입원 환자의 야간 조제·투약 관리를 담당합니다.",
+    responsibilities: [
+      "야간 입원환자 처방 조제 및 감사",
+      "응급 투약 요청 처리 및 마약·고위험 의약품 관리",
+      "야간 당직 의료진 협력 및 약물 정보 제공",
+      "다음 근무자 인수인계 및 이상반응 보고",
+    ],
+    requirements: ["약사 면허 소지자", "경력 1년 이상 (병원 근무 경험 우대)", "야간 교대 근무 가능자"],
+    preferred: ["상급종합병원 약제부 근무 경험자", "응급·중환자 조제 경험자"],
+
+    shiftTypeIds: ["night_on_call", "shift_work"],
+    // workDays: 없음 — 야간 교대라 요일이 특정되지 않았다
+    address: "서울 용산구 이촌로 340 한강상급종합병원",
+    salary: "연 9,000만원 수준 (야간수당 포함)",
+    // 야간수당·비직수당은 hospitalBenefitLabelMap 12종에 없어(당직·휴일수당과 같은 항목이 아니다)
+    // 4대보험·퇴직금과 함께 workConditionDetail 문장으로 옮겼다
+    benefitIds: ["의료비 지원", "구내식당", "직원 주차"],
+    workConditionDetail:
+      "야간·비직 전담 (17:00 ~ 다음날 08:00) 근무입니다. 급여는 기본급 + 야간수당 + 비직수당으로 구성되며, 연간 수입은 약 9,000만원 수준 (수당 합산)입니다. 근무 형태는 격주 교대 또는 3인 순환 (입사 후 협의)입니다. 4대보험과 퇴직금이 적용되고, 사내식당에서 야식이 제공됩니다.",
+
+    coreKeywords: ["야간전담", "입원조제", "야간수당", "비직수당", "교대근무"],
+    // additionalNotes/detailImages/attachments/requiredDocuments: 없음 — jobs.ts 408에 근거 없음
+    hiringProcess: ["서류심사", "면접 (1차)", "최종합격"],
+
+    apply: {
+      method: "email",
+      email: "pharmrecruit@hmcseoul.example",
+      phone: "",
+      // jobs.ts 408에 applicationGuide가 없어 지원 방법만 안내한다
+      notice: "이메일로 지원해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    companyId: "hmcseoul-hospital",
+    hospitalName: "한강상급종합병원",
+    // logoUrl: companyLogos에 "한강상급종합병원" 키가 없어 생략 — CompanyLogo가 이름 기반으로 폴백한다
+
+    hospitalTypeId: "tertiary",
+    hospitalOperatorId: "private",
+    // foundedYear/homepageUrl: 없음 — 원본에 근거 없음
+
+    shortIntro: "서울 용산구에 위치한 24시간 운영 상급종합병원입니다.",
+    fullIntro:
+      "한강상급종합병원은 서울 용산구에 위치한 상급종합병원으로, 응급·중환자·외상 분야에 특화된 24시간 운영 체계를 갖추고 있습니다.",
+    // keywords/bedCount/medicalDepartments/pharmacyStaffCount/specialistPharmacists: 없음 — companyProfiles.ts에 프로필이 없다
+    dutySystem: "야간·비직 전담 약사를 두고 격주 교대 또는 3인 순환으로 운영합니다.",
+    pharmacyEnvironmentDescription:
+      "약제부는 17:00부터 다음날 08:00까지 야간 교대 근무로 응급·입원 환자의 조제와 투약 관리를 담당합니다.",
+
+    location: {
+      address: "서울 용산구 이촌로 340 한강상급종합병원",
+      detailAddress: "",
+    },
+  },
+};
+
+// ---- 미래요양병원 정본 — org는 companyProfiles.ts의 프로필 값을 재사용한다 ----
+
+export const miraeCareHospitalJobDetail: HospitalJobDetail = {
+  id: "mirae-care-hospital-409",
+  slug: "mirae-care-weekend-parttime-pharmacist",
+  companyId: "mirae-care-hospital",
+
+  job: {
+    id: "mirae-care-hospital-409",
+    companyId: "mirae-care-hospital",
+    title: "주말·파트타임 입원·조제 약사",
+
+    jobCategory: { main: "약사 직무", sub: "입원·조제 약사" },
+    headcount: "1명",
+    employmentTypeId: "part-time",
+    experienceId: "any",
+    educationId: "pharmacy",
+
+    summary: "주말 이틀 또는 하루만 근무 가능한 파트타임 입원조제 약사를 모집합니다.",
+    responsibilities: ["주말 입원환자 처방 조제·감사", "의약품 재고 확인 및 관리", "주말 당직 의료진 협력"],
+    requirements: ["약사 면허 소지자", "주말 근무 가능자 (경력 무관)"],
+    preferred: ["병원 또는 약국 근무 경험자", "요양 환자 대상 조제 경험자"],
+
+    shiftTypeIds: ["weekend_work"],
+    workDays: ["토", "일"],
+    address: "경기 수원시 팔달구 매산로 88 미래요양병원",
+    salary: "시급 협의 (주 16시간 기준)",
+    // 4대보험(시간 비례)·식사 제공은 hospitalBenefitLabelMap 12종에 없어 workConditionDetail 문장으로 옮겼다
+    benefitIds: ["직원 주차"],
+    workConditionDetail:
+      "토·일 09:00~18:00 주 16시간 근무이며, 근무 옵션은 A안 토·일 / B안 토 또는 일 선택 (협의 가능)입니다. 급여는 시급 협의로 경력·자격 기준 면접 후 결정합니다. 4대보험이 시간 비례로 적용되고 식사가 제공됩니다.",
+
+    coreKeywords: ["파트타임", "주말근무", "요양병원", "유연근무", "단시간"],
+    // additionalNotes/detailImages/attachments/requiredDocuments: 없음 — jobs.ts 409에 근거 없음
+    hiringProcess: ["서류심사", "면접", "최종합격"],
+
+    apply: {
+      method: "quick",
+      email: "",
+      phone: "",
+      notice: "간편지원으로 접수해 주세요.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    companyId: "mirae-care-hospital",
+    hospitalName: "미래요양병원",
+    logoUrl: companyLogos["미래요양병원"],
+
+    hospitalTypeId: "long-term",
+    hospitalOperatorId: "private",
+    foundedYear: "2009년",
+    // homepageUrl: 없음 — companies.ts website가 빈 값이다
+
+    shortIntro: "노인성·만성질환 중심의 재활 요양병원입니다.",
+    fullIntro:
+      "미래요양병원은 경기 수원시 팔달구에 위치한 요양병원으로, 노인성 질환·만성질환 환자 중심의 입원 서비스를 운영하고 있습니다.",
+    keywords: ["요양병원", "재활", "만성질환", "입원"],
+
+    // bedCount/pharmacyStaffCount: 없음 — companyProfiles.ts에 metrics가 없다
+    medicalDepartments: ["internal_medicine", "surgery", "neurosurgery", "family_medicine", "rehabilitation_medicine"],
+    dutySystem: "약제팀 주간 근무 중심, 입원 환자 조제 대응 체계 운영",
+    // specialistPharmacists: 없음 — 원본에 기관 보유 현황 기재가 없다
+    pharmacyEnvironmentDescription: "입원 조제, 만성질환 복약 관리, 의약품 관리를 담당합니다.",
+
+    location: {
+      address: "경기 수원시 팔달구 매산로 88 미래요양병원",
+      detailAddress: "",
+    },
+  },
+};
+
 export const hospitalJobDetails: HospitalJobDetail[] = [
   osanHospitalJobDetail,
   armedForcesSeoulDistrictHospitalJobDetail,
@@ -781,6 +1116,10 @@ export const hospitalJobDetails: HospitalJobDetail[] = [
   snuhPharmacyStaffJobDetail,
   jeilOrthopedicHospitalJobDetail,
   mujuCountyCareHospitalJobDetail,
+  hanbitGeneralHospitalJobDetail,
+  nationalSpecialMedicalCenterJobDetail,
+  hmcseoulHospitalJobDetail,
+  miraeCareHospitalJobDetail,
 ];
 
 export function getHospitalJobDetail(slug: string): HospitalJobDetail | undefined {
