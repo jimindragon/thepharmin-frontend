@@ -349,7 +349,7 @@ export function ResumeEditorClient({ mode, initialResume }: { mode: "create" | "
 
   return (
     <MyPageShell>
-      <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "내 정보" }, { label: "이력서 관리", href: "/mypage/resume" }, { label: pageTitle }]} />
+      <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "내 정보" }, { label: "이력서 관리", href: "/mypage/resume" }, { label: pageTitle }]} />
 
       <div className="mt-5 flex items-center justify-between gap-4">
         <h1 className="text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{pageTitle}</h1>

@@ -123,7 +123,7 @@ export function MyPageResumeClient() {
 
   return (
     <MyPageShell>
-      <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "내 정보" }, { label: "이력서 관리" }]} />
+      <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "내 정보" }, { label: "이력서 관리" }]} />
 
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
         <div>

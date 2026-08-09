@@ -25,7 +25,7 @@ export function MyPageNotificationSettingsClient() {
 
   return (
     <MyPageShell>
-      <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "알림 설정" }]} />
+      <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "알림 설정" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림 설정</h1>
       <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">

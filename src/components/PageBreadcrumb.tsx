@@ -9,11 +9,16 @@ interface BreadcrumbItem {
 interface PageBreadcrumbProps {
   items: BreadcrumbItem[];
   className?: string;
+  /** 모바일: 공개 페이지는 탭바·뒤로가기가 위치를 제공 — 깊이 표시가 필요한 마이페이지만 유지 */
+  keepOnMobile?: boolean;
 }
 
-export function PageBreadcrumb({ items, className = "" }: PageBreadcrumbProps) {
+export function PageBreadcrumb({ items, className = "", keepOnMobile = false }: PageBreadcrumbProps) {
   return (
-    <nav className={`flex items-center gap-3 text-[13px] font-medium text-[#a0a9b7] ${className}`} aria-label="breadcrumb">
+    <nav
+      className={`flex items-center gap-3 text-[13px] font-medium text-[#a0a9b7] ${keepOnMobile ? "" : "max-[760px]:hidden"} ${className}`}
+      aria-label="breadcrumb"
+    >
       <Home size={16} strokeWidth={2.1} className="shrink-0" />
       {items.map((item, index) => {
         const isLast = index === items.length - 1;

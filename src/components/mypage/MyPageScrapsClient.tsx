@@ -174,7 +174,7 @@ export function MyPageScrapsClient() {
 
   return (
     <MyPageShell>
-      <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "스크랩" }]} />
+      <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "스크랩" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36] max-[760px]:mt-4 max-[760px]:text-[24px]">스크랩</h1>
       <p className="mt-2.5 max-w-[640px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">

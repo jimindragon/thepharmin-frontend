@@ -280,7 +280,7 @@ export function MyPageDashboardClient() {
 
         {/* 브레드크럼 + 인사 영역 */}
         <div>
-          <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "대시보드" }]} />
+          <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "대시보드" }]} />
           <div className="mt-5 flex flex-wrap items-start justify-between gap-y-3">
             <div>
               <h1 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[24px]">
