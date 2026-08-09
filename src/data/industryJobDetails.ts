@@ -790,6 +790,784 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       ],
     },
   },
+
+  "otsuka-mi-pv": {
+    slug: "otsuka-mi-pv",
+    companyId: "otsuka-korea",
+    job: {
+      title: "정규직 MI/PV 채용",
+      tags: ["다국적제약", "PV·Drug Safety", "정규직", "경력무관"],
+      oneLineIntro: "의학정보(MI) 및 약물감시(PV)를 담당할 메디컬 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "약무·안전관리", sub: "PV·Drug Safety" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: false,
+      career: "경력무관",
+      headcount: "○명",
+      education: "학사 이상",
+      location: {
+        address: "서울 강남구 역삼로 226, 오츠카제약빌딩",
+        workMode: "사무실 근무",
+      },
+      coreKeywords: ["Medical Information", "Pharmacovigilance", "약물감시", "안전성", "의학정보", "약사 면허"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/otsuka-mi-pv",
+      },
+      deadline: { date: "2026-08-21", label: "마감 D-33", status: "dDay" },
+      postingSource: "direct",
+      introduction:
+        "의약품 의학정보(Medical Information) 제공 및 약물감시(Pharmacovigilance) 업무를 담당할 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "의약품 의학정보(MI) 문의 대응 및 자료 관리",
+          "약물 이상사례(PV) 수집·평가·보고 및 안전성 자료 관리",
+          "규제기관 보고 및 안전성 문서 작성",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["약학·생명과학 관련 전공 학사 이상", "경력 무관 (신입 지원 가능)", "의학·약학 용어에 대한 이해"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["약사 면허 보유자", "영어 커뮤니케이션 가능자", "MI·PV 유관 경험자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "다국적 제약사 표준 복리후생 제도를 운영합니다.",
+      positionIntro:
+        "의약품 의학정보(Medical Information) 제공 및 약물감시(Pharmacovigilance) 업무를 담당할 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "한국오츠카제약",
+      orgType: "다국적제약",
+      employeeCount: "비공개",
+      shortIntro: "중추신경계·순환기 등 전문의약품을 공급하는 일본 오츠카제약의 한국법인입니다.",
+      description:
+        "일본 오츠카제약의 한국법인으로 중추신경계·순환기 등 전문의약품을 공급합니다.",
+      keywords: ["다국적 제약사", "중추신경계", "순환기", "메디컬"],
+      logoUrl: companyLogos["한국오츠카제약"],
+    },
+    businessContext: {
+      businessFields: ["중추신경계 전문의약품", "순환기 전문의약품"],
+    },
+  },
+
+  "bukwang-bd-lead": {
+    slug: "bukwang-bd-lead",
+    companyId: "bukwang",
+    job: {
+      title: "본사 사업개발(BD) 팀장 채용 (경력 8년~)",
+      tags: ["전문의약품 제조업", "BD·Licensing", "정규직", "경력"],
+      oneLineIntro: "신약 라이선싱·기술이전을 주도할 사업개발 팀장을 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "전략·투자", sub: "BD·Licensing" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: true,
+      career: "경력 8년 이상",
+      headcount: "1명",
+      education: "학사 이상",
+      location: {
+        address: "서울 동작구",
+        workMode: "사무실 근무",
+      },
+      coreKeywords: ["BD", "라이선싱", "기술이전", "파트너십", "신약 파이프라인", "계약 협상"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "direct",
+      introduction: "신약 파이프라인의 사업개발(BD)과 라이선싱·기술이전을 총괄할 팀장급 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "신약·파이프라인 라이선스 인/아웃 및 기술이전 전략 수립",
+          "국내외 파트너십·제휴 발굴 및 계약 협상",
+          "사업개발 프로젝트 총괄 및 경영진 보고",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["관련 전공 학사 이상", "제약·바이오 BD·라이선싱 경력 8년 이상", "계약·협상 실무 경험"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["영어 협상·계약 가능자", "글로벌 라이선싱 딜 경험자", "약학·이공계 + 경영 백그라운드"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      positionIntro: "신약 파이프라인의 사업개발(BD)과 라이선싱·기술이전을 총괄할 팀장급 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "부광약품",
+      orgType: "전문의약품 제조업",
+      employeeCount: "비공개",
+      shortIntro: "중추신경계·항암 등에 강점을 가진 국내 중견 제약사입니다.",
+      description:
+        "중추신경계·항암 등에 강점을 가진 국내 중견 제약사로 신약개발과 오픈이노베이션을 추진합니다.",
+      keywords: ["국내 제약사", "중추신경계", "항암", "오픈이노베이션"],
+      logoUrl: companyLogos["부광약품"],
+    },
+    businessContext: {
+      businessFields: ["중추신경계 전문의약품", "항암 전문의약품", "신약개발·오픈이노베이션"],
+    },
+  },
+
+  "lgchem-mfg-pharmacist": {
+    slug: "lgchem-mfg-pharmacist",
+    companyId: "lgchem-life-science",
+    job: {
+      title: "생명과학사업본부 온산공장 제조관리약사 모집",
+      tags: ["제약·바이오(대기업)", "제약 약무", "정규직", "경력무관"],
+      oneLineIntro: "의약품 제조 공정의 제조관리약사를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "약무·안전관리", sub: "제약 약무" },
+      employmentType: "정규직",
+      workMode: "사무실·현장",
+      isLeadership: false,
+      career: "경력무관(졸업예정자 가능)",
+      headcount: "○명",
+      education: "학사 이상(졸업예정자 가능)",
+      location: {
+        address: "울산 울주군 온산읍 이진로 19-2, LG화학 온산공장",
+        workMode: "사무실·현장",
+      },
+      coreKeywords: ["제조관리약사", "GMP", "의약품 생산", "약사 면허", "품질"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/lgchem-mfg-pharmacist",
+      },
+      deadline: { date: "2026-08-25", label: "마감 D-37", status: "dDay" },
+      postingSource: "direct",
+      introduction: "의약품 제조 공정의 품질과 적법성을 책임질 제조관리약사를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "의약품 제조 공정 관리 및 제조 기록 검토",
+          "GMP 기준 준수 및 제조 관련 문서 관리",
+          "제조소 품질 이슈 대응",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["약학 전공 학사 이상 (졸업예정자 가능)", "약사 면허 보유(예정) 자", "경력 무관"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["제조관리약사 경험자", "GMP 이해 보유자", "의약품 생산 현장 이해"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "대기업 계열 표준 복리후생 및 성과 보상 제도를 운영합니다.",
+      positionIntro: "의약품 제조 공정의 품질과 적법성을 책임질 제조관리약사를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "LG화학 생명과학본부",
+      orgType: "제약·바이오(대기업)",
+      employeeCount: "비공개",
+      shortIntro: "당뇨·성장호르몬·백신 등 바이오의약품을 개발·생산하는 LG화학 생명과학사업본부입니다.",
+      description: "LG화학 생명과학사업본부로 당뇨·성장호르몬·백신 등 바이오의약품을 개발·생산합니다.",
+      keywords: ["대기업", "바이오의약품", "GMP", "생산 현장"],
+      logoUrl: companyLogos["LG화학 생명과학본부"],
+    },
+    businessContext: {
+      businessFields: ["당뇨 치료제", "성장호르몬", "백신"],
+      products: [
+        { name: "당뇨 치료제", description: "당뇨 영역의 바이오의약품을 개발·생산합니다." },
+        { name: "성장호르몬", description: "성장호르몬 바이오의약품을 개발·생산합니다." },
+        { name: "백신", description: "백신 바이오의약품을 개발·생산합니다." },
+      ],
+    },
+  },
+
+  "yuyu-ma-formulation": {
+    slug: "yuyu-ma-formulation",
+    companyId: "yuyu-pharm",
+    job: {
+      title: "MA/제제연구 부문별 경력 채용",
+      tags: ["전문의약품 제조업", "바이오의약품 제제·분석", "정규직", "경력"],
+      oneLineIntro: "제제연구 및 학술(MA) 부문 경력 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "연구개발", sub: "바이오의약품 제제·분석" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: false,
+      career: "경력 4년 이상",
+      headcount: "1명",
+      education: "학사 이상",
+      location: {
+        address: "서울 중구 남대문로 197, 유유제약",
+        workMode: "사무실 근무",
+      },
+      coreKeywords: ["제제연구", "Medical Affairs", "학술", "제품 개발", "처방 설계"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "direct",
+      introduction:
+        "제제연구 및 학술(Medical Affairs) 부문에서 제품 개발과 학술 활동을 담당할 경력 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "제제 연구·개발 및 처방 설계",
+          "학술 자료 작성 및 제품 관련 의학·약학 정보 관리",
+          "유관 부서(개발·RA·마케팅) 협업",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["약학·화학·생명과학 관련 전공 학사 이상", "제제연구 또는 학술(MA) 경력 4년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["제제 개발 프로젝트 경험자", "약사 면허 보유자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      positionIntro:
+        "제제연구 및 학술(Medical Affairs) 부문에서 제품 개발과 학술 활동을 담당할 경력 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "유유제약",
+      orgType: "전문의약품 제조업",
+      employeeCount: "비공개",
+      shortIntro: "순환기·비뇨기 등에 강점을 가진 국내 중견 제약사입니다.",
+      description: "순환기·비뇨기 등에 강점을 가진 국내 중견 제약사입니다.",
+      keywords: ["국내 제약사", "순환기", "비뇨기", "제제연구"],
+      logoUrl: companyLogos["유유제약"],
+    },
+    businessContext: {
+      businessFields: ["순환기 전문의약품", "비뇨기 전문의약품"],
+    },
+  },
+
+  "cellbion-qaqc": {
+    slug: "cellbion-qaqc",
+    companyId: "cellbion",
+    job: {
+      title: "생산본부 QA·QC 신입/경력 채용",
+      tags: ["바이오 신약개발", "QA", "정규직", "신입·경력"],
+      oneLineIntro: "방사성의약품 생산본부의 QA·QC 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "생산·품질", sub: "QA" },
+      employmentType: "정규직",
+      workMode: "사무실·현장",
+      isLeadership: false,
+      career: "신입·경력 2년 이상",
+      headcount: "○명",
+      education: "학사 이상",
+      location: {
+        address: "서울 종로구",
+        workMode: "사무실·현장",
+      },
+      coreKeywords: ["QA", "QC", "GMP", "품질관리", "CAPA", "방사성의약품"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/cellbion-qaqc",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "direct",
+      introduction:
+        "방사성의약품 신약을 개발하는 바이오텍 생산본부에서 품질보증(QA)·품질관리(QC)를 담당할 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "생산 공정 품질보증(QA) 및 품질관리(QC) 업무",
+          "GMP 기준 품질 문서 작성·관리 및 시험 데이터 관리",
+          "일탈·부적합 관리 및 시정·예방조치(CAPA)",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["약학·화학·생명과학 관련 전공 학사 이상", "신입 또는 QA·QC 경력 2년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["GMP·QMS 이해 보유자", "바이오의약품 품질 경험자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      positionIntro:
+        "방사성의약품 신약을 개발하는 바이오텍 생산본부에서 품질보증(QA)·품질관리(QC)를 담당할 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "셀비온",
+      orgType: "바이오 신약개발",
+      employeeCount: "비공개",
+      shortIntro: "방사성의약품(RPT) 신약을 개발하는 혁신 바이오텍입니다.",
+      description: "방사성의약품(RPT) 신약을 개발하는 혁신 바이오텍입니다.",
+      keywords: ["혁신 바이오벤처", "방사성의약품", "RPT", "GMP"],
+      logoUrl: companyLogos["셀비온"],
+    },
+    businessContext: {
+      businessFields: ["방사성의약품(RPT) 신약개발"],
+    },
+  },
+
+  "samsung-pharma-qc": {
+    slug: "samsung-pharma-qc",
+    companyId: "samsung-pharm",
+    job: {
+      title: "QC 경력 채용 (9년 이상)",
+      tags: ["전문의약품 제조업", "QC", "정규직", "경력"],
+      oneLineIntro: "의약품 품질관리(QC) 경력 팀원을 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "생산·품질", sub: "QC" },
+      employmentType: "정규직",
+      workMode: "사무실·현장",
+      isLeadership: false,
+      career: "경력 9년 이상",
+      headcount: "○명",
+      education: "학사 이상",
+      location: {
+        address: "경기 화성시",
+        workMode: "사무실·현장",
+      },
+      coreKeywords: ["QC", "품질관리", "시험·분석", "HPLC", "GMP"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/samsung-pharma-qc",
+      },
+      deadline: { date: "2026-08-28", label: "마감 D-40", status: "dDay" },
+      postingSource: "direct",
+      introduction: "의약품 품질관리(QC) 부문에서 시험·분석과 품질 데이터를 책임질 시니어 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "원부자재·완제품 시험 및 분석",
+          "품질관리(QC) 데이터 관리 및 시험기기 관리",
+          "부적합 원인 분석 및 품질 문서 관리",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["화학·약학·생명과학 관련 전공 학사 이상", "QC 경력 9년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["HPLC·GC 등 분석기기 운용 경험자", "GMP 품질 시스템 경험자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      positionIntro: "의약품 품질관리(QC) 부문에서 시험·분석과 품질 데이터를 책임질 시니어 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "삼성제약",
+      orgType: "전문의약품 제조업",
+      employeeCount: "비공개",
+      shortIntro: "의약품·건강기능식품을 제조하는 국내 제약사입니다.",
+      description: "의약품·건강기능식품을 제조하는 국내 제약사입니다.",
+      keywords: ["국내 제약사", "품질관리", "GMP", "건강기능식품"],
+      logoUrl: companyLogos["삼성제약"],
+    },
+    businessContext: {
+      businessFields: ["전문의약품 제조", "건강기능식품"],
+    },
+  },
+
+  "oreon-raqaqc": {
+    slug: "oreon-raqaqc",
+    companyId: "oreon",
+    job: {
+      title: "메디컬에스테틱 품질경영본부 RA/QA/QC 인재 채용",
+      tags: ["의료기기·메디컬에스테틱", "의료기기 RA", "정규직", "경력무관"],
+      oneLineIntro: "미용 의료기기 인허가(RA)·품질(QA/QC) 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "RA·인허가", sub: "의료기기 RA" },
+      employmentType: "정규직(수습 3개월)",
+      workMode: "사무실·현장",
+      isLeadership: false,
+      career: "경력무관(수습 3개월)",
+      headcount: "○명",
+      education: "초대졸 이상",
+      location: {
+        address: "경기 성남시 중원구 사기막골로 99, 일성테크비즈 2차",
+        workMode: "사무실·현장",
+      },
+      coreKeywords: ["RA", "QA", "QC", "ISO13485", "CE MDR", "FDA", "GC/LC"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: "2026-09-01", label: "마감 D-44", status: "dDay" },
+      postingSource: "direct",
+      introduction:
+        "보톡스·필러 등 미용 의료제품을 70여 개국에 수출하는 기업의 품질경영본부에서 인허가(RA)·품질(QA/QC)을 담당할 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "(RA) 식약처·CE·FDA 등 국내외 의료기기 인허가 전략 수립 및 기술문서 작성",
+          "(QA) ISO 13485·GMP 기반 QMS 운영 및 심사 대응, 내부 품질 감사·CAPA",
+          "(QC) 원부자재·제품 검사, 함량 분석(GC/LC), 품질 문서 관리",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: [
+          "의공학·생명공학·화학 등 유관 전공 (초대졸 이상)",
+          "(RA) 인허가 경력 1~5년 / (QA) 경력 3년 이상 / (QC) 경력 무관",
+        ],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["의료기기 RA 1·2급 자격증 취득자", "CE MDR·FDA·해외 화장품 인허가 경력자", "비즈니스 영어 가능자"],
+      },
+      benefits: ["4대 보험", "자율복장", "식대 지원", "성과급", "생일 상품권"],
+      workConditionDetail: "자율복장, 식대 지원, 자유로운 연차 사용, 성과급 등을 운영합니다(포괄임금제).",
+      positionIntro:
+        "보톡스·필러 등 미용 의료제품을 70여 개국에 수출하는 기업의 품질경영본부에서 인허가(RA)·품질(QA/QC)을 담당할 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      // 원본 파일의 기업명은 "(주)에지앙"이지만 목록(jobs.ts 118)의 기업명이 "오래온"이라 목록 값을 따른다.
+      name: "오래온",
+      orgType: "의료기기·메디컬에스테틱",
+      employeeCount: "비공개",
+      shortIntro: "보톡스·필러·미용 봉합사 등 메디컬 에스테틱 제품을 70여 개국에 수출하는 전문 기업입니다.",
+      description:
+        "보톡스·필러·미용 봉합사 등 메디컬 에스테틱 제품을 70여 개국에 수출하는 전문 기업입니다.",
+      keywords: ["의료기기", "메디컬 에스테틱", "글로벌 수출", "RA"],
+      logoUrl: companyLogos["오래온"],
+    },
+    businessContext: {
+      businessFields: ["보톡스", "필러", "미용 봉합사"],
+      products: [
+        { name: "보톡스", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+        { name: "필러", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+        { name: "미용 봉합사", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+      ],
+    },
+  },
+
+  "aju-clinical-pm": {
+    slug: "aju-clinical-pm",
+    companyId: "aju-pharm",
+    job: {
+      title: "임상PM/제제개발/건기식개발 담당 채용",
+      tags: ["전문의약품 제조업", "임상 PM", "정규직", "경력"],
+      oneLineIntro: "임상 프로젝트 관리(PM) 및 개발 담당 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "임상", sub: "임상 PM" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: false,
+      career: "경력 3년 이상",
+      headcount: "○명",
+      education: "학사 이상",
+      location: {
+        address: "서울 구로구 경인로 600",
+        workMode: "사무실 근무(포지션별 상이)",
+      },
+      coreKeywords: ["임상PM", "GCP", "임상시험", "제제개선", "건강기능식품"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: "2026-09-04", label: "마감 D-47", status: "dDay" },
+      postingSource: "direct",
+      introduction: "임상 프로젝트 관리(PM)와 제제개선·건강기능식품 개발을 담당할 경력 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "임상시험 프로젝트 기획 및 운영 관리(PM)",
+          "제제 개선 및 건강기능식품 개발 업무",
+          "유관 부서·기관 협업 및 일정 관리",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["약학·생명과학 관련 전공 학사 이상", "임상·개발 유관 경력 3년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["GCP 이해 보유자", "임상시험 운영 경험자", "약사 면허 보유자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원, 성과급 제도를 운영합니다.",
+      positionIntro: "임상 프로젝트 관리(PM)와 제제개선·건강기능식품 개발을 담당할 경력 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "아주약품",
+      orgType: "전문의약품 제조업",
+      employeeCount: "비공개",
+      shortIntro: "순환기·소화기 등 전문의약품과 건강기능식품을 보유한 국내 제약사입니다.",
+      description: "순환기·소화기 등 전문의약품과 건강기능식품을 보유한 국내 제약사입니다.",
+      keywords: ["국내 제약사", "순환기", "소화기", "건강기능식품"],
+      logoUrl: companyLogos["아주약품"],
+    },
+    businessContext: {
+      businessFields: ["순환기 전문의약품", "소화기 전문의약품", "건강기능식품"],
+    },
+  },
+
+  "samo-bd": {
+    slug: "samo-bd",
+    companyId: "samo-pharm",
+    job: {
+      title: "개발부(BD) 경력 모집 (7년 이상)",
+      tags: ["전문의약품 제조업", "BD·Licensing", "정규직", "경력"],
+      oneLineIntro: "신약 개발·사업개발(BD) 경력 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "전략·투자", sub: "BD·Licensing" },
+      employmentType: "정규직",
+      workMode: "사무실 근무",
+      isLeadership: false,
+      career: "경력 7년 이상",
+      headcount: "○명",
+      education: "학사 이상",
+      location: {
+        address: "서울",
+        workMode: "사무실 근무",
+      },
+      coreKeywords: ["BD", "개발", "라이선싱", "사업개발", "파트너십"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/samo-bd",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "direct",
+      introduction: "신약·제품 개발과 사업개발(BD)을 담당할 경력 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: ["신약·제품 개발 기획 및 사업개발(BD)", "라이선싱·제휴 검토 및 파트너십 발굴", "개발 프로젝트 관리"],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["관련 전공 학사 이상", "개발·BD 유관 경력 7년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["라이선싱·기술이전 경험자", "영어 가능자"],
+      },
+      benefits: ["4대 보험", "연차", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 성과급 제도를 운영합니다.",
+      positionIntro: "신약·제품 개발과 사업개발(BD)을 담당할 경력 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "(주)삼오제약",
+      orgType: "전문의약품 제조업",
+      employeeCount: "비공개",
+      shortIntro: "전문의약품을 제조하는 국내 제약사입니다.",
+      description: "전문의약품을 제조하는 국내 제약사입니다.",
+      keywords: ["국내 제약사", "전문의약품", "사업개발"],
+      logoUrl: companyLogos["(주)삼오제약"],
+    },
+    businessContext: {
+      businessFields: ["전문의약품 제조"],
+    },
+  },
+
+  "kolonbiotech-qaqc": {
+    slug: "kolonbiotech-qaqc",
+    companyId: "kolon-biotech",
+    job: {
+      title: "품질부문(QC/QA) 신입/경력(초대졸) 채용",
+      tags: ["바이오·제약 제조", "QC", "정규직", "신입·경력"],
+      oneLineIntro: "바이오·제약 생산의 품질부문(QC/QA) 인재를 찾습니다.",
+      salary: "회사 내규에 따름",
+      jobCategory: { main: "생산·품질", sub: "QC" },
+      employmentType: "정규직",
+      workMode: "사무실·현장",
+      isLeadership: false,
+      career: "신입·경력 3년 이하",
+      headcount: "○명",
+      education: "초대졸(2·3년제) 이상",
+      location: {
+        address: "충북 충주시",
+        workMode: "사무실·현장",
+      },
+      coreKeywords: ["QC", "QA", "GMP", "밸리데이션", "환경모니터링", "무균제제"],
+      apply: {
+        method: "homepage",
+        target: "https://example.com/careers/kolonbiotech-qaqc",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "direct",
+      introduction:
+        "바이오·제약 의약품 생산의 품질부문(QC/QA)에서 시험·밸리데이션·문서관리를 담당할 인재를 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "(QC) 이화학·미생물 시험 및 환경모니터링(EM)",
+          "(QA) 적격성 평가 및 밸리데이션 수행",
+          "GMP 문서(계획서·보고서·SOP) 작성 및 관리",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["2·3년제 전문대학 학위(화학·미생물·생명공학 관련)", "(경력) 제약회사 품질관리/보증 경력 3년 이하"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["GMP 환경 근무 경험자", "생물학적 제제·무균제제 QA 경험자", "외국어 능력 우수자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "4대 보험, 연차, 교육비 지원 등 복리후생을 운영합니다.",
+      positionIntro:
+        "바이오·제약 의약품 생산의 품질부문(QC/QA)에서 시험·밸리데이션·문서관리를 담당할 인재를 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      name: "코오롱바이오텍",
+      orgType: "바이오·제약 제조",
+      employeeCount: "비공개",
+      shortIntro: "코오롱 계열의 바이오·제약 의약품 제조 기업입니다.",
+      description: "코오롱 계열의 바이오·제약 의약품 제조 기업입니다.",
+      keywords: ["바이오 생산", "GMP", "품질부문", "무균제제"],
+      logoUrl: companyLogos["코오롱바이오텍"],
+    },
+    businessContext: {
+      businessFields: ["바이오의약품 제조", "제약 의약품 제조"],
+    },
+  },
+
+  "antibody-biotech-aoc": {
+    slug: "antibody-biotech-aoc",
+    // companyId: 없음 — 헤드헌팅 공고로 기업명이 비공개라 companies.ts에 대응 엔티티가 없다
+    companyId: null,
+    job: {
+      title: "항체 바이오텍 AOC 연구원 (Antibody-Oligonucleotide Conjugate)",
+      tags: ["바이오 신약개발(코스닥)", "신약개발", "정규직", "박사"],
+      oneLineIntro: "차세대 모달리티 AOC를 설계·제작할 박사급 연구원을 찾습니다.",
+      salary: "면접 후 결정",
+      jobCategory: { main: "연구개발", sub: "신약개발" },
+      employmentType: "정규직",
+      workMode: "연구·사무",
+      isLeadership: false,
+      career: "박사 이상(졸업예정자 가능)",
+      headcount: "1명",
+      education: "박사 이상(취득 예정 포함)",
+      location: {
+        address: "서울 강남구 (역삼·강남 인근)",
+        workMode: "연구·사무",
+      },
+      coreKeywords: ["AOC", "항체", "Oligonucleotide", "Conjugation", "신약연구", "차세대 모달리티"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "headhunting",
+      introduction:
+        "글로벌 빅파마와 협업하는 코스닥 상장 항체 바이오텍에서 차세대 모달리티 AOC(Antibody-Oligonucleotide Conjugate)를 설계·제작할 박사급 연구원을 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "AOC 설계 및 제작, Conjugation 반응 수행 및 공정 조건 최적화",
+          "항체 공학 및 siRNA/oligonucleotide 기반 치료물질 설계",
+          "In vitro 효능 평가·후보물질 스크리닝 및 CRO 협업",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: [
+          "화학·생명공학·약학·생물학 등 관련 분야 박사 학위(취득 예정 포함)",
+          "Antibody-Oligonucleotide Conjugation 또는 Oligonucleotide 연구 경험",
+        ],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["제약사·바이오텍 연구개발 경험자", "Neuroscience 연구 경험자", "영어 기반 연구 커뮤니케이션 가능자"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "상세 처우는 면접 후 결정됩니다.",
+      positionIntro:
+        "글로벌 빅파마와 협업하는 코스닥 상장 항체 바이오텍에서 차세대 모달리티 AOC(Antibody-Oligonucleotide Conjugate)를 설계·제작할 박사급 연구원을 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      // 헤드헌팅 공고 — jobs.ts 128의 company 문자열을 그대로 쓴다(기업명 비공개 관례).
+      name: "코스닥 상장 항체 바이오텍 (기업명 비공개)",
+      orgType: "바이오 신약개발(코스닥)",
+      employeeCount: "비공개",
+      shortIntro: "글로벌 빅파마와 협업하는 코스닥 상장 항체 신약 바이오텍입니다.",
+      description: "글로벌 빅파마와 협업하는 코스닥 상장 항체 신약 바이오텍입니다.",
+      keywords: ["혁신 바이오벤처", "항체 신약", "AOC", "코스닥 상장"],
+      // logoUrl: 없음 — 기업명 비공개 공고라 로고 자산을 연결하지 않는다
+    },
+    businessContext: {
+      businessFields: ["항체 신약개발"],
+    },
+  },
+
+  "biotech-nonclinical-tox": {
+    slug: "biotech-nonclinical-tox",
+    // companyId: 없음 — 헤드헌팅 공고로 기업명이 비공개라 companies.ts에 대응 엔티티가 없다
+    companyId: null,
+    job: {
+      title: "비임상약리독성 연구원 (박사급)",
+      tags: ["바이오 신약개발(상장)", "비임상", "정규직", "경력"],
+      oneLineIntro: "ADC 후보물질의 비임상 PK/PD·독성을 책임질 박사급 연구원을 찾습니다.",
+      salary: "면접 후 결정",
+      jobCategory: { main: "연구개발", sub: "비임상" },
+      employmentType: "정규직",
+      workMode: "연구·사무",
+      isLeadership: false,
+      career: "경력 10~15년",
+      headcount: "1명",
+      education: "박사 이상",
+      location: {
+        address: "대전",
+        workMode: "연구·사무",
+      },
+      coreKeywords: ["비임상", "독성", "ADME/T", "PK/PD", "ADC", "Pharmacology"],
+      apply: {
+        method: "quick",
+        target: "",
+      },
+      deadline: { date: null, label: "상시 채용", status: "always" },
+      postingSource: "headhunting",
+      introduction:
+        "상장 바이오텍의 비임상약리팀에서 ADC 후보물질의 비임상시험(ADME/T)과 PK/PD 모델 확립, 독성시험을 총괄할 박사급 연구원을 찾습니다.",
+      responsibilities: {
+        format: "bullet",
+        items: [
+          "후보물질 비임상시험(ADME/T) 계획 및 실행",
+          "PK 기반 동물 약효모델 설계 및 PK/PD 모델 확립",
+          "ADC 후보물질 독성시험 디자인·평가 및 CRO management",
+        ],
+      },
+      requirements: {
+        format: "bullet",
+        items: ["신약개발 관련 전공 박사 이상", "Pharmacology 중 ADME·Toxicology 경험 10년 이상"],
+      },
+      preferred: {
+        format: "bullet",
+        items: ["ADC PK, PK/PD 전문가", "ADC 독성 전문가"],
+      },
+      benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
+      workConditionDetail: "상세 처우는 면접 후 결정됩니다.",
+      positionIntro:
+        "상장 바이오텍의 비임상약리팀에서 ADC 후보물질의 비임상시험(ADME/T)과 PK/PD 모델 확립, 독성시험을 총괄할 박사급 연구원을 찾습니다.",
+      // hiringProcess/requiredDocuments/additionalNotes: 없음 — 원본과 jobs.ts 모두 전형 절차 정보가 없다
+    },
+    org: {
+      // 헤드헌팅 공고 — jobs.ts 129의 company 문자열을 그대로 쓴다(기업명 비공개 관례).
+      name: "상장 바이오텍 (기업명 비공개)",
+      orgType: "바이오 신약개발(상장)",
+      employeeCount: "비공개",
+      shortIntro: "ADC 등 차세대 모달리티를 개발하는 상장 바이오텍입니다.",
+      description: "ADC 등 차세대 모달리티를 개발하는 상장 바이오텍입니다.",
+      keywords: ["혁신 바이오벤처", "ADC", "차세대 모달리티", "비임상"],
+      // logoUrl: 없음 — 기업명 비공개 공고라 로고 자산을 연결하지 않는다
+    },
+    businessContext: {
+      businessFields: ["ADC 신약개발", "차세대 모달리티"],
+    },
+  },
 };
 
 export function getIndustryJobDetail(slug: string): IndustryJobDetail | null {
