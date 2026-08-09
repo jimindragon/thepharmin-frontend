@@ -1163,6 +1163,276 @@ export const injeCardiovascularCoreFacilityResearcherJobDetail: ResearchJobDetai
   },
 };
 
+// ---- 고려대학교 의과대학 성형외과학교실 정본 ----
+
+export const koreaUnivPlasticSurgeryResearcherJobDetail: ResearchJobDetail = {
+  id: "korea-univ-plastic-surgery-researcher",
+  slug: "korea-univ-plastic-surgery-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "korea-univ-plastic-surgery-researcher",
+    title: "재건성형·미세수술 연구 석사급 이상 연구원 모집",
+
+    jobCategory: { main: "연구직", sub: "연구원" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "재건성형·미세수술 분야 in vitro 연구를 수행할 석사급 이상 연구원을 모집합니다.",
+    responsibilities: [
+      "Cell assay 수행",
+      "실험 결과 분석 및 통계 처리",
+      "시험계획서·보고서 작성",
+      "실험실 관리",
+      "성형외과 관련 in vitro assay (real-time PCR, Western blot, 조직면역학 분석)",
+    ],
+    requirements: ["석사 학위 소지자 (석사 수료자 지원 가능)"],
+    preferred: [
+      "생물학·세포생물학·분자생물학 관련 전공",
+      "연구실 운영·벤치세팅 경험자",
+      "독립적 연구 수행 가능자",
+      "영어 가능자",
+      "SAS·R 등 통계 프로그램 활용 가능자",
+      "유관 업무 경력자",
+    ],
+
+    workMode: "연구실 근무",
+    address: "서울 성북구 고려대로 73 고려대학교 의과대학",
+    // kangwon과 동일 — jobs.ts 207의 실값(연봉 3,600만~4,000만원) 하한을 담는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "1~2년",
+    // benefitIds: 없음 — 복리후생은 workConditionDetail에 서술
+    workConditionDetail:
+      "계약기간 1년이며 성과에 따라 연장할 수 있습니다. 주 5일 08:30~17:30 근무로 시간은 협의 가능하며, 4대 보험이 적용됩니다. 급여는 면접 후 경력에 따라 협의합니다.",
+
+    coreKeywords: ["in vitro assay", "real-time PCR", "Western blot", "조직면역학", "통계 분석"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서(CV)", "경력소개서", "자기소개서", "학위·경력증명서"],
+
+    apply: {
+      method: "email",
+      email: "ps-lab-recruit@korea.example",
+      phone: "",
+      notice: "이력서(CV)·경력소개서·자기소개서와 학위·경력증명서를 이메일로 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "고려대학교 의과대학 성형외과학교실",
+    logoText: "고려대",
+    logoColor: "#374151",
+    // logoUrl: 없음 — companyImages.ts에 대응 로고 자산 키가 없다
+
+    institutionTypeId: "university_lab",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본에 기관 홈페이지 정보 없음
+
+    shortIntro: "재건성형·미세수술 분야의 기초실험과 임상연구를 함께 수행하는 의과대학 교실입니다.",
+    fullIntro:
+      "고려대학교 의과대학 성형외과학교실로, 재건성형과 미세수술을 중심으로 in vitro assay 기반의 기초실험을 수행합니다. Real-time PCR·Western blot·조직면역학 분석 등 세포·분자 실험과 통계 분석을 연계해 연구를 진행합니다.",
+    keywords: ["재건성형", "미세수술", "의과대학 연구실"],
+
+    researchFields: ["translational-research", "clinical-research"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "성형외과학교실 연구팀",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "재건성형·미세수술 분야의 in vitro assay와 통계 분석을 수행하는 연구팀입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "서울 성북구 고려대로 73",
+      detailAddress: "고려대학교 의과대학",
+    },
+  },
+};
+
+// ---- 경북대학교병원 인체조직·동물실험/융합연구치료센터 정본 ----
+
+export const knuHospitalOmicsBioinformaticsResearcherJobDetail: ResearchJobDetail = {
+  id: "knu-hospital-omics-bioinformatics-researcher",
+  slug: "knu-hospital-omics-bioinformatics-researcher",
+  // companyId: 없음 — companies.ts에 대응 기업 엔티티가 아직 없다
+  companyId: null,
+
+  job: {
+    id: "knu-hospital-omics-bioinformatics-researcher",
+    title: "인체조직·동물실험 오믹스·AI 분석 석사 연구원 채용",
+
+    jobCategory: { main: "데이터·분석", sub: "바이오인포매틱스 연구원" },
+    headcount: "1명",
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "다중 오믹스 데이터와 AI 기술로 질병 진단·예후 예측 연구를 수행할 석사급 연구원을 모집합니다.",
+    responsibilities: [
+      "인체조직·동물실험 유래 다중 오믹스 데이터 준비 및 큐레이션",
+      "딥러닝 기반 분석·예측 모델 구축 참여",
+      "의료 영상 처리(분류·분할) 지원",
+      "분석 결과 정리 및 논문 작성 참여",
+    ],
+    requirements: [
+      "석사 학위 소지자 (컴퓨터과학·전기전자·바이오공학·통계 등 관련 분야)",
+      "Python 및 딥러닝 프레임워크(TensorFlow·PyTorch 등) 활용 가능자",
+    ],
+    preferred: [
+      "학술대회·저널 출판 실적 보유자",
+      "의료 영상 처리 경험자",
+      "의학 분야 AI 연구 참여 경험자",
+    ],
+
+    workMode: "연구실 근무",
+    address: "대구 북구 호국로 807 칠곡경북대병원",
+    // kangwon과 동일 — jobs.ts 208의 실값(연봉 3,600만~3,700만원) 하한을 담는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "과제 기간 연동",
+    // benefitIds: 없음 — 복리후생은 workConditionDetail에 서술
+    workConditionDetail:
+      "임상·기초의학·공학·통계가 참여하는 융합 연구팀에서 근무하며, 4대 보험이 적용됩니다. 급여는 경력에 따라 협의합니다.",
+
+    coreKeywords: ["다중 오믹스", "딥러닝", "Python", "의료 영상", "예측 모델"],
+    // additionalNotes/detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서(CV)", "자기소개서", "학위증명서"],
+
+    apply: {
+      method: "email",
+      email: "omics-recruit@knuh.example",
+      phone: "",
+      notice: "이력서(CV)와 자기소개서, 학위증명서를 이메일로 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "경북대학교병원 인체조직·동물실험/융합연구치료센터",
+    logoText: "경북대병원",
+    logoColor: "#374151",
+    // logoUrl: 없음 — companyImages.ts에 대응 로고 자산 키가 없다
+
+    institutionTypeId: "hospital_research_institute",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본에 기관 홈페이지 정보 없음
+
+    shortIntro: "다중 오믹스 데이터와 AI 기술로 질병 진단·예후 예측을 연구하는 병원 융합연구센터입니다.",
+    fullIntro:
+      "경북대학교병원의 인체조직·동물실험/융합연구치료센터로, 인체조직·동물실험에서 확보한 다중 오믹스 데이터를 딥러닝 기반으로 분석해 질병 진단과 예후 예측을 연구합니다. 임상·기초의학·공학·통계가 함께 참여하는 융합 연구팀을 운영합니다.",
+    keywords: ["다중 오믹스", "의료 AI", "융합연구"],
+
+    researchFields: ["multiomics", "ngs-single-cell", "ai-drug-discovery"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "인체조직·동물실험/융합연구치료센터",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "인체조직·동물실험 유래 다중 오믹스 데이터와 의료 영상을 함께 분석해 진단·예후 예측 모델을 구축하는 센터입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "대구 북구 호국로 807",
+      detailAddress: "칠곡경북대병원",
+    },
+  },
+};
+
+// ---- 서울대학교병원 신경내과 연구실 정본 ----
+
+export const snuhNeurologyDataResearcherJobDetail: ResearchJobDetail = {
+  id: "snuh-neurology-data-researcher",
+  slug: "snuh-neurology-data-researcher",
+  companyId: "snuh",
+
+  job: {
+    id: "snuh-neurology-data-researcher",
+    title: "신경내과 국성과제 연구 데이터 분석 연구원 채용",
+
+    jobCategory: { main: "데이터·분석", sub: "데이터 분석 연구원" },
+    headcount: "1명",
+    // jobs.ts 211의 고용형태는 "계약직"(employmentTypeId: "contract")이라 프리랜서 계열이 아니다 — 목록 값을 그대로 따른다.
+    employmentTypeId: "contract",
+    experienceId: "any",
+    educationId: "master",
+
+    summary: "심뇌혈관질환 관리 전략 개발 연구의 데이터 수집·분석을 담당할 연구원을 모집합니다.",
+    responsibilities: [
+      "심뇌혈관질환 관리 전략 개발·적용 연구 실무",
+      "임상시험(RCT) 및 연구 자료 수집·정제",
+      "통계 분석 지원",
+      "연구계획서·보고서 등 문서 작성 지원",
+      "자료 관리 및 연구 행정 지원",
+    ],
+    requirements: ["석사 이상 (보건학·간호학·통계학·의학·생명공학 등 관련 분야)"],
+    preferred: [
+      "임상 연구·정책 연구 또는 보건의료 연구기관 1년 이상 경력자",
+      "R·SAS 등 통계 프로그램 활용 가능자",
+    ],
+
+    workMode: "사무실 근무",
+    address: "서울 종로구 대학로 101",
+    // kangwon과 동일 — jobs.ts 211의 실값(월 280만~320만원 = 연 환산 하한 3,360만원)을 담는 유효 구간은 "3,000만↑"이다.
+    salary: "3,000만↑",
+    contractPeriod: "1~2년",
+    // benefitIds: 없음 — 복리후생은 workConditionDetail에 서술
+    workConditionDetail:
+      "주 40시간(월~금 09:00~18:00) 근무합니다. 학술연구용역 과제 참여 계약으로 진행되어 4대 보험이 적용되지 않으며, 급여는 인건비 기준단가를 적용해 지급합니다.",
+
+    coreKeywords: ["심뇌혈관질환", "RCT", "통계 분석", "R", "SAS", "연구 행정"],
+    additionalNotes:
+      "본 채용은 병원 공식 채용이 아닌, 연구책임자 연구비 재원으로 진행되는 개별 채용입니다.",
+    // detailImages/attachments: 없음
+    hiringProcess: ["서류전형", "면접전형"],
+    requiredDocuments: ["이력서", "자기소개서 (자유 양식, 지원동기·연구경력 중심)"],
+
+    apply: {
+      method: "email",
+      email: "neurology-research@snuh.example",
+      phone: "",
+      notice: "이력서와 자기소개서(자유 양식, 지원동기·연구경력 중심)를 이메일로 제출해 주세요.",
+    },
+    isRolling: false,
+  },
+
+  org: {
+    institutionName: "서울대학교병원 신경내과 연구실",
+    logoText: "서울대병원",
+    logoColor: "#374151",
+    logoUrl: companyLogos["서울대학교병원 신경내과 연구실"],
+
+    institutionTypeId: "hospital_research_institute",
+    // foundedYear: 없음 — 원본에 설립 연도 정보 없음
+    // homepageUrl: 없음 — 원본에 기관 홈페이지 정보 없음
+
+    shortIntro: "심뇌혈관질환 관리 전략을 연구하는 병원 신경내과 연구실입니다.",
+    fullIntro:
+      "서울대학교병원 신경내과 연구실로, 심뇌혈관질환의 관리 전략을 개발하고 적용하는 연구를 수행합니다. 임상시험(RCT)과 연구 자료의 수집·정제, 통계 분석, 연구 행정을 함께 운영합니다.",
+    keywords: ["심뇌혈관질환", "임상연구", "데이터 분석"],
+
+    researchFields: ["neuroscience", "clinical-research"],
+    // staffScaleId: 없음 — 원본에 규모 정보 없음
+
+    labName: "신경내과 연구실",
+    // piName: 없음 — 개인 실명 미기재 방침
+    labIntro:
+      "심뇌혈관질환 관리 전략 개발·적용 연구를 수행하며 임상시험 자료의 수집·분석을 담당하는 연구실입니다.",
+
+    // equipmentInfra/achievements: 없음 — 원본에 근거 없음
+
+    location: {
+      address: "서울 종로구 대학로 101",
+      detailAddress: "",
+    },
+  },
+};
+
 export const researchJobDetails: ResearchJobDetail[] = [
   kistNeurochannelPostdocJobDetail,
   amcColorectalSurgeryResearcherJobDetail,
@@ -1176,6 +1446,9 @@ export const researchJobDetails: ResearchJobDetail[] = [
   konyangMyunggokEyeResearcherJobDetail,
   hallymMicrobiologyLabManagerJobDetail,
   injeCardiovascularCoreFacilityResearcherJobDetail,
+  koreaUnivPlasticSurgeryResearcherJobDetail,
+  knuHospitalOmicsBioinformaticsResearcherJobDetail,
+  snuhNeurologyDataResearcherJobDetail,
 ];
 
 export function getResearchJobDetail(slug: string): ResearchJobDetail | undefined {
