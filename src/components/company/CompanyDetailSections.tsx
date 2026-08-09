@@ -214,7 +214,7 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">기업 정보</h2>
 
       {hasCards ? (
-        <div className="mt-6 grid grid-cols-4 divide-x divide-[#e8edf2] max-[640px]:grid-cols-2">
+        <div className="mt-6 grid grid-cols-4 divide-x divide-[#e8edf2] max-[640px]:grid-cols-2 max-[640px]:divide-x-0 max-[640px]:divide-y max-[640px]:divide-[#e8edf2]">
           {orgType ? <IndustryDividerStatCell icon={Building2} label="기관 유형" value={orgType} /> : null}
           {employeeCount ? <IndustryDividerStatCell icon={Users} label="직원 수" value={employeeCount} /> : null}
           {foundedYear ? <IndustryDividerStatCell icon={Calendar} label="설립 연도" value={foundedYear} /> : null}
