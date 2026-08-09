@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/Footer";
 import { DevStatePanel } from "@/components/dev/DevStatePanel";
 import { MigrationGuard } from "@/components/migration/MigrationGuard";
@@ -9,6 +9,18 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "THE PHARMA Recruit.",
   description: "제약·바이오 전문 채용공고 목록",
+};
+
+/**
+ * width/initialScale은 Next의 기본값과 같지만, viewportFit을 주려면 이 export를 직접 소유해야 한다.
+ * viewport-fit=cover가 없으면 iOS가 env(safe-area-inset-*)를 전부 0으로 돌려준다 —
+ * 하단 탭바(MobileTabBar)의 pb-[env(safe-area-inset-bottom)]과 globals.css의 본문 하단 보정이
+ * 실기기에서만 조용히 무효가 되어 탭바가 홈 인디케이터·사파리 하단 바에 겹친다.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 /**
