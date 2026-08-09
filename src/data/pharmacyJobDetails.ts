@@ -58,13 +58,6 @@ export const educationLabelMap: Record<string, string> = {
   professional: "의약학 전문학위 (6년제)",
 };
 
-export const applyMethodLabelMap: Record<string, string> = {
-  quick: "간편지원",
-  phone: "전화 지원",
-  email: "이메일 지원",
-  homepage: "기업 홈페이지 지원",
-};
-
 // 근무 시간대 그룹: 같은 시간에 근무하는 요일을 묶음
 // 예: 화·목은 오후, 토는 오전 → 두 개의 WorkScheduleBlock
 export interface WorkScheduleBlock {

@@ -39,13 +39,6 @@ export const educationLabelMap: Record<string, string> = {
   professional: "의약학 전문학위 (6년제)",
 };
 
-export const applyMethodLabelMap: Record<string, string> = {
-  quick: "간편지원",
-  phone: "전화 지원",
-  email: "이메일 지원",
-  homepage: "기업 홈페이지 지원",
-};
-
 /** 병원 공고폼(§3 근무조건) 복리후생 12종. 폼(WELFARE_OPTS)이 id 없이 라벨 문자열 자체를 값으로 쓰므로
  * 여기서는 동일 문자열의 항등 매핑으로 "라벨 매핑 상수" 관례를 맞춘다. */
 export const hospitalBenefitLabelMap: Record<string, string> = {

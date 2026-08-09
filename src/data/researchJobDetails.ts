@@ -46,14 +46,6 @@ export const staffScaleLabelMap: Record<string, string> = Object.fromEntries(
   researchStaffScaleOptions.map((option) => [option.id, option.label]),
 );
 
-/** ResearchJobPostingForm §6 지원 방식(url/quick/email) 3종에 대응. 병원 폼의 4종(quick/phone/email/homepage)과는
- * 값 체계가 다르므로 별도로 정의한다. */
-export const applyMethodLabelMap: Record<string, string> = {
-  url: "기관 채용페이지 지원",
-  quick: "더파마 간편지원",
-  email: "이메일 지원",
-};
-
 /** 연구 공고폼(§4 근무조건) 복리후생 12종. 폼(WELFARE_OPTS)이 id 없이 라벨 문자열 자체를 값으로 쓰므로
  * hospitalBenefitLabelMap과 동일하게 동일 문자열의 항등 매핑으로 관례를 맞춘다. */
 export const researchBenefitLabelMap: Record<string, string> = {
