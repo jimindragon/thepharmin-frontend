@@ -70,13 +70,18 @@ export function MyPageSidebar() {
         </div>
       </div>
       <div className="mt-5 h-px bg-[#e5e9ef] max-[1040px]:mt-3" />
-      {/* ≤1040px: 그룹 3개(제목 + 세로 링크)의 2차원 구조를 CSS만으로 해체해 링크 11개를
-          한 행 가로 스크롤 칩으로 만든다. 래퍼 두 겹에 display:contents를 걸어 상자를
-          투명화하면 링크가 nav의 직계 flex 아이템이 되므로, 마크업과 데이터 소스는 그대로 둔다.
-          contents는 상자만 없앨 뿐 자식은 그대로라 space-y-1의 margin-top은 살아남는다 — 함께 끈다. */}
-      <nav className="mt-5 space-y-7 max-[1040px]:mt-3 max-[1040px]:flex max-[1040px]:items-center max-[1040px]:gap-2 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
+      {/* ≤1040px: 그룹 3개(제목 + 세로 링크)의 2차원 구조를 CSS만으로 재배치해 칩 2단
+          가로 스크롤로 만든다. 마크업과 데이터 소스는 그대로 둔다.
+          그룹 래퍼는 각자 독립된 2행 그리드(grid-flow-col)라 세로 채움이 그룹 경계를 넘지 않고,
+          그룹 간 gap-5(20px)와 칩 간 gap-2(8px)의 차이가 제목 없이도 묶음을 구분한다.
+          안쪽 목록은 display:contents로 상자만 없애 링크가 그룹 그리드의 직계 아이템이 된다 —
+          contents는 자식을 남기므로 space-y-1의 margin-top은 살아남는다. 함께 끈다. */}
+      <nav className="mt-5 space-y-7 max-[1040px]:mt-3 max-[1040px]:flex max-[1040px]:items-start max-[1040px]:gap-5 max-[1040px]:space-y-0 max-[1040px]:overflow-x-auto max-[1040px]:pb-2">
         {myPageMenuGroups.map((group) => (
-          <div key={group.title} className="max-[1040px]:contents">
+          <div
+            key={group.title}
+            className="max-[1040px]:grid max-[1040px]:shrink-0 max-[1040px]:grid-flow-col max-[1040px]:grid-rows-2 max-[1040px]:gap-2"
+          >
             <p className="text-[17px] font-bold text-[#222a35] max-[1040px]:hidden">{group.title}</p>
             <div className="mt-2 space-y-1 max-[1040px]:contents max-[1040px]:space-y-0">
               {group.items.map((item) => (
