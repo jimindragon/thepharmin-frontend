@@ -55,7 +55,8 @@ export function MyPageSidebar() {
   }, [pathname]);
 
   return (
-    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5 max-[1040px]:py-4">
+    // 모바일: 이름 한 줄만 남아 정보 가치가 없음 — 계정 식별은 헤더 아바타가 담당. 복원 시 이 클래스만 제거
+    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:hidden max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5 max-[1040px]:py-4">
       <div>
         {/* 이메일·태그 칩은 ≤1040px에서 숨긴다 — 모바일 첫 화면은 본문(카드) 밀도가 우선이고,
             둘 다 회원정보 화면이 정본이다. mt는 숨는 요소 쪽에 있어 함께 사라진다. */}
