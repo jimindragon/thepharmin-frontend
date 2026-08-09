@@ -47,16 +47,6 @@ export const scrapedOrganizations: ScrapedOrganization[] = [
     href: "/companies/thepharmin-pharma",
   },
   {
-    id: "bionex",
-    name: "바이오넥스(주)",
-    type: "company",
-    logoText: "바이오넥스",
-    logoColor: "#1f6f5c",
-    summary: "바이오의약품 개발 · 글로벌 인허가",
-    activeJobCount: 2,
-    href: fallbackHref("바이오넥스", "company"),
-  },
-  {
     id: "snuh",
     name: "서울대학교병원",
     type: "hospital",
