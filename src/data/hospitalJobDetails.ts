@@ -371,10 +371,9 @@ export const nationalFireHospitalJobDetail: HospitalJobDetail = {
     requiredDocuments: ["지원서 (지정 양식, 채용 공고문 참고)"],
 
     apply: {
-      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
-      // window.open에 그대로 넘기므로, jobs.ts 413의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "https://recruit.nfh.example",
+      url: "https://recruit.nfh.example",
+      email: "",
       phone: "",
       notice: "채용 공고문을 확인한 후 병원 홈페이지 채용 페이지에서 접수해 주세요.",
     },
@@ -526,10 +525,9 @@ export const nationalCentralHospitalJobDetail: HospitalJobDetail = {
     requiredDocuments: ["이력서", "약사 면허증 사본", "경력증명서"],
 
     apply: {
-      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
-      // window.open에 그대로 넘기므로, jobs.ts 410의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "https://recruit.nch.example",
+      url: "https://recruit.nch.example",
+      email: "",
       phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요. 블라인드 전형으로 진행됩니다.",
     },
@@ -609,10 +607,9 @@ export const snuhPharmacyStaffJobDetail: HospitalJobDetail = {
     requiredDocuments: ["졸업(예정)증명서", "성적증명서", "공인영어성적표", "약사 면허증 사본(해당자)"],
 
     apply: {
-      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
-      // window.open에 그대로 넘기므로, jobs.ts 417의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "https://recruit.snuh.example",
+      url: "https://recruit.snuh.example",
+      email: "",
       phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요.",
     },
@@ -933,10 +930,9 @@ export const nationalSpecialMedicalCenterJobDetail: HospitalJobDetail = {
     hiringProcess: ["서류심사", "1차 면접 (실무)", "2차 면접 (임원)", "신체검사 (채용검진)", "최종합격"],
 
     apply: {
-      // 이 스키마엔 지원 URL 전용 필드가 없다. ApplyCard가 homepage일 때 target(=email)을
-      // window.open에 그대로 넘기므로, jobs.ts 407의 applicationUrl을 이 자리에 둔다.
       method: "homepage",
-      email: "https://recruit.nsmc.example",
+      url: "https://recruit.nsmc.example",
+      email: "",
       phone: "",
       notice: "채용 홈페이지에서 온라인 지원해 주세요.",
     },

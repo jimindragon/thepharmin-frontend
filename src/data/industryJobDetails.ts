@@ -93,7 +93,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["CTD", "규제기관 대응", "약사 면허", "영어 커뮤니케이션", "IND/NDA", "FDA", "EMA", "글로벌 인허가"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/ra-specialist",
+        url: "https://example.com/careers/ra-specialist",
+        target: "",
         notice: "지원 시 기업 채용 페이지로 이동합니다. 지원 결과와 전형 진행은 해당 기업에서 관리됩니다.",
       },
       deadline: { date: "2026-09-08", label: "마감 D-51", status: "dDay" },
@@ -175,7 +176,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["RA", "FDA", "CE", "MDR", "ISO13485", "의료기기 인허가"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/dentium-device-ra",
+        url: "https://example.com/careers/dentium-device-ra",
+        target: "",
       },
       deadline: { date: "2026-07-08", label: "마감 D-12", status: "dDay" },
       postingSource: "direct",
@@ -264,7 +266,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["바이오공정", "CDMO", "바이오의약품", "생산공정"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/samsungbio-bioprocess",
+        url: "https://example.com/careers/samsungbio-bioprocess",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -347,7 +350,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["RA", "허가전략", "규제대응", "신약허가", "글로벌인허가"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/yuhan-ra-regulatory-strategy",
+        url: "https://example.com/careers/yuhan-ra-regulatory-strategy",
+        target: "",
       },
       deadline: { date: "2026-08-09", label: "마감 D-28", status: "dDay" },
       postingSource: "direct",
@@ -417,7 +421,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["CRA", "임상시험 모니터링", "임상시험기관", "CRO"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/medicoa-senior-cra",
+        url: "https://example.com/careers/medicoa-senior-cra",
+        target: "",
       },
       deadline: { date: "2026-07-31", label: "마감 D-19", status: "dDay" },
       postingSource: "direct",
@@ -485,7 +490,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["RA", "CTD", "IND", "품목갱신", "사후관리"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/celltrionph-ra",
+        url: "https://example.com/careers/celltrionph-ra",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -555,7 +561,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["임상운영", "GCP", "CRA", "IIT", "임상시험전략"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/celltrionph-clinical",
+        url: "https://example.com/careers/celltrionph-clinical",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -625,7 +632,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["BD", "License-in", "코프로모션", "파트너링", "사업개발"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/celltrionph-bd",
+        url: "https://example.com/careers/celltrionph-bd",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -698,7 +706,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["MSL", "Medical Affairs", "백신", "CVMD", "과학적 교류", "RWE"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/gsk-vaccine-msl-cvmd",
+        url: "https://example.com/careers/gsk-vaccine-msl-cvmd",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -767,7 +776,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["MSL", "Oncology", "항암", "Medical Affairs", "과학적 교류", "KOL"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/gsk-oncology-msl",
+        url: "https://example.com/careers/gsk-oncology-msl",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -836,7 +846,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["QA", "GMP", "품질보증", "CAPA", "글로벌 규제", "SOP"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/roche-cmc-qa",
+        url: "https://example.com/careers/roche-cmc-qa",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -905,7 +916,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["Medical Information", "Pharmacovigilance", "약물감시", "안전성", "의학정보", "약사 면허"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/otsuka-mi-pv",
+        url: "https://example.com/careers/otsuka-mi-pv",
+        target: "",
       },
       deadline: { date: "2026-08-21", label: "마감 D-33", status: "dDay" },
       postingSource: "direct",
@@ -1033,7 +1045,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["제조관리약사", "GMP", "의약품 생산", "약사 면허", "품질"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/lgchem-mfg-pharmacist",
+        url: "https://example.com/careers/lgchem-mfg-pharmacist",
+        target: "",
       },
       deadline: { date: "2026-08-25", label: "마감 D-37", status: "dDay" },
       postingSource: "direct",
@@ -1164,7 +1177,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["QA", "QC", "GMP", "품질관리", "CAPA", "방사성의약품"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/cellbion-qaqc",
+        url: "https://example.com/careers/cellbion-qaqc",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1228,7 +1242,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["QC", "품질관리", "시험·분석", "HPLC", "GMP"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/samsung-pharma-qc",
+        url: "https://example.com/careers/samsung-pharma-qc",
+        target: "",
       },
       deadline: { date: "2026-08-28", label: "마감 D-40", status: "dDay" },
       postingSource: "direct",
@@ -1426,7 +1441,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["BD", "개발", "라이선싱", "사업개발", "파트너십"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/samo-bd",
+        url: "https://example.com/careers/samo-bd",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
@@ -1484,7 +1500,8 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       coreKeywords: ["QC", "QA", "GMP", "밸리데이션", "환경모니터링", "무균제제"],
       apply: {
         method: "homepage",
-        target: "https://example.com/careers/kolonbiotech-qaqc",
+        url: "https://example.com/careers/kolonbiotech-qaqc",
+        target: "",
       },
       deadline: { date: null, label: "상시 채용", status: "always" },
       postingSource: "direct",
