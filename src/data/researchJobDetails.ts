@@ -1357,8 +1357,8 @@ export const snuhNeurologyDataResearcherJobDetail: ResearchJobDetail = {
 
     jobCategory: { main: "데이터·분석", sub: "데이터 분석 연구원" },
     headcount: "1명",
-    // jobs.ts 211의 고용형태는 "계약직"(employmentTypeId: "contract")이라 프리랜서 계열이 아니다 — 목록 값을 그대로 따른다.
-    employmentTypeId: "contract",
+    // 원문이 학술연구용역 과제 참여 계약(4대 보험 미적용)이라 프리랜서로 확정했다. jobs.ts 211의 고용형태도 같은 라운드에서 함께 프리랜서로 바꿨다.
+    employmentTypeId: "freelance",
     experienceId: "any",
     educationId: "master",
 
@@ -1404,7 +1404,7 @@ export const snuhNeurologyDataResearcherJobDetail: ResearchJobDetail = {
   org: {
     institutionName: "서울대학교병원 신경내과 연구실",
     logoText: "서울대병원",
-    logoColor: "#374151",
+    logoColor: "#1e3a5f",
     logoUrl: companyLogos["서울대학교병원 신경내과 연구실"],
 
     institutionTypeId: "hospital_research_institute",
