@@ -20,7 +20,15 @@ export interface IndustryJobBlock {
   education: string;
   location: { address: string; workMode: string };
   coreKeywords: string[];
-  apply: { method: string; target: string; notice?: string };
+  /**
+   * 지원 정보. url은 method가 "homepage"일 때 지원 페이지 주소로 쓰며, 산업의 target(자유 슬롯)과
+   * 병원·약국·연구가 URL을 넣어 쓰던 email 자리를 함께 대체한다.
+   *
+   * target은 제거 예정이지만 아직 필수로 남긴다 — IndustryJobDetailClient가 이 값을 ApplyCard의
+   * 필수 prop(target: string)에 그대로 넘기고 있어, 지금 옵셔널로 내리면 그 호출부가 타입 에러가 난다.
+   * ApplyCard가 apply 객체를 받도록 바꾸는 단계에서 함께 지운다.
+   */
+  apply: { method: string; url?: string; email?: string; phone?: string; target: string; notice?: string };
   deadline: { date: string | null; label: string; status: "dDay" | "always" };
   postingSource: "direct" | "headhunting";
   introduction?: string;

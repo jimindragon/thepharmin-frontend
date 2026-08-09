@@ -99,8 +99,11 @@ export interface PharmacyJobPosting {
 
   // 지원 정보: method 단일 id. 로그인 잠금은 렌더 단계.
   // 이메일 지원 = email 노출을 로그인 후로 잠금.
+  // url은 method가 "homepage"일 때 지원 페이지 주소로 쓴다 — 전용 필드가 없어 URL을 email 자리에
+  // 넣어 쓰던 관례를 대체하며, 산업의 target과 같은 자리다(4트랙 공통 형태로 맞추는 중).
   apply: {
     method: string;      // applyMethodLabelMap의 id
+    url?: string;        // 홈페이지 지원 시 사용. 없으면 생략
     email: string;       // 이메일 지원 시 사용. 없으면 ""
     phone: string;       // 전화 지원 시 사용. 없으면 ""
     notice: string;
