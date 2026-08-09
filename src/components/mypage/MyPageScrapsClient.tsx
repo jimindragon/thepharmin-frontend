@@ -30,7 +30,7 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
 
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="border border-border bg-white p-10 text-center">
+    <div className="border border-border bg-white p-10 text-center max-[760px]:p-8">
       <p className="text-[15px] font-medium text-[#303946]">{title}</p>
       <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{description}</p>
     </div>
@@ -48,7 +48,9 @@ function TrackFilterTabs({
   onChange: (id: TrackFilter) => void;
 }) {
   return (
-    <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+    // ≤760px에서는 가로 스크롤 대신 2줄로 감는다 — 칩 5개(452px)가 본문 폭(302px)을 넘어
+    // "약국"이 아예 보이지 않았다. 스크롤 힌트가 없는 화면에서는 노출이 확실한 wrap이 낫다.
+    <div className="mt-5 flex gap-2 overflow-x-auto pb-1 max-[760px]:mt-4 max-[760px]:flex-wrap max-[760px]:overflow-x-visible">
       {options.map((option) => {
         const active = option.id === activeId;
         return (
@@ -58,7 +60,7 @@ function TrackFilterTabs({
             onClick={() => onChange(option.id)}
             aria-pressed={active}
             className={clsx(
-              "inline-flex h-9 shrink-0 items-center gap-1.5 border px-4 text-[13px] font-medium transition-colors",
+              "inline-flex h-9 shrink-0 items-center gap-1.5 border px-4 text-[13px] font-medium transition-colors max-[760px]:h-10",
               active
                 ? "border-[#111111] bg-[#111111] text-white"
                 : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
@@ -210,12 +212,12 @@ export function MyPageScrapsClient() {
     <MyPageShell>
       <PageBreadcrumb items={[{ label: "마이페이지" }, { label: "스크랩" }]} />
 
-      <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">스크랩</h1>
+      <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36] max-[760px]:mt-4 max-[760px]:text-[24px]">스크랩</h1>
       <p className="mt-2.5 max-w-[640px] text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
         관심 있는 채용공고와 기관을 모아 보고, 마감 전에 다시 확인하세요.
       </p>
 
-      <div className="mt-7 flex items-center gap-6 border-b border-border">
+      <div className="mt-7 flex items-center gap-6 border-b border-border max-[760px]:mt-6">
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -226,7 +228,8 @@ export function MyPageScrapsClient() {
               aria-selected={active}
               onClick={() => setActiveTab(tab.id)}
               className={clsx(
-                "relative flex items-center gap-1.5 pb-3 text-[15px] font-medium transition-colors",
+                // ≤760px pb-4: 탭 높이 37 → 41px로 터치 타깃 확보. 밑줄은 after:-bottom-px라 함께 내려간다.
+                "relative flex items-center gap-1.5 pb-3 text-[15px] font-medium transition-colors max-[760px]:pb-4",
                 active
                   ? "text-[#111111] after:absolute after:-bottom-px after:left-0 after:h-[2px] after:w-full after:bg-[#111111]"
                   : "text-[#8a94a3] hover:text-[#111111]",
@@ -245,7 +248,7 @@ export function MyPageScrapsClient() {
       {activeTab === "jobs" ? (
         <>
           <TrackFilterTabs options={jobFilterOptions} activeId={jobTrackFilter} onChange={setJobTrackFilter} />
-          <div className="mt-5">
+          <div className="mt-5 max-[760px]:mt-4">
             {visibleJobs.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {visibleJobs.map((job) => (
@@ -260,7 +263,7 @@ export function MyPageScrapsClient() {
       ) : (
         <>
           <TrackFilterTabs options={organizationFilterOptions} activeId={orgTrackFilter} onChange={setOrgTrackFilter} />
-          <div className="mt-5">
+          <div className="mt-5 max-[760px]:mt-4">
             {visibleOrganizations.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {visibleOrganizations.map((organization) => (
