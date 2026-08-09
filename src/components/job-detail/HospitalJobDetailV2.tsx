@@ -28,6 +28,8 @@ import {
   CompanyLogo,
   firstWords,
   FormattedContentView,
+  getApplyAction,
+  getApplyButtonLabel,
   HiringProcessSteps,
   IconSectionShell,
   InfoRow,
@@ -409,8 +411,13 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
           >
             <Share2 size={17} />
           </button>
-          <button type="button" className="flex h-12 items-center justify-center gap-2 bg-brand text-[14px] font-medium text-white">
-            이메일 지원하기
+          {/* 사이드바 ApplyCard와 같은 문구·동작을 쓴다 — 720px 이하에선 이 버튼이 유일한 지원 CTA다 */}
+          <button
+            type="button"
+            onClick={getApplyAction(job.apply)}
+            className="flex h-12 items-center justify-center gap-2 bg-brand text-[14px] font-medium text-white"
+          >
+            {getApplyButtonLabel(job.apply)}
           </button>
         </div>
       </div>

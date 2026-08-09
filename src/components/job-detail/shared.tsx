@@ -329,8 +329,7 @@ const APPLY_METHOD_LABELS: Record<ApplyMethodId, string> = {
   guide: "별도 안내",
 };
 
-/** 모바일 하단 바도 사이드바 카드와 같은 문구를 써야 하므로 export한다. */
-export const APPLY_BUTTON_LABELS: Record<ApplyMethodId, string> = {
+const APPLY_BUTTON_LABELS: Record<ApplyMethodId, string> = {
   quick: "간편지원하기",
   homepage: "지원하기",
   email: "이메일 지원하기",
@@ -392,6 +391,14 @@ export function getApplyAction(apply: JobApply): (() => void) | undefined {
   const url = getApplyValue(apply);
   if (!url) return undefined;
   return () => window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/**
+ * 지원 버튼 문구. 사이드바 카드와 모바일 하단 바가 같은 문구를 써야 해서 한 곳에서 고른다.
+ * 데이터의 method가 아직 string이라 여기서 한 번만 좁힌다(호출부에 캐스트를 퍼뜨리지 않는다).
+ */
+export function getApplyButtonLabel(apply: JobApply): string {
+  return APPLY_BUTTON_LABELS[apply.method as ApplyMethodId];
 }
 
 /**
