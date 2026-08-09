@@ -15,6 +15,7 @@ import {
   FileText,
   GraduationCap,
   Info,
+  Layers,
   ListChecks,
   Share2,
   Stethoscope,
@@ -147,6 +148,11 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
               {/* 공고 상세 */}
               <IconSectionShell id="summary" icon={ClipboardList} title="공고 상세">
                 <SummaryStatGrid>
+                  <SummaryStatCell
+                    icon={Layers}
+                    label="모집 직무"
+                    value={`${job.jobCategory.main} · ${job.jobCategory.sub}`}
+                  />
                   <SummaryStatCell icon={Wallet} label="급여" value={job.salary} />
                   {hasWorkDays ? (
                     <SummaryStatCell icon={CalendarDays} label="근무 요일" value={job.workDays!.join("·")} />

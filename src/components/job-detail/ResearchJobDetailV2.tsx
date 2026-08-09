@@ -15,6 +15,7 @@ import {
   FlaskConical,
   GraduationCap,
   Info,
+  Layers,
   ListChecks,
   Microscope,
   Share2,
@@ -150,6 +151,11 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
               {/* 공고 상세 */}
               <IconSectionShell id="summary" icon={ClipboardList} title="공고 상세">
                 <SummaryStatGrid>
+                  <SummaryStatCell
+                    icon={Layers}
+                    label="모집 직무"
+                    value={`${job.jobCategory.main} · ${job.jobCategory.sub}`}
+                  />
                   <SummaryStatCell icon={Wallet} label="급여" value={job.salary} />
                   {hasContractPeriod ? (
                     <SummaryStatCell icon={CalendarRange} label="계약 기간" value={job.contractPeriod} />
