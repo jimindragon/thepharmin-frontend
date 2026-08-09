@@ -283,7 +283,7 @@ export const calendarJobs: CalendarJob[] = [
     role: "연구원",
     track: "research",
     jobCategoryId: "researcher",
-    deadline: "2026-07-31",
+    deadline: "2026-09-04",
     isBookmarked: scrapedJobIds.includes(207),
     isApplied: false,
   },
