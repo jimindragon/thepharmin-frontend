@@ -148,8 +148,8 @@ export function QnaActivityClient() {
   ];
 
   return (
-    <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell pt-8">
+    <main className="bg-[#f7f8fa] pb-20 max-[760px]:pb-16">
+      <div className="app-shell pt-8 max-[760px]:pt-6">
         <PageBreadcrumb className="mb-5" items={[{ label: "QNA", href: "/qna" }, { label: "내 활동" }]} />
         <div className="max-[760px]:hidden">
           <Eyebrow>THE PHARMA QNA</Eyebrow>
@@ -157,11 +157,11 @@ export function QnaActivityClient() {
         <PageTitle className="max-[760px]:mt-0">내 활동</PageTitle>
         <p className={clsx("mt-3 max-w-[640px]", typeScale.body, "text-[#596373]")}>내 QNA 활동을 한곳에서 확인할 수 있습니다.</p>
 
-        <div className="mt-8">
+        <div className="mt-8 max-[760px]:mt-6">
           <ActivityTabControl tabs={tabs} value={activeTab} onChange={setActiveTab} />
         </div>
 
-        <section className="mt-5 border border-border bg-white p-5">
+        <section className="mt-5 border border-border bg-white p-5 max-[760px]:mt-4">
           {activeTab === "scraps" ? (
             scrapEntries.length ? (
               <div className="divide-y divide-[#edf1f5]">

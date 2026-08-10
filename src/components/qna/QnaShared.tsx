@@ -88,7 +88,7 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref,
 
   return (
     <section className={clsx("border border-border bg-white p-5", className)}>
-      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 태그
       </h2>
@@ -117,7 +117,7 @@ export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref,
 export function QnaOperationPrinciplePanel() {
   return (
     <section className="border border-border bg-[#050505] p-5 text-white">
-      <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">{qnaOperationPrinciple.title}</h2>
+      <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white max-[760px]:text-[16px]">{qnaOperationPrinciple.title}</h2>
       <p className="mt-2.5 text-[13px] font-normal leading-[1.8] text-white/70">{qnaOperationPrinciple.description}</p>
     </section>
   );
@@ -136,7 +136,7 @@ export function TrendingPostsPanel({
 }) {
   return (
     <section className={clsx("border border-border bg-white p-5", className)}>
-      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         실시간 인기 글
       </h2>
@@ -228,7 +228,7 @@ export function MyActivityPanel({ activeType, variant = "panel", className }: My
 
   return (
     <section className={clsx("border border-border bg-white p-5", className)}>
-      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
+      <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         내 활동
       </h2>

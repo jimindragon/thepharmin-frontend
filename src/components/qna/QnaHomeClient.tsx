@@ -103,7 +103,7 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
         </div>
       </div>
 
-      <h3 className="mt-3 text-[17px] font-semibold leading-[1.4] tracking-[-0.01em] text-[#171d26]">{entry.title}</h3>
+      <h3 className="mt-3 text-[17px] font-semibold leading-[1.4] tracking-[-0.01em] text-[#171d26] max-[760px]:text-[16px]">{entry.title}</h3>
       <p className="mt-1.5 line-clamp-2 text-[14px] font-normal leading-[1.6] text-[#596373]">{excerpt}</p>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-[#edf1f5] pt-3">
@@ -183,8 +183,8 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
   }, [entries, categoryFilter, sortOption]);
 
   return (
-    <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell pt-8">
+    <main className="bg-[#f7f8fa] pb-20 max-[760px]:pb-16">
+      <div className="app-shell pt-8 max-[760px]:pt-6">
         <PageHeader
           breadcrumbLabel="채용 QNA"
           eyebrow="THE PHARMA QNA"
@@ -205,7 +205,12 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           onNotify={(message) => showQnaNotice(setNotice, message)}
         />
 
-        <nav className="mt-8 flex flex-wrap gap-2 border-b border-border pb-3.5" aria-label="QNA 카테고리">
+        {/* 모바일은 wrap 대신 1행 가로 스크롤 — 10개짜리 태그 필터라 전부 보일 필요가 없고,
+            wrap하면 3줄 124px을 먹어 첫 화면에 글 카드가 한 장도 들어오지 않는다 */}
+        <nav
+          className="mt-8 flex flex-wrap gap-2 border-b border-border pb-3.5 max-[760px]:mt-6 max-[760px]:flex-nowrap max-[760px]:overflow-x-auto max-[760px]:pb-1"
+          aria-label="QNA 카테고리"
+        >
           {filterChips.map((chip) => (
             <button
               key={chip}
@@ -223,7 +228,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           ))}
         </nav>
 
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1">
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:mt-6 max-[760px]:gap-6">
           <div>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <p className="text-[14px] font-medium text-[#596373]">전체 {visibleEntries.length}개의 글</p>
@@ -241,7 +246,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
             )}
           </div>
 
-          <aside className="space-y-5">
+          <aside className="space-y-5 max-[760px]:space-y-4">
             {/* 1열에서는 본문 목록과 완전 중복 (추천순 상위 = 인기 글, 칩 nav = 태그 풀) */}
             <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} className="max-[1040px]:hidden" />
             {isLoggedIn ? <MyActivityPanel activeType={activeType} className="max-[1040px]:hidden" /> : null}

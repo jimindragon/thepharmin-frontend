@@ -61,7 +61,7 @@ function ReactionRow({
   onReport: () => void;
 }) {
   return (
-    <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1f5] pt-5">
+    <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1f5] pt-5 max-[760px]:mt-5 max-[760px]:pt-4">
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -286,20 +286,20 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
   };
 
   return (
-    <main className="bg-[#f7f8fa] pb-20">
-      <div className="app-shell pt-8">
+    <main className="bg-[#f7f8fa] pb-20 max-[760px]:pb-16">
+      <div className="app-shell pt-8 max-[760px]:pt-6">
         <Link href={backHref} className="inline-flex h-9 items-center gap-1.5 text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
           <ArrowLeft size={14} aria-hidden="true" />
           채용 QNA
         </Link>
 
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1">
-          <div className="min-w-0 space-y-5">
-            <article className="border border-border bg-white p-7 max-[640px]:p-5">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:gap-6">
+          <div className="min-w-0 space-y-5 max-[760px]:space-y-4">
+            <article className="border border-border bg-white p-7 max-[760px]:p-5">
               {post.isBest ? (
                 <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
               ) : null}
-              <h1 className="text-[22px] font-bold leading-[1.35] tracking-[-0.02em] text-[#171d26] max-[640px]:text-[20px]">{post.title}</h1>
+              <h1 className="text-[22px] font-bold leading-[1.35] tracking-[-0.02em] text-[#171d26] max-[760px]:text-[20px]">{post.title}</h1>
 
               <div className="mt-4 flex items-center gap-3 border-b border-[#edf1f5] pb-5">
                 <QnaAuthorAvatar id={post.id} nickname={post.nickname} size={40} />
@@ -340,9 +340,9 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
               />
             </article>
 
-            <section className="border border-border bg-white p-7 max-[640px]:p-5">
+            <section className="border border-border bg-white p-7 max-[760px]:p-5">
               <div className="flex items-center justify-between gap-4">
-                <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">댓글 {totalCommentCount}</h2>
+                <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">댓글 {totalCommentCount}</h2>
                 <CommentSortControl value={commentSort} onChange={setCommentSort} />
               </div>
 
@@ -407,8 +407,8 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             </section>
 
             {relatedEntries.length ? (
-              <section className="border border-border bg-white p-7 max-[640px]:p-5">
-                <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">이런 글은 어때요?</h2>
+              <section className="border border-border bg-white p-7 max-[760px]:p-5">
+                <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">이런 글은 어때요?</h2>
                 <div className="mt-3 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
                   {relatedEntries.map((entry) => (
                     <div key={entry.id} className="py-4 last:pb-0">
@@ -420,7 +420,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             ) : null}
           </div>
 
-          <aside className="space-y-5">
+          <aside className="space-y-5 max-[760px]:space-y-4">
             <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} />
             {isLoggedIn ? <MyActivityPanel activeType={post.qnaType} /> : null}
             <PopularTagsPanel activeType={post.qnaType} tagHref={popularTagHref} />
