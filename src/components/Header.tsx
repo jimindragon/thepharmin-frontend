@@ -124,12 +124,17 @@ export function Header() {
       <header className="site-header sticky top-0 z-50 h-[64px] border-b border-[#151515] bg-[#050505] text-white">
         <div className="app-shell flex h-full items-center gap-6 max-[900px]:gap-4 max-[520px]:gap-3">
           <Link href="/" className="flex shrink-0 items-center" aria-label="더파마 리크루트 홈으로 이동">
+            {/*
+              ≤360px 한 단계 더. 이 행은 로고(shrink-0) + gap + 우측 묶음이고 로고만 폭이 고정이라
+              좁아질 때 넘치는 쪽은 항상 로고다 — 320px에서 214+12+84=310 > 가용 272였다.
+              170이면 266으로 6px 남는다. 361px부터는 214가 그대로 들어가므로(310 ≤ 313) 건드리지 않는다.
+            */}
             <img
               src="/images/white_logo_1.svg"
               alt="더파마 리크루트"
               width={254}
               height={25}
-              className="h-[25px] w-[254px] object-contain max-[900px]:h-[23px] max-[900px]:w-[234px] max-[520px]:h-[21px] max-[520px]:w-[214px]"
+              className="h-[25px] w-[254px] object-contain max-[900px]:h-[23px] max-[900px]:w-[234px] max-[520px]:h-[21px] max-[520px]:w-[214px] max-[360px]:h-[17px] max-[360px]:w-[170px]"
             />
           </Link>
   
