@@ -2,6 +2,7 @@
 
 import {
   CalendarClock,
+  CalendarPlus,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -19,6 +20,7 @@ import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { researchInstitutionTypeOptions, researchJobCategoryOptions } from "@/config/jobFilters/researchFilters";
 import { companyTypeOptions, experienceOptions } from "@/config/jobFilters/shared";
 import { PageHeader } from "@/components/PageHeader";
+import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
 import { ApplicationStepper } from "@/components/ui/ApplicationStepper";
 import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
 import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
@@ -626,9 +628,10 @@ function ApplicationMoreCard() {
  * 하루치 일정 1행. 데스크톱 "+N 더보기" 모달과 ≤760px 선택 날짜 리스트가 공유한다.
  * JobCard 선례대로 행 전면에 링크를 깔아 어디를 눌러도 상세로 이동한다.
  */
-function CalendarDayJobRow({ job }: { job: CalendarJob }) {
+function CalendarDayJobRow({ job, showAddToCalendar = true }: { job: CalendarJob; showAddToCalendar?: boolean }) {
   const eventType = eventTypeOf(job);
   const style = eventTypeStyles[eventType];
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <article
@@ -648,16 +651,55 @@ function CalendarDayJobRow({ job }: { job: CalendarJob }) {
           <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
         </div>
       </div>
-      <span className={`shrink-0 text-[12px] font-medium ${style.text}`}>{eventScheduleLabel(job)}</span>
+      <div className="flex shrink-0 items-center gap-1">
+        <span className={`text-[12px] font-medium ${style.text}`}>{eventScheduleLabel(job)}</span>
+        {showAddToCalendar ? (
+          <button
+            type="button"
+            // z-20 + stopPropagation — 행 전면 링크(z-10) 위로 올려 버튼만 눌리게 한다(JobCard 북마크 선례).
+            onClick={(clickEvent) => {
+              clickEvent.stopPropagation();
+              setSheetOpen(true);
+            }}
+            aria-label={`${job.companyName} ${job.title} 내 캘린더에 추가`}
+            className="relative z-20 grid h-10 w-10 shrink-0 place-items-center text-[#a0a9b7] transition-colors hover:bg-[#f4f7f9] hover:text-[#111111]"
+          >
+            <CalendarPlus size={18} strokeWidth={1.7} />
+          </button>
+        ) : null}
+      </div>
+
+      {/* 시트는 z-70(ModalShell) — 행 링크·버튼과 층이 겹치지 않는다 */}
+      <AddToCalendarSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        event={{
+          uid: job.id,
+          title: job.title,
+          company: job.companyName,
+          date: job.deadline,
+          // CalendarJob.deadline은 start 이벤트에선 접수 시작일 — 접두어가 갈려야 한다
+          kind: eventType,
+          url: resolveJobHref(job),
+        }}
+      />
     </article>
   );
 }
 
-function CalendarDayJobList({ jobs, className = "" }: { jobs: CalendarJob[]; className?: string }) {
+function CalendarDayJobList({
+  jobs,
+  className = "",
+  showAddToCalendar = true,
+}: {
+  jobs: CalendarJob[];
+  className?: string;
+  showAddToCalendar?: boolean;
+}) {
   return (
     <div className={`grid gap-2 ${className}`}>
       {jobs.map((job) => (
-        <CalendarDayJobRow key={job.id} job={job} />
+        <CalendarDayJobRow key={job.id} job={job} showAddToCalendar={showAddToCalendar} />
       ))}
     </div>
   );
@@ -729,7 +771,8 @@ function MoreJobsModal({
         </>
       }
     >
-      <CalendarDayJobList jobs={jobs} className="mt-5" />
+      {/* 모달(z-50) 위 ModalShell(z-70) 계열 공존 회피 — 데스크톱은 ApplyCard 경로 예정 */}
+      <CalendarDayJobList jobs={jobs} className="mt-5" showAddToCalendar={false} />
     </OverlayPanel>
   );
 }
