@@ -68,6 +68,8 @@ export const businessTabItems: MobileTabItem[] = [
       "/business/hospital",
       "/business/pharmacy",
       "/business/research",
+      // 헤드헌팅은 6순위 비탭 기능 — 소속은 MY(기업관리)로 귀속
+      "/business/headhunting",
     ],
   },
 ];
