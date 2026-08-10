@@ -10,8 +10,8 @@ import { MOCK_TODAY_DATE } from "@/config/mockToday";
  * downloadIcs·toAbsoluteUrl 둘로 격리했다.
  *
  * 이 코드베이스에 파일 다운로드 선례가 없어(Blob·createObjectURL·download 속성 모두 0건)
- * downloadIcs는 신규 패턴이다. 실기기 검증 전이므로 iOS 분기는 방어적으로 짜고 실패 시
- * 항상 표준 다운로드로 되돌아온다.
+ * downloadIcs는 신규 패턴이다. iOS 분기는 아직 실기기 검증 대기 상태다 — downloadIcs의
+ * 주석을 함께 볼 것.
  */
 
 export type CalendarEventKind = "deadline" | "start";
@@ -203,8 +203,12 @@ export function toAbsoluteUrl(pathOrUrl: string): string {
  * iOS 계열 추정.
  *
  * iPadOS 13+는 userAgent를 데스크톱 맥으로 위장하므로 "MacIntel + 터치포인트"까지 봐야
- * 아이패드가 걸린다(맥에는 maxTouchPoints가 0이다). 추정이므로 실패해도 손해가 없는
- * 분기에만 쓴다 — 아래 downloadIcs는 어느 쪽으로 새도 결국 파일을 내놓는다.
+ * 아이패드가 걸린다(맥에는 maxTouchPoints가 0이다). 사파리만이 아니라 iOS 브라우저 전반이
+ * 대상이다 — iOS의 크롬·인앱 웹뷰도 결국 같은 WebKit이라 a[download] 동작이 같다.
+ *
+ * 오판의 대가가 대칭이 아니다. 데스크톱을 iOS로 잘못 보면(맥+터치 트랙패드는 maxTouchPoints
+ * 0이라 실제로는 걸리지 않는다) 다운로드 대신 blob 이동이 일어나 화면이 바뀐다.
+ * 반대로 iOS를 놓치면 기존 다운로드 동작으로 떨어질 뿐이다.
  */
 function isIosLike(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -213,37 +217,46 @@ function isIosLike(): boolean {
 }
 
 /**
- * .ics를 사용자에게 넘긴다. 경로는 둘이고 순서가 중요하다.
+ * blob URL 해제 지연(ms). navigation·다운로드가 시작되기 전에 revoke하면 URL이 사라져
+ * 동작 자체가 실패한다. iOS의 blob 이동은 미리보기 창이 뜰 때까지 URL이 살아 있어야 해서
+ * 한 틱으로는 부족하다 — 넉넉히 준다. 지연 동안 남는 건 문서 1건 분량의 메모리다.
+ */
+const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
+
+/**
+ * .ics를 사용자에게 넘긴다. 경로는 둘이고 갈림길은 iOS 여부다.
  *
- *   1) iOS 추정 + 파일 공유 가능 → navigator.share({ files })
- *      iOS 사파리는 a[download]로 받은 파일을 "다운로드" 폴더에 넣을 뿐 캘린더로 넘기는 흐름이
- *      매끄럽지 않다. 공유 시트를 띄우면 "캘린더에 추가"가 바로 뜬다.
- *      선례: CompanyHero.tsx의 shareCompany — navigator.share 우선, 실패 시 폴백.
+ *   1) iOS 추정 → blob URL로 직접 이동(window.location.href)
  *   2) 그 외 전부 → Blob + a[download] (표준 경로)
  *
- * 1)이 어떤 이유로든 실패하면(취소·권한·미지원) 2)로 내려온다. 사용자가 공유 시트를 직접
- * 닫은 경우(AbortError)에만 아무 것도 하지 않는다 — 취소했는데 파일이 떨어지면 놀란다.
+ * 1)의 근거 — iOS 사파리는 a[download]를 무시하고 파일 저장으로 흘리고, 앞서 쓰던
+ * navigator.share({ files })는 실기기에서 공유 시트에 앱 목록과 "파일에 저장"만 띄울 뿐
+ * 캘린더 직행을 주지 않았다(실기기 확인). text/calendar blob으로 직접 이동하면 사파리가
+ * 내장 뷰어로 열어 "캘린더에 추가" 미리보기까지 한 번에 가는 것이 목표다.
  *
- * ⚠️ 실기기 검증 전. iOS 동작은 기기에서 확인할 것.
+ * ⚠️ 실기기 검증 필요. blob: 최상위 이동 허용 여부와 text/calendar 뷰어 동작은 iOS 버전·
+ * 브라우저(사파리/크롬/인앱 웹뷰)마다 편차가 있다 — 버전에 따라 미리보기 대신 빈 화면이나
+ * 파일 저장으로 떨어질 수 있다. 실패가 확인되면 iOS는 구글 캘린더 단일 경로로 후퇴한다
+ * (AddToCalendarSheet에서 .ics 버튼을 감추는 쪽).
+ *
+ * 폴백을 두지 않은 이유 — 이동이 성공했는지는 스크립트에서 알 수 없다(성공하면 페이지가
+ * 떠나거나 뷰어가 덮는다). 실패를 감지할 수 없으니 뒤에 a[download]를 붙이면 성공한 경우에도
+ * 파일이 한 벌 더 떨어진다.
+ *
+ * 대가 하나 — 이 경로는 filename을 못 쓴다. blob URL에는 이름을 실을 수 없어, 뷰어가 아니라
+ * "파일에 저장"으로 흐르면 blob UUID가 파일명이 된다. 캘린더 미리보기로 바로 가는 게
+ * 목표이므로 감수하되, 실기기에서 저장 흐름으로 떨어진다면 이것도 후퇴 판단 근거가 된다.
  */
 export async function downloadIcs(filename: string, ics: string): Promise<void> {
   const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
 
-  if (isIosLike() && typeof navigator !== "undefined" && navigator.canShare) {
-    const file = new File([blob], filename, { type: "text/calendar" });
-    if (navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file] });
-        return;
-      } catch (error) {
-        // 사용자가 공유 시트를 닫은 것뿐이면 다운로드로 밀어붙이지 않는다.
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        // 그 외 실패는 아래 표준 경로로 계속 내려간다.
-      }
-    }
+  if (isIosLike()) {
+    window.location.href = url;
+    window.setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_DELAY_MS);
+    return;
   }
 
-  const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = filename;
@@ -251,6 +264,6 @@ export async function downloadIcs(filename: string, ics: string): Promise<void> 
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  // 즉시 revoke하면 사파리에서 다운로드가 시작되기 전에 URL이 사라진다 — 한 틱 뒤로 미룬다.
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  // 즉시 revoke하면 사파리에서 다운로드가 시작되기 전에 URL이 사라진다 — 뒤로 미룬다.
+  window.setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_DELAY_MS);
 }
