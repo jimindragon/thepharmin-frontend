@@ -119,28 +119,85 @@ export function BusinessBillingPlansClient() {
       key: "action",
       width: "72px",
       align: "end",
-      cell: (boost) => {
-        const isEnded = boost.status === "ended";
-        return (
-          <button
-            type="button"
-            disabled={isEnded}
-            title={isEnded ? EXTEND_DISABLED_TITLE : undefined}
-            aria-label={isEnded ? EXTEND_DISABLED_TITLE : undefined}
-            onClick={() => openExtendModal(boost.jobId, boost.grade)}
-            className={clsx(
-              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
-              isEnded
-                ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
-                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
-            )}
-          >
-            연장
-          </button>
-        );
-      },
+      cell: (boost) => renderExtendAction(boost),
     },
   ];
+
+  /** 연장 버튼. 표의 액션 열과 모바일 카드가 같은 것을 쓴다 — 종료 건 비활성 규칙이 갈리지 않게 한다. */
+  function renderExtendAction(boost: ActiveBoost) {
+    const isEnded = boost.status === "ended";
+    return (
+      <button
+        type="button"
+        disabled={isEnded}
+        title={isEnded ? EXTEND_DISABLED_TITLE : undefined}
+        aria-label={isEnded ? EXTEND_DISABLED_TITLE : undefined}
+        onClick={() => openExtendModal(boost.jobId, boost.grade)}
+        className={clsx(
+          "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+          isEnded
+            ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
+            : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+        )}
+      >
+        연장
+      </button>
+    );
+  }
+
+  /**
+   * ≤760px 카드 한 장. 표 5열(공고·상태·기간·결제 금액·액션)을 세 줄로 접는다.
+   *
+   * 1줄: 공고명 + 상태("D-N 종료 임박" 등). 이 표도 점 없는 텍스트 상태라 표의 상태 열과
+   *      같은 마크업을 쓴다 — 종료 임박 D-day가 카드 첫 줄에서 바로 읽히는 것이 요점이다.
+   * 2줄: 트랙 배지 + 등급 · 기간 · 종료일 · 결제 금액
+   * 3줄: 연장(종료 건은 비활성)
+   *
+   * chevron 없음 — 부스트 건 상세 화면이 없고 이 행의 동작은 연장 모달 하나뿐이다.
+   */
+  const renderMobileCard = (boost: ActiveBoost) => {
+    const isEnded = boost.status === "ended";
+    return (
+      <div className="px-6 py-4">
+        <div className="flex items-start gap-3">
+          <p
+            className={clsx(
+              "line-clamp-1 min-w-0 flex-1 text-[15px] font-semibold leading-[1.45]",
+              isEnded ? "text-[#8a94a3]" : "text-[#17202c]",
+            )}
+          >
+            {boost.jobTitle}
+          </p>
+          <span
+            className={clsx(
+              "shrink-0 whitespace-nowrap text-[13px] font-medium",
+              STATUS_TONE[BOOST_TONE[boost.status]].text,
+            )}
+          >
+            {boostStatusLabel(boost.status, boost.daysLeft)}
+          </span>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[13px] font-normal text-[#8a94a3]">
+          <TrackBadge label={boostTrackLabel(boost.track)} />
+          <span className="whitespace-nowrap">
+            {BOOST_GRADE_LABEL[boost.grade]} · {boost.durationWeeks}주 · ~{boost.endDate}
+          </span>
+          <span aria-hidden>·</span>
+          <span
+            className={clsx(
+              "font-semibold",
+              isEnded ? "text-[#8a94a3]" : "text-[#303946]",
+            )}
+          >
+            {formatKrw(boost.amountKrw)}
+          </span>
+        </div>
+
+        <div className="mt-3 flex justify-end">{renderExtendAction(boost)}</div>
+      </div>
+    );
+  };
 
   function openNewBoostModal() {
     setExtendTarget(null);
@@ -208,25 +265,30 @@ export function BusinessBillingPlansClient() {
         <h2 className="mt-6 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">
           진행 중인 부스트
         </h2>
-        <DataTable
-          columns={BOOST_COLUMNS}
-          rows={boosts}
-          rowKey={(boost) => boost.id}
-          /* 740(기존 트랙 폭) + 좌우 패딩 48 */
-          minWidth={788}
-          empty={{
-            title: "아직 진행 중인 부스트가 없습니다",
-            description: "부스트는 공고를 목록 상단에 노출하고 관련 인재에게 알림을 보내는 기능입니다.",
-            action: (
-              <Link
-                href="/business#pricing"
-                className="mt-6 inline-flex h-10 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
-              >
-                요금제 알아보기
-              </Link>
-            ),
-          }}
-        />
+        {/* ≤760px는 카드. 셸 거터(24px)를 되밀어 화면 폭을 채운다(공고 관리 선례) */}
+        <div className="max-[760px]:-mx-[calc(var(--shell-gutter)/2)]">
+          <DataTable
+            columns={BOOST_COLUMNS}
+            rows={boosts}
+            rowKey={(boost) => boost.id}
+            mobileCard={renderMobileCard}
+            /* 740(기존 트랙 폭) + 좌우 패딩 48 */
+            minWidth={788}
+            empty={{
+              title: "아직 진행 중인 부스트가 없습니다",
+              description:
+                "부스트는 공고를 목록 상단에 노출하고 관련 인재에게 알림을 보내는 기능입니다.",
+              action: (
+                <Link
+                  href="/business#pricing"
+                  className="mt-6 inline-flex h-10 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white transition hover:bg-[#2a2a2a]"
+                >
+                  요금제 알아보기
+                </Link>
+              ),
+            }}
+          />
+        </div>
 
         {/* 하단 안내 배너 */}
         <div className="mt-5 flex items-center justify-between gap-4 border border-border bg-white px-6 py-5 max-[760px]:flex-col max-[760px]:items-start">
