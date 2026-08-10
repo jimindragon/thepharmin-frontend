@@ -98,9 +98,17 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
 
               <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-6">
                 {/* 배너 높이가 고정(290/260/244)이라 제목·부제 크기가 곧 레이아웃 여유다.
-                    ≤760px에서 제목은 2줄이 되므로, 부제가 15px보다 크면 긴 부제(약국 슬라이드)가
-                    2줄로 늘어나 내용이 230px를 넘고 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것. */}
-                <h1 className="max-w-[720px] break-keep text-[34px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[26px]">
+                    ≤760px 기준 세로 예산은 제목+부제 122px(244 − CTA 48 − mt-9 36 − pb 24 − mt-[14px] 14).
+                    부제가 15px보다 크면 긴 부제(약국 슬라이드)가 2줄로 늘어나 이 예산을 넘고,
+                    내용이 justify-end라 넘친 만큼 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것.
+
+                    360px 미만에서 26px을 한 단계 더 줄이는 이유: 이 구간은 아래 renderSlideTitle의
+                    nowrap 덩어리가 걸리지 않아 제목이 자유롭게 감긴다. 26px이면 320px에서 병원·약국 제목이
+                    3줄(97.5px)이 돼 예산을 초과했다(병원 −0.3, 약국 −25). 24px이면 네 슬라이드 모두 2줄
+                    (60px)로 떨어져 최악(약국)에도 12.5px이 남는다. 실측 파손 구간은 ≤329px이지만,
+                    경계를 nowrap이 켜지는 360px에 맞춰 "자유 줄바꿈 구간 = 24px"로 규칙을 하나로 둔다 —
+                    문구가 바뀌어도 이 구간이 다시 3줄로 넘어가지 않는다. 360px 이상은 손대지 않는다. */}
+                <h1 className="max-w-[720px] break-keep text-[34px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[26px] max-[359.98px]:text-[24px]">
                   {renderSlideTitle(slide)}
                 </h1>
                 <p className="mt-[14px] max-w-[560px] break-keep text-[17px] font-normal text-[#c9ced3] max-[760px]:text-[15px]">
