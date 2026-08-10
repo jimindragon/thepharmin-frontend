@@ -67,10 +67,11 @@ const ALL_JOB_CATEGORY_ID = "__all";
 /** jobId로 jobs.ts 원본 레코드를 조인하기 위한 조회 맵. 캘린더 필터가 실제 taxonomy 필드를 읽을 때 사용한다. */
 const jobsById = new Map(jobs.map((job) => [job.id, job]));
 
-const tabs: Array<{ id: CalendarTab; label: string }> = [
-  { id: "all", label: "전체 공고" },
-  { id: "saved", label: "스크랩한 공고" },
-  { id: "applied", label: "지원한 공고" },
+/** shortLabel은 ≤760px 전용 축약형 — 카운트 뱃지·자물쇠까지 48px 탭 박스에 수납하기 위한 것이다. */
+const tabs: Array<{ id: CalendarTab; label: string; shortLabel: string }> = [
+  { id: "all", label: "전체 공고", shortLabel: "전체 공고" },
+  { id: "saved", label: "스크랩한 공고", shortLabel: "스크랩" },
+  { id: "applied", label: "지원한 공고", shortLabel: "지원" },
 ];
 
 const calendarTrackOptions: Array<{ id: CalendarTrackFilter; label: string }> = [
@@ -955,42 +956,51 @@ export function RecruitmentCalendarClient() {
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  className={`h-[48px] text-[15px] font-medium transition ${
+                  className={`h-[48px] text-[15px] font-medium transition max-[760px]:flex max-[760px]:items-center max-[760px]:justify-center max-[760px]:gap-1 max-[760px]:whitespace-nowrap max-[760px]:text-[13px] ${
                     active
                       ? "bg-[#1b1f25] text-white shadow-[0_10px_22px_rgba(17,17,17,0.16)]"
                       : "bg-white text-[#4b535f] hover:bg-[#f6f7f8]"
                   }`}
                   onClick={() => handleTabChange(tab.id)}
                 >
-                  <span>{tab.label}</span>
+                  {/* ≤760px에서는 카운트·자물쇠까지 48px 박스에 넣기 위해 축약 라벨로 교체한다. */}
+                  <span className="max-[760px]:hidden">{tab.label}</span>
+                  <span className="min-[761px]:hidden">{tab.shortLabel}</span>
                   <span
-                    className={`ml-2 inline-flex min-w-[26px] items-center justify-center rounded-full px-2 py-[2px] text-[12px] ${
+                    className={`ml-2 inline-flex min-w-[26px] items-center justify-center rounded-full px-2 py-[2px] text-[12px] max-[760px]:ml-0 max-[760px]:min-w-0 max-[760px]:px-1.5 ${
                       active ? "bg-white/20 text-white" : "bg-[#edf0f3] text-[#8a93a1]"
                     }`}
                   >
                     {tabCounts[tab.id]}
                   </span>
-                  {privateTab ? <Lock size={13} className="ml-2 inline-block align-[-2px] text-[#a3abb6]" /> : null}
+                  {privateTab ? (
+                    <Lock size={13} className="ml-2 inline-block align-[-2px] text-[#a3abb6] max-[760px]:ml-0 max-[760px]:shrink-0" />
+                  ) : null}
                 </button>
               );
             })}
           </section>
 
           {appliedJobsCount > 0 ? (
-            <section className="mt-3.5 border border-[#e0e5eb] bg-white p-5">
+            <section className="mt-3.5 border border-[#e0e5eb] bg-white p-5 max-[760px]:p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <CalendarClock size={17} strokeWidth={2} className="text-gray-700" />
-                    <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d]">다가오는 지원 일정</h2>
+                    <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d] max-[760px]:text-[16px]">다가오는 지원 일정</h2>
                   </div>
-                  <p className="mt-1.5 text-[13px] font-medium text-[#8b94a2]">지원 중인 공고의 다음 일정을 확인하세요.</p>
+                  {/* 같은 내용이 /mypage/applications에 있어 모바일에서는 부연 설명을 접는다. */}
+                  <p className="mt-1.5 text-[13px] font-medium text-[#8b94a2] max-[760px]:hidden">지원 중인 공고의 다음 일정을 확인하세요.</p>
                 </div>
-                <Link href="/mypage/applications" className="shrink-0 text-[13px] font-medium text-[#5f6875] hover:text-[#111111]">
+                <Link href="/mypage/applications" className="shrink-0 text-[13px] font-medium text-[#5f6875] hover:text-[#111111] max-[760px]:text-[12px]">
                   전체 지원 현황 보기 &gt;
                 </Link>
               </div>
-              <div className="mt-4 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4">
+              {/*
+                ≤760px에서는 세로 스택 대신 가로 스크롤 1행. 카드 너비·shrink는 자식 선택자로만 얹어
+                데스크톱 grid(md:2열 / lg:4열)의 DOM과 렌더 결과를 그대로 둔다.
+              */}
+              <div className="mt-4 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4 max-[760px]:flex max-[760px]:overflow-x-auto max-[760px]:[&>*]:w-[248px] max-[760px]:[&>*]:shrink-0">
                 {appliedJobs.map((job) => (
                   <ApplicationSummaryCard key={job.id} job={job} />
                 ))}
