@@ -557,12 +557,13 @@ function MiniMonthCalendar({
               aria-label={`${day.getMonth() + 1}월 ${day.getDate()}일${dayJobs.length > 0 ? ` 일정 ${dayJobs.length}건` : " 일정 없음"}`}
               className="flex min-h-[48px] flex-col items-center gap-1 py-1.5"
             >
+              {/* 오늘=테두리, 선택=채움 — 두 상태가 같은 날이면 채움이 이김 (선택 우선) */}
               <span
                 className={`grid h-7 w-7 place-items-center text-[14px] font-medium ${
                   isSelected
                     ? "bg-[#111111] text-white"
                     : isToday
-                      ? "bg-[#1b1f25] text-white"
+                      ? "border-[1.5px] border-[#111111] text-[#111111]"
                       : !inCurrentMonth
                         ? "text-[#c4cad3]"
                         : isSunday
@@ -1071,12 +1072,13 @@ export function RecruitmentCalendarClient() {
               {activeTab === "all" ? (
                 <div className="border-b border-[#e7ebef] px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2.5">
+                    {/* 모바일은 wrap 대신 1행 가로 스크롤 — 트랙 칩 5개가 2줄로 접히면 미니 캘린더가 첫 화면 밖으로 밀린다 */}
+                    <div className="flex flex-wrap items-center gap-2.5 max-[760px]:flex-nowrap max-[760px]:overflow-x-auto max-[760px]:pb-1">
                       {calendarTrackOptions.map((track) => (
                         <button
                           key={track.id}
                           type="button"
-                          className={`h-10 border px-5 text-[13px] font-medium ${
+                          className={`h-10 shrink-0 border px-5 text-[13px] font-medium ${
                             trackFilter === track.id
                               ? "border-[#111111] bg-[#111111] text-white shadow-[0_10px_18px_rgba(17,17,17,0.10)]"
                               : "border-[#dfe4eb] bg-white text-[#4b535f] hover:border-[#111111]"
