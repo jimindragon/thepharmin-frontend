@@ -103,7 +103,7 @@ export default function JobsPage() {
 
           <PageTitle className="max-[760px]:mt-0">{siteConfig.pageTitle}</PageTitle>
 
-          <CategoryTabs activeTrack={activeTrack} onChange={filterState.setTrack} />
+          <CategoryTabs activeTrack={activeTrack} onChange={filterState.setTrack} variant="page" />
 
           <div className="jobs-layout mt-3.5">
             <div className="jobs-main">
