@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Lock,
   MailCheck,
   Plus,
   RotateCcw,
@@ -25,6 +24,7 @@ import { InterestConditionCard } from "@/components/ui/InterestConditionCard";
 import { JobUsageTipsCard } from "@/components/ui/JobUsageTipsCard";
 import { LoginGateModal } from "@/components/ui/LoginGateModal";
 import { OverlayPanel } from "@/components/ui/OverlayPanel";
+import { PageTabBar } from "@/components/ui/PageTabBar";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
@@ -779,6 +779,17 @@ export function RecruitmentCalendarClient() {
     [allTabFilteredJobs, availableCalendarJobs, eventView],
   );
 
+  /** 비로그인 탭은 숨기지 않고 자물쇠를 달아 남긴다 — 눌렀을 때 로그인 모달로 안내하는 것이 이 탭의 동작이다. */
+  const tabItems = useMemo(
+    () =>
+      tabs.map((tab) => ({
+        ...tab,
+        count: tabCounts[tab.id],
+        locked: tab.id !== "all" && !isLoggedIn,
+      })),
+    [isLoggedIn, tabCounts],
+  );
+
   const filteredJobs = useMemo(() => {
     if (activeTab === "all") return allTabFilteredJobs;
     return availableCalendarJobs.filter((job) => eventMatchesView(job, eventView) && jobMatchesTab(job, activeTab));
@@ -990,40 +1001,13 @@ export function RecruitmentCalendarClient() {
             description="채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요."
           />
 
-          <section className="mt-7 grid grid-cols-3 gap-0 overflow-hidden border border-[#e0e5eb] bg-white p-1.5">
-            {tabs.map((tab) => {
-              const active = activeTab === tab.id;
-              const privateTab = tab.id !== "all" && !isLoggedIn;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  className={`h-[48px] text-[15px] font-medium transition max-[760px]:flex max-[760px]:h-10 max-[760px]:items-center max-[760px]:justify-center max-[760px]:gap-1 max-[760px]:whitespace-nowrap max-[760px]:text-[13px] ${
-                    active
-                      ? "bg-[#1b1f25] text-white shadow-[0_10px_22px_rgba(17,17,17,0.16)]"
-                      : "bg-white text-[#4b535f] hover:bg-[#f6f7f8]"
-                  }`}
-                  onClick={() => handleTabChange(tab.id)}
-                >
-                  {/* ≤760px에서는 카운트·자물쇠까지 48px 박스에 넣기 위해 축약 라벨로 교체한다. */}
-                  <span className="max-[760px]:hidden">{tab.label}</span>
-                  <span className="min-[761px]:hidden">{tab.shortLabel}</span>
-                  <span
-                    className={`ml-2 inline-flex min-w-[26px] items-center justify-center rounded-full px-2 py-[2px] text-[12px] max-[760px]:ml-0 max-[760px]:min-w-0 max-[760px]:px-1.5 ${
-                      active ? "bg-white/20 text-white" : "bg-[#edf0f3] text-[#8a93a1]"
-                    }`}
-                  >
-                    {tabCounts[tab.id]}
-                  </span>
-                  {privateTab ? (
-                    <Lock size={13} className="ml-2 inline-block align-[-2px] text-[#a3abb6] max-[760px]:ml-0 max-[760px]:shrink-0" />
-                  ) : null}
-                </button>
-              );
-            })}
-          </section>
+          <PageTabBar
+            className="mt-7"
+            ariaLabel="캘린더 공고 범위"
+            items={tabItems}
+            activeId={activeTab}
+            onSelect={handleTabChange}
+          />
 
           {appliedJobsCount > 0 ? (
             <UpcomingApplicationsSection jobs={appliedJobs} totalCount={appliedJobsCount} className="mt-3.5 max-[760px]:hidden" />
