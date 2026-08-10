@@ -93,8 +93,11 @@ export default function JobsPage() {
     <>
       <Header />
       <InterestPromptGate />
-      {/* ≤760px h1 상단 여백은 캘린더(app-shell pt-8 = 32px) 기준으로 맞춘다. 데스크톱 18px은 유지. */}
-      <main className="pb-9 pt-[18px] max-[760px]:pt-8">
+      {/*
+        ≤760px h1 상단 여백은 캘린더(app-shell pt-8 = 32px) 기준으로 맞춘다. 데스크톱 18px은 유지.
+        배경도 ≤760px에서만 QNA·캘린더와 같은 회색으로 — 탭바로 오가는 화면끼리 바탕이 끊기지 않게 한다.
+      */}
+      <main className="pb-9 pt-[18px] max-[760px]:min-h-screen max-[760px]:bg-[#f7f8fa] max-[760px]:pt-8">
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 

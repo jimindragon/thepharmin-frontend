@@ -26,7 +26,8 @@ export function TrackLandingClient({ track }: { track: JobTrack }) {
       <Header />
       {/* 뉴스에서 공고 링크로 들어오면 목록(/jobs)이 아니라 여기에 먼저 닿는다 — 두 곳 모두에 둔다. */}
       <InterestPromptGate />
-      <main className="pb-0">
+      {/* ≤760px 배경은 QNA·캘린더와 같은 회색 — 탭바로 오가는 화면끼리 바탕이 끊기지 않게 한다. 데스크톱은 흰 배경 유지. */}
+      <main className="pb-0 max-[760px]:min-h-screen max-[760px]:bg-[#f7f8fa]">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={track} />
           <FeaturedJobsSection jobs={trackJobs} />
