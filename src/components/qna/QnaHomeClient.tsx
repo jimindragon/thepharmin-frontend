@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { PageHeader } from "@/components/PageHeader";
 import { PageTabBar } from "@/components/ui/PageTabBar";
 import { getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
@@ -82,6 +83,17 @@ function SortControl({ value, onChange }: { value: QnaSortOption; onChange: (opt
   );
 }
 
+/**
+ * ≤760px 풀블리드. 목록 컨테이너(FLUSH_LIST_CLASS)가 화면 폭까지 밀어내고 카드 사이 선을
+ * divide-y로 그리므로, 카드 자신의 테두리는 761px 이상에서만 붙인다. 루트가 .surface가 아니라
+ * 순수 유틸리티라 ScrapedOrganizationCard처럼 특이도 다툼 없이 분기만 하면 된다.
+ *
+ * 좌우 패딩은 화면 여백이 되는 순간 24px로 올려 같은 화면의 h1·칩이 서 있는 선에 맞춘다.
+ * p 단축형 대신 px/py로 축을 나눈 이유는 JobCard flush와 같다 — 같은 축 안에서
+ * "변형 없는 유틸리티 < 변형 붙은 유틸리티"만 남아 Tailwind 출력 순서에 기대지 않는다.
+ */
+const QNA_CARD_CLASS = "bg-white px-5 py-5 transition max-[760px]:px-6 min-[761px]:border min-[761px]:border-[#e5e9ef]";
+
 function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuery: string }) {
   const clickable = true;
   const excerpt = entry.body[0];
@@ -89,7 +101,7 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
   const isBest = Boolean(entry.isBest);
 
   const content = (
-    <article className={clsx("border border-[#e5e9ef] bg-white p-5 transition", clickable && "hover:border-[#111111]")}>
+    <article className={clsx(QNA_CARD_CLASS, clickable && "min-[761px]:hover:border-[#111111]")}>
       {isBest ? (
         <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
       ) : null}
@@ -257,7 +269,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
             </div>
 
             {visibleEntries.length ? (
-              <div className="flex flex-col gap-3">
+              <div className={FLUSH_LIST_CLASS}>
                 {visibleEntries.map((entry) => (
                   <QnaListCard key={entry.id} entry={entry} previewQuery={previewQuery} />
                 ))}
