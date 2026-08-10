@@ -211,7 +211,13 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
   return (
     // 좌측 날짜 칸과 우측 본문을 3줄 격자로 묶는다 — 2칼럼 flex로 각자 쌓던 때는 줄이 아래로 갈수록 어긋났다.
     // 기업 InterviewRow와 같은 구조·같은 클래스 문자열을 쓴다. 한쪽만 고치면 갈라진다.
-    <div className="grid grid-cols-[48px_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 px-6 py-4 max-[760px]:px-4">
+    <div className="relative grid grid-cols-[48px_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 px-6 py-4 transition hover:bg-[#f7f8fa] max-[760px]:px-4">
+      {/* 행 어디를 눌러도 이동한다 — 전면 링크는 absolute라 격자 칸을 차지하지 않는다. */}
+      <Link
+        href="/mypage/applications"
+        aria-label={`${jobTitle} ${eventLabel} 지원 현황 보기`}
+        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
+      />
       <p className="text-center text-[24px] font-bold leading-none tracking-[-0.02em] text-[#17202c]">{day}</p>
       <p className="text-[16px] font-semibold leading-tight text-[#17202c]">{eventLabel}</p>
 
@@ -230,12 +236,11 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
             {badge.label}
           </span>
         </span>
-        <Link
-          href="/mypage/applications"
-          className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-        >
+        {/* 전면 링크가 이동을 맡으므로 span으로 강등한다 — 같은 목적지를 두 번 포커스하지 않게.
+            "지금 확인할 일"의 우측 CTA와 같은 처리다. */}
+        <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946]">
           지원 보기
-        </Link>
+        </span>
       </div>
     </div>
   );
@@ -346,7 +351,13 @@ export function MyPageDashboardClient() {
                     .map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id)
                     .slice(0, 3);
                   return (
-                    <div key={resume.id} className="grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-6 py-4 max-[760px]:px-4">
+                    <div key={resume.id} className="relative grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-6 py-4 transition hover:bg-[#f7f8fa] max-[760px]:px-4">
+                      {/* 행 어디를 눌러도 이동한다 — 전면 링크는 absolute라 격자 칸을 차지하지 않는다. */}
+                      <Link
+                        href="/mypage/resume"
+                        aria-label={`${resume.title} ${isComplete ? "보기" : "이어 작성하기"}`}
+                        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
+                      />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate text-[16px] font-semibold text-[#17202c]">{resume.title}</span>
@@ -368,12 +379,10 @@ export function MyPageDashboardClient() {
                           </span>
                         )}
                       </div>
-                      <Link
-                        href="/mypage/resume"
-                        className="inline-flex h-8 w-full items-center justify-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-                      >
+                      {/* 전면 링크가 이동을 맡으므로 span으로 강등한다 — 같은 목적지를 두 번 포커스하지 않게. */}
+                      <span className="inline-flex h-8 w-full items-center justify-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946]">
                         {isComplete ? "보기" : "이어 작성하기"}
-                      </Link>
+                      </span>
                     </div>
                   );
                 })}
