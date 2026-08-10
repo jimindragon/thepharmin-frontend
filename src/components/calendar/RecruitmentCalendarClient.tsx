@@ -1059,17 +1059,18 @@ export function RecruitmentCalendarClient() {
                     </button>
                   </div>
 
-                  {/* ≤760px: 테두리 없는 텍스트 버튼으로 강등. h-10이 40px 높이를, px-2.5가 40px 이상 탭 폭을 확보하고, 같은 값의 -mr이 글자를 콘텐츠 우측선에 맞춘다. */}
+                  {/* ≤760px에서도 테두리를 유지한다 — 마감/시작이 텍스트 토글로 내려가 줄 밀도가 낮아졌으므로 박스가 산만하지 않다. px-2.5로 좁혀 박스 우측선만 콘텐츠 선에 맞춘다. */}
                   <button
                     type="button"
-                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] max-[760px]:-mr-2.5 max-[760px]:justify-self-end max-[760px]:border-0 max-[760px]:bg-transparent max-[760px]:px-2.5"
+                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] max-[760px]:justify-self-end max-[760px]:px-2.5"
                     onClick={moveToday}
                   >
                     오늘
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#4d5662]">
+                {/* 트랙 필터(박스 칩)와 시각 층위 분리 — 박스 칩은 트랙만 */}
+                <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#4d5662] max-[760px]:gap-4">
                   {[
                     { id: "all" as const, label: "전체" },
                     { id: "deadline" as const, label: "마감" },
@@ -1080,14 +1081,18 @@ export function RecruitmentCalendarClient() {
                       <button
                         key={view.id}
                         type="button"
-                        className={`inline-flex h-10 items-center gap-2 border px-3.5 transition ${
-                          checked ? "border-[#111111] bg-[#111111] text-white" : "border-[#dfe4eb] bg-white text-[#596373] hover:border-[#111111]"
+                        className={`inline-flex h-10 items-center gap-2 border px-3.5 transition max-[760px]:border-0 max-[760px]:bg-transparent max-[760px]:px-0 ${
+                          checked
+                            ? "border-[#111111] bg-[#111111] text-white max-[760px]:text-[#111111]"
+                            : "border-[#dfe4eb] bg-white text-[#596373] hover:border-[#111111] max-[760px]:text-[#8a94a3]"
                         }`}
                         onClick={() => setEventView(view.id)}
                         aria-pressed={checked}
                       >
                         {view.id !== "all" ? (
-                          <span className={`h-2.5 w-2.5 rounded-full ${eventTypeStyles[view.id].dot}`} />
+                          <span
+                            className={`h-2.5 w-2.5 rounded-full ${eventTypeStyles[view.id].dot} ${checked ? "" : "max-[760px]:opacity-40"}`}
+                          />
                         ) : null}
                         {view.label}
                       </button>
