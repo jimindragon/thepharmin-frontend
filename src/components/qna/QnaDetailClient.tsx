@@ -287,7 +287,8 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
 
   return (
     <main className="bg-[#f7f8fa] pb-20 max-[760px]:pb-16">
-      <div className="app-shell pt-8 max-[760px]:pt-6">
+      {/* ≤760px 상단 여백은 캘린더(pt-8 = 32px) 기준으로 통일 — 이전 max-[760px]:pt-6(24px)에서 수렴 */}
+      <div className="app-shell pt-8">
         <Link href={backHref} className="inline-flex h-9 items-center gap-1.5 text-[13px] font-medium text-[#596373] transition hover:text-[#111111]">
           <ArrowLeft size={14} aria-hidden="true" />
           채용 QNA
