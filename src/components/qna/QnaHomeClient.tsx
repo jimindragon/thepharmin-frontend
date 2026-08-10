@@ -193,6 +193,11 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           rightSlot={canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : undefined}
         />
 
+        {/* 사이드바가 본문 맨 아래로 밀리는 1열 폭에서만 본문 상단으로 끌어올린다 —
+            "내 활동"은 /qna/activity로 가는 앱 내 유일한 진입점이라 하단 사각지대에 두면 도달률이 0에 수렴한다.
+            아래 aside 사본과 max-[1040px]/min-[1041px]로 정확히 상보라 겹치거나 비는 구간이 없다. */}
+        {isLoggedIn ? <MyActivityPanel activeType={activeType} variant="compact" className="mt-6 min-[1041px]:hidden" /> : null}
+
         <QnaComposer
           activeType={activeType}
           isLoggedIn={isLoggedIn}
@@ -237,12 +242,14 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           </div>
 
           <aside className="space-y-5">
-            <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} />
-            {isLoggedIn ? <MyActivityPanel activeType={activeType} /> : null}
+            {/* 1열에서는 본문 목록과 완전 중복 (추천순 상위 = 인기 글, 칩 nav = 태그 풀) */}
+            <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} className="max-[1040px]:hidden" />
+            {isLoggedIn ? <MyActivityPanel activeType={activeType} className="max-[1040px]:hidden" /> : null}
             <PopularTagsPanel
               activeType={activeType}
               selectedTag={categoryFilter !== "전체" ? categoryFilter : undefined}
               onTagClick={(tag) => setCategoryFilter(tag)}
+              className="max-[1040px]:hidden"
             />
             <QnaOperationPrinciplePanel />
           </aside>

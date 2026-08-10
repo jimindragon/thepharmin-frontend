@@ -79,13 +79,15 @@ interface PopularTagsPanelProps {
   onTagClick?: (tag: string) => void;
   /** 상세 페이지: 클릭 시 /qna로 이동(로컬 필터 상태가 없어 콜백 대신 링크 사용) */
   tagHref?: (tag: string) => string;
+  /** 호출부가 폭에 따라 노출을 제어하기 위한 통로 — 패널 자체는 반응형을 갖지 않는다 */
+  className?: string;
 }
 
-export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref }: PopularTagsPanelProps) {
+export function PopularTagsPanel({ activeType, selectedTag, onTagClick, tagHref, className }: PopularTagsPanelProps) {
   const tags = getPopularQnaTags(activeType);
 
   return (
-    <section className="border border-border bg-white p-5">
+    <section className={clsx("border border-border bg-white p-5", className)}>
       <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         인기 태그
@@ -122,9 +124,18 @@ export function QnaOperationPrinciplePanel() {
 }
 
 /** 허브/상세 사이드바가 공유하는 "실시간 인기 글" 패널 — 대상 목록만 호출부에서 넘긴다 */
-export function TrendingPostsPanel({ entries, previewQuery }: { entries: QnaListEntry[]; previewQuery: string }) {
+export function TrendingPostsPanel({
+  entries,
+  previewQuery,
+  className,
+}: {
+  entries: QnaListEntry[];
+  previewQuery: string;
+  /** 호출부가 폭에 따라 노출을 제어하기 위한 통로 — 패널 자체는 반응형을 갖지 않는다 */
+  className?: string;
+}) {
   return (
-    <section className="border border-border bg-white p-5">
+    <section className={clsx("border border-border bg-white p-5", className)}>
       <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         실시간 인기 글
@@ -162,8 +173,22 @@ function MyActivitySummaryRow({ label, count, href }: { label: string; count: nu
   );
 }
 
+interface MyActivityPanelProps {
+  activeType: QnaType;
+  /**
+   * "panel"   — 사이드바 기본형(제목 + 세로 3행).
+   * "compact" — 1열 승격형(제목 없이 가로 3칸). 사이드바가 본문 맨 아래로 밀리는 폭에서
+   *             본문 상단으로 끌어올려 쓰는 형태라 세로 길이를 줄이고 탭 타깃을 키운다.
+   *             열 수가 3으로 고정이라 divide-x 대신 셀 border-r을 쓴다(가이드라인 3절).
+   * 이 패널은 /qna/activity로 가는 앱 내 유일한 진입점이므로 어느 폭에서도 사라지면 안 된다.
+   */
+  variant?: "panel" | "compact";
+  /** 호출부가 폭에 따라 노출을 제어하기 위한 통로 — 패널 자체는 반응형을 갖지 않는다 */
+  className?: string;
+}
+
 /** 허브/상세 사이드바가 공유하는 "내 활동" 카드 — 스크랩 카운트만 activeType 기준으로 필터링한다 */
-export function MyActivityPanel({ activeType }: { activeType: QnaType }) {
+export function MyActivityPanel({ activeType, variant = "panel", className }: MyActivityPanelProps) {
   const [scrapCount, setScrapCount] = useState(0);
   const myPostsCount = getMyQnaPosts().length;
   const myCommentsCount = getMyQnaComments().length;
@@ -175,17 +200,43 @@ export function MyActivityPanel({ activeType }: { activeType: QnaType }) {
     setScrapCount(scrapped.length);
   }, [activeType]);
 
+  /** 두 변형이 같은 항목·순서·링크를 쓰도록 한 곳에서만 정의한다 */
+  const items = [
+    { label: "스크랩한 글", count: scrapCount, href: "/qna/activity?tab=scraps" },
+    { label: "내가 쓴 글", count: myPostsCount, href: "/qna/activity?tab=posts" },
+    { label: "내가 단 댓글", count: myCommentsCount, href: "/qna/activity?tab=comments" },
+  ];
+
+  if (variant === "compact") {
+    return (
+      <section className={clsx("border border-border bg-white", className)} aria-label="내 활동">
+        <div className="grid grid-cols-3">
+          {items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex flex-col items-center justify-center gap-1 border-r border-[#edf1f5] py-3 transition last:border-r-0 hover:bg-[#f7f8fa]"
+            >
+              <span className="text-[12px] font-medium text-[#8a94a3]">{item.label}</span>
+              <span className="text-[16px] font-bold text-[#171d26]">{item.count}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="border border-border bg-white p-5">
+    <section className={clsx("border border-border bg-white p-5", className)}>
       <h2 className="flex items-center gap-2 text-[17px] font-bold tracking-[-0.01em] text-[#17202c]">
         <span className="inline-block h-3.5 w-[3px] bg-[#111111]" aria-hidden="true" />
         내 활동
       </h2>
 
       <div className="mt-3 divide-y divide-[#edf1f5]">
-        <MyActivitySummaryRow label="스크랩한 글" count={scrapCount} href="/qna/activity?tab=scraps" />
-        <MyActivitySummaryRow label="내가 쓴 글" count={myPostsCount} href="/qna/activity?tab=posts" />
-        <MyActivitySummaryRow label="내가 단 댓글" count={myCommentsCount} href="/qna/activity?tab=comments" />
+        {items.map((item) => (
+          <MyActivitySummaryRow key={item.href} label={item.label} count={item.count} href={item.href} />
+        ))}
       </div>
     </section>
   );
