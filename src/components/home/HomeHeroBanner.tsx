@@ -107,8 +107,19 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                   {slide.subtitle}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-5">
-                  {/* 사진 위 단독 CTA — 어두운 변형 */}
-                  <LinkButton href={slide.href} variant="gradient-dark" size="lg">
+                  {/*
+                    사진 위 단독 CTA — 어두운 변형.
+                    이 줄은 우측 끝 페이저와 폭을 나눠 쓴다. 원래 치수로는 CTA 158 + 페이저 116 = 274라
+                    본문 폭이 274에 못 미치는 ≤369px에서 겹치고, 370~380px에서도 간격이 0~10px로 붙는다.
+                    배너 높이가 고정이고 제목이 이미 3줄로 상단에 붙어 있어(320px 기준 여유 0) 세로로 피할
+                    수 없으므로 ≤380px에서 가로로 줄인다. 높이(h-12)는 그대로 둬 터치 타깃을 지킨다.
+                  */}
+                  <LinkButton
+                    href={slide.href}
+                    variant="gradient-dark"
+                    size="lg"
+                    className="max-[380px]:px-3 max-[380px]:text-[13px]"
+                  >
                     {getHeroSlideCtaLabel(slide)}
                   </LinkButton>
                 </div>
@@ -118,7 +129,9 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
         })}
 
         <div className="absolute inset-x-0 bottom-0 z-20 flex justify-end px-14 pb-6 max-[1024px]:px-10 max-[760px]:px-6">
-          <div className="flex items-center gap-[14px] rounded-none bg-black/35 px-[14px] py-2">
+          {/* CTA와 같은 줄을 나눠 쓰므로 ≤380px에서는 페이저 쪽을 더 세게 줄인다 — CTA가 주행동이고 이쪽은 크롬이다.
+              화살표 아이콘 크기(18)는 유지해 탭 타깃을 지키고, 안쪽 여백만 좁힌다. */}
+          <div className="flex items-center gap-[14px] rounded-none bg-black/35 px-[14px] py-2 max-[380px]:gap-1.5 max-[380px]:px-1.5">
             <button
               type="button"
               className="text-white/70 transition hover:text-white"
