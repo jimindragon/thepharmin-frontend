@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ChevronDown, Lock, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { BusinessTabBar } from "@/components/business/BusinessTabBar";
 import { headerDropdownActionClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
@@ -179,6 +180,7 @@ export function BusinessHeader() {
     pathname === "/business/login" ? "/business/login" : `/business/login?redirect=${encodeURIComponent(pathname)}`;
 
   return (
+    <>
     <header className="site-header sticky top-0 z-50 h-[64px] border-b border-border bg-white text-[#17202c]">
       {/* gap-4 — 좁은 폭에서 로고가 우측 버튼 그룹에 맞닿지 않도록 최소 간격을 보장한다. */}
       <div className="app-shell flex h-full items-center justify-between gap-4">
@@ -251,5 +253,12 @@ export function BusinessHeader() {
         </div>
       </div>
     </header>
+
+    {/* 노출 여부(≤760px + 1차 화면 5개)는 컴포넌트가 스스로 판단한다 — 호출부에 조건을 두지 않는다.
+        개인 Header.tsx가 MobileTabBar를 형제로 두는 방식과 같다. 이 헤더는 셸 밖 화면
+        (/business 랜딩·pricing·headhunting·company/preview)도 함께 쓰지만, 그 경로들은
+        allowlist에 없어 탭바가 새지 않는다. */}
+    <BusinessTabBar />
+    </>
   );
 }

@@ -48,7 +48,9 @@ export function BusinessSidebar() {
   const isLocked = (href: string) => orgVerificationStatus === "pending" && isApprovalGatedPath(href);
 
   return (
-    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
+    // 모바일: 탭바가 1차 동선 담당 — 스트립은 6그룹 중 1개만 노출되던 상태 (진단 1-2)
+    // ≤1040px 분기는 지우지 않고 남긴다 — 탭바를 되돌리면 스트립이 그대로 살아난다(마이페이지 선례).
+    <aside className="border-r border-border bg-white px-6 py-7 max-[1040px]:hidden max-[1040px]:border-r-0 max-[1040px]:border-b max-[1040px]:px-5">
       {/* 마이페이지 사이드바(MyPageShell)와 같은 구조 — 이름/부제/상태칩.
           값은 헤더 프로필 드롭다운(BusinessAccountMenu)이 읽는 소스를 그대로 쓴다. */}
       <div>
@@ -148,7 +150,11 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
       <main className="min-h-[calc(100vh-64px)] bg-[#f5f6f7]">
         <div className="app-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <BusinessSidebar />
-          <div className="min-w-0 py-8 pl-8 max-[1040px]:px-4 max-[760px]:py-6">{isGated ? <ApprovalGatePanel /> : children}</div>
+          {/* ≤760px는 px-0 — 셸 gutter(24px)가 이미 좌우를 잡고 있어 px-4가 겹치면 40px이 된다.
+              761~1040px은 사이드바만 빠지고 폭은 넉넉해 기존 px-4를 그대로 둔다. (마이페이지 선례) */}
+          <div className="min-w-0 py-8 pl-8 max-[1040px]:px-4 max-[760px]:px-0 max-[760px]:py-6">
+            {isGated ? <ApprovalGatePanel /> : children}
+          </div>
         </div>
       </main>
     </>
