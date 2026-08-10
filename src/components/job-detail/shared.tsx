@@ -7,6 +7,7 @@ import { Bookmark, CalendarClock, CalendarPlus, ChevronRight, Layers, Lock, MapP
 import { JobCard } from "@/components/JobCard";
 import { FLUSH_LIST_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
+import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/SectionAnchorNav";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
@@ -257,6 +258,8 @@ export function IconSectionShell({
       className={clsx(
         "scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)]",
         FLUSH_SECTION_CLASS,
+        /* ≤760px 앵커 행이 덮는 만큼(헤더 64 + 앵커 44)으로 갈아끼운다 — 위 130px은 데스크톱 잔재다 */
+        SECTION_ANCHOR_SCROLL_MT_CLASS,
       )}
     >
       <div className="flex items-center justify-between gap-4">
