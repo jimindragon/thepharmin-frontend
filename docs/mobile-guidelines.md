@@ -36,6 +36,7 @@
 - 단, 행 구분선을 divide-y로 대체하지 않는다 — divide-y는 2번째 자식부터 상단선을 그어, N열 그리드의 첫 행 안쪽 셀에도 선이 생긴다. 행 구분은 [&>*:nth-child(n+{N+1})]:border-t 방식으로 "둘째 행부터"를 명시한다 (2열이면 n+3, 3열이면 n+4). 선례: CompanyDetailSections.tsx
 - 고정 폭은 w-full max-w-[Npx] 관용구를 사용한다. w-[Npx] 단독 사용 금지(가로 스크롤 캐러셀 내부 제외).
 - truncate/line-clamp-1은 좁은 폭에서 정보 손실이 크다. 모바일 분기에서 line-clamp-2 이상으로 완화를 검토한다.
+- 그리드 아이템은 기본 min-width: auto라 콘텐츠(가로 스크롤 행 등)가 열 폭을 밀어내 문서 오버플로를 만들 수 있다. 그리드 열은 minmax(0,1fr)로 선언하거나 아이템에 min-w-0을 준다. 선례: RecruitmentCalendarClient 모바일 지원 일정 사본 (globals.css .jobs-layout의 ≤1180px 오버라이드가 1fr이라 보호 없음)
 - 목표는 "페이지를 짧게"가 아니라 "한 화면 정보 밀도 높이기"다. 스크롤 길이 자체는 문제가 아니다.
 
 ## 4. 타이포그래피 — 위계 압축 (≤760px)
