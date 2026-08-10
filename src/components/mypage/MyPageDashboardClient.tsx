@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { CalendarDays, FileText, MessageSquare } from "lucide-react";
+import { CalendarDays, ChevronRight, FileText, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -117,7 +117,6 @@ type ChecklistRow = {
   Icon: LucideIcon;
   title: string;
   meta: string;
-  ctaLabel: string;
   href: string;
   isNewBadge: boolean;
   onNavigate?: () => void;
@@ -135,7 +134,6 @@ function buildScheduleChecklist(): Array<ChecklistRow & { daysLeft: number }> {
           Icon: CalendarDays,
           title: app.jobTitle,
           meta: `면접 ${daysLeft === 0 ? "오늘" : "내일"} · ${app.company}`,
-          ctaLabel: "지원 현황",
           href: "/mypage/applications",
           isNewBadge: false,
           daysLeft,
@@ -146,7 +144,6 @@ function buildScheduleChecklist(): Array<ChecklistRow & { daysLeft: number }> {
         Icon: FileText,
         title: app.jobTitle,
         meta: `서류 발표 D-${daysLeft} · ${app.company} · ${toMonthDay(app.nextEventDate as string)}`,
-        ctaLabel: "지원 현황",
         href: "/mypage/applications",
         isNewBadge: false,
         daysLeft,
@@ -174,12 +171,13 @@ function resolveScheduleBadge(
 
 // ─── sub-components ────────────────────────────────────────────────────────────
 
-function ChecklistRowCell({ Icon, title, meta, ctaLabel, href, isNewBadge, onNavigate }: ChecklistRow) {
+function ChecklistRowCell({ Icon, title, meta, href, isNewBadge, onNavigate }: ChecklistRow) {
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex items-start gap-3 px-6 py-4 max-[760px]:px-4 transition hover:bg-[#f7f8fa] max-[600px]:flex-wrap"
+      // 우측이 16px chevron이라 좁은 폭에서도 접히지 않는다 — 기존 CTA 버튼 때 있던 max-[600px]:flex-wrap을 뗀다.
+      className="flex items-start gap-3 px-6 py-4 max-[760px]:px-4 transition hover:bg-[#f7f8fa]"
     >
       <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-[#e5e9ef] bg-[#f7f8fa]">
         <Icon className="h-[15px] w-[15px] text-[#596373]" />
@@ -198,9 +196,8 @@ function ChecklistRowCell({ Icon, title, meta, ctaLabel, href, isNewBadge, onNav
           <p className="text-[13px] leading-[1.5] text-[#68717e]">{meta}</p>
         </div>
       </div>
-      <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] max-[600px]:ml-11">
-        {ctaLabel}
-      </span>
+      {/* 행 전면이 링크라 우측 버튼은 같은 목적지를 두 번 두는 셈이었다. 탭 가능 신호만 남기고 폭은 본문에 돌려준다. */}
+      <ChevronRight size={16} aria-hidden="true" className="mt-2 shrink-0 text-[#8a94a3]" />
     </Link>
   );
 }
@@ -236,11 +233,8 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
             {badge.label}
           </span>
         </span>
-        {/* 전면 링크가 이동을 맡으므로 span으로 강등한다 — 같은 목적지를 두 번 포커스하지 않게.
-            "지금 확인할 일"의 우측 CTA와 같은 처리다. */}
-        <span className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946]">
-          지원 보기
-        </span>
+        {/* 전면 링크가 이동을 맡으므로 chevron만 남긴다 — "지금 확인할 일"의 우측 처리와 같다. */}
+        <ChevronRight size={16} aria-hidden="true" className="shrink-0 text-[#8a94a3]" />
       </div>
     </div>
   );
@@ -269,8 +263,9 @@ export function MyPageDashboardClient() {
     id: notification.id,
     Icon: MessageSquare,
     title: notification.subjectLabel ?? notification.title,
-    meta: `받은 날짜 ${notification.createdAt.split(" ")[0]}`,
-    ctaLabel: "받은 제안",
+    // 우측 "받은 제안" 버튼이 chevron으로 바뀌면서 이 행이 무엇인지 알려주던 유일한 단어가 사라진다.
+    // 제목은 포지션명뿐이라 그대로 두면 새 공고 알림과 구분되지 않아, 다른 행들과 같은 "무엇 · 언제" 형식으로 본문에 옮긴다.
+    meta: `받은 제안 · ${notification.createdAt.split(" ")[0]}`,
     href: notification.href,
     isNewBadge: true,
     onNavigate: () => markRead(notification.id),
@@ -351,7 +346,7 @@ export function MyPageDashboardClient() {
                     .map((id) => optionLabelMaps.jobSubcategory?.get(id) ?? id)
                     .slice(0, 3);
                   return (
-                    <div key={resume.id} className="relative grid grid-cols-[minmax(0,1fr)_120px] items-center gap-4 px-6 py-4 transition hover:bg-[#f7f8fa] max-[760px]:px-4">
+                    <div key={resume.id} className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-6 py-4 transition hover:bg-[#f7f8fa] max-[760px]:px-4">
                       {/* 행 어디를 눌러도 이동한다 — 전면 링크는 absolute라 격자 칸을 차지하지 않는다. */}
                       <Link
                         href="/mypage/resume"
@@ -379,10 +374,8 @@ export function MyPageDashboardClient() {
                           </span>
                         )}
                       </div>
-                      {/* 전면 링크가 이동을 맡으므로 span으로 강등한다 — 같은 목적지를 두 번 포커스하지 않게. */}
-                      <span className="inline-flex h-8 w-full items-center justify-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946]">
-                        {isComplete ? "보기" : "이어 작성하기"}
-                      </span>
+                      {/* 전면 링크가 이동을 맡으므로 chevron만 남긴다. 작성 여부는 본문의 "작성 중" 점 표시가 계속 알린다. */}
+                      <ChevronRight size={16} aria-hidden="true" className="shrink-0 text-[#8a94a3]" />
                     </div>
                   );
                 })}
