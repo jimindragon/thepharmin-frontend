@@ -8,6 +8,7 @@ import { BusinessTabBar } from "@/components/business/BusinessTabBar";
 import { headerDropdownActionClassName } from "@/components/headerNavStyles";
 import { LinkButton } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
+import { MobileDrawer, useIsMobileDrawerViewport } from "@/components/ui/MobileDrawer";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { businessAccountMenuItems } from "@/config/businessAccountMenu";
 import { businessCenterHomeItem, isApprovalGatedPath } from "@/config/businessCenterMenu";
@@ -64,12 +65,79 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
  * 동일한 인터랙션(useDropdownMenu)을 쓰되, 메뉴 내용은 기업센터 사이드바 구성
  * (businessCenterMenuGroups)을 그대로 가져와 둘이 항상 같은 목적지를 가리키게 한다.
  */
-export function BusinessAccountMenu() {
+/**
+ * 기업 계정 메뉴 알맹이 — 데스크톱 앵커 드롭다운과 모바일 드로어가 함께 쓴다.
+ * 개인 AccountMenuContent(Header.tsx)와 같은 구성: 겉틀만 다르고 머리·항목·잠금·로그아웃은 한 벌.
+ */
+function BusinessAccountMenuContent({ onClose, onLogout }: { onClose: () => void; onLogout: () => void }) {
   const pathname = usePathname();
-  const router = useRouter();
   const orgVerificationStatus = useOrgVerificationStatus();
-  const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const isHomeActive = pathname === businessCenterHomeItem.href;
+
+  return (
+    <>
+      <div className="px-3 py-2.5">
+        <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
+        <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
+          {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
+        </p>
+      </div>
+      <div className="h-px bg-[#edf1f5]" />
+      <div className="py-2">
+        {/* 대시보드도 나머지 4항목과 한 블록에 둔다 — 구분선을 지운 뒤에도 블록을 나눠 두면
+            py-1.5 두 겹이 12px 여백으로 남아 첫 행만 유독 떨어져 보인다. 5항목 모두 등간격. */}
+        <div className="px-1 py-1.5">
+          <Link
+            href={businessCenterHomeItem.href}
+            onClick={onClose}
+            className={clsx(
+              "flex items-center px-2 py-2 text-[13px] font-medium transition-colors",
+              isHomeActive ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+            )}
+          >
+            {businessCenterHomeItem.label}
+          </Link>
+          {businessAccountMenuItems.map((item) => {
+            const active = pathname === item.href;
+            const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={clsx(
+                  "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
+                  active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+                )}
+              >
+                <span>{item.label}</span>
+                {locked ? (
+                  <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
+                    <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+      {/* 로그아웃 — 이동이 아니라 상태를 끊는 동작이라 위 항목들과 구분선으로 갈라 둔다.
+          색은 나머지와 동일하게(경고색 없음): 되돌릴 수 있는 평범한 동작이다. */}
+      <div className="border-t border-border px-1 py-1.5">
+        <button type="button" onClick={onLogout} className={headerDropdownActionClassName}>
+          로그아웃
+        </button>
+      </div>
+    </>
+  );
+}
+
+export function BusinessAccountMenu() {
+  const router = useRouter();
+  const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
+  const isMobile = useIsMobileDrawerViewport();
+
+  const close = () => setOpen(false);
 
   // 로그인 화면(/business/login)이 아니라 기업 소개(/business)로 보낸다 —
   // 나가려는 사람에게 곧바로 다시 들어오라고 요구하지 않기 위해서.
@@ -103,63 +171,20 @@ export function BusinessAccountMenu() {
       </button>
 
       {open ? (
-        <div
-          role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
-        >
-          <div className="px-3 py-2.5">
-            <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
-            <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
-              {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
-            </p>
-          </div>
-          <div className="h-px bg-[#edf1f5]" />
-          <div className="py-2">
-            {/* 대시보드도 나머지 4항목과 한 블록에 둔다 — 구분선을 지운 뒤에도 블록을 나눠 두면
-                py-1.5 두 겹이 12px 여백으로 남아 첫 행만 유독 떨어져 보인다. 5항목 모두 등간격. */}
-            <div className="px-1 py-1.5">
-              <Link
-                href={businessCenterHomeItem.href}
-                onClick={() => setOpen(false)}
-                className={clsx(
-                  "flex items-center px-2 py-2 text-[13px] font-medium transition-colors",
-                  isHomeActive ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                )}
-              >
-                {businessCenterHomeItem.label}
-              </Link>
-              {businessAccountMenuItems.map((item) => {
-                const active = pathname === item.href;
-                const locked = orgVerificationStatus === "pending" && isApprovalGatedPath(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={clsx(
-                      "flex items-center justify-between gap-2 px-2 py-2 text-[13px] font-medium transition-colors",
-                      active ? "font-bold text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                    )}
-                  >
-                    <span>{item.label}</span>
-                    {locked ? (
-                      <span title={LOCK_TITLE} aria-label={LOCK_TITLE} className="shrink-0">
-                        <Lock size={14} className="text-[#9aa3af]" aria-hidden="true" />
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
+        isMobile ? (
+          <MobileDrawer ariaLabel={`${initialBusinessCompanyProfile.displayName} 계정 메뉴`} onClose={close}>
+            <div className="p-2">
+              <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} />
             </div>
+          </MobileDrawer>
+        ) : (
+          <div
+            role="menu"
+            className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          >
+            <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} />
           </div>
-          {/* 로그아웃 — 이동이 아니라 상태를 끊는 동작이라 위 항목들과 구분선으로 갈라 둔다.
-              색은 나머지와 동일하게(경고색 없음): 되돌릴 수 있는 평범한 동작이다. */}
-          <div className="border-t border-border px-1 py-1.5">
-            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
-              로그아웃
-            </button>
-          </div>
-        </div>
+        )
       ) : null}
     </div>
   );

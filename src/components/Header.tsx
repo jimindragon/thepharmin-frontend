@@ -10,16 +10,75 @@ import { siteConfig } from "@/config/site";
 import { headerDropdownActionClassName, headerNavItemClassName } from "@/components/headerNavStyles";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { NotificationBell } from "@/components/shared/NotificationBell";
+import { MobileDrawer, useIsMobileDrawerViewport } from "@/components/ui/MobileDrawer";
 import { PersonAvatar } from "@/components/ui/PersonAvatar";
 import { MOCK_PERSONAL_NOTIFICATIONS } from "@/data/notifications";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 
-export function AccountMenu() {
+/**
+ * 계정 메뉴 알맹이 — 데스크톱 앵커 드롭다운과 모바일 드로어가 함께 쓴다.
+ * 겉틀만 다르고 이름·이메일 머리, 3그룹 11항목, 뱃지, 로그아웃은 한 벌뿐이다.
+ * 드로어에는 별도 타이틀을 두지 않는다 — 이 머리(이름·이메일)가 그 역할을 한다.
+ */
+function AccountMenuContent({ onClose, onLogout }: { onClose: () => void; onLogout: () => void }) {
   const pathname = usePathname();
+
+  return (
+    <>
+      <div className="px-3 py-2.5">
+        <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
+        <p className="mt-0.5 text-[13px] font-normal text-[#6b7480]">{myPageUser.email}</p>
+      </div>
+      <div className="h-px bg-[#edf1f5]" />
+      <div className="py-2">
+        {myPageMenuGroups.map((group) => (
+          // 라벨 위(pt-3 + 앞 그룹 pb-1.5 = 18px)는 넓고 아래(mt-0.5 = 2px)는 좁다 —
+          // 라벨이 아래 항목 묶음에 붙어야 "이 묶음의 제목"으로 읽힌다. 첫 그룹만 pt-1 —
+          // 위에 이메일 아래 구분선이 이미 있어 같은 12px을 주면 과하게 벌어진다.
+          <div key={group.title} className="px-1 pb-1.5 pt-3 first:pt-1">
+            <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#6b7480]">{group.title}</p>
+            <div className="mt-0.5">
+              {group.items.map((item) => {
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={clsx(
+                      "flex items-center justify-between gap-3 px-2 py-2 text-[13px] font-medium transition-colors",
+                      active ? "text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
+                    )}
+                  >
+                    <span className={active ? "font-bold" : undefined}>{item.label}</span>
+                    {item.badge ? (
+                      <span className={clsx("text-[12px] font-normal", active ? "text-[#596373]" : "text-[#6b7480]")}>{item.badge}</span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* 로그아웃 — 이동 항목들과 성격이 달라 구분선으로 갈라 둔다. */}
+      <div className="border-t border-border px-1 py-1.5">
+        <button type="button" onClick={onLogout} className={headerDropdownActionClassName}>
+          로그아웃
+        </button>
+      </div>
+    </>
+  );
+}
+
+export function AccountMenu() {
   const router = useRouter();
   const { logout } = usePersonalLoginState();
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
+  const isMobile = useIsMobileDrawerViewport();
+
+  const close = () => setOpen(false);
 
   // 기업 계정 메뉴의 로그아웃(BusinessAccountMenu)과 같은 순서 — 세션을 끊고, 메뉴를 닫고, 홈으로 보낸다.
   const handleLogout = () => {
@@ -49,55 +108,22 @@ export function AccountMenu() {
       </button>
 
       {open ? (
-        // 3그룹 11항목이라 노트북 높이에서 로그아웃까지 넘친다. 패널 상단은 헤더(64px) 아래 8px에
-        // 붙으므로 뷰포트에서 그 72px과 하단 여백 16px을 빼야 잘리지 않는다 — 고정 px는 720 높이에서 다시 넘친다.
-        <div
-          role="menu"
-          className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 max-h-[calc(100vh-88px)] w-[260px] overflow-y-auto border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
-        >
-          <div className="px-3 py-2.5">
-            <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
-            <p className="mt-0.5 text-[13px] font-normal text-[#6b7480]">{myPageUser.email}</p>
+        isMobile ? (
+          <MobileDrawer ariaLabel={`${myPageUser.name}님 계정 메뉴`} onClose={close}>
+            <div className="p-2">
+              <AccountMenuContent onClose={close} onLogout={handleLogout} />
+            </div>
+          </MobileDrawer>
+        ) : (
+          // 3그룹 11항목이라 노트북 높이에서 로그아웃까지 넘친다. 패널 상단은 헤더(64px) 아래 8px에
+          // 붙으므로 뷰포트에서 그 72px과 하단 여백 16px을 빼야 잘리지 않는다 — 고정 px는 720 높이에서 다시 넘친다.
+          <div
+            role="menu"
+            className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 max-h-[calc(100vh-88px)] w-[260px] overflow-y-auto border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
+          >
+            <AccountMenuContent onClose={close} onLogout={handleLogout} />
           </div>
-          <div className="h-px bg-[#edf1f5]" />
-          <div className="py-2">
-            {myPageMenuGroups.map((group) => (
-              // 라벨 위(pt-3 + 앞 그룹 pb-1.5 = 18px)는 넓고 아래(mt-0.5 = 2px)는 좁다 —
-              // 라벨이 아래 항목 묶음에 붙어야 "이 묶음의 제목"으로 읽힌다. 첫 그룹만 pt-1 —
-              // 위에 이메일 아래 구분선이 이미 있어 같은 12px을 주면 과하게 벌어진다.
-              <div key={group.title} className="px-1 pb-1.5 pt-3 first:pt-1">
-                <p className="px-2 text-[12px] font-medium uppercase tracking-[0.06em] text-[#6b7480]">{group.title}</p>
-                <div className="mt-0.5">
-                  {group.items.map((item) => {
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={clsx(
-                          "flex items-center justify-between gap-3 px-2 py-2 text-[13px] font-medium transition-colors",
-                          active ? "text-[#111111]" : "text-[#4f5967] hover:text-[#111111]",
-                        )}
-                      >
-                        <span className={active ? "font-bold" : undefined}>{item.label}</span>
-                        {item.badge ? (
-                          <span className={clsx("text-[12px] font-normal", active ? "text-[#596373]" : "text-[#6b7480]")}>{item.badge}</span>
-                        ) : null}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* 로그아웃 — 이동 항목들과 성격이 달라 구분선으로 갈라 둔다. */}
-          <div className="border-t border-border px-1 py-1.5">
-            <button type="button" onClick={handleLogout} className={headerDropdownActionClassName}>
-              로그아웃
-            </button>
-          </div>
-        </div>
+        )
       ) : null}
     </div>
   );
