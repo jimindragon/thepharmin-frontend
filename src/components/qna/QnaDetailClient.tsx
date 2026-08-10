@@ -200,13 +200,14 @@ function CommentComposer({ isLoggedIn, placeholder, onSubmit }: { isLoggedIn: bo
         </label>
       </div>
 
+      {/* text-[16px] 분기: 16px 미만이면 iOS Safari가 포커스 시 뷰포트를 확대한다 */}
       <textarea
         rows={3}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         placeholder={isLoggedIn ? placeholder : "로그인 후 이용할 수 있습니다."}
         disabled={!isLoggedIn}
-        className="mt-3 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] disabled:cursor-not-allowed"
+        className="mt-3 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] disabled:cursor-not-allowed max-[760px]:text-[16px]"
       />
       <div className="mt-3 flex items-center justify-end border-t border-[#edf1f5] pt-3">
         <Button

@@ -47,6 +47,16 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
     setIsAnonymous(true);
   }, [activeType]);
 
+  /**
+   * 입력 중 키보드 위 탭바가 입력 영역을 가림 — 펼침 동안만 숨긴다(globals.css의 body.composer-open).
+   * 접기·취소·제출은 물론 펼친 채로 화면을 떠나는 경우까지 cleanup이 마커를 반드시 걷어낸다.
+   */
+  useEffect(() => {
+    if (!expanded) return;
+    document.body.classList.add("composer-open");
+    return () => document.body.classList.remove("composer-open");
+  }, [expanded]);
+
   const topics = qnaCategoryFilters[activeType];
 
   const handleExpand = () => {
@@ -133,12 +143,13 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
         </label>
       </div>
 
+      {/* 아래 두 입력의 max-[760px]:text-[16px]: 16px 미만이면 iOS Safari가 포커스 시 뷰포트를 확대한다 */}
       <input
         type="text"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         placeholder="제목을 입력해 주세요"
-        className="mt-3 w-full border border-[#e5e9ef] bg-[#fbfcfd] px-3 py-2.5 text-[14px] font-medium text-[#202734] outline-none placeholder:font-normal placeholder:text-[#a0a9b7]"
+        className="mt-3 w-full border border-[#e5e9ef] bg-[#fbfcfd] px-3 py-2.5 text-[14px] font-medium text-[#202734] outline-none placeholder:font-normal placeholder:text-[#a0a9b7] max-[760px]:text-[16px]"
       />
 
       <textarea
@@ -146,7 +157,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         placeholder="어떤 경험이든 편하게 적어주세요. 면접 후기, 연봉 협상, 직무 전환 등 무엇이든 좋아요."
-        className="mt-2 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
+        className="mt-2 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] max-[760px]:text-[16px]"
       />
 
       <div className="mt-4">

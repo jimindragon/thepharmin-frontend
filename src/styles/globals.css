@@ -157,6 +157,16 @@ input:focus-visible {
   }
 }
 
+/*
+ * 입력 중 키보드 위 탭바가 입력 영역을 가림 — 펼침 동안만 숨긴다.
+ * 탭바가 뜨는 1차 화면(/qna) 안에 유일하게 입력 폼(QnaComposer)이 있어 생기는 충돌로,
+ * 상세·폼 화면을 TAB_BAR_ROUTES에서 뺀 것과 같은 이유의 예외 처리다.
+ * 하단 여백(위 규칙)은 그대로 둔다 — 함께 지우면 펼칠 때 본문이 56px 튄다.
+ */
+body.composer-open .mobile-tabbar {
+  display: none;
+}
+
 .surface {
   border: 1px solid var(--color-border);
   background: var(--color-surface);
