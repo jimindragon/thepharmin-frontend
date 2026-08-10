@@ -20,6 +20,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { getPharmacyTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
@@ -32,9 +33,16 @@ import { getActiveJobCount, getActiveJobs } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company, CompanyReview, CompanyReviewType } from "@/types/jobs";
 
-/** [companyId] 탭 페이지들(개요/채용공고/면접 후기/기업 리뷰/뉴스)이 공유하는 섹션 빌딩 블록.
+/**
+ * [companyId] 탭 페이지들(개요/채용공고/면접 후기/기업 리뷰/뉴스)이 공유하는 섹션 빌딩 블록.
  * 예전 앵커 스크롤 시절의 SectionShell은 id/scroll-mt를 가졌지만, 지금은 각 섹션이 별도 라우트의
- * 페이지 콘텐츠 그 자체라 더 이상 앵커가 필요 없다. */
+ * 페이지 콘텐츠 그 자체라 더 이상 앵커가 필요 없다.
+ *
+ * ≤760px 풀블리드는 공고 상세 IconSectionShell과 같은 한 줄(FLUSH_SECTION_CLASS)을 쓴다 —
+ * 두 상세가 같은 회색 배경 위 같은 카드 리듬이라 문법이 갈리면 안 된다. 이 파일 안의 트랙별
+ * "정보" 카드(기업/병원/약국/연구)도 같은 줄을 직접 붙인다. CompanyHero와 사이드바
+ * (CompanyCoreInfoCard)는 대상이 아니다.
+ */
 export function SectionShell({
   title,
   description,
@@ -47,7 +55,7 @@ export function SectionShell({
   children: ReactNode;
 }) {
   return (
-    <section className="border border-border bg-white p-6 shadow-[var(--shadow)] max-[720px]:p-5">
+    <section className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS)}>
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
@@ -210,7 +218,7 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
   ].filter((item): item is { label: string; value: string; icon: LucideIcon } => Boolean(item.value));
 
   return (
-    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+    <div className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">기업 정보</h2>
 
       {hasCards ? (
@@ -609,7 +617,7 @@ function HospitalInfoCard({ profile, company }: { profile: CompanyProfile; compa
   const hasDutySection = hasDutyRows || Boolean(profile.pharmacyEnvironmentDescription);
 
   return (
-    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+    <div className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">병원 정보</h2>
 
       {hasCards ? (
@@ -731,7 +739,7 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
   );
 
   return (
-    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+    <div className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">약국 정보</h2>
 
       {hasCards ? (
@@ -903,7 +911,7 @@ function ResearchInfoCard({ profile }: { profile: CompanyProfile }) {
   const hasResearchEnvRows = Boolean(researchFieldLabels.length || profile.equipmentInfra || profile.achievements);
 
   return (
-    <div className="border border-border bg-white p-6 shadow-[var(--shadow)]">
+    <div className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">연구기관 정보</h2>
 
       {hasCards ? (
