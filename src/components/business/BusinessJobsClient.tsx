@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BoostModal } from "@/components/business/BoostModal";
 import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
@@ -263,7 +264,7 @@ export function BusinessJobsClient() {
               { label: "공고 관리" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">공고 관리</h1>
+          <PageTitle className="max-[760px]:mt-0">공고 관리</PageTitle>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             등록한 공고를 관리하고, 공고별로 부스트를 적용할 수 있습니다.
           </p>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 
 const TRACKS = [
@@ -51,9 +52,7 @@ export function ProfileHubClient() {
               { label: "기업정보 관리" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
-            기업 정보 관리
-          </h1>
+          <PageTitle className="max-[760px]:mt-0">기업 정보 관리</PageTitle>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             관리할 기업/기관 정보 트랙을 선택하세요.
           </p>

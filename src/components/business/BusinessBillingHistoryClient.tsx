@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BillingDocumentModal } from "@/components/business/BillingDocumentModal";
 import { DataTable, type DataTableColumn } from "@/components/business/table/DataTable";
@@ -244,7 +245,7 @@ export function BusinessBillingHistoryClient() {
               { label: "결제 내역" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">결제 내역</h1>
+          <PageTitle className="max-[760px]:mt-0">결제 내역</PageTitle>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             부스트 결제 내역을 조회하고, 세금계산서와 영수증을 발급받을 수 있습니다.
           </p>

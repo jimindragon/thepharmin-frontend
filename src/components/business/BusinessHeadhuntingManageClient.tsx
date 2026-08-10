@@ -5,6 +5,7 @@ import { ChevronDown, MoreHorizontal, Plus, Search, User, X } from "lucide-react
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { Pagination } from "@/components/Pagination";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
@@ -408,9 +409,7 @@ export function BusinessHeadhuntingManageClient() {
                 { label: "의뢰 관리" },
               ]}
             />
-            <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
-              헤드헌팅 관리
-            </h1>
+            <PageTitle className="max-[760px]:mt-0">헤드헌팅 관리</PageTitle>
             <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
               진행 중인 헤드헌팅 의뢰와 추천 후보자 현황을 확인합니다.
             </p>

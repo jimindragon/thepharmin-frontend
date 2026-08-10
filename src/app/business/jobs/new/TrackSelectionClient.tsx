@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 
 const TRACKS = [
@@ -52,9 +53,7 @@ export function TrackSelectionClient() {
             { label: "공고 등록" },
           ]}
         />
-        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
-          공고 등록
-        </h1>
+        <PageTitle className="max-[760px]:mt-0">공고 등록</PageTitle>
         <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
           등록할 채용 트랙을 선택하세요. 어떤 트랙이든 등록은 무료입니다.
         </p>

@@ -103,7 +103,7 @@ function CompleteContent() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
+        <h1 className="mt-5 max-[760px]:mt-0 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
           공고가 등록되었습니다
         </h1>
         <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">

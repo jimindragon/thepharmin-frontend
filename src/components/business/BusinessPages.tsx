@@ -26,7 +26,7 @@ export function BusinessPublicMockPage({ title, description }: { title: string; 
             <InfoNoticeBox>이 화면은 준비 중입니다.</InfoNoticeBox>
           </div>
           <Eyebrow>기업 서비스</Eyebrow>
-          <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
+          <h1 className="mt-3 max-[760px]:mt-0 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
           <p className="mt-4 text-[15px] font-normal leading-[1.75] text-[#68717e]">{description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/business/signup" className="inline-flex h-11 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white">
@@ -51,7 +51,7 @@ export function BusinessCenterMockPage({ title, description }: { title: string; 
           <InfoNoticeBox>이 화면은 준비 중입니다.</InfoNoticeBox>
         </div>
         <Eyebrow>기업센터</Eyebrow>
-        <h1 className="mt-3 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
+        <h1 className="mt-3 max-[760px]:mt-0 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">{title}</h1>
         <p className="mt-4 max-w-[720px] text-[15px] font-normal leading-[1.75] text-[#68717e]">{description}</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/business/company/profile" className="inline-flex h-11 items-center border border-[#111111] bg-[#111111] px-5 text-[13px] font-medium text-white">

@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
@@ -361,9 +362,7 @@ export function BusinessApplicantsClient() {
                 { label: "지원자 관리" },
               ]}
             />
-            <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">
-              지원자 관리
-            </h1>
+            <PageTitle className="max-[760px]:mt-0">지원자 관리</PageTitle>
             <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
               공고별 지원자를 단계별로 관리하고, 서류·면접 진행 상황을 한 곳에서 확인하세요.
             </p>

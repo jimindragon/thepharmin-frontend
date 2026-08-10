@@ -143,7 +143,7 @@ export function BusinessApplicantDetailClient({ applicant }: { applicant: Applic
             { label: applicant.name },
           ]}
         />
-        <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원자 프로필</h1>
+        <h1 className="mt-5 max-[760px]:mt-0 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원자 프로필</h1>
         <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">지원자의 이력과 지원 현황을 확인합니다.</p>
 
         <section className="mt-5 border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">

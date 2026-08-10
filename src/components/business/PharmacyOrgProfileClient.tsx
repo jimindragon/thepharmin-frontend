@@ -194,7 +194,7 @@ export function PharmacyOrgProfileClient() {
       <div className="flex items-start justify-between gap-5 max-[760px]:flex-col">
         <div>
           <PageBreadcrumb items={[{ label: "기업센터", href: "/business/dashboard" }, { label: "기업관리" }, { label: "약국 정보 관리" }]} />
-          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">약국 정보 관리</h1>
+          <h1 className="mt-5 max-[760px]:mt-0 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">약국 정보 관리</h1>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">채용공고와 약국 상세 페이지에 표시되는 약국 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">

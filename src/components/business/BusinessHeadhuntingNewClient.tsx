@@ -33,7 +33,7 @@ export function BusinessHeadhuntingNewClient() {
       <BusinessCenterShell>
         <section className="mx-auto max-w-[640px] border border-border bg-white p-10 text-center">
           <p className="text-[12px] font-medium text-[#111111]">접수 완료</p>
-          <h1 className="mt-3 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
+          <h1 className="mt-3 max-[760px]:mt-0 text-[26px] font-bold tracking-[-0.02em] text-[#17202c]">헤드헌팅 의뢰가 접수되었습니다.</h1>
           <p className="mt-3 text-[13px] font-normal leading-[1.8] text-[#68717e]">
             담당 매니저가 의뢰 내용을 검토한 후 1~2영업일 내에 추천 후보자 탐색을 시작합니다.
           </p>

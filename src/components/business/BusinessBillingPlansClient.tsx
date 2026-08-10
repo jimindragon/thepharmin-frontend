@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { typeScale } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { BusinessStatCard, BusinessStatGrid } from "@/components/business/BusinessStatCard";
 import { BoostModal } from "@/components/business/BoostModal";
@@ -221,8 +222,10 @@ export function BusinessBillingPlansClient() {
               { label: "요금제 관리" },
             ]}
           />
-          <div className="mt-5 flex items-center justify-between gap-5 max-[760px]:flex-col max-[760px]:items-start">
-            <h1 className="text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">요금제 관리</h1>
+          {/* mt-5는 이 줄이 소유한다(h1이 아니라 제목+버튼 행이라) — ≤760px에서는 셸 pt-8이
+              여백을 대신 잡으므로 0으로 접는다. 다른 기업센터 페이지의 PageTitle과 같은 규칙. */}
+          <div className="mt-5 flex items-center justify-between gap-5 max-[760px]:mt-0 max-[760px]:flex-col max-[760px]:items-start">
+            <h1 className={clsx(typeScale.pageTitle, "text-[#242b36]")}>요금제 관리</h1>
             <button
               type="button"
               onClick={openNewBoostModal}

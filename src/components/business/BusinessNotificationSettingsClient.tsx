@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { PageTitle } from "@/components/ui/Typography";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { NotificationSettingList } from "@/components/shared/NotificationSettingList";
 import { BUSINESS_NOTIFICATION_SETTINGS } from "@/types/notifications";
@@ -27,7 +28,7 @@ export function BusinessNotificationSettingsClient() {
               { label: "알림 설정" },
             ]}
           />
-          <h1 className="mt-5 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">알림 설정</h1>
+          <PageTitle className="max-[760px]:mt-0">알림 설정</PageTitle>
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">
             사이트 내 알림은 항상 제공되며, 아래 설정은 이메일 수신 여부에 적용됩니다.
             <br />

@@ -199,7 +199,9 @@ export function BusinessDashboardClient() {
               { label: "대시보드" },
             ]}
           />
-          <div className="mt-5 flex flex-wrap items-start justify-between gap-y-3">
+          {/* h1이 아니라 인사말+날짜 행이 mt-5를 소유한다 — ≤760px에서는 셸 pt-8이 여백을
+              대신 잡으므로 0으로 접는다. 제목 크기는 이미 28→24로 내려가 있다. */}
+          <div className="mt-5 flex flex-wrap items-start justify-between gap-y-3 max-[760px]:mt-0">
           <div>
             <h1 className="text-[28px] font-bold leading-[1.35] tracking-[-0.02em] text-[#17202c] max-[760px]:text-[24px]">
               안녕하세요,{" "}

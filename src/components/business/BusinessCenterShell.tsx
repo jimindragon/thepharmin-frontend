@@ -151,8 +151,14 @@ export function BusinessCenterShell({ children }: { children: ReactNode }) {
         <div className="app-shell grid grid-cols-[260px_minmax(0,1fr)] max-[1040px]:grid-cols-1">
           <BusinessSidebar />
           {/* ≤760px는 px-0 — 셸 gutter(24px)가 이미 좌우를 잡고 있어 px-4가 겹치면 40px이 된다.
-              761~1040px은 사이드바만 빠지고 폭은 넉넉해 기존 px-4를 그대로 둔다. (마이페이지 선례) */}
-          <div className="min-w-0 py-8 pl-8 max-[1040px]:px-4 max-[760px]:px-0 max-[760px]:py-6">
+              761~1040px은 사이드바만 빠지고 폭은 넉넉해 기존 px-4를 그대로 둔다. (마이페이지 선례)
+
+              pt-8(32px) — h1 위 여백의 출처를 이 컨테이너 하나로 모은다. 공개 페이지가
+              `app-shell pt-8` + PageTitle `max-[760px]:mt-0`으로 잡아 둔 32px과 같은 값이고,
+              같은 방식으로 각 페이지의 h1은 ≤760px에서 자기 mt를 0으로 접는다. 이전에는
+              컨테이너 24 + 페이지마다 제각각인 mt(20/12/0)가 더해져 44·36·24로 갈렸다.
+              pb는 6(24px) 그대로 — 아래는 탭바 보정(globals.css body:has)이 따로 잡는다. */}
+          <div className="min-w-0 py-8 pl-8 max-[1040px]:px-4 max-[760px]:px-0 max-[760px]:pb-6 max-[760px]:pt-8">
             {isGated ? <ApprovalGatePanel /> : children}
           </div>
         </div>
