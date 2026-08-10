@@ -40,7 +40,9 @@ export function CategoryTabs({ activeTrack, onChange, variant = "default" }: Cat
             type="button"
             onClick={() => onChange(track.id)}
             className={clsx(
-              "h-[40px] min-w-[84px] border px-5 text-[14px] font-medium transition-colors max-[520px]:min-w-[74px] max-[520px]:px-4",
+              // ≤360px: 4탭 × min-w 74 + gap 3칸 = 320이 가용 폭(320px 화면에서 272)을 넘긴다.
+              // 최소폭을 놓아주고 좌우 여백만 줄이면 2글자 라벨 기준 4탭이 240으로 한 줄에 들어간다.
+              "h-[40px] min-w-[84px] border px-5 text-[14px] font-medium transition-colors max-[520px]:min-w-[74px] max-[520px]:px-4 max-[360px]:min-w-0 max-[360px]:px-3",
               activeTrack === track.id
                 ? "border-[#111111] bg-[#111111] text-white shadow-[0_8px_18px_rgba(0,0,0,0.12)]"
                 : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:bg-[#eeeeee] hover:text-[#111111]",
