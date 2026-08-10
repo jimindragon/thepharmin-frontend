@@ -3,11 +3,31 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { LinkButton } from "@/components/ui/Button";
-import { getHeroSlideCtaLabel, homeHeroSlides, type HomeTrackFilter } from "@/data/home";
+import { getHeroSlideCtaLabel, homeHeroSlides, type HomeHeroSlide, type HomeTrackFilter } from "@/data/home";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const HERO_AUTOPLAY_ALL_TRACK_MS = 4500;
 const HERO_AUTOPLAY_OTHER_TRACK_MS = 6500;
+
+/**
+ * 제목을 titleBreakAfter 지점에서 두 덩어리로 나눠 각각 줄바꿈을 막는다.
+ * 덩어리 사이의 공백만 유일한 줄바꿈 기회가 되므로, 좁으면 그 지점에서 꺾이고 넓으면 한 줄로 이어진다.
+ * (<wbr>는 기회를 "추가"할 뿐이라 탐욕적 줄채움이 여전히 뒤쪽 공백을 골라 이 목적에 쓸 수 없다.)
+ *
+ * 덩어리를 붙들면 폭이 아주 좁을 때 잘리므로 nowrap은 360px 이상에서만 건다 — 그 아래는 기존 자동 줄바꿈 그대로다.
+ * 문구는 title 하나에서만 오고, titleBreakAfter가 title의 접두어가 아니면 자동 줄바꿈으로 되돌아간다.
+ */
+function renderSlideTitle(slide: HomeHeroSlide) {
+  const lead = slide.titleBreakAfter;
+  if (!lead || !slide.title.startsWith(`${lead} `)) return slide.title;
+
+  return (
+    <>
+      <span className="min-[360px]:whitespace-nowrap">{lead}</span>{" "}
+      <span className="min-[360px]:whitespace-nowrap">{slide.title.slice(lead.length + 1)}</span>
+    </>
+  );
+}
 
 /**
  * 홈 화면과 산업·연구·병원·약국 분야별 랜딩 페이지가 공유하는 이미지 히어로.
@@ -81,7 +101,7 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                     ≤760px에서 제목은 2줄이 되므로, 부제가 15px보다 크면 긴 부제(약국 슬라이드)가
                     2줄로 늘어나 내용이 230px를 넘고 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것. */}
                 <h1 className="max-w-[720px] break-keep text-[34px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[26px]">
-                  {slide.title}
+                  {renderSlideTitle(slide)}
                 </h1>
                 <p className="mt-[14px] max-w-[560px] break-keep text-[17px] font-normal text-[#c9ced3] max-[760px]:text-[15px]">
                   {slide.subtitle}

@@ -14,6 +14,11 @@ export interface HomeHeroSlide {
   kind: "track" | "company";
   track: HomeTrackFilter;
   title: string;
+  /**
+   * 좁은 화면에서 title이 두 줄로 접힐 때 선호하는 줄바꿈 지점 — 첫 줄에 오길 바라는 앞부분을 title에서 그대로 잘라 적는다.
+   * 문구 자체는 title 하나만이 원본이고 이 값은 위치 표시일 뿐이라, title과 어긋나면 배너가 자동 줄바꿈으로 되돌아간다.
+   */
+  titleBreakAfter?: string;
   subtitle: string;
   tags: string[];
   href: string;
@@ -28,6 +33,7 @@ export const homeHeroSlides: HomeHeroSlide[] = [
     kind: "track",
     track: "research",
     title: "새로운 발견이 시작되는 연구 현장",
+    titleBreakAfter: "새로운 발견이 시작되는",
     subtitle: "대학·병원·출연연의 연구 인재 채용",
     tags: ["박사후연구원·포닥", "연구원", "임상시험 운영"],
     href: "/jobs/research",
@@ -40,6 +46,7 @@ export const homeHeroSlides: HomeHeroSlide[] = [
     kind: "track",
     track: "industry",
     title: "제약·바이오 산업을 움직이는 사람들",
+    titleBreakAfter: "제약·바이오 산업을",
     subtitle: "허가·임상부터 생산·품질까지, 전문직 채용",
     tags: ["RA", "CRA", "QA", "MSL"],
     href: "/jobs/industry",
@@ -52,6 +59,7 @@ export const homeHeroSlides: HomeHeroSlide[] = [
     kind: "track",
     track: "hospital",
     title: "의료 현장에서 이어가는 약사의 전문성",
+    titleBreakAfter: "의료 현장에서 이어가는",
     subtitle: "공공·종합병원 약제부의 인재 채용",
     tags: ["입원·조제 약사", "임상·전문약사", "약무행정"],
     href: "/jobs/hospital",
@@ -64,6 +72,7 @@ export const homeHeroSlides: HomeHeroSlide[] = [
     kind: "track",
     track: "pharmacy",
     title: "좋은 약국에서 시작하는 더 나은 커리어",
+    titleBreakAfter: "좋은 약국에서 시작하는",
     subtitle: "문전 약국부터 로컬 약국까지, 근무약사 채용",
     tags: ["문전 약국", "로컬 약국", "대형 약국"],
     href: "/jobs/pharmacy",
