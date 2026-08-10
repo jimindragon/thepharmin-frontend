@@ -26,7 +26,7 @@ function ActivityTabControl({
   value,
   onChange,
 }: {
-  tabs: { id: ActivityTab; label: string }[];
+  tabs: { id: ActivityTab; label: string; shortLabel: string }[];
   value: ActivityTab;
   onChange: (tab: ActivityTab) => void;
 }) {
@@ -42,11 +42,14 @@ function ActivityTabControl({
             aria-selected={active}
             onClick={() => onChange(tab.id)}
             className={clsx(
-              "flex h-9 items-center justify-center border-r border-[#dce2ea] px-3 text-[13px] font-medium last:border-r-0",
+              // ≤360px에서는 좌우 여백까지 줄인다 — 3등분 열이 320px 화면에서 90.7px밖에 안 된다.
+              "flex h-9 items-center justify-center border-r border-[#dce2ea] px-3 text-[13px] font-medium last:border-r-0 max-[360px]:px-1.5",
               active ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
             )}
           >
-            {tab.label}
+            {/* ≤360px에서는 축약 라벨로 교체한다 — 원래 라벨은 3등분 열을 넘겨 2줄로 감기고 h-9 박스를 뚫었다. */}
+            <span className="max-[360px]:hidden">{tab.label}</span>
+            <span className="min-[361px]:hidden">{tab.shortLabel}</span>
           </button>
         );
       })}
@@ -141,10 +144,10 @@ export function QnaActivityClient() {
     setScrapIds((current) => current.filter((scrapId) => scrapId !== id));
   };
 
-  const tabs: { id: ActivityTab; label: string }[] = [
-    { id: "scraps", label: `스크랩한 글 ${scrapEntries.length}` },
-    { id: "posts", label: `내가 쓴 글 ${myPosts.length}` },
-    { id: "comments", label: `내가 단 댓글 ${myComments.length}` },
+  const tabs: { id: ActivityTab; label: string; shortLabel: string }[] = [
+    { id: "scraps", label: `스크랩한 글 ${scrapEntries.length}`, shortLabel: `스크랩 ${scrapEntries.length}` },
+    { id: "posts", label: `내가 쓴 글 ${myPosts.length}`, shortLabel: `내 글 ${myPosts.length}` },
+    { id: "comments", label: `내가 단 댓글 ${myComments.length}`, shortLabel: `내 댓글 ${myComments.length}` },
   ];
 
   return (
