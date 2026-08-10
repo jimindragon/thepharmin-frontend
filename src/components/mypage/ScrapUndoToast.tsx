@@ -21,8 +21,9 @@ export function ScrapUndoToast({
 
   return (
     // iOS 사파리 하단 툴바·홈 인디케이터 회피 (viewport-fit=cover 전제)
+    // ≤760px: 탭바(56px) 위로 회피 — 27px 겹침 실측 (145e6d0 검증)
     <div
-      className="fixed inset-x-0 bottom-[calc(24px+env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
+      className="fixed inset-x-0 bottom-[calc(24px+env(safe-area-inset-bottom))] z-50 flex justify-center px-4 max-[760px]:bottom-[calc(80px+env(safe-area-inset-bottom))]"
       role="status"
       aria-live="polite"
     >
