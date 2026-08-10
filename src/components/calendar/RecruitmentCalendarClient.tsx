@@ -1032,11 +1032,8 @@ export function RecruitmentCalendarClient() {
           <div className="jobs-layout mt-3.5">
             <section className="overflow-hidden border border-[#e0e5eb] bg-white">
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e7ebef] px-5 py-5 max-[760px]:gap-3">
-                {/* ≤760px에서는 3열 그리드로 바뀌어 ◀·월·▶ 묶음이 줄 정중앙, "오늘"이 우측 끝에 선다. 데스크톱은 기존 좌측 flex 행 그대로. */}
-                <div className="flex items-center gap-4 max-[760px]:grid max-[760px]:w-full max-[760px]:grid-cols-[1fr_auto_1fr] max-[760px]:gap-0">
-                  {/* 가운데 열을 줄 정중앙에 고정하기 위한 좌측 균형 칸 */}
-                  <span aria-hidden className="hidden max-[760px]:block" />
-
+                {/* ≤760px에서는 "오늘"이 아래 필터 행으로 내려가 이 줄에 ◀·월·▶만 남으므로 단순 중앙 정렬로 충분하다. 데스크톱은 기존 좌측 flex 행 그대로. */}
+                <div className="flex items-center gap-4 max-[760px]:w-full max-[760px]:justify-center">
                   <div className="flex items-center gap-4 max-[760px]:gap-2">
                     <button
                       type="button"
@@ -1059,10 +1056,10 @@ export function RecruitmentCalendarClient() {
                     </button>
                   </div>
 
-                  {/* ≤760px에서도 테두리를 유지한다 — 마감/시작이 텍스트 토글로 내려가 줄 밀도가 낮아졌으므로 박스가 산만하지 않다. px-2.5로 좁혀 박스 우측선만 콘텐츠 선에 맞춘다. */}
+                  {/* 데스크톱 전용 "오늘" — ≤760px 대응물은 아래 필터 행 끝에 있다(부모가 달라 위치 이동 대신 두 벌로 나눈다) */}
                   <button
                     type="button"
-                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] max-[760px]:justify-self-end max-[760px]:px-2.5"
+                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] max-[760px]:hidden"
                     onClick={moveToday}
                   >
                     오늘
@@ -1070,7 +1067,7 @@ export function RecruitmentCalendarClient() {
                 </div>
 
                 {/* 트랙 필터(박스 칩)와 시각 층위 분리 — 박스 칩은 트랙만 */}
-                <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#4d5662] max-[760px]:gap-4">
+                <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#4d5662] max-[760px]:w-full max-[760px]:gap-4">
                   {[
                     { id: "all" as const, label: "전체" },
                     { id: "deadline" as const, label: "마감" },
@@ -1098,6 +1095,15 @@ export function RecruitmentCalendarClient() {
                       </button>
                     );
                   })}
+
+                  {/* ≤760px 전용 "오늘" — ml-auto로 필터 행 우측 끝에 붙인다. 테두리·흰 배경은 데스크톱과 동일. */}
+                  <button
+                    type="button"
+                    className="ml-auto h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] min-[761px]:hidden"
+                    onClick={moveToday}
+                  >
+                    오늘
+                  </button>
                 </div>
               </div>
 
