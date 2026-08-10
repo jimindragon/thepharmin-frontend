@@ -13,3 +13,24 @@
  */
 export const FLUSH_LIST_CLASS =
   "flex flex-col gap-3 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:gap-0 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)]";
+
+/**
+ * ≤760px 풀블리드 **본문 섹션 카드**. 위 목록판과 같은 음수 마진을 쓰되, 목록이 아니라
+ * 자기 완결적인 섹션 카드(공고 상세·기업 상세 본문)에 붙인다.
+ *
+ * 세 가지를 한 묶음으로 다룬다.
+ *   1) -mx  — 셸이 물러난 만큼 되밀어 화면 폭을 채운다.
+ *   2) border-x-0 — 화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽힌다.
+ *      위아래 선은 남긴다. 섹션 사이는 회색 배경 간격이 이미 갈라 주지만, 흰 블록의
+ *      시작·끝을 1px로 확정해 두는 편이 긴 본문에서 경계가 흐려지지 않는다.
+ *   3) px-6 — 좌우 패딩이 그대로 화면 여백이 되므로, 같은 화면의 h1·탭이 서 있는
+ *      --shell-gutter/2(=24px, ≤760px) 선에 맞춘다. JobCard flush가 pl-6으로 맞춘 선과 같다.
+ *
+ * 붙이는 쪽의 기본 좌우 패딩은 변형 없는 유틸리티(px-7 등)로 남겨 둘 것 — 같은 축(px)이라
+ * "변형 없는 유틸리티 < 변형 붙은 유틸리티"만 남아 Tailwind 출력 순서에 기대지 않는다.
+ * p 단축형과 섞으면 그 보장이 깨지므로, p-6을 쓰던 자리는 px-6 py-6으로 축을 나눠 둔다.
+ *
+ * 761px 이상은 클래스가 하나도 적용되지 않아 데스크톱 렌더에 영향이 없다.
+ */
+export const FLUSH_SECTION_CLASS =
+  "max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:border-x-0 max-[760px]:px-6";

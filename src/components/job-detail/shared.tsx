@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Bookmark, CalendarClock, CalendarPlus, ChevronRight, Layers, Lock, MapPin, Send, Share2, type LucideIcon } from "lucide-react";
 import { JobCard } from "@/components/JobCard";
+import { FLUSH_LIST_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
@@ -227,6 +228,14 @@ export function firstWords(text: string, count: number): string {
 /**
  * SectionShell(위)과 동일한 카드 셸(배경/border/shadow/radius/padding)을 그대로 쓰되,
  * title이 string 전용이라 아이콘 슬롯이 없어 제목 옆 아이콘만 추가로 지원하는 버전.
+ *
+ * ≤760px 풀블리드(FLUSH_SECTION_CLASS)는 prop이 아니라 셸 안에 직접 박아 둔다.
+ * 이 컴포넌트의 호출부는 4트랙 상세 본문(+아래 모바일 전용 두 섹션)뿐이고 전부 같은 한 열에
+ * 서므로, 값이 하나뿐인 variant를 30여 개 호출부에 받아 적게 하는 건 부담만 남는다.
+ * 상세 컨테이너 CSS로 내리는 방법은 쓸 수 없다 — 무변경이어야 할 히어로가 같은 컨테이너의
+ * 형제 <section>이고, MobileApplyInfoSection·MobileDeadlineCalendarSection은 이 셸을
+ * min-[721px]:hidden div로 한 겹 싸고 있어 자식 선택자가 닿지 않는다.
+ * 이 셸을 본문 밖(사이드바 등)에 쓰게 되는 날 그때 variant를 만들 것.
  */
 export function IconSectionShell({
   id,
@@ -243,7 +252,13 @@ export function IconSectionShell({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)] max-[720px]:px-5">
+    <section
+      id={id}
+      className={clsx(
+        "scroll-mt-[130px] rounded-[var(--radius)] border border-border bg-white px-7 py-6 shadow-[var(--shadow)]",
+        FLUSH_SECTION_CLASS,
+      )}
+    >
       <div className="flex items-center justify-between gap-4">
         <h2 className="flex items-center gap-2 text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">
           <Icon size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
@@ -728,7 +743,7 @@ export function SimilarJobsSection({ jobs, track }: { jobs: Job[]; track: JobTra
   };
 
   return (
-    <section className="border border-border bg-white px-7 py-6 max-[720px]:px-5">
+    <section className={clsx("border border-border bg-white px-7 py-6", FLUSH_SECTION_CLASS)}>
       <div className="flex items-center justify-between gap-4">
         <h2 className="flex items-center gap-2 text-[20px] font-bold tracking-[-0.02em] text-[#242b36]">
           <Layers size={18} className="shrink-0 text-[#6b7280]" aria-hidden />
@@ -738,9 +753,11 @@ export function SimilarJobsSection({ jobs, track }: { jobs: Job[]; track: JobTra
           관련 공고 더보기 ›
         </Link>
       </div>
-      <div className="mt-5 flex flex-col gap-3">
+      {/* 섹션이 이미 전폭이라 카드는 섹션 패딩(≤760px 24px = --shell-gutter/2)만큼 더 밀면 화면 끝에 닿는다 —
+          FLUSH_LIST_CLASS의 음수 마진이 정확히 그 값이라 목록 페이지와 같은 한 줄을 쓴다. */}
+      <div className={clsx("mt-5", FLUSH_LIST_CLASS)}>
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} isBookmarked={savedIds.has(job.id)} onToggleBookmark={toggleSave} />
+          <JobCard key={job.id} job={job} isBookmarked={savedIds.has(job.id)} onToggleBookmark={toggleSave} variant="flush" />
         ))}
       </div>
     </section>
