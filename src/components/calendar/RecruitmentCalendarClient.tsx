@@ -663,6 +663,49 @@ function CalendarDayJobList({ jobs, className = "" }: { jobs: CalendarJob[]; cla
   );
 }
 
+/**
+ * 다가오는 지원 일정 요약.
+ * 데스크톱은 3탭 바로 아래, ≤760px에서는 캘린더 아래에 놓여야 하는데 두 위치가 서로 다른 부모에 속해
+ * CSS order로는 재배열되지 않는다. 그래서 같은 블록을 양쪽에 렌더하고 브레이크포인트로 한쪽만 남긴다.
+ */
+function UpcomingApplicationsSection({
+  jobs,
+  totalCount,
+  className = "",
+}: {
+  jobs: CalendarJob[];
+  totalCount: number;
+  className?: string;
+}) {
+  return (
+    <section className={`border border-[#e0e5eb] bg-white p-5 max-[760px]:p-4 ${className}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <CalendarClock size={17} strokeWidth={2} className="text-gray-700" />
+            <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d] max-[760px]:text-[16px]">다가오는 지원 일정</h2>
+          </div>
+          {/* 같은 내용이 /mypage/applications에 있어 모바일에서는 부연 설명을 접는다. */}
+          <p className="mt-1.5 text-[13px] font-medium text-[#8b94a2] max-[760px]:hidden">지원 중인 공고의 다음 일정을 확인하세요.</p>
+        </div>
+        <Link href="/mypage/applications" className="shrink-0 text-[13px] font-medium text-[#5f6875] hover:text-[#111111] max-[760px]:text-[12px]">
+          전체 지원 현황 보기 &gt;
+        </Link>
+      </div>
+      {/*
+        ≤760px에서는 세로 스택 대신 가로 스크롤 1행. 카드 너비·shrink는 자식 선택자로만 얹어
+        데스크톱 grid(md:2열 / lg:4열)의 DOM과 렌더 결과를 그대로 둔다.
+      */}
+      <div className="mt-4 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4 max-[760px]:flex max-[760px]:overflow-x-auto max-[760px]:[&>*]:w-[248px] max-[760px]:[&>*]:shrink-0">
+        {jobs.map((job) => (
+          <ApplicationSummaryCard key={job.id} job={job} />
+        ))}
+        {totalCount > 3 ? <ApplicationMoreCard /> : null}
+      </div>
+    </section>
+  );
+}
+
 function MoreJobsModal({
   dateLabel,
   jobs,
@@ -983,31 +1026,7 @@ export function RecruitmentCalendarClient() {
           </section>
 
           {appliedJobsCount > 0 ? (
-            <section className="mt-3.5 border border-[#e0e5eb] bg-white p-5 max-[760px]:p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <CalendarClock size={17} strokeWidth={2} className="text-gray-700" />
-                    <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#1f252d] max-[760px]:text-[16px]">다가오는 지원 일정</h2>
-                  </div>
-                  {/* 같은 내용이 /mypage/applications에 있어 모바일에서는 부연 설명을 접는다. */}
-                  <p className="mt-1.5 text-[13px] font-medium text-[#8b94a2] max-[760px]:hidden">지원 중인 공고의 다음 일정을 확인하세요.</p>
-                </div>
-                <Link href="/mypage/applications" className="shrink-0 text-[13px] font-medium text-[#5f6875] hover:text-[#111111] max-[760px]:text-[12px]">
-                  전체 지원 현황 보기 &gt;
-                </Link>
-              </div>
-              {/*
-                ≤760px에서는 세로 스택 대신 가로 스크롤 1행. 카드 너비·shrink는 자식 선택자로만 얹어
-                데스크톱 grid(md:2열 / lg:4열)의 DOM과 렌더 결과를 그대로 둔다.
-              */}
-              <div className="mt-4 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4 max-[760px]:flex max-[760px]:overflow-x-auto max-[760px]:[&>*]:w-[248px] max-[760px]:[&>*]:shrink-0">
-                {appliedJobs.map((job) => (
-                  <ApplicationSummaryCard key={job.id} job={job} />
-                ))}
-                {appliedJobsCount > 3 ? <ApplicationMoreCard /> : null}
-              </div>
-            </section>
+            <UpcomingApplicationsSection jobs={appliedJobs} totalCount={appliedJobsCount} className="mt-3.5 max-[760px]:hidden" />
           ) : null}
 
           <div className="jobs-layout mt-3.5">
@@ -1265,6 +1284,12 @@ export function RecruitmentCalendarClient() {
                 </div>
               </div>
             </section>
+
+            {/* 캘린더 탭 진입자의 1차 기대는 캘린더 — 지원 일정 요약은 대시보드와 중복이라 캘린더 아래로 (H2, 2026.08 모바일 사이클) */}
+            {/* min-w-0: .jobs-layout의 ≤1180px 오버라이드가 minmax(0,1fr)이 아닌 1fr이라, 기본 min-width:auto면 가로 스크롤 카드 행이 열을 밀어 페이지가 넘친다 */}
+            {appliedJobsCount > 0 ? (
+              <UpcomingApplicationsSection jobs={appliedJobs} totalCount={appliedJobsCount} className="min-w-0 min-[761px]:hidden" />
+            ) : null}
 
             <aside className="grid content-start gap-5">
               <InterestConditionCard
