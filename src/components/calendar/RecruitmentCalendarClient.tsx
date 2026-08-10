@@ -85,14 +85,16 @@ const eventTypeLabels: Record<CalendarEventType, string> = {
   start: "시작",
 };
 
-const eventTypeStyles: Record<CalendarEventType, { marker: string; dot: string }> = {
+const eventTypeStyles: Record<CalendarEventType, { marker: string; dot: string; text: string }> = {
   deadline: {
     marker: "bg-[#e95544]",
     dot: "bg-[#e95544]",
+    text: "text-[#e95544]",
   },
   start: {
     marker: "bg-[#337ddf]",
     dot: "bg-[#337ddf]",
+    text: "text-[#337ddf]",
   },
 };
 
@@ -152,6 +154,28 @@ function postingKey(job: CalendarJob) {
 
 function uniquePostingCount(jobs: CalendarJob[]) {
   return new Set(jobs.map(postingKey)).size;
+}
+
+/** dateKey("YYYY-MM-DD")에서 월 스코프 비교용 "YYYY-MM" 접두어를 뽑는다. */
+function monthPrefixOf(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/**
+ * 모바일 일정 리스트의 초기 선택일: 오늘 → (오늘 일정이 없으면) 이번 달에서 오늘 이후 가장 이른 일정일 → 오늘.
+ * 마운트 시 1회만 쓰이므로 필터가 걸리기 전의 원본 calendarJobs를 본다.
+ */
+function initialSelectedDateKey() {
+  const todayKey = dateKey(TODAY);
+  const eventKeys = new Set(calendarJobs.map((job) => job.deadline));
+  if (eventKeys.has(todayKey)) return todayKey;
+
+  const monthPrefix = monthPrefixOf(TODAY);
+  const nextKey = Array.from(eventKeys)
+    .filter((key) => key.startsWith(monthPrefix) && key > todayKey)
+    .sort()[0];
+
+  return nextKey ?? todayKey;
 }
 
 function optionLabel(options: FilterOption[], id: string) {
@@ -457,6 +481,93 @@ function CalendarJobChip({ job }: { job: CalendarJob }) {
   );
 }
 
+/**
+ * ≤760px 전용 미니 월간 캘린더. 데스크톱 월 그리드(min-w-[900px] 가로 스크롤)를 대체한다.
+ * days·jobsByDate를 데스크톱 그리드와 같은 소스에서 받으므로 점이 찍히는 날짜는 그리드의 칩과 항상 일치한다.
+ * 마이페이지 DashboardMiniCalendar와는 데이터 소스(mockApplications/scraps)와 인터랙션 유무가 달라 공유하지 않고,
+ * 날짜 계산만 monthGrid.ts 유틸로 공유한다.
+ */
+function MiniMonthCalendar({
+  days,
+  visibleMonthIndex,
+  jobsByDate,
+  selectedDateKey,
+  onSelectDate,
+}: {
+  days: Date[];
+  visibleMonthIndex: number;
+  jobsByDate: Map<string, CalendarJob[]>;
+  selectedDateKey: string;
+  onSelectDate: (key: string) => void;
+}) {
+  const todayKey = dateKey(TODAY);
+
+  return (
+    <div className="px-3 py-4">
+      <div className="grid grid-cols-7">
+        {WEEKDAYS.map((weekday, index) => (
+          <div
+            key={weekday}
+            className={`py-1 text-center text-[12px] font-medium ${
+              index === 0 ? "text-[#e95544]" : index === 6 ? "text-[#337ddf]" : "text-[#87909d]"
+            }`}
+          >
+            {weekday}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7">
+        {days.map((day) => {
+          const key = dateKey(day);
+          const inCurrentMonth = day.getMonth() === visibleMonthIndex;
+          const isToday = key === todayKey;
+          const isSelected = key === selectedDateKey;
+          const isSunday = day.getDay() === 0;
+          const isSaturday = day.getDay() === 6;
+          const dayJobs = jobsByDate.get(key) ?? [];
+          // 같은 날 마감·시작이 공존하면 점 2개. dayJobs는 이미 마감 우선으로 정렬돼 있어 순서가 범례와 같다.
+          const eventTypes = Array.from(new Set(dayJobs.map(eventTypeOf)));
+
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onSelectDate(key)}
+              aria-pressed={isSelected}
+              aria-label={`${day.getMonth() + 1}월 ${day.getDate()}일${dayJobs.length > 0 ? ` 일정 ${dayJobs.length}건` : " 일정 없음"}`}
+              className="flex min-h-[48px] flex-col items-center gap-1 py-1.5"
+            >
+              <span
+                className={`grid h-7 w-7 place-items-center text-[14px] font-medium ${
+                  isSelected
+                    ? "bg-[#111111] text-white"
+                    : isToday
+                      ? "bg-[#1b1f25] text-white"
+                      : !inCurrentMonth
+                        ? "text-[#c4cad3]"
+                        : isSunday
+                          ? "text-[#e95544]"
+                          : isSaturday
+                            ? "text-[#337ddf]"
+                            : "text-[#3d4652]"
+                }`}
+              >
+                {day.getDate()}
+              </span>
+              <span className="flex h-[5px] items-center gap-[3px]">
+                {eventTypes.map((eventType) => (
+                  <span key={eventType} className={`h-[5px] w-[5px] rounded-full ${eventTypeStyles[eventType].dot}`} />
+                ))}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ApplicationSummaryCard({ job }: { job: CalendarJob }) {
   return (
     <Link
@@ -550,6 +661,8 @@ export function RecruitmentCalendarClient() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [moreJobs, setMoreJobs] = useState<{ dateLabel: string; jobs: CalendarJob[] } | null>(null);
   const [emailAlertOn, setEmailAlertOn] = useState(false);
+  /** ≤760px 미니 캘린더에서 선택된 날짜. 데스크톱 렌더는 이 값을 읽지 않는다. */
+  const [selectedDateKey, setSelectedDateKey] = useState(initialSelectedDateKey);
 
   useEffect(() => {
     const stored = getAllStoredJobPreferences();
@@ -627,11 +740,15 @@ export function RecruitmentCalendarClient() {
 
   const moveMonth = (amount: number) => {
     if (requireLogin()) return;
-    setVisibleMonth((current) => addMonths(current, amount));
+    const next = addMonths(visibleMonth, amount);
+    setVisibleMonth(next);
+    // 모바일 선택일이 이전 달에 남아 미니 캘린더와 리스트가 어긋나지 않도록 새 달 1일로 옮긴다.
+    setSelectedDateKey(dateKey(next));
   };
 
   const moveToday = () => {
     setVisibleMonth(new Date(DEFAULT_YEAR, DEFAULT_MONTH, 1));
+    setSelectedDateKey(initialSelectedDateKey());
   };
 
   const updateTrackFilter = (nextTrack: CalendarTrackFilter) => {
@@ -972,7 +1089,7 @@ export function RecruitmentCalendarClient() {
                 </div>
               ) : null}
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-[760px]:hidden">
                 <div className="min-w-[900px]">
                   <div className="grid grid-cols-7 border-b border-[#e8edf2] bg-white">
                     {WEEKDAYS.map((weekday, index) => (
@@ -1045,6 +1162,16 @@ export function RecruitmentCalendarClient() {
                     })}
                   </div>
                 </div>
+              </div>
+
+              <div className="min-[761px]:hidden">
+                <MiniMonthCalendar
+                  days={days}
+                  visibleMonthIndex={visibleMonth.getMonth()}
+                  jobsByDate={jobsByDate}
+                  selectedDateKey={selectedDateKey}
+                  onSelectDate={setSelectedDateKey}
+                />
               </div>
             </section>
 
