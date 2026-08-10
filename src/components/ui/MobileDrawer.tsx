@@ -88,6 +88,51 @@ export function MobileDrawer({
     return () => node.removeEventListener("mousedown", stop);
   }, []);
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // 닫힌 직후에 도착하는 클릭 1회를 삼킨다(고스트 클릭 차단).
+  //
+  // 실기기 증상 둘이 같은 원인이었다:
+  //   · X를 누르면 닫혔다가 드로어가 다시 뜬다
+  //   · 알림 "전체 보기"를 누르면 캘린더로 간다
+  // 드로어는 탭과 동시에 언마운트되는데, 터치 기기는 touchend 뒤에 mousedown·mouseup·
+  // click을 뒤이어 쏘고 그 시점의 히트 테스트는 이미 사라진 드로어가 아니라 "그 아래에
+  // 있던 것"을 고른다. 390×664 실측으로 아래에 무엇이 있었는지 확인했다:
+  //   · X(354,28) 아래 = 헤더의 계정 메뉴 트리거 → 계정 드로어가 열린다
+  //     (계정 드로어에서는 자기 트리거라 같은 드로어가 다시 뜬다)
+  //   · 드로어 패널(x 59~390)이 하단 탭바를 덮고, 캘린더 칸이 x 234~312 →
+  //     패널 폭 전체를 쓰는 "전체 보기"를 아래쪽에서 누르면 캘린더로 간다
+  //
+  // 그래서 트리거의 토글 로직이나 mousedown 차단이 범인이 아니다 — 이벤트가 트리거까지
+  // 버블링하는 것도 아니다(드로어는 body로 포털돼 트리거의 형제도 자손도 아니다).
+  // 고칠 지점은 "닫힌 뒤에 오는 여분의 클릭" 하나뿐이라, 여기서 한 번만 끊는다.
+  //
+  // 캡처 단계에서 끊는 이유 — React의 루트 리스너(버블)보다 먼저 잡아야 아래 요소의
+  // onClick이 아예 실행되지 않는다. preventDefault는 <a href>의 브라우저 기본 이동을 막는다.
+  // coarse 포인터에서만 건다: 마우스는 클릭이 한 번뿐이라 삼킬 것이 없고, 그대로 두면
+  // 닫은 직후의 정상 클릭이 먹히지 않는다.
+  // ─────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (!window.matchMedia("(pointer: coarse)").matches) return;
+
+      let timer = 0;
+      const release = () => {
+        document.removeEventListener("click", swallow, true);
+        window.clearTimeout(timer);
+      };
+      function swallow(event: MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+        release();
+      }
+
+      document.addEventListener("click", swallow, true);
+      // 고스트 클릭은 touchend 직후(고전적으로 ~300ms) 한 번 온다. 그 창을 넘기면
+      // 사용자가 새로 누른 것이므로 감시를 거둔다.
+      timer = window.setTimeout(release, 400);
+    };
+  }, []);
+
   if (typeof document === "undefined") return null;
 
   return createPortal(
