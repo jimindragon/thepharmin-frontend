@@ -63,17 +63,34 @@ function QnaTypeToggle({ activeType, previewQuery }: { activeType: QnaType; prev
   );
 }
 
+/**
+ * ≤760px에서는 박스를 벗고 텍스트 토글이 된다 — 캘린더 "마감/시작" 필터와 같은 문법이다
+ * (RecruitmentCalendarClient.tsx의 트랙 필터). 좁은 화면의 검은 박스는 유형 토글·카테고리 칩·BEST
+ * 배지까지 이미 세 겹이라, 정렬까지 박스로 두면 무엇이 상위 층인지 읽히지 않는다.
+ * 활성은 #111111 + font-medium, 비활성은 #8a94a3 — 밑줄은 쓰지 않는다(칩·탭과 층이 갈리는 신호는 색뿐).
+ *
+ * 기본값이 모바일이고 min-[761px]:로 박스를 다시 붙이는 방향으로 쓴 이유 — 같은 속성을 두 벌 쓸 때
+ * max-/min- 변형끼리 겹치면 Tailwind 출력 순서에 기대게 된다. 한쪽만 변형을 달면 다툼 자체가 없다.
+ */
 function SortControl({ value, onChange }: { value: QnaSortOption; onChange: (option: QnaSortOption) => void }) {
   return (
-    <div className="grid h-[36px] shrink-0 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+    <div
+      className="flex h-10 shrink-0 items-center gap-4 min-[761px]:grid min-[761px]:h-[36px] min-[761px]:grid-cols-3 min-[761px]:gap-0 min-[761px]:overflow-hidden min-[761px]:border min-[761px]:border-[#dce2ea] min-[761px]:bg-white"
+      role="group"
+      aria-label="정렬"
+    >
       {qnaSortOptions.map((option) => (
         <button
           key={option}
           type="button"
           onClick={() => onChange(option)}
+          aria-pressed={value === option}
           className={clsx(
-            "min-w-[72px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-            value === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+            /* 텍스트일 때도 40px 터치 타깃 — 높이는 부모(h-10)가 주고 버튼이 전부 채운다 */
+            "h-full text-[13px] font-medium transition-colors min-[761px]:min-w-[72px] min-[761px]:border-r min-[761px]:border-[#dce2ea] min-[761px]:px-3 min-[761px]:text-[12px] min-[761px]:last:border-r-0",
+            value === option
+              ? "text-[#111111] min-[761px]:bg-[#111111] min-[761px]:text-white"
+              : "text-[#8a94a3] min-[761px]:text-[#3d4653] min-[761px]:hover:bg-[#f4f4f4]",
           )}
         >
           {option}
@@ -263,7 +280,8 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
 
         <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:mt-6 max-[760px]:gap-6">
           <div>
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            {/* ≤760px 정렬은 박스가 아니라 텍스트라 밑선 정렬이 어긋난다 — 그 폭에서만 가운데로 맞춘다 */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 min-[761px]:items-end">
               <p className="text-[14px] font-medium text-[#596373]">전체 {visibleEntries.length}개의 글</p>
               <SortControl value={sortOption} onChange={setSortOption} />
             </div>
