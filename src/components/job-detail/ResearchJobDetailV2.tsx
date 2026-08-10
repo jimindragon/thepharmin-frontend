@@ -44,6 +44,8 @@ import {
   SummaryStatGrid,
   useStickySidebarTop,
 } from "@/components/job-detail/shared";
+import { SectionAnchorNav } from "@/components/shared/SectionAnchorNav";
+import { jobDetailAnchors } from "@/config/jobDetailAnchors";
 import { getResearchFieldShortLabel } from "@/config/researchFields";
 import {
   educationLabelMap,
@@ -148,6 +150,9 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
                   </p>
                 </div>
               </section>
+
+              {/* ≤760px 섹션 앵커 — 히어로 아래, 본문 시작 직전. 옵셔널 섹션 필터링·미노출 판정은 컴포넌트가 한다 */}
+              <SectionAnchorNav sections={jobDetailAnchors.research} ariaLabel="공고 섹션 바로가기" />
 
               {/* 공고 상세 */}
               <IconSectionShell id="summary" icon={ClipboardList} title="공고 상세">

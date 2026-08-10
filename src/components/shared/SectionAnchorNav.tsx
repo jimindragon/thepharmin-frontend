@@ -10,8 +10,8 @@ export interface AnchorSection {
   label: string;
 }
 
-/** 앵커 행 높이(h-11). 아래 SECTION_ANCHOR_OFFSET의 108 = 헤더 64 + 이 값. */
-const NAV_HEIGHT = 44;
+/** 앵커 행 실측 높이 — 탭 줄 h-11(44px) + 하단 경계선 1px. 아래 109 = 헤더 64 + 이 값. */
+const NAV_HEIGHT = 44 + 1;
 
 /** 헤더(64px, sticky) + 앵커 행 — 섹션 상단이 앵커 행에 가리지 않고 바로 아래 서는 값. */
 export const SECTION_ANCHOR_OFFSET = 64 + NAV_HEIGHT;
@@ -23,10 +23,11 @@ export const SECTION_ANCHOR_OFFSET = 64 + NAV_HEIGHT;
  * IconSectionShell이 이미 변형 없는 scroll-mt-[130px](데스크톱 앵커 시절의 잔재)를 달고 있어
  * 변형을 붙여야 같은 축에서 이긴다 — "변형 없는 유틸리티 < 변형 붙은 유틸리티".
  *
- * 클래스 문자열을 여기서 내보내는 것은 108이라는 숫자의 출처를 한 곳에 두기 위해서다.
- * Tailwind는 src/components 아래 소스를 훑으므로 이 리터럴도 그대로 수집된다.
+ * 클래스 문자열을 여기서 내보내는 것은 109(=SECTION_ANCHOR_OFFSET)라는 숫자의 출처를 한 곳에
+ * 두기 위해서다. Tailwind는 리터럴만 수집하므로 값 자체는 손으로 맞춰 적되, 위 상수를 고치면
+ * 여기도 같이 고쳐야 한다는 것을 이 주석이 알린다.
  */
-export const SECTION_ANCHOR_SCROLL_MT_CLASS = "max-[760px]:scroll-mt-[108px]";
+export const SECTION_ANCHOR_SCROLL_MT_CLASS = "max-[760px]:scroll-mt-[109px]";
 
 /**
  * 3개 미만이면 앵커 행을 렌더하지 않는다 — 두 칸짜리 목차는 훑을 것이 없어

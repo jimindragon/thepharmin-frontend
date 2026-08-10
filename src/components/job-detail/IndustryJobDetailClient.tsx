@@ -43,6 +43,8 @@ import {
   SummaryStatGrid,
   useStickySidebarTop,
 } from "@/components/job-detail/shared";
+import { SectionAnchorNav } from "@/components/shared/SectionAnchorNav";
+import { jobDetailAnchors } from "@/config/jobDetailAnchors";
 import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import type { IndustryJobDetail } from "@/data/industryJobDetails";
 import { getIndustryNews, hasDirectCompanyNews } from "@/data/industryNews";
@@ -140,6 +142,9 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   </p>
                 </div>
               </section>
+
+              {/* ≤760px 섹션 앵커 — 히어로 아래, 본문 시작 직전. 옵셔널 섹션 필터링·미노출 판정은 컴포넌트가 한다 */}
+              <SectionAnchorNav sections={jobDetailAnchors.industry} ariaLabel="공고 섹션 바로가기" />
 
               {/* 포지션 소개 */}
               {hasPositionIntro ? (
