@@ -292,7 +292,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
           채용 QNA
         </Link>
 
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1024px]:grid-cols-1">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1">
           <div className="min-w-0 space-y-5">
             <article className="border border-border bg-white p-7 max-[640px]:p-5">
               {post.isBest ? (

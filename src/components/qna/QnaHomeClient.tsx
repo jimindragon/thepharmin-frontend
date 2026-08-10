@@ -218,7 +218,7 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           ))}
         </nav>
 
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1024px]:grid-cols-1">
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1">
           <div>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <p className="text-[14px] font-medium text-[#596373]">전체 {visibleEntries.length}개의 글</p>
