@@ -37,6 +37,8 @@ const TAB_BAR_ROUTES: ReadonlySet<string> = new Set([
   "/mypage/review-credits",
   "/mypage/preferences",
   "/mypage/account",
+  // 이력서는 목록만 — 저장바는 new·[resumeId]의 편집기(ResumeEditorClient)에만 있다
+  "/mypage/resume",
 ]);
 
 /**
