@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { PageTabBar } from "@/components/ui/PageTabBar";
 import { getEntryCommentCount, qnaCategoryFilters } from "@/data/qna";
 import type { QnaListEntry, QnaType } from "@/types/qna";
 import {
@@ -192,7 +193,24 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           title="채용 QNA"
           description={qnaTypeIntro[activeType]}
           rightSlot={canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : undefined}
+          rightSlotClassName="max-[760px]:hidden"
         />
+
+        {/*
+          ≤760px에서는 유형 전환이 다른 탭바 페이지와 같은 자리(h1 블록 바로 아래 전폭 탭바)에 서야 한다.
+          제목 옆 우측 슬롯과 h1 아래 형제는 부모가 서로 달라 CSS로 옮길 수 없어, 캘린더
+          UpcomingApplicationsSection 선례대로 같은 컨트롤을 양쪽에 렌더하고 브레이크포인트로 한쪽만 남긴다.
+          미인증(canSwitchType=false)이면 양쪽 모두 렌더하지 않는 종전 동작 그대로다.
+        */}
+        {canSwitchType ? (
+          <PageTabBar
+            className="mt-7 min-[761px]:hidden"
+            ariaLabel="QNA 유형"
+            items={qnaTypeTabs}
+            activeId={activeType}
+            hrefFor={(type) => withTypeParam(type, previewQuery)}
+          />
+        ) : null}
 
         {/* 사이드바가 본문 맨 아래로 밀리는 1열 폭에서만 본문 상단으로 끌어올린다 —
             "내 활동"은 /qna/activity로 가는 앱 내 유일한 진입점이라 하단 사각지대에 두면 도달률이 0에 수렴한다.
