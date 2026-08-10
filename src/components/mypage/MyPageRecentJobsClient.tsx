@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { JobCard } from "@/components/JobCard";
 import { MyPageEmptyState } from "@/components/mypage/MyPageEmptyState";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
@@ -121,9 +122,15 @@ export function MyPageRecentJobsClient() {
           </div>
           <div className="mt-5 max-[760px]:mt-4">
             {visibleJobs.length > 0 ? (
-              <div className="flex flex-col gap-3">
+              <div className={FLUSH_LIST_CLASS}>
                 {visibleJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isBookmarked={savedIds.has(job.id)} onToggleBookmark={toggleSave} />
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    isBookmarked={savedIds.has(job.id)}
+                    onToggleBookmark={toggleSave}
+                    variant="flush"
+                  />
                 ))}
               </div>
             ) : (

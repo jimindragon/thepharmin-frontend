@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Bookmark, Building2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { JobCard } from "@/components/JobCard";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { MyPageEmptyState } from "@/components/mypage/MyPageEmptyState";
@@ -32,14 +33,6 @@ const trackFilterOptions: { id: TrackFilter; label: string }[] = [
 
 /** 스크랩 칩 행은 본문 흐름에 놓이므로 바깥 마진을 여기서 준다 (TrackFilterChips는 마진을 갖지 않는다) */
 const CHIP_ROW_CLASS = "mt-5 max-[760px]:mt-4";
-
-/**
- * ≤760px 풀블리드 목록. 본문이 px-0이라 기준점은 .sidebar-shell이고, gutter의 절반만큼
- * 좌우로 빼면 화면 폭을 꽉 채운다. 카드 좌우 테두리는 flush variant가 지우고,
- * 카드 사이 선은 divide-y가 그린다 — 첫 카드 위·마지막 카드 아래에는 선이 생기지 않는다.
- */
-const FLUSH_LIST_CLASS =
-  "flex flex-col gap-3 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:gap-0 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)]";
 
 /** 칩 셸이 요구하는 { key, label, count } 모양으로만 바꾼다 — count 계산은 호출부 useMemo가 그대로 소유 */
 function toChipItems(options: { id: TrackFilter; label: string; count: number }[]) {
