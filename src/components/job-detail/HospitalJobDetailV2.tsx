@@ -38,6 +38,7 @@ import {
   JobDetailActionRow,
   MapPlaceholder,
   MobileApplyInfoSection,
+  MobileDeadlineCalendarSection,
   SimilarJobsSection,
   SummaryStatCell,
   SummaryStatGrid,
@@ -353,6 +354,9 @@ export function HospitalJobDetailV2({ data, jobRecord }: { data: HospitalJobDeta
 
                 <CompanyCtaButtons companyId={data.companyId} detailLabel="기관 정보 더보기" />
               </IconSectionShell>
+
+              {/* 마감일 + 캘린더 추가 — 720px 이하에서만. 이 폭에선 사이드바가 숨겨져 이 공고의 마감일이 화면 어디에도 없다 */}
+              <MobileDeadlineCalendarSection job={jobRecord} />
 
               {/* 지원 정보 — 720px 이하에서만. 이 폭에선 사이드바가 숨겨져 연락처에 닿을 길이 없다 */}
               <MobileApplyInfoSection apply={job.apply} isLoggedIn={isLoggedIn} />

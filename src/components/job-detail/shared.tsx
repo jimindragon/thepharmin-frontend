@@ -3,15 +3,17 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, ChevronRight, Layers, Lock, MapPin, Send, Share2, type LucideIcon } from "lucide-react";
+import { Bookmark, CalendarClock, CalendarPlus, ChevronRight, Layers, Lock, MapPin, Send, Share2, type LucideIcon } from "lucide-react";
 import { JobCard } from "@/components/JobCard";
+import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
 import { companyDirectory } from "@/data/companyDirectory";
+import type { CalendarExportEvent } from "@/lib/calendarExport";
 import type { ApplyMethodId, FormattedContent, Job, JobApply, JobTrack } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
-import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
+import { formatJobDeadlineLabel, formatKoreanDate, isJobDeadlineUrgent } from "@/utils/dday";
 
 /**
  * 공고 상세 페이지(산업/약국 등 트랙 공용)에서 재사용하는 패널·타이포그래피·저장 상태 유틸.
@@ -435,6 +437,72 @@ export function MobileApplyInfoSection({ apply, isLoggedIn }: { apply: JobApply;
   );
 }
 
+// ── 마감일 캘린더 추가 ────────────────────────────────────────────────────────
+
+/**
+ * Job 레코드에서 캘린더 이벤트 입력을 만든다. 만들 수 없으면 null.
+ *
+ * 상시채용(closingStatus === "always", 60건 중 28건)은 날짜 자체가 없어 이벤트가 성립하지
+ * 않는다. 비활성 버튼도 두지 않는다 — 누를 수 없는 버튼은 "언젠가 생길 것"이라는 잘못된
+ * 기대만 남긴다. 호출부는 null이면 블록 자체를 렌더하지 않는다.
+ *
+ * url은 사이트 상대 경로다. 절대화는 AddToCalendarSheet가 핸들러 안에서 한다.
+ */
+function calendarEventFromJob(job: Job): CalendarExportEvent | null {
+  if (job.closingStatus === "always" || !job.deadline) return null;
+
+  return {
+    uid: `job-${job.id}`,
+    title: job.title,
+    company: job.company,
+    date: job.deadline,
+    kind: "deadline",
+    url: job.slug ? `/jobs/${job.slug}` : undefined,
+    location: job.location,
+  };
+}
+
+/**
+ * ≤720px 본문의 마감일 블록.
+ *
+ * 이 폭에서는 사이드바(ApplyCard)가 숨겨져 **이 공고의 마감일이 화면 어디에도 없다** —
+ * 보이는 D-day는 전부 페이지 최하단 "비슷한 공고" 카드의 것이다. 그래서 이 블록은
+ * 캘린더 버튼을 놓는 자리이자 모바일에서 마감일을 처음 노출하는 자리이기도 하다.
+ *
+ * 반응형 클래스를 컴포넌트 안에 두는 이유는 MobileApplyInfoSection과 같다 — 본문이
+ * space-y-5라 바깥에 래퍼를 두면 비렌더 시 빈 div가 남아 20px 죽은 여백이 생긴다.
+ */
+export function MobileDeadlineCalendarSection({ job }: { job?: Job }) {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const event = job ? calendarEventFromJob(job) : null;
+
+  if (!job || !event) return null;
+
+  const deadlineLabel = formatJobDeadlineLabel(job);
+  const urgent = isJobDeadlineUrgent(job);
+
+  return (
+    <div className="min-[721px]:hidden">
+      <IconSectionShell id="deadline-calendar" icon={CalendarClock} title="마감일">
+        <p className={clsx("text-[24px] font-bold", urgent ? "text-danger" : "text-brand")}>{deadlineLabel}</p>
+        {/* formatKoreanDate는 점 구분자를 받는다 — jobs.ts의 deadline은 대시 형식이라 바꿔 넘긴다 */}
+        <p className="mt-1 text-[13px] font-normal text-[#8993a1]">{formatKoreanDate(job.deadline!.replace(/-/g, "."))}</p>
+
+        <button
+          type="button"
+          onClick={() => setSheetOpen(true)}
+          className="mt-4 flex h-12 w-full items-center justify-center gap-2 border border-border bg-white text-[14px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
+        >
+          <CalendarPlus size={16} />
+          캘린더에 추가
+        </button>
+
+        <AddToCalendarSheet open={sheetOpen} onClose={() => setSheetOpen(false)} event={event} />
+      </IconSectionShell>
+    </div>
+  );
+}
+
 /**
  * 사이드바 지원 카드. method별로 버튼 문구와 하단 게이트/안내 영역만 분기하고,
  * 껍데기(카드 톤·타이포)는 PharmacyJobDetailV2/IndustryJobDetailClient가 쓰던 것을 그대로 계승한다.
@@ -461,12 +529,26 @@ export function ApplyCard({
   const onActivate = getApplyAction(apply);
   const deadlineLabel = job ? formatJobDeadlineLabel(job) : null;
   const urgent = job ? isJobDeadlineUrgent(job) : false;
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const calendarEvent = job ? calendarEventFromJob(job) : null;
 
   return (
     <section className="rounded-[var(--radius)] border border-border bg-white px-5 py-5 shadow-[var(--shadow)]">
       <p className="text-[13px] font-medium text-[#7d8796]">지원 정보</p>
       {deadlineLabel ? (
         <h2 className={clsx("mt-2 text-[24px] font-bold", urgent ? "text-danger" : "text-brand")}>{deadlineLabel}</h2>
+      ) : null}
+      {/* 마감일에 딸린 보조 동작이라 h2 바로 아래 텍스트 버튼으로 둔다 — 아래 지원 CTA(솔리드)와
+          형태를 달리해 위계를 지킨다. 상시채용은 calendarEvent가 null이라 자동으로 빠진다. */}
+      {calendarEvent ? (
+        <button
+          type="button"
+          onClick={() => setCalendarOpen(true)}
+          className="mt-1.5 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#5f6875] underline-offset-2 transition-colors hover:text-brand hover:underline"
+        >
+          <CalendarPlus size={14} />
+          내 캘린더에 추가
+        </button>
       ) : null}
       <p className="mt-2 text-[13px] font-medium text-[#8993a1]">{APPLY_METHOD_LABELS[method]}</p>
 
@@ -492,6 +574,10 @@ export function ApplyCard({
 
       {apply.notice ? (
         <p className="mt-4 bg-[#f7f7f7] px-3 py-3 text-[12px] font-normal leading-[1.65] text-[#667181]">{apply.notice}</p>
+      ) : null}
+
+      {calendarEvent ? (
+        <AddToCalendarSheet open={calendarOpen} onClose={() => setCalendarOpen(false)} event={calendarEvent} />
       ) : null}
     </section>
   );
