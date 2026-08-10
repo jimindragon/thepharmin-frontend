@@ -20,6 +20,12 @@ interface NotificationBellProps {
    * 검은 헤더라 그쪽을 무설정 기본으로 두는 편이 호출부가 조용하다.
    */
   tone?: "dark" | "light";
+  /**
+   * 트리거 버튼에 얹을 클래스. 지금 쓰이는 곳은 기업 헤더의 ≤760px 터치 타깃 보정(h-9 → h-10)뿐이다.
+   * 기본값 h-9(36px)를 여기서 바꾸지 않는 이유 — 개인·고객센터 헤더까지 함께 커지기 때문이다.
+   * 그 두 헤더의 보정은 각자의 진단 항목으로 따로 다룬다.
+   */
+  triggerClassName?: string;
 }
 
 const MAX_VISIBLE = 5;
@@ -132,7 +138,7 @@ function NotificationPanelContent({
   );
 }
 
-export function NotificationBell({ notifications, viewAllHref, scope, size = 20, tone = "dark" }: NotificationBellProps) {
+export function NotificationBell({ notifications, viewAllHref, scope, size = 20, tone = "dark", triggerClassName }: NotificationBellProps) {
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const { markRead, markAllRead, isRead, isLoaded } = useNotificationReadState(scope);
   const isMobile = useIsMobileDrawerViewport();
@@ -173,21 +179,27 @@ export function NotificationBell({ notifications, viewAllHref, scope, size = 20,
         aria-expanded={open}
         aria-label="알림"
         className={clsx(
-          "relative grid h-9 w-9 place-items-center",
+          "grid h-9 w-9 place-items-center",
           // 다크는 부모(흰 글자)를 그대로 상속받고, 라이트만 아이콘 색을 지정한다.
           isLight ? "text-[#303946] hover:bg-[#f4f5f6]" : "hover:bg-white/10",
+          triggerClassName,
         )}
       >
-        <Bell size={size} strokeWidth={2} />
-        {hasUnread ? (
-          <span
-            className={clsx(
-              // 위치·크기는 20px 아이콘 기준 고정값. 톤에 따라 바뀌는 건 헤더 배경색과 맞물리는 링 색뿐.
-              "absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-danger ring-2",
-              isLight ? "ring-white" : "ring-[#050505]",
-            )}
-          />
-        ) : null}
+        {/* 미읽음 점의 기준 박스를 버튼이 아니라 이 36px 칸으로 둔다 — triggerClassName으로
+            버튼을 40px까지 키워도 점이 벨 글리프에서 떨어져 나가지 않는다.
+            triggerClassName이 없으면 바깥과 크기가 같아 렌더 결과는 종전과 픽셀 동일하다. */}
+        <span className="relative grid h-9 w-9 place-items-center">
+          <Bell size={size} strokeWidth={2} />
+          {hasUnread ? (
+            <span
+              className={clsx(
+                // 위치·크기는 20px 아이콘 기준 고정값. 톤에 따라 바뀌는 건 헤더 배경색과 맞물리는 링 색뿐.
+                "absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-danger ring-2",
+                isLight ? "ring-white" : "ring-[#050505]",
+              )}
+            />
+          ) : null}
+        </span>
       </button>
 
       {/* 드로어는 body로 포털된다 — 바깥 클릭 감지와의 충돌은 MobileDrawer가 직접 막는다. */}

@@ -42,7 +42,9 @@ function lightNavItemClassName(active: boolean) {
 function BusinessBrand({ homeHref }: { homeHref: string }) {
   return (
     // shrink-0 대신 min-w-0 — 좁은 폭에서 로고가 우측 버튼 그룹을 파고들지 않고 함께 줄어든다.
-    <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex min-w-0 items-center gap-3 hover:opacity-80 transition-opacity">
+    // min-h-[40px] — 로고 이미지가 ≤560px에서 22px까지 줄어 링크 높이가 곧 22px이었다.
+    // 헤더가 h-64 고정에 items-center라 박스만 커지고 로고 위치·크기는 그대로다.
+    <Link href={homeHref} aria-label="기업 센터 홈으로 이동" className="flex min-w-0 items-center gap-3 transition-opacity hover:opacity-80 max-[760px]:min-h-[40px]">
       <img
         src="/images/color_logo_1.svg"
         alt="더파마 리크루트"
@@ -170,7 +172,9 @@ export function BusinessAccountMenu() {
         // 아바타가 aria-hidden이고 사명은 720px 이하에서 숨으므로, 버튼 이름은 여기서만 나온다.
         // 개인 헤더와 달리 법인명이라 "님"을 붙이지 않는다.
         aria-label={`${initialBusinessCompanyProfile.displayName} 계정 메뉴`}
-        className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111] max-[520px]:gap-0 max-[520px]:px-1.5"
+        // ≤520px px-2 — 이전 px-1.5는 로고 24 + 좌우 12 + 테두리 2 = 38px으로 폭이 2px 모자랐다.
+        // 높이는 h-10으로 이미 40px이라 폭만 채운다.
+        className="flex h-10 items-center gap-2 border border-[#d7dde5] px-2.5 text-[12px] font-medium text-[#303946] hover:border-[#111111] max-[520px]:gap-0 max-[520px]:px-2"
       >
         <EntityLogo
           name={initialBusinessCompanyProfile.displayName}
@@ -250,8 +254,11 @@ export function BusinessHeader() {
                 <LinkButton href="/business/headhunting" variant="secondary" size="sm" className="max-[760px]:hidden border-[#d4d4d4] text-[#555555]">
                   헤드헌팅 의뢰
                 </LinkButton>
-                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼(어두운 변형) */}
-                <LinkButton href="/business/jobs/new" variant="gradient-dark" size="sm">
+                {/* 1순위 — 브랜드 그라데이션 솔리드 버튼(어두운 변형).
+                    ≤760px h-10 — size="sm"의 h-9(36px)는 터치 타깃 40px에 미달한다. 공용 sm을
+                    건드리면 전 화면 버튼이 함께 커지므로 이 호출부에서만 올린다. 바로 옆
+                    계정 메뉴가 이미 h-10이라 두 버튼 높이도 이 폭에서 비로소 맞는다. */}
+                <LinkButton href="/business/jobs/new" variant="gradient-dark" size="sm" className="max-[760px]:h-10">
                   <Plus size={15} />
                   <span className="max-[520px]:sr-only">공고 등록</span>
                 </LinkButton>
@@ -260,9 +267,12 @@ export function BusinessHeader() {
               <div className="flex items-center gap-1">
                 {/* 520까지 유지 — 760에서 헤드헌팅 의뢰(103px)가 빠져 자리가 생기는데 같은 브레이크포인트에
                     묶여 함께 사라지면서 641~760 구간에 기업→개인 전환 경로가 없어졌었다. */}
+                {/* ≤760px min-h-[40px] — py-1 기준 31.4px이라 터치 타깃 미달이었다.
+                    521~760px 구간에서만 보이는 링크지만 그 구간이 전부 터치 폭이다.
+                    inline-flex/items-center는 높이를 키우면서 라벨을 세로 중앙에 두기 위한 것. */}
                 <Link
                   href="/"
-                  className="whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[13px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[520px]:hidden"
+                  className="inline-flex items-center whitespace-nowrap rounded-full border border-[#d4dae3] px-3 py-1 text-[13px] font-medium text-[#b0bac7] transition-colors hover:border-[#b0bac7] hover:text-[#4f5967] max-[760px]:min-h-[40px] max-[520px]:hidden"
                 >
                   개인 서비스
                 </Link>
@@ -271,6 +281,8 @@ export function BusinessHeader() {
                   viewAllHref="/business/notifications"
                   scope="business"
                   tone="light"
+                  // h-9(36px) → 40px. 개인·고객센터 헤더는 이 prop을 주지 않아 종전 그대로다.
+                  triggerClassName="max-[760px]:h-10 max-[760px]:w-10"
                 />
                 <BusinessAccountMenu />
               </div>
