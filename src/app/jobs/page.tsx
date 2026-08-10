@@ -93,7 +93,8 @@ export default function JobsPage() {
     <>
       <Header />
       <InterestPromptGate />
-      <main className="pb-9 pt-[18px]">
+      {/* ≤760px h1 상단 여백은 캘린더(app-shell pt-8 = 32px) 기준으로 맞춘다. 데스크톱 18px은 유지. */}
+      <main className="pb-9 pt-[18px] max-[760px]:pt-8">
         <div className="app-shell">
           <PageBreadcrumb items={[{ label: siteConfig.breadcrumb }]} />
 
