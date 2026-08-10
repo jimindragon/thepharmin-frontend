@@ -28,10 +28,11 @@ import { OverlayPanel } from "@/components/ui/OverlayPanel";
 import { sharedRoutes } from "@/config/routes";
 import { calendarJobs, type CalendarEventType, type CalendarJob } from "@/data/calendar";
 import { mockUserPreferences } from "@/data/mockUserPreferences";
-import { MOCK_TODAY_DATE } from "@/config/mockToday";
+import { MOCK_TODAY, MOCK_TODAY_DATE } from "@/config/mockToday";
 import { getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
+import { formatDday, getDaysUntil } from "@/utils/dday";
 import { addMonths, buildMonthDays, dateKey } from "@/utils/monthGrid";
 import type { FilterOption, Job, JobCategoryOption, JobTrack } from "@/types/jobs";
 import { jobs } from "@/data/jobs";
@@ -159,6 +160,23 @@ function uniquePostingCount(jobs: CalendarJob[]) {
 /** dateKey("YYYY-MM-DD")에서 월 스코프 비교용 "YYYY-MM" 접두어를 뽑는다. */
 function monthPrefixOf(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** dateKey("YYYY-MM-DD")를 리스트 헤더용 "7월 21일 (화)"로 표기한다. */
+function formatDayLabel(key: string) {
+  const [year, month, day] = key.split("-").map(Number);
+  return `${month}월 ${day}일 (${WEEKDAYS[new Date(year, month - 1, day).getDay()]})`;
+}
+
+/**
+ * 일정 행의 날짜 성격 라벨.
+ * CalendarJob.deadline은 eventType이 "start"일 때 실제로는 시작일이므로, 날짜만 보고 마감으로 읽으면 안 된다.
+ * 이미 지난 마감은 D+n 대신 "마감"으로만 표기한다.
+ */
+function eventScheduleLabel(job: CalendarJob) {
+  if (eventTypeOf(job) === "start") return "접수 시작";
+  const daysLeft = getDaysUntil(job.deadline.replace(/-/g, "."), MOCK_TODAY);
+  return daysLeft < 0 ? "마감" : `마감 ${formatDday(daysLeft)}`;
 }
 
 /**
@@ -602,6 +620,47 @@ function ApplicationMoreCard() {
   );
 }
 
+/**
+ * 하루치 일정 1행. 데스크톱 "+N 더보기" 모달과 ≤760px 선택 날짜 리스트가 공유한다.
+ * JobCard 선례대로 행 전면에 링크를 깔아 어디를 눌러도 상세로 이동한다.
+ */
+function CalendarDayJobRow({ job }: { job: CalendarJob }) {
+  const eventType = eventTypeOf(job);
+  const style = eventTypeStyles[eventType];
+
+  return (
+    <article
+      className={`relative flex min-w-0 items-start justify-between gap-3 border p-3 transition hover:border-[#111111] ${
+        job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#e4e8ee] bg-white"
+      }`}
+    >
+      <Link
+        href={resolveJobHref(job)}
+        className="absolute inset-0 z-10 cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(17,17,17,0.18)]"
+        aria-label={`${job.companyName} ${job.title} 상세 보기`}
+      />
+      <div className="flex min-w-0 items-start gap-2">
+        <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${style.marker}`} aria-hidden />
+        <div className="min-w-0">
+          <p className="truncate text-[14px] font-medium text-[#222832]">{job.companyName}</p>
+          <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
+        </div>
+      </div>
+      <span className={`shrink-0 text-[12px] font-medium ${style.text}`}>{eventScheduleLabel(job)}</span>
+    </article>
+  );
+}
+
+function CalendarDayJobList({ jobs, className = "" }: { jobs: CalendarJob[]; className?: string }) {
+  return (
+    <div className={`grid gap-2 ${className}`}>
+      {jobs.map((job) => (
+        <CalendarDayJobRow key={job.id} job={job} />
+      ))}
+    </div>
+  );
+}
+
 function MoreJobsModal({
   dateLabel,
   jobs,
@@ -625,25 +684,7 @@ function MoreJobsModal({
         </>
       }
     >
-      <div className="mt-5 grid gap-2">
-        {jobs.map((job) => (
-          <Link
-            key={job.id}
-            href={resolveJobHref(job)}
-            className={`flex min-w-0 items-center justify-between gap-4 border p-3 transition hover:border-[#111111] ${
-              job.isBookmarked ? "border-[#c7ced8] bg-[#f6f7f8]" : "border-[#e4e8ee] bg-white"
-            }`}
-          >
-            <div className="flex min-w-0 items-start gap-2">
-              <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${eventTypeStyles[eventTypeOf(job)].marker}`} />
-              <div className="min-w-0">
-                <p className="truncate text-[14px] font-medium text-[#222832]">{job.companyName}</p>
-                <p className="mt-1 truncate text-[12px] font-medium text-[#87909d]">{job.title}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <CalendarDayJobList jobs={jobs} className="mt-5" />
     </OverlayPanel>
   );
 }
@@ -709,6 +750,18 @@ export function RecruitmentCalendarClient() {
   }, [filteredJobs]);
 
   const days = useMemo(() => buildMonthDays(visibleMonth.getFullYear(), visibleMonth.getMonth()), [visibleMonth]);
+
+  const selectedDayJobs = useMemo(() => jobsByDate.get(selectedDateKey) ?? [], [jobsByDate, selectedDateKey]);
+
+  /** 선택일이 비었을 때 안내할 다음 일정일. 월 이동은 로그인 게이트가 있으므로 보이는 달 안에서만 찾는다. */
+  const nextEventDateKey = useMemo(() => {
+    const monthPrefix = monthPrefixOf(visibleMonth);
+    return (
+      Array.from(jobsByDate.keys())
+        .filter((key) => key.startsWith(monthPrefix) && key > selectedDateKey)
+        .sort()[0] ?? null
+    );
+  }, [jobsByDate, selectedDateKey, visibleMonth]);
   const appliedJobsAll = useMemo(() => {
     const seen = new Set<string>();
     return availableCalendarJobs.filter((job) => job.isApplied).filter((job) => {
@@ -1172,6 +1225,32 @@ export function RecruitmentCalendarClient() {
                   selectedDateKey={selectedDateKey}
                   onSelectDate={setSelectedDateKey}
                 />
+
+                <div className="border-t border-[#e7ebef] px-4 py-4">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3 className="text-[15px] font-bold tracking-[-0.01em] text-[#1f252d]">{formatDayLabel(selectedDateKey)}</h3>
+                    {selectedDayJobs.length > 0 ? (
+                      <span className="shrink-0 text-[12px] font-medium text-[#8a93a1]">{selectedDayJobs.length}건</span>
+                    ) : null}
+                  </div>
+
+                  {selectedDayJobs.length > 0 ? (
+                    <CalendarDayJobList jobs={selectedDayJobs} className="mt-3" />
+                  ) : (
+                    <div className="mt-3 border border-dashed border-[#dfe4eb] bg-[#fbfcfd] px-4 py-5 text-center">
+                      <p className="text-[13px] font-medium text-[#6b7280]">이 날은 일정이 없어요</p>
+                      {nextEventDateKey ? (
+                        <button
+                          type="button"
+                          className="mt-1 inline-flex min-h-[40px] items-center text-[13px] font-medium text-[#111111] underline underline-offset-4"
+                          onClick={() => setSelectedDateKey(nextEventDateKey)}
+                        >
+                          다음 일정: {formatDayLabel(nextEventDateKey)}
+                        </button>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
               </div>
             </section>
 
