@@ -74,8 +74,18 @@ export type DataTableProps<T> = {
   pagination?: ReactNode;
   empty: { title: ReactNode; description: ReactNode; action?: ReactNode };
   /**
-   * 모바일 카드형 렌더. 현재 6종 모두 min-w 유지 + 가로 스크롤이라 미사용 —
-   * 모바일 전략을 바꿀 때 시그니처를 안 바꾸려고 자리만 잡아둔다.
+   * ≤760px에서 표 대신 그릴 카드 한 장. 주면 그 폭에서 표가 통째로 감춰지고 카드 목록이 선다.
+   *
+   * 안 주면 종전 그대로(전 폭 표 + 가로 스크롤)다 — 아직 이걸 넘기지 않는 표 5종은 무변경이다.
+   *
+   * 두 모습을 한 DOM에 오버라이드로 얹지 않고 따로 렌더한다: 표는 grid 트랙 6칸,
+   * 카드는 자유 배치라 공유할 뼈대가 없고, 합치면 카드 쪽에서 grid-cols·min-w·가로 스크롤을
+   * 전부 되돌려야 한다(CategoryTabs page 변형과 같은 판단).
+   *
+   * ★ 풀블리드는 이 부품이 하지 않는다 — 목록은 divide-y 세로 스택까지만 만든다.
+   * 셸 거터를 얼마나 되밀어야 하는지가 화면마다 다르므로(기업센터 본문 px-0 ↔ 마이페이지 ↔ 일반
+   * 페이지) 음수 마진은 호출부가 <DataTable>을 감싸며 건다. 스크랩·QNA의 FLUSH_LIST_CLASS와
+   * 같은 분담이다.
    */
   mobileCard?: (row: T) => ReactNode;
 };
@@ -101,13 +111,53 @@ export function DataTable<T>({
   footer,
   pagination,
   empty,
+  mobileCard,
 }: DataTableProps<T>) {
   // grid-cols를 한 번만 조립해 헤더·행이 같은 값을 쓴다
   const gridTemplate = { gridTemplateColumns: columns.map((c) => c.width).join(" ") };
 
+  const emptyState = (
+    <TableEmptyState title={empty.title} description={empty.description} action={empty.action} />
+  );
+
   return (
-    <div className="mt-3 border border-border bg-white">
-      <div className="overflow-x-auto">
+    <div
+      className={clsx(
+        "mt-3 border border-border bg-white",
+        // 풀블리드로 화면 끝까지 나간 목록에 좌우 테두리가 남으면 화면 가장자리에 선이 붙는다.
+        // 위아래 선은 목록의 시작·끝을 잡아 주므로 남긴다.
+        mobileCard && "max-[760px]:border-x-0",
+      )}
+    >
+      {mobileCard ? (
+        <div className="min-[761px]:hidden">
+          {rows.length > 0 ? (
+            <div className="divide-y divide-[#e5e9ef]">
+              {rows.map((row) => (
+                <div
+                  key={rowKey(row)}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={clsx(
+                    // 카드 안쪽 패딩은 카드가 갖는다 — 표의 px-6 py-4를 여기서 강요하면
+                    // 배치가 자유롭지 않다. 여기서 주는 것은 선택/클릭 상태뿐이다.
+                    onRowClick && "cursor-pointer transition",
+                    onRowClick && (isRowSelected?.(row) ? "bg-[#f7f8fa]" : "hover:bg-[#fafafa]"),
+                  )}
+                >
+                  {mobileCard(row)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            emptyState
+          )}
+          {/* footer는 카드 모드에서도 그대로 흘려보낸다 — 표 트랙에 맞춘 마크업이면
+              그 호출부가 카드용으로 갈라 주는 것이 맞고, 여기서 조용히 지우면 값이 사라진다. */}
+          {footer}
+        </div>
+      ) : null}
+
+      <div className={clsx("overflow-x-auto", mobileCard && "max-[760px]:hidden")}>
         <div style={{ minWidth }}>
           {/* 헤더 — 헤더 전용 슬롯은 두지 않는다. 헤더에만 노드를 더하면 행과 그리드 칸이
               어긋나기 때문이다. 전체선택 체크박스처럼 헤더·행 양쪽에 필요한 것은 "열"로 정의한다
@@ -145,11 +195,7 @@ export function DataTable<T>({
               ))}
             </div>
           ) : (
-            <TableEmptyState
-              title={empty.title}
-              description={empty.description}
-              action={empty.action}
-            />
+            emptyState
           )}
 
           {footer}
