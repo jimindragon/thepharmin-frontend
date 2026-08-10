@@ -139,35 +139,98 @@ export function BusinessBillingHistoryClient() {
       key: "documents",
       width: "170px",
       align: "end",
-      cell: (record) => {
-        const isCancelled = record.status === "cancelled";
-        return (
-          <span className="flex items-center gap-1.5">
-            <button
-              type="button"
-              disabled={isCancelled}
-              onClick={() => setDocModal({ variant: "taxInvoice", record })}
-              className={clsx(
-                "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
-                isCancelled
-                  ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
-                  : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
-              )}
-            >
-              세금계산서
-            </button>
-            <button
-              type="button"
-              onClick={() => setDocModal({ variant: "receipt", record })}
-              className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-            >
-              영수증
-            </button>
-          </span>
-        );
-      },
+      cell: (record) => renderDocumentActions(record),
     },
   ];
+
+  /**
+   * 증빙 발급 버튼(세금계산서·영수증). 표의 액션 열과 모바일 카드가 같은 것을 쓴다 —
+   * 결제취소 건의 세금계산서 비활성 규칙이 두 곳에서 갈리지 않게 한다.
+   */
+  function renderDocumentActions(record: BillingRecord) {
+    const isCancelled = record.status === "cancelled";
+    return (
+      <span className="flex items-center gap-1.5">
+        <button
+          type="button"
+          disabled={isCancelled}
+          onClick={() => setDocModal({ variant: "taxInvoice", record })}
+          className={clsx(
+            "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+            isCancelled
+              ? "cursor-not-allowed border-[#e5e9ef] text-[#c0c8d2]"
+              : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+          )}
+        >
+          세금계산서
+        </button>
+        <button
+          type="button"
+          onClick={() => setDocModal({ variant: "receipt", record })}
+          className="inline-flex h-8 items-center justify-center border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+        >
+          영수증
+        </button>
+      </span>
+    );
+  }
+
+  /**
+   * ≤760px 카드 한 장. 표 6열(결제일·공고/상품·결제수단·금액·상태·증빙)을 네 줄로 접는다.
+   *
+   * 1줄: 공고명 + 결제 상태. 이 표의 상태는 점 없는 텍스트라 뱃지 대신 tone의 색만 쓴다
+   *      (표의 상태 열과 같은 마크업).
+   * 2줄: 트랙 배지 + 상품명 · 결제일 · 결제수단.
+   * 3줄: 금액. 총액과 "공급가액 · VAT" 보조줄을 표의 금액 셀 그대로 둔다 — 증빙을 받는
+   *      화면이라 세액 분해가 곧 이 표의 값이다. 취소 건 취소선도 그대로다.
+   * 4줄: 증빙 버튼. 금액과 한 줄에 합치면 342px에서 보조줄(175px)과 버튼(166px)이 부딪힌다.
+   *
+   * 행 전체 탭·chevron은 없다 — 결제 건 상세 화면이 없고, 이 행의 목적지는 두 증빙 모달뿐이라
+   * 어느 하나를 행 전체에 걸 수 없다(파일럿 원칙: 목적지 없는 chevron 금지).
+   */
+  const renderMobileCard = (record: BillingRecord) => (
+    <div className="px-6 py-4">
+      <div className="flex items-start gap-3">
+        <p className="line-clamp-1 min-w-0 flex-1 text-[15px] font-semibold leading-[1.45] text-[#17202c]">
+          {record.jobTitle}
+        </p>
+        <span
+          className={clsx(
+            "shrink-0 text-[13px] font-medium",
+            STATUS_TONE[PAYMENT_TONE[record.status]].text,
+          )}
+        >
+          {paymentStatusLabel(record.status)}
+        </span>
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[13px] font-normal text-[#8a94a3]">
+        <TrackBadge label={boostTrackLabel(record.track)} />
+        <span>{record.productName}</span>
+        <span aria-hidden>·</span>
+        <span className="whitespace-nowrap">결제 {record.paidAt}</span>
+        <span aria-hidden>·</span>
+        <span>{record.paymentMethod}</span>
+      </div>
+
+      <div className="mt-2.5">
+        <p
+          className={clsx(
+            "text-[15px] font-semibold text-[#303946]",
+            record.status === "cancelled" && "line-through",
+          )}
+        >
+          {formatKrw(toTotalKrw(record.amountKrw))}
+        </p>
+        <p className="mt-0.5 text-[12px] font-normal text-[#8a94a3]">
+          공급가액 {formatKrw(record.amountKrw)} · VAT{" "}
+          {formatKrw(toTotalKrw(record.amountKrw) - record.amountKrw)}
+        </p>
+      </div>
+
+      <div className="mt-3 flex justify-end">{renderDocumentActions(record)}</div>
+    </div>
+  );
 
   return (
     <BusinessCenterShell>
@@ -239,30 +302,35 @@ export function BusinessBillingHistoryClient() {
           </div>
         </div>
 
-        {/* 테이블 영역 */}
-        <DataTable
-          columns={BILLING_COLUMNS}
-          rows={filtered}
-          rowKey={(record) => record.id}
-          /* A계열의 기존 min-w는 이미 패딩 포함 총폭이었다 — 48을 더하지 않는다 */
-          minWidth={950}
-          empty={{
-            title: "결제 내역이 없습니다",
-            description: "부스트를 이용하면 결제 내역이 이곳에 표시됩니다.",
-          }}
-          footer={
-            hasRecords ? (
-              <div className="border-t border-border px-6 py-4 text-right max-[760px]:px-4">
-                <span className="text-[13px] font-normal text-[#8a94a3]">
-                  조회 기간 결제 합계 (결제완료 기준)
-                </span>
-                <span className="ml-4 text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
-                  {formatKrw(completedTotal)}
-                </span>
-              </div>
-            ) : undefined
-          }
-        />
+        {/* 테이블 영역 — ≤760px는 카드. 셸 거터(24px)를 되밀어 화면 폭을 채운다(공고 관리 선례) */}
+        <div className="max-[760px]:-mx-[calc(var(--shell-gutter)/2)]">
+          <DataTable
+            columns={BILLING_COLUMNS}
+            rows={filtered}
+            rowKey={(record) => record.id}
+            mobileCard={renderMobileCard}
+            /* A계열의 기존 min-w는 이미 패딩 포함 총폭이었다 — 48을 더하지 않는다 */
+            minWidth={950}
+            empty={{
+              title: "결제 내역이 없습니다",
+              description: "부스트를 이용하면 결제 내역이 이곳에 표시됩니다.",
+            }}
+            footer={
+              hasRecords ? (
+                // ≤760px 패딩은 카드와 같은 24px로 맞춘다 — 카드 목록이 화면 폭을 꽉 채우면서
+                // 합계 줄만 16px로 들어와 있으면 오른쪽 끝이 카드 값들과 어긋난다.
+                <div className="border-t border-border px-6 py-4 text-right">
+                  <span className="text-[13px] font-normal text-[#8a94a3]">
+                    조회 기간 결제 합계 (결제완료 기준)
+                  </span>
+                  <span className="ml-4 text-[17px] font-bold tracking-[-0.02em] text-[#17202c]">
+                    {formatKrw(completedTotal)}
+                  </span>
+                </div>
+              ) : undefined
+            }
+          />
+        </div>
 
         {/* 안내 박스 */}
         <div className="mt-4 border border-[#dfe4ea] bg-[#f7f8fa] px-5 py-4">
