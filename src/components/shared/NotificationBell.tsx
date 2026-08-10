@@ -8,9 +8,18 @@ import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import { useNotificationReadState, type NotificationScope } from "@/hooks/useNotificationReadState";
 import type { Notification } from "@/types/notifications";
 
+/**
+ * "전체 보기"의 목적지. scope가 곧 목적지를 정하므로 호출부가 따로 넘기지 않는다 —
+ * 예전에는 헤더 3곳이 각자 viewAllHref를 적어, 값이 어긋나도 타입이 잡아 주지 못했다.
+ * (실제로 세 곳 다 맞게 적혀 있었지만, 틀릴 수 있는 자리를 남겨 둘 이유가 없다.)
+ */
+const VIEW_ALL_HREF: Record<NotificationScope, string> = {
+  personal: "/mypage/notifications",
+  business: "/business/notifications",
+};
+
 interface NotificationBellProps {
   notifications: Notification[];
-  viewAllHref: string;
   scope: NotificationScope;
   /** 벨 아이콘 크기(px). 순수 크기값 — 색·hover·링은 tone이 결정한다. */
   size?: number;
@@ -138,7 +147,8 @@ function NotificationPanelContent({
   );
 }
 
-export function NotificationBell({ notifications, viewAllHref, scope, size = 20, tone = "dark", triggerClassName }: NotificationBellProps) {
+export function NotificationBell({ notifications, scope, size = 20, tone = "dark", triggerClassName }: NotificationBellProps) {
+  const viewAllHref = VIEW_ALL_HREF[scope];
   const { open, setOpen, containerRef } = useDropdownMenu<HTMLDivElement>();
   const { markRead, markAllRead, isRead, isLoaded } = useNotificationReadState(scope);
   const isMobile = useIsMobileDrawerViewport();

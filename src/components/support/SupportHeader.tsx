@@ -67,7 +67,6 @@ export function SupportHeader() {
               <>
                 <NotificationBell
                   notifications={MOCK_PERSONAL_NOTIFICATIONS}
-                  viewAllHref="/mypage/notifications"
                   scope="personal"
                 />
                 <AccountMenu />

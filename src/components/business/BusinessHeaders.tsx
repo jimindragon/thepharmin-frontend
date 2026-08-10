@@ -278,7 +278,6 @@ export function BusinessHeader() {
                 </Link>
                 <NotificationBell
                   notifications={MOCK_BUSINESS_NOTIFICATIONS}
-                  viewAllHref="/business/notifications"
                   scope="business"
                   tone="light"
                   // h-9(36px) → 40px. 개인·고객센터 헤더는 이 prop을 주지 않아 종전 그대로다.

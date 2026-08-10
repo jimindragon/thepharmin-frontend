@@ -214,7 +214,7 @@ export function Header() {
           <div className="ml-auto flex items-center gap-2.5 border-l border-white/15 pl-4 text-white/80 max-[640px]:gap-2 max-[640px]:border-l-0 max-[640px]:pl-0">
             {isLoggedIn ? (
               <>
-                <NotificationBell notifications={MOCK_PERSONAL_NOTIFICATIONS} viewAllHref="/mypage/notifications" scope="personal" />
+                <NotificationBell notifications={MOCK_PERSONAL_NOTIFICATIONS} scope="personal" />
                 <AccountMenu />
               </>
             ) : (
