@@ -2,7 +2,8 @@
 
 import clsx from "clsx";
 import { X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 /**
@@ -53,6 +54,7 @@ export function MobileDrawer({
   children: ReactNode;
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
   // 마운트 직후 한 프레임 뒤에 켜서 translate-x-full → 0 전환이 실제로 일어나게 한다.
   // 닫힘은 즉시 언마운트다 — 들어올 때만 움직이는 dropdown-panel과 같은 규칙.
   const [entered, setEntered] = useState(false);
@@ -73,9 +75,32 @@ export function MobileDrawer({
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  return (
+  // 드로어 안의 mousedown을 여기서 끊는다. 호출부(헤더 드롭다운)는 useDropdownMenu의
+  // document mousedown 감지로 "바깥 클릭"을 닫는데, 포털로 나간 드로어는 그 기준에서
+  // 항상 바깥이다 — 그대로 두면 링크를 누르는 순간 mouseup 전에 언마운트돼 이동이 먹지 않는다.
+  // React 합성 이벤트의 stopPropagation은 루트 컨테이너(document)에서 일어나 같은 document에
+  // 걸린 리스너를 막지 못하므로, 드로어 노드에 네이티브로 직접 건다.
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+    const stop = (event: MouseEvent) => event.stopPropagation();
+    node.addEventListener("mousedown", stop);
+    return () => node.removeEventListener("mousedown", stop);
+  }, []);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    // 헤더(z-50)가 만드는 쌓임 맥락 안에 두면 z-75가 그 안에서만 유효해 DEV 패널(z-60) 같은
+    // 형제에게 덮인다. body로 내보내야 선언한 계층이 실제 계층이 된다.
     // z-[75] — 헤더(50)·탭바(40)는 물론 모달 계열(70)보다도 위. 토스트(80)만 남겨 둔다.
-    <div className="fixed inset-0 z-[75]" role="dialog" aria-modal="true" aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}>
+    <div
+      ref={rootRef}
+      className="fixed inset-0 z-[75]"
+      role="dialog"
+      aria-modal="true"
+      aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}
+    >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
       <div
         className={clsx(
@@ -101,6 +126,7 @@ export function MobileDrawer({
 
         <div className="flex-1 overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom))]">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
