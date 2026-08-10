@@ -192,6 +192,8 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           eyebrow="THE PHARMA QNA"
           title="채용 QNA"
           description={qnaTypeIntro[activeType]}
+          /* 약사/산업 구분을 설명하는 유일한 문장이라 접지 않고 한 줄 캡션으로 줄인다 */
+          mobileDescription="caption"
           rightSlot={canSwitchType ? <QnaTypeToggle activeType={activeType} previewQuery={previewQuery} /> : undefined}
           rightSlotClassName="max-[760px]:hidden"
         />

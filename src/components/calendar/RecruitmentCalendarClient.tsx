@@ -999,6 +999,7 @@ export function RecruitmentCalendarClient() {
             eyebrow="THE PHARMA CALENDAR"
             title="채용 캘린더"
             description="채용 시작일과 마감일을 한눈에 확인하고 관심·지원 현황을 함께 추적하세요."
+            mobileDescription="hidden"
           />
 
           <PageTabBar

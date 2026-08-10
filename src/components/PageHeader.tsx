@@ -15,8 +15,21 @@ interface PageHeaderProps {
    * 안쪽 내용만 숨기면 빈 칸이 flex 아이템으로 남아 줄바꿈된 2행이 생기고 row-gap 16px이 그대로 붙는다.
    */
   rightSlotClassName?: string;
+  /**
+   * ≤760px에서 보조문구를 어떻게 다룰지. 미지정이면 데스크톱과 같은 본문 크기 그대로다.
+   * hidden: 탭 라벨·범례가 이미 같은 정보를 주는 화면(캘린더)에서 통째로 접는다.
+   * caption: 문구가 그 화면의 유일한 해설이라 지울 수 없을 때(QNA 약사/산업 구분) 한 줄로 줄인다.
+   * 탭바로 오가는 페이지에서만 켠다 — 첫 화면에서 h1 아래 컨트롤 위치를 서로 맞추기 위한 것이다.
+   */
+  mobileDescription?: "hidden" | "caption";
   className?: string;
 }
+
+const MOBILE_DESCRIPTION_CLASS = {
+  hidden: "max-[760px]:hidden",
+  caption:
+    "max-[760px]:mt-2 max-[760px]:line-clamp-1 max-[760px]:text-[12px] max-[760px]:leading-[1.5] max-[760px]:text-[#8a94a3]",
+} as const;
 
 /**
  * 글로벌 헤더 바로 아래에 오는 표준 상단 구조: 브레드크럼 → 영문 소제목 → 제목 → 설명.
@@ -31,6 +44,7 @@ export function PageHeader({
   description,
   rightSlot,
   rightSlotClassName,
+  mobileDescription,
   className,
 }: PageHeaderProps) {
   return (
@@ -43,7 +57,18 @@ export function PageHeader({
             <Eyebrow>{eyebrow}</Eyebrow>
           </div>
           <PageTitle className="max-[760px]:mt-0">{title}</PageTitle>
-          {description ? <p className={clsx("mt-3 max-w-[640px]", typeScale.body, "text-[#596373]")}>{description}</p> : null}
+          {description ? (
+            <p
+              className={clsx(
+                "mt-3 max-w-[640px]",
+                typeScale.body,
+                "text-[#596373]",
+                mobileDescription && MOBILE_DESCRIPTION_CLASS[mobileDescription],
+              )}
+            >
+              {description}
+            </p>
+          ) : null}
         </div>
         {rightSlot ? <div className={clsx("shrink-0", rightSlotClassName)}>{rightSlot}</div> : null}
       </div>
