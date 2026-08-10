@@ -21,14 +21,23 @@ import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
  * 겉틀만 다르고 이름·이메일 머리, 3그룹 11항목, 뱃지, 로그아웃은 한 벌뿐이다.
  * 드로어에는 별도 타이틀을 두지 않는다 — 이 머리(이름·이메일)가 그 역할을 한다.
  */
-function AccountMenuContent({ onClose, onLogout }: { onClose: () => void; onLogout: () => void }) {
+function AccountMenuContent({
+  onClose,
+  onLogout,
+  variant,
+}: {
+  onClose: () => void;
+  onLogout: () => void;
+  variant: "dropdown" | "drawer";
+}) {
   const pathname = usePathname();
 
   return (
     <>
       <div className="px-3 py-2.5">
-        <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p>
-        <p className="mt-0.5 text-[13px] font-normal text-[#6b7480]">{myPageUser.email}</p>
+        {/* 드로어는 이름을 헤더 타이틀로 올렸으므로 여기서 다시 적지 않는다 — 이메일만 남는다. */}
+        {variant === "dropdown" ? <p className="text-[14px] font-bold text-[#17202c]">{myPageUser.name} 님</p> : null}
+        <p className={clsx("text-[13px] font-normal text-[#6b7480]", variant === "dropdown" && "mt-0.5")}>{myPageUser.email}</p>
       </div>
       <div className="h-px bg-[#edf1f5]" />
       <div className="py-2">
@@ -109,9 +118,9 @@ export function AccountMenu() {
 
       {open ? (
         isMobile ? (
-          <MobileDrawer ariaLabel={`${myPageUser.name}님 계정 메뉴`} onClose={close}>
+          <MobileDrawer title={`${myPageUser.name} 님`} ariaLabel={`${myPageUser.name}님 계정 메뉴`} onClose={close}>
             <div className="p-2">
-              <AccountMenuContent onClose={close} onLogout={handleLogout} />
+              <AccountMenuContent onClose={close} onLogout={handleLogout} variant="drawer" />
             </div>
           </MobileDrawer>
         ) : (
@@ -121,7 +130,7 @@ export function AccountMenu() {
             role="menu"
             className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 max-h-[calc(100vh-88px)] w-[260px] overflow-y-auto border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
           >
-            <AccountMenuContent onClose={close} onLogout={handleLogout} />
+            <AccountMenuContent onClose={close} onLogout={handleLogout} variant="dropdown" />
           </div>
         )
       ) : null}

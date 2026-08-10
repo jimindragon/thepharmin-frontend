@@ -69,7 +69,15 @@ function BusinessBrand({ homeHref }: { homeHref: string }) {
  * 기업 계정 메뉴 알맹이 — 데스크톱 앵커 드롭다운과 모바일 드로어가 함께 쓴다.
  * 개인 AccountMenuContent(Header.tsx)와 같은 구성: 겉틀만 다르고 머리·항목·잠금·로그아웃은 한 벌.
  */
-function BusinessAccountMenuContent({ onClose, onLogout }: { onClose: () => void; onLogout: () => void }) {
+function BusinessAccountMenuContent({
+  onClose,
+  onLogout,
+  variant,
+}: {
+  onClose: () => void;
+  onLogout: () => void;
+  variant: "dropdown" | "drawer";
+}) {
   const pathname = usePathname();
   const orgVerificationStatus = useOrgVerificationStatus();
   const isHomeActive = pathname === businessCenterHomeItem.href;
@@ -77,8 +85,11 @@ function BusinessAccountMenuContent({ onClose, onLogout }: { onClose: () => void
   return (
     <>
       <div className="px-3 py-2.5">
-        <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
-        <p className="mt-0.5 text-[13px] font-normal text-[#8a94a3]">
+        {/* 드로어는 사명을 헤더 타이틀로 올렸으므로 여기서 다시 적지 않는다 — 소속·직함만 남는다. */}
+        {variant === "dropdown" ? (
+          <p className="text-[14px] font-bold text-[#17202c]">{initialBusinessCompanyProfile.displayName}</p>
+        ) : null}
+        <p className={clsx("text-[13px] font-normal text-[#8a94a3]", variant === "dropdown" && "mt-0.5")}>
           {initialIndustryOrgManager.department} · {initialIndustryOrgManager.position}
         </p>
       </div>
@@ -172,9 +183,13 @@ export function BusinessAccountMenu() {
 
       {open ? (
         isMobile ? (
-          <MobileDrawer ariaLabel={`${initialBusinessCompanyProfile.displayName} 계정 메뉴`} onClose={close}>
+          <MobileDrawer
+            title={initialBusinessCompanyProfile.displayName}
+            ariaLabel={`${initialBusinessCompanyProfile.displayName} 계정 메뉴`}
+            onClose={close}
+          >
             <div className="p-2">
-              <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} />
+              <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} variant="drawer" />
             </div>
           </MobileDrawer>
         ) : (
@@ -182,7 +197,7 @@ export function BusinessAccountMenu() {
             role="menu"
             className="dropdown-panel absolute right-0 top-[calc(100%+8px)] z-30 w-[260px] border border-border bg-white p-2 shadow-[0_8px_22px_rgba(20,32,46,0.12)]"
           >
-            <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} />
+            <BusinessAccountMenuContent onClose={close} onLogout={handleLogout} variant="dropdown" />
           </div>
         )
       ) : null}
