@@ -37,6 +37,7 @@ const TAB_BAR_ROUTES: ReadonlySet<string> = new Set([
   // 공고 등록 허브 — 폼이 아니라 트랙 선택 화면이라 저장바가 없다
   "/business/jobs/new",
   "/business/applicants",
+  "/business/headhunting",
   "/business/headhunting/manage",
   // MY 탭 하위 목록·설정 화면 (하단 고정 요소 없음)
   "/business/billing/plans",
