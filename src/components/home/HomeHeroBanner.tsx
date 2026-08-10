@@ -52,8 +52,9 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
 
   return (
     <section className="pt-7">
+      {/* ≤760px 높이 230→244: 텍스트 블록이 justify-end라 pt로는 제목이 안 내려온다. 제목 위 숨 쉴 공간(18.3→32.3px)을 만드는 레버는 배너 높이뿐이다. */}
       <div
-        className="relative h-[290px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[260px] max-[760px]:h-[230px]"
+        className="relative h-[290px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[260px] max-[760px]:h-[244px]"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
@@ -76,7 +77,7 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
               <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
 
               <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-6">
-                {/* 배너 높이가 고정(290/260/230)이라 제목·부제 크기가 곧 레이아웃 여유다.
+                {/* 배너 높이가 고정(290/260/244)이라 제목·부제 크기가 곧 레이아웃 여유다.
                     ≤760px에서 제목은 2줄이 되므로, 부제가 15px보다 크면 긴 부제(약국 슬라이드)가
                     2줄로 늘어나 내용이 230px를 넘고 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것. */}
                 <h1 className="max-w-[720px] break-keep text-[34px] font-bold leading-[1.25] tracking-[-0.02em] text-white max-[760px]:text-[26px]">
