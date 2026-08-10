@@ -7,7 +7,7 @@ import { Bookmark, CalendarClock, CalendarPlus, ChevronRight, Layers, Lock, MapP
 import { JobCard } from "@/components/JobCard";
 import { FLUSH_LIST_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
-import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/SectionAnchorNav";
+import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/sectionAnchorStyles";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";

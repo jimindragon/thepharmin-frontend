@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SECTION_ANCHOR_OFFSET } from "@/components/shared/sectionAnchorStyles";
 
 export interface AnchorSection {
   /** 페이지가 소유한 섹션 DOM id. 이 id를 가진 요소가 없으면 해당 탭은 렌더되지 않는다. */
@@ -9,25 +10,6 @@ export interface AnchorSection {
   /** 탭 문구. 섹션 제목을 그대로 쓰면 길어지는 자리(예: "자격 요건 및 우대사항")는 줄여 쓴다. */
   label: string;
 }
-
-/** 앵커 행 실측 높이 — 탭 줄 h-11(44px) + 하단 경계선 1px. 아래 109 = 헤더 64 + 이 값. */
-const NAV_HEIGHT = 44 + 1;
-
-/** 헤더(64px, sticky) + 앵커 행 — 섹션 상단이 앵커 행에 가리지 않고 바로 아래 서는 값. */
-export const SECTION_ANCHOR_OFFSET = 64 + NAV_HEIGHT;
-
-/**
- * 앵커가 가리키는 섹션에 붙이는 scroll-margin. 클릭 시의 위치 보정은 전부 이 한 줄이 맡는다.
- *
- * ≤760px 변형으로만 두는 이유가 둘이다. 앵커 행 자체가 그 폭에서만 뜨고, 공고 상세
- * IconSectionShell이 이미 변형 없는 scroll-mt-[130px](데스크톱 앵커 시절의 잔재)를 달고 있어
- * 변형을 붙여야 같은 축에서 이긴다 — "변형 없는 유틸리티 < 변형 붙은 유틸리티".
- *
- * 클래스 문자열을 여기서 내보내는 것은 109(=SECTION_ANCHOR_OFFSET)라는 숫자의 출처를 한 곳에
- * 두기 위해서다. Tailwind는 리터럴만 수집하므로 값 자체는 손으로 맞춰 적되, 위 상수를 고치면
- * 여기도 같이 고쳐야 한다는 것을 이 주석이 알린다.
- */
-export const SECTION_ANCHOR_SCROLL_MT_CLASS = "max-[760px]:scroll-mt-[109px]";
 
 /**
  * 3개 미만이면 앵커 행을 렌더하지 않는다 — 두 칸짜리 목차는 훑을 것이 없어
@@ -135,8 +117,13 @@ export function SectionAnchorNav({ sections, ariaLabel = "섹션 바로가기" }
     <nav
       /* 셸이 물러난 만큼 되밀어 흰 바가 화면 폭을 채운다 — 본문 위에 떠 있는 동안 좌우로 회색
          배경이 새면 바가 아니라 카드처럼 읽힌다. 이 컴포넌트는 ≤760px에서만 뜨므로
-         --shell-gutter는 항상 48px(=좌우 24px)이고 변형을 붙일 필요가 없다. */
-      className="sticky top-16 z-30 -mx-[calc(var(--shell-gutter)/2)] border-b border-border bg-white min-[761px]:hidden"
+         --shell-gutter는 항상 48px(=좌우 24px)이고 변형을 붙일 필요가 없다.
+
+         min-w-0는 부모가 flex/grid일 때의 기본 최소 크기(auto)를 끈다. 다만 그것만으로는
+         부족한 자리가 있다 — 부모가 트랙을 명시하지 않은 grid면 열이 auto(=max-content)로 잡혀
+         탭 줄 전체 길이가 페이지 폭을 늘린다(기업 상세 개요에서 390px 화면이 474px이 됐다).
+         이 컴포넌트를 grid 안에 넣을 때는 부모에 grid-cols-1(=minmax(0,1fr))을 줄 것. */
+      className="sticky top-16 z-30 -mx-[calc(var(--shell-gutter)/2)] min-w-0 border-b border-border bg-white min-[761px]:hidden"
       aria-label={ariaLabel}
     >
       {/* 스크롤바를 감추지 않는다 — 가려진 탭이 더 있다는 유일한 신호다.

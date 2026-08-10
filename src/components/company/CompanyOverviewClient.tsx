@@ -1,3 +1,5 @@
+import { SectionAnchorNav } from "@/components/shared/SectionAnchorNav";
+import { companyDetailAnchors } from "@/config/companyDetailAnchors";
 import { companies } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
@@ -29,7 +31,9 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
   if (track === "hospital" && company) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
-        <div className="grid gap-9">
+        <div className="grid grid-cols-1 gap-9">
+          {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
+          <SectionAnchorNav sections={companyDetailAnchors.hospital} ariaLabel="기업 정보 섹션 바로가기" />
           <HospitalSummarySection profile={profile} company={company} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -43,7 +47,9 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
   if (track === "pharmacy" && company) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
-        <div className="grid gap-9">
+        <div className="grid grid-cols-1 gap-9">
+          {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
+          <SectionAnchorNav sections={companyDetailAnchors.pharmacy} ariaLabel="기업 정보 섹션 바로가기" />
           <PharmacySummarySection profile={profile} company={company} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -57,7 +63,9 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
   if (track === "research" && company) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
-        <div className="grid gap-9">
+        <div className="grid grid-cols-1 gap-9">
+          {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
+          <SectionAnchorNav sections={companyDetailAnchors.research} ariaLabel="기업 정보 섹션 바로가기" />
           <ResearchSummarySection profile={profile} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -70,7 +78,9 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
-      <div className="grid gap-9">
+      <div className="grid grid-cols-1 gap-9">
+        {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
+        <SectionAnchorNav sections={companyDetailAnchors.industry} ariaLabel="기업 정보 섹션 바로가기" />
         <CompanyOverview profile={profile} />
         <CompanyDetailOverview profile={profile} />
         <CompanyActiveJobsPreviewSection profile={profile} />
