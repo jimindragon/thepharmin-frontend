@@ -20,19 +20,29 @@ import { useBusinessMember } from "@/hooks/useBusinessMember";
  */
 
 /**
- * 탭바를 띄우는 1차 화면 목록. 정확히 일치할 때만 렌더한다(하위 경로 매칭 아님).
+ * 탭바를 띄우는 화면 목록. 정확히 일치할 때만 렌더한다(하위 경로 매칭 아님).
  *
- * 목록형 5개만 넣고 폼·상세를 뺀 이유는 개인 TAB_BAR_ROUTES와 같다:
- *   1) 앱 문법 — 탭바는 "어디로 갈까"를 고르는 자리다.
- *   2) 하단 고정 요소와의 충돌 회피. 기업 폼 5종(company/pharmacy/hospital/research
- *      프로필 + headhunting/manage/new)이 `sticky bottom-0 z-30` 저장바를 쓰고,
- *      /business/jobs/new/*도 같은 계열이다 — 목록에서 빼면 겹칠 일이 없다.
+ * 제외 기준은 실충돌(sticky 저장바)만 — 개인 탭바와 동일 원칙이고, 화면 깊이가 아니다.
+ * 빠지는 건 `sticky bottom-0 z-30` 저장바(실측 114.4px)가 같은 자리를 쓰는 화면들이다 —
+ * /business/jobs/new/{industry,research,hospital,pharmacy}, headhunting/manage/new,
+ * 그리고 트랙별 정보관리 5종(company/profile은 industry/profile로 리다이렉트된다).
+ * 여기에 이미 고른 뒤의 화면인 상세(applicants/[id])를 더한다.
+ *
+ * 반대로 목록·설정·허브는 하단 충돌이 없어(실측 0건) 그대로 넣는다 — 목록에서 목록으로
+ * 건너뛰는 게 탭바의 본래 용도다. jobs/new는 폼이 아니라 트랙 선택 허브라 포함된다.
  */
 const TAB_BAR_ROUTES: ReadonlySet<string> = new Set([
   "/business/dashboard",
   "/business/jobs",
+  // 공고 등록 허브 — 폼이 아니라 트랙 선택 화면이라 저장바가 없다
+  "/business/jobs/new",
   "/business/applicants",
+  "/business/headhunting/manage",
+  // MY 탭 하위 목록·설정 화면 (하단 고정 요소 없음)
+  "/business/billing/plans",
+  "/business/billing/history",
   "/business/notifications",
+  "/business/notifications/settings",
   "/business/profile-hub",
 ]);
 
