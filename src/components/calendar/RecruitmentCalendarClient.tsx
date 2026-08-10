@@ -1000,7 +1000,7 @@ export function RecruitmentCalendarClient() {
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  className={`h-[48px] text-[15px] font-medium transition max-[760px]:flex max-[760px]:items-center max-[760px]:justify-center max-[760px]:gap-1 max-[760px]:whitespace-nowrap max-[760px]:text-[13px] ${
+                  className={`h-[48px] text-[15px] font-medium transition max-[760px]:flex max-[760px]:h-10 max-[760px]:items-center max-[760px]:justify-center max-[760px]:gap-1 max-[760px]:whitespace-nowrap max-[760px]:text-[13px] ${
                     active
                       ? "bg-[#1b1f25] text-white shadow-[0_10px_22px_rgba(17,17,17,0.16)]"
                       : "bg-white text-[#4b535f] hover:bg-[#f6f7f8]"
@@ -1031,30 +1031,38 @@ export function RecruitmentCalendarClient() {
 
           <div className="jobs-layout mt-3.5">
             <section className="overflow-hidden border border-[#e0e5eb] bg-white">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e7ebef] px-5 py-5">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e7ebef] px-5 py-5 max-[760px]:gap-3">
+                {/* ≤760px에서는 3열 그리드로 바뀌어 ◀·월·▶ 묶음이 줄 정중앙, "오늘"이 우측 끝에 선다. 데스크톱은 기존 좌측 flex 행 그대로. */}
+                <div className="flex items-center gap-4 max-[760px]:grid max-[760px]:w-full max-[760px]:grid-cols-[1fr_auto_1fr] max-[760px]:gap-0">
+                  {/* 가운데 열을 줄 정중앙에 고정하기 위한 좌측 균형 칸 */}
+                  <span aria-hidden className="hidden max-[760px]:block" />
+
+                  <div className="flex items-center gap-4 max-[760px]:gap-2">
+                    <button
+                      type="button"
+                      className="grid h-10 w-10 place-items-center border border-[#dfe4eb] bg-white text-[#5f6875] hover:border-[#1b1f25] hover:text-[#1b1f25]"
+                      onClick={() => moveMonth(-1)}
+                      aria-label="이전 달"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <h2 className="min-w-[132px] text-center text-[28px] font-bold tracking-[-0.02em] text-[#20242b] max-[760px]:min-w-[92px] max-[760px]:text-[20px]">
+                      {visibleMonth.getFullYear()}. {String(visibleMonth.getMonth() + 1).padStart(2, "0")}
+                    </h2>
+                    <button
+                      type="button"
+                      className="grid h-10 w-10 place-items-center border border-[#dfe4eb] bg-white text-[#5f6875] hover:border-[#1b1f25] hover:text-[#1b1f25]"
+                      onClick={() => moveMonth(1)}
+                      aria-label="다음 달"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+
+                  {/* ≤760px: 테두리 없는 텍스트 버튼으로 강등. h-10이 40px 높이를, px-2.5가 40px 이상 탭 폭을 확보하고, 같은 값의 -mr이 글자를 콘텐츠 우측선에 맞춘다. */}
                   <button
                     type="button"
-                    className="grid h-10 w-10 place-items-center border border-[#dfe4eb] bg-white text-[#5f6875] hover:border-[#1b1f25] hover:text-[#1b1f25]"
-                    onClick={() => moveMonth(-1)}
-                    aria-label="이전 달"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <h2 className="min-w-[132px] text-center text-[28px] font-bold tracking-[-0.02em] text-[#20242b]">
-                    {visibleMonth.getFullYear()}. {String(visibleMonth.getMonth() + 1).padStart(2, "0")}
-                  </h2>
-                  <button
-                    type="button"
-                    className="grid h-10 w-10 place-items-center border border-[#dfe4eb] bg-white text-[#5f6875] hover:border-[#1b1f25] hover:text-[#1b1f25]"
-                    onClick={() => moveMonth(1)}
-                    aria-label="다음 달"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25]"
+                    className="h-10 border border-[#dfe4eb] bg-white px-4 text-[13px] font-medium text-[#4d5662] hover:border-[#1b1f25] max-[760px]:-mr-2.5 max-[760px]:justify-self-end max-[760px]:border-0 max-[760px]:bg-transparent max-[760px]:px-2.5"
                     onClick={moveToday}
                   >
                     오늘
