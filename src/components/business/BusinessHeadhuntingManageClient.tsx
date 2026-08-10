@@ -172,25 +172,72 @@ export function BusinessHeadhuntingManageClient() {
       key: "action",
       width: "104px",
       align: "end",
-      cell: (request) => (
-        // stopPropagation — 행 클릭과 버튼 클릭이 겹쳐 두 번 실행되지 않게 한다
-        <span onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            onClick={() => handleSelectRequest(request.id)}
-            className={clsx(
-              "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
-              selectedRequestId === request.id
-                ? "border-[#111111] bg-[#111111] text-white"
-                : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
-            )}
-          >
-            후보자 보기
-          </button>
-        </span>
-      ),
+      cell: (request) => renderRequestAction(request),
     },
   ];
+
+  /** 후보자 보기 토글. 표의 액션 열과 모바일 카드가 같은 것을 쓴다 — 선택 상태 표기가 갈리지 않게 한다. */
+  function renderRequestAction(request: HeadhuntingRequest) {
+    return (
+      // stopPropagation — 행(카드) 클릭과 버튼 클릭이 겹쳐 두 번 실행되지 않게 한다
+      <span onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={() => handleSelectRequest(request.id)}
+          className={clsx(
+            "inline-flex h-8 items-center justify-center border px-3 text-[13px] font-medium transition",
+            selectedRequestId === request.id
+              ? "border-[#111111] bg-[#111111] text-white"
+              : "border-[#cfd8e3] text-[#303946] hover:border-[#111111] hover:text-[#111111]",
+          )}
+        >
+          후보자 보기
+        </button>
+      </span>
+    );
+  }
+
+  /**
+   * ≤760px 의뢰 카드. 표 7열(포지션·직무 분야·진행 상태·인원·추천 후보자·신청일·액션)을 세 줄로.
+   *
+   * 1줄: 포지션 + 진행 상태 뱃지
+   * 2줄: 직무 분야 · 인원 · 추천 후보 수 · 신청일
+   * 3줄: 후보자 보기(선택 시 검정)
+   *
+   * chevron은 두지 않았다 — 이 행의 목적지는 다른 화면이 아니라 같은 페이지 아래의
+   * "추천 후보자 현황" 필터다. 카드 전체 탭은 표의 행 클릭과 같은 동작(선택 + 스크롤)을 하고,
+   * 선택된 카드는 DataTable이 isRowSelected로 배경을 깔아 준다.
+   */
+  const renderRequestCard = (request: HeadhuntingRequest) => (
+    <div className="px-6 py-4">
+      <div className="flex items-start gap-3">
+        <p className="line-clamp-1 min-w-0 flex-1 text-[15px] font-semibold leading-[1.45] text-[#17202c]">
+          {request.positionTitle}
+        </p>
+        <span className="shrink-0">
+          <StatusPill
+            tone={HEADHUNTING_REQUEST_TONE[request.status]}
+            label={headhuntingStatusLabel(request.status)}
+          />
+        </span>
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[13px] font-normal text-[#8a94a3]">
+        <span>
+          {headhuntingJobCategoryLabel(request.jobCategoryId)} ·{" "}
+          {headhuntingJobSubcategoryLabel(request.jobCategoryId, request.jobSubcategoryId)}
+        </span>
+        <span aria-hidden>·</span>
+        <span>{request.headcount}명 채용</span>
+        <span aria-hidden>·</span>
+        <span>후보 {request.recommendedCandidateCount}명</span>
+        <span aria-hidden>·</span>
+        <span className="whitespace-nowrap">신청 {request.requestedAt}</span>
+      </div>
+
+      <div className="mt-3 flex justify-end">{renderRequestAction(request)}</div>
+    </div>
+  );
 
   const CANDIDATE_COLUMNS: DataTableColumn<HeadhuntingCandidate>[] = [
     {
@@ -263,25 +310,78 @@ export function BusinessHeadhuntingManageClient() {
       key: "action",
       width: "104px",
       align: "end",
-      cell: () => (
-        <span className="flex items-center gap-1.5">
-          <button
-            type="button"
-            className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
-          >
-            상세
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[#cfd8e3] text-[#8a94a3] transition hover:border-[#111111] hover:text-[#111111]"
-            aria-label="더보기"
-          >
-            <MoreHorizontal size={14} />
-          </button>
-        </span>
-      ),
+      cell: () => renderCandidateActions(),
     },
   ];
+
+  /** 후보자 행 액션(상세·더보기). 표의 액션 열과 모바일 카드가 같은 것을 쓴다. */
+  function renderCandidateActions() {
+    return (
+      <span className="flex items-center gap-1.5">
+        <button
+          type="button"
+          className="inline-flex h-8 items-center justify-center whitespace-nowrap border border-[#cfd8e3] px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+        >
+          상세
+        </button>
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center border border-[#cfd8e3] text-[#8a94a3] transition hover:border-[#111111] hover:text-[#111111]"
+          aria-label="더보기"
+        >
+          <MoreHorizontal size={14} />
+        </button>
+      </span>
+    );
+  }
+
+  /**
+   * ≤760px 후보자 카드. 표 6열(후보자·주요 경력·매칭 포지션·적합도·진행 상태·추천일·액션)을 네 줄로.
+   *
+   * 1줄: 후보자 코드 + 진행 상태 뱃지
+   * 2줄: 주요 경력 요약(clamp-1)
+   * 3줄: 매칭 포지션 칩 · 추천일
+   * 4줄: 적합도 좌, 상세·더보기 우
+   *
+   * chevron 없음 — 후보자 상세 라우트가 없다(표의 '상세'도 지금은 목적지 없는 버튼이라
+   * 카드에도 그대로 옮겨 데스크톱과 같은 상태로 둔다).
+   * 표에만 남긴 값: 아바타 아이콘, "추천 후보자" 캡션, 적합도 캡션("N개 요건 중 M개 충족").
+   */
+  const renderCandidateCard = (candidate: HeadhuntingCandidate) => (
+    <div className="px-6 py-4">
+      <div className="flex items-start gap-3">
+        <p className="line-clamp-1 min-w-0 flex-1 text-[15px] font-semibold leading-[1.45] text-[#17202c]">
+          {candidate.code}
+        </p>
+        <span className="shrink-0">
+          <StatusPill
+            tone={HEADHUNTING_CANDIDATE_TONE[candidate.status]}
+            label={candidateStatusLabel(candidate.status)}
+          />
+        </span>
+      </div>
+
+      <p className="mt-1.5 line-clamp-1 text-[13px] font-normal text-[#8a94a3]">
+        {candidate.experienceSummary}
+      </p>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[13px] font-normal text-[#8a94a3]">
+        <span className="block max-w-full truncate border border-[#dfe4ea] bg-[#f7f8fa] px-2 py-1 text-[12px] font-medium text-[#596373]">
+          {requestTitleById.get(candidate.matchedRequestId) ?? "—"}
+        </span>
+        <span aria-hidden>·</span>
+        <span className="whitespace-nowrap">추천 {candidate.recommendedAt}</span>
+      </div>
+
+      <div className="mt-2.5 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="shrink-0 text-[13px] font-normal text-[#8a94a3]">적합도</span>
+          <FitScoreBar score={candidate.fitScore} />
+        </div>
+        {renderCandidateActions()}
+      </div>
+    </div>
+  );
 
   function handleSelectRequest(id: string) {
     const next = selectedRequestId === id ? null : id;
@@ -386,20 +486,23 @@ export function BusinessHeadhuntingManageClient() {
             </div>
           </div>
 
-          {/* 테이블 */}
-          <DataTable
-            columns={REQUEST_COLUMNS}
-            rows={filteredRequests}
-            rowKey={(request) => request.id}
-            /* 873(기존 트랙 폭) + 좌우 패딩 48 — 패딩이 행 안으로 들어와 총폭에 포함된다 */
-            minWidth={921}
-            onRowClick={(request) => handleSelectRequest(request.id)}
-            isRowSelected={(request) => selectedRequestId === request.id}
-            empty={{
-              title: "해당하는 의뢰가 없습니다",
-              description: "조건을 변경해 다시 검색해 보세요.",
-            }}
-          />
+          {/* 테이블 — ≤760px는 카드. 셸 거터(24px)를 되밀어 화면 폭을 채운다(공고 관리 선례) */}
+          <div className="max-[760px]:-mx-[calc(var(--shell-gutter)/2)]">
+            <DataTable
+              columns={REQUEST_COLUMNS}
+              rows={filteredRequests}
+              rowKey={(request) => request.id}
+              mobileCard={renderRequestCard}
+              /* 873(기존 트랙 폭) + 좌우 패딩 48 — 패딩이 행 안으로 들어와 총폭에 포함된다 */
+              minWidth={921}
+              onRowClick={(request) => handleSelectRequest(request.id)}
+              isRowSelected={(request) => selectedRequestId === request.id}
+              empty={{
+                title: "해당하는 의뢰가 없습니다",
+                description: "조건을 변경해 다시 검색해 보세요.",
+              }}
+            />
+          </div>
         </div>
 
         {/* 추천 후보자 현황 */}
@@ -458,33 +561,36 @@ export function BusinessHeadhuntingManageClient() {
             ))}
           </div>
 
-          {/* 테이블 카드 */}
-          <DataTable
-            columns={CANDIDATE_COLUMNS}
-            rows={pagedCandidates}
-            rowKey={(candidate) => candidate.id}
-            minWidth={921}
-            empty={{
-              title: selectedRequestId
-                ? "해당 의뢰의 후보자가 없습니다"
-                : candidateTab !== "all"
-                  ? "해당 상태의 후보자가 없습니다"
-                  : "추천된 후보자가 없습니다",
-              description: "헤드헌팅 의뢰를 진행하면 후보자가 이곳에 추천됩니다.",
-            }}
-            pagination={
-              filteredCandidates.length > 0 ? (
-                <div className="pb-6">
-                  <Pagination
-                    currentPage={safeCandidatePage}
-                    totalPages={candidateTotalPages}
-                    onPageChange={setCandidatePage}
-                    ariaLabel="후보자 목록 페이지"
-                  />
-                </div>
-              ) : undefined
-            }
-          />
+          {/* 테이블 카드 — ≤760px는 카드 목록 */}
+          <div className="max-[760px]:-mx-[calc(var(--shell-gutter)/2)]">
+            <DataTable
+              columns={CANDIDATE_COLUMNS}
+              rows={pagedCandidates}
+              rowKey={(candidate) => candidate.id}
+              mobileCard={renderCandidateCard}
+              minWidth={921}
+              empty={{
+                title: selectedRequestId
+                  ? "해당 의뢰의 후보자가 없습니다"
+                  : candidateTab !== "all"
+                    ? "해당 상태의 후보자가 없습니다"
+                    : "추천된 후보자가 없습니다",
+                description: "헤드헌팅 의뢰를 진행하면 후보자가 이곳에 추천됩니다.",
+              }}
+              pagination={
+                filteredCandidates.length > 0 ? (
+                  <div className="pb-6">
+                    <Pagination
+                      currentPage={safeCandidatePage}
+                      totalPages={candidateTotalPages}
+                      onPageChange={setCandidatePage}
+                      ariaLabel="후보자 목록 페이지"
+                    />
+                  </div>
+                ) : undefined
+              }
+            />
+          </div>
         </div>
       </div>
     </BusinessCenterShell>
