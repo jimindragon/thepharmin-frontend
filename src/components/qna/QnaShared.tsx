@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getEntryCommentCount, getMyQnaComments, getMyQnaPosts, getPopularQnaTags, getQnaPostById, qnaOperationPrinciple } from "@/data/qna";
@@ -183,12 +184,18 @@ interface MyActivityPanelProps {
    * 이 패널은 /qna/activity로 가는 앱 내 유일한 진입점이므로 어느 폭에서도 사라지면 안 된다.
    */
   variant?: "panel" | "compact";
+  /**
+   * compact 전용. 3칸 박스 위에 "내 활동 ›" 텍스트 링크 행을 얹는다.
+   * compact에는 제목이 없어 3칸이 무엇을 세는 칸인지 이름이 붙지 않고, 3칸 각각은 탭별 딥링크라
+   * /qna/activity 첫 화면으로 가는 통로가 따로 필요하다. 3칸의 기존 링크는 그대로 둔다.
+   */
+  showLabelLink?: boolean;
   /** 호출부가 폭에 따라 노출을 제어하기 위한 통로 — 패널 자체는 반응형을 갖지 않는다 */
   className?: string;
 }
 
 /** 허브/상세 사이드바가 공유하는 "내 활동" 카드 — 스크랩 카운트만 activeType 기준으로 필터링한다 */
-export function MyActivityPanel({ activeType, variant = "panel", className }: MyActivityPanelProps) {
+export function MyActivityPanel({ activeType, variant = "panel", showLabelLink = false, className }: MyActivityPanelProps) {
   const [scrapCount, setScrapCount] = useState(0);
   const myPostsCount = getMyQnaPosts().length;
   const myCommentsCount = getMyQnaComments().length;
@@ -208,8 +215,9 @@ export function MyActivityPanel({ activeType, variant = "panel", className }: My
   ];
 
   if (variant === "compact") {
-    return (
-      <section className={clsx("border border-border bg-white", className)} aria-label="내 활동">
+    const box = (
+      /* 레이블 행이 붙을 때는 바깥 래퍼가 여백을 받으므로 className을 넘기지 않는다 */
+      <section className={clsx("border border-border bg-white", !showLabelLink && className)} aria-label="내 활동">
         <div className="grid grid-cols-3">
           {items.map((item) => (
             <Link
@@ -223,6 +231,22 @@ export function MyActivityPanel({ activeType, variant = "panel", className }: My
           ))}
         </div>
       </section>
+    );
+
+    if (!showLabelLink) return box;
+
+    return (
+      <div className={className}>
+        {/* 테두리 밖에 두어 "이름 붙은 텍스트 행 + 숫자 박스"로 층이 갈리게 한다 — 안에 넣으면 3칸 박스가 커진다 */}
+        <Link
+          href="/qna/activity"
+          className="inline-flex h-10 items-center gap-0.5 text-[13px] font-medium text-[#4b535f] transition hover:text-[#111111]"
+        >
+          내 활동
+          <ChevronRight size={14} aria-hidden="true" />
+        </Link>
+        {box}
+      </div>
     );
   }
 

@@ -245,8 +245,16 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
 
         {/* 사이드바가 본문 맨 아래로 밀리는 1열 폭에서만 본문 상단으로 끌어올린다 —
             "내 활동"은 /qna/activity로 가는 앱 내 유일한 진입점이라 하단 사각지대에 두면 도달률이 0에 수렴한다.
-            아래 aside 사본과 max-[1040px]/min-[1041px]로 정확히 상보라 겹치거나 비는 구간이 없다. */}
-        {isLoggedIn ? <MyActivityPanel activeType={activeType} variant="compact" className="mt-6 min-[1041px]:hidden" /> : null}
+            아래 aside 사본과 max-[1040px]/min-[1041px]로 정확히 상보라 겹치거나 비는 구간이 없다.
+
+            그 1열 구간(761~1040px)용 사본은 여기, ≤760px용 사본은 컴포저 아래에 따로 둔다 —
+            좁은 화면에서는 페이지의 목적인 "글쓰기"가 내 활동 요약보다 먼저 와야 하는데, 두 형제의
+            자리를 CSS로 맞바꾸려면 .app-shell 전체를 flex로 바꿔야 해서 헤더·칩·본문까지 같이 흔들린다.
+            같은 컨트롤을 두 벌 렌더하고 브레이크포인트로 한쪽만 남기는 건 이 파일의 유형 토글(위)과
+            캘린더 UpcomingApplicationsSection이 이미 쓰는 방식이다. 세 구간이 서로 배타라 중복 노출은 없다. */}
+        {isLoggedIn ? (
+          <MyActivityPanel activeType={activeType} variant="compact" className="mt-6 max-[760px]:hidden min-[1041px]:hidden" />
+        ) : null}
 
         <QnaComposer
           activeType={activeType}
@@ -254,6 +262,11 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           isVerifiedPharmacist={canSwitchType}
           onNotify={(message) => showQnaNotice(setNotice, message)}
         />
+
+        {/* ≤760px 사본. 제목 없는 3칸만으로는 무엇의 숫자인지 읽히지 않아 레이블 행을 함께 붙인다 */}
+        {isLoggedIn ? (
+          <MyActivityPanel activeType={activeType} variant="compact" showLabelLink className="mt-4 min-[761px]:hidden" />
+        ) : null}
 
         {/* 모바일은 wrap 대신 1행 가로 스크롤 — 10개짜리 태그 필터라 전부 보일 필요가 없고,
             wrap하면 3줄 124px을 먹어 첫 화면에 글 카드가 한 장도 들어오지 않는다 */}
