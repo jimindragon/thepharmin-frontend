@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { ChevronDown, ThumbsUp } from "lucide-react";
+import { ChevronDown, MessageCircle, ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { PageHeader } from "@/components/PageHeader";
@@ -144,11 +144,18 @@ function QnaListCard({ entry, previewQuery }: { entry: QnaListEntry; previewQuer
             </span>
           ))}
         </span>
-        <span className="inline-flex shrink-0 items-center gap-2 text-[13px] font-normal text-[#8b95a1]">
-          <span className="whitespace-nowrap">댓글 {commentCount}</span>
-          <span className="inline-flex items-center gap-1">
+        {/* 댓글·공감 모두 "회색 아이콘 + 숫자"로 통일한다 — 한쪽만 단어를 달고 있으면 두 지표가 같은 층으로 읽히지 않는다.
+            단어가 사라져 숫자만 남으므로 각 묶음이 레이블을 직접 진다. role="img"를 함께 두는 이유는
+            role 없는 span에는 aria-label이 노출되지 않아(generic 롤), 안쪽을 aria-hidden으로 덮은 순간
+            스크린리더에서 지표가 통째로 사라지기 때문이다. gap-3은 두 묶음이 한 덩어리로 뭉치는 것을 막는다. */}
+        <span className="inline-flex shrink-0 items-center gap-3 text-[13px] font-normal text-[#8b95a1]">
+          <span role="img" aria-label={`댓글 ${commentCount}개`} className="inline-flex items-center gap-1">
+            <MessageCircle size={14} aria-hidden="true" />
+            <span aria-hidden="true">{commentCount}</span>
+          </span>
+          <span role="img" aria-label={`공감 ${entry.likeCount}개`} className="inline-flex items-center gap-1">
             <ThumbsUp size={14} aria-hidden="true" />
-            {entry.likeCount}
+            <span aria-hidden="true">{entry.likeCount}</span>
           </span>
         </span>
       </div>
