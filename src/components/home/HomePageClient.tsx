@@ -191,8 +191,11 @@ function HomeRecommendationCard({
       >
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
-      {/* 로고 영역: 박스 없이 이미지만, 없으면 이니셜 */}
-      <div className="flex w-[130px] shrink-0 items-center justify-center px-5">
+      {/* 로고 영역: 박스 없이 이미지만, 없으면 이니셜
+          ≤760px 칸 폭 130 → 112(좌우 여백 20 → 16). 로고가 실제로 쓰는 폭은 90 → 80이 된다.
+          로고는 가로형이라 폭이 줄어도 높이 40 안에서 여유가 있고, 여기서 나온 18px은 전부 우측 정보 열로 간다
+          (카드가 화면 폭 하나를 통째로 쓰는 1열 배치라 제목·태그가 잘리는 쪽이 손해가 크다). */}
+      <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[760px]:w-[112px] max-[760px]:px-4">
         {/* JobCard와 같은 규격 — 폭은 칸이 정하므로 !w-full로 EntityLogo의 인라인 width를 덮는다.
             height 40 + padding 0은 종전 `max-h-10 w-full object-contain`과 같은 렌더 결과다. */}
         <EntityLogo
@@ -207,8 +210,10 @@ function HomeRecommendationCard({
       </div>
       {/* 세로 구분선 */}
       <div className="w-px shrink-0 self-stretch bg-[#eeeeee]" />
-      {/* 정보 영역 */}
-      <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px]">
+      {/* 정보 영역
+          ≤760px 안쪽 여백 22 → 20. 20(p-5)이 모바일 가이드라인의 카드 패딩 바닥값이라 위아래로 내려갈 수 있는
+          한 단계가 이게 전부다 — 나머지는 아래 요소 사이 간격(제목→태그 10→8, 태그→풋터 12→10)에서 만든다. */}
+      <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px] max-[760px]:px-5 max-[760px]:pt-5">
         <button
           type="button"
           onClick={(event) => {
@@ -220,16 +225,18 @@ function HomeRecommendationCard({
         >
           <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
+        {/* ≤760px 타이포: 제목 17 → 16(위계 압축표). 회사명 13·태그 12는 15px 바닥 아래라 그대로 둔다 —
+            이 카드에서 줄일 수 있는 글자는 제목 하나뿐이다. */}
         <p className="truncate pr-8 text-[13px] font-medium text-[#6b7280]">{job.company}</p>
-        <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111]")}>{job.title}</h3>
-        <div className="mt-2.5 flex flex-wrap gap-2">
+        <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111] max-[760px]:text-[16px]")}>{job.title}</h3>
+        <div className="mt-2.5 flex flex-wrap gap-2 max-[760px]:mt-2">
           {(job.coreKeywords ?? []).slice(0, 4).map((tag) => (
             <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
               {tag}
             </span>
           ))}
         </div>
-        <div className="mt-auto flex items-center justify-between pt-3">
+        <div className="mt-auto flex items-center justify-between pt-3 max-[760px]:pt-2.5">
           <div className="flex items-center gap-2">
             {job.postingSource === "headhunting" ? (
               <span className="bg-[#111111] px-2.5 py-1 text-[13px] font-medium text-white">헤드헌팅</span>
