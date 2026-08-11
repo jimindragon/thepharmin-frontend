@@ -607,8 +607,16 @@ export function ApplyCard({
  * 히어로 텍스트 영역 상단에 얹는 기업 정보 + 액션 묶음.
  * 왼쪽: [로고]+기업명+관심 기업 저장(기업 단위 액션), 오른쪽: 저장·공유(공고 단위 액션).
  * showLogo=false인 트랙(약국)은 로고 자리를 만들지 않고 기업명부터 시작한다.
- * 모바일(≤560px)에서는 로고+기업명 행 아래로 관심 기업 저장 버튼이 full-width로 내려가고,
- * 저장·공유는 기존 모바일 하단바가 담당하므로 여기서는 숨긴다.
+ * 저장·공유는 767px 이하에서 모바일 하단바가 담당하므로 여기서는 숨긴다.
+ *
+ * ≤760px에서 관심 기업 버튼은 테두리를 벗고 텍스트 버튼이 된다(히트 영역만 h-10로 남긴다). 문구도
+ * 기업 상세 히어로(2b12316)와 같은 "관심 기업"으로 줄인다 — 같은 동작을 두 화면이 다르게 부르지 않는다.
+ * ≤560px에서는 [로고][기업명 / 관심 기업] 두 칸으로 접어 한 행에 담는다. 종전에는 로고 행 아래로
+ * 전폭 버튼이 내려가 이 묶음만 98px(2.5행)을 먹었고, 그만큼 공고 제목이 아래로 밀려 있었다.
+ * 그래서 로고와 기업명이 한 링크였던 것을 로고 링크 / 기업명 링크로 나눈다 — 로고가 두 줄(기업명+버튼)
+ * 옆에 서려면 같은 부모의 형제여야 한다. 로고 쪽은 aria-hidden+tabIndex=-1로 접근성 트리·탭 순서에서
+ * 빼, 같은 목적지 링크가 둘로 읽히지 않게 한다.
+ *
  * companyId가 있으면 로고+기업명을 /companies/{companyId}로 감싼다 — 프로필 존재 여부와 무관하게
  * 항상 링크(하단 CompanyCtaButtons "기업 정보 더보기"와 동일한 무조건부 링크 관례). companyId가 없는
  * 공고(비공개 기업, 연구 트랙 free-text 기관 등)는 기존처럼 비링크 텍스트로 둔다.
@@ -634,36 +642,52 @@ export function JobDetailActionRow({
   onToggleInterest: () => void;
   onShare: () => void;
 }) {
-  const companyContent = (
-    <>
-      {showLogo ? <CompanyLogo name={orgName} logoUrl={logoUrl} size="sm" /> : null}
-      <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
-    </>
-  );
+  const logo = showLogo ? <CompanyLogo name={orgName} logoUrl={logoUrl} size="sm" /> : null;
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-3 max-[560px]:w-full max-[560px]:flex-col max-[560px]:items-start">
-        {companyId ? (
-          <Link href={`/companies/${companyId}`} className="group flex items-center gap-3">
-            {showLogo ? <CompanyLogo name={orgName} logoUrl={logoUrl} size="sm" /> : null}
-            <p className="text-[15px] font-normal text-[#667181] group-hover:text-brand">{orgName}</p>
-          </Link>
-        ) : (
-          <div className="flex items-center gap-3">{companyContent}</div>
-        )}
+      <div className="flex min-w-0 flex-wrap items-center gap-3 max-[560px]:flex-nowrap">
+        {logo ? (
+          companyId ? (
+            <Link href={`/companies/${companyId}`} aria-hidden tabIndex={-1} className="flex shrink-0">
+              {logo}
+            </Link>
+          ) : (
+            logo
+          )
+        ) : null}
 
-        <button
-          type="button"
-          onClick={onToggleInterest}
+        {/* 기업명 + 관심 기업. showLogo 트랙만 ≤560px에서 두 줄로 접는다 — 로고가 없는 약국은
+            접을 이유가 없고(이미 한 행), 접으면 오히려 버튼 높이만큼 늘어난다. */}
+        <div
           className={clsx(
-            "inline-flex h-8 items-center gap-1.5 border bg-white px-3 text-[12px] font-medium transition max-[560px]:h-10 max-[560px]:w-full max-[560px]:justify-center",
-            interested ? "border-brand text-brand" : "border-[#dfe5ec] text-[#596373] hover:border-brand hover:text-brand",
+            "flex min-w-0 items-center gap-3",
+            showLogo && "max-[560px]:flex-col max-[560px]:items-start max-[560px]:gap-0",
           )}
         >
-          <Bookmark size={14} fill={interested ? "currentColor" : "none"} />
-          {interested ? "관심 기업 저장됨" : "관심 기업으로 저장"}
-        </button>
+          {companyId ? (
+            <Link href={`/companies/${companyId}`} className="min-w-0">
+              <p className="text-[15px] font-normal text-[#667181] hover:text-brand">{orgName}</p>
+            </Link>
+          ) : (
+            <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
+          )}
+
+          <button
+            type="button"
+            onClick={onToggleInterest}
+            aria-label={interested ? "관심 기업 저장됨" : "관심 기업으로 저장"}
+            className={clsx(
+              "inline-flex h-8 shrink-0 items-center gap-1.5 border bg-white px-3 text-[12px] font-medium transition",
+              "max-[760px]:h-10 max-[760px]:border-0 max-[760px]:bg-transparent max-[760px]:px-0 max-[760px]:text-[13px]",
+              interested ? "border-brand text-brand" : "border-[#dfe5ec] text-[#596373] hover:border-brand hover:text-brand",
+            )}
+          >
+            <Bookmark size={14} fill={interested ? "currentColor" : "none"} />
+            <span className="max-[760px]:hidden">{interested ? "관심 기업 저장됨" : "관심 기업으로 저장"}</span>
+            <span className="min-[761px]:hidden">관심 기업</span>
+          </button>
+        </div>
       </div>
 
       {/* 공고 단위 액션(저장·공유)은 768px부터 여기, 767px 이하는 모바일 하단바가 통째로 담당한다 —
@@ -677,6 +701,38 @@ export function JobDetailActionRow({
           <Share2 size={17} />
         </ActionIconButton>
       </div>
+    </div>
+  );
+}
+
+/**
+ * 히어로 텍스트 블록 — 4트랙(산업·약국·병원·연구)이 같은 4줄(기업 행 / 공고 제목 / 메타 / 한줄 소개)을
+ * 각자 복제하고 있던 것을 한 자리로 모은다. 트랙별로 다른 것은 필드 이름뿐이라(oneLineIntro vs summary 등)
+ * 호출부에서 문자열로 넘긴다.
+ *
+ * DOM 순서는 모바일 위계를 따른다 — 공고 제목이 기업 행 바로 다음이다. 이 화면의 주어는 공고이고 기업은
+ * 그 부가 정보인데, 종전에는 메타 한 줄이 제목 앞을 막고 있었다. >760px에서만 order로 메타를 제목 위로
+ * 되돌려 데스크톱 배치를 그대로 유지한다(액션 행은 order 미지정=0이라 항상 맨 앞).
+ * 메타~소개 사이 구분선은 ≤760px 전용이다 — 좁은 폭에서 메타와 소개가 같은 크기·비슷한 색으로 붙어
+ * 한 문단처럼 읽히던 것을 끊는다.
+ */
+export function JobDetailHeroHeader({
+  title,
+  meta,
+  intro,
+  ...actionRow
+}: React.ComponentProps<typeof JobDetailActionRow> & { title: string; meta: string; intro: string }) {
+  return (
+    <div className="flex flex-col">
+      <JobDetailActionRow {...actionRow} />
+      <h1 className="mt-4 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px] min-[761px]:order-3 min-[761px]:mt-2">
+        {title}
+      </h1>
+      <p className="mt-2 text-[15px] font-normal text-[#667181] min-[761px]:order-2 min-[761px]:mt-3">{meta}</p>
+      <div className="mt-3 border-t border-[#edf1f4] min-[761px]:hidden" />
+      <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181] min-[761px]:order-4 min-[761px]:mt-4">
+        {intro}
+      </p>
     </div>
   );
 }

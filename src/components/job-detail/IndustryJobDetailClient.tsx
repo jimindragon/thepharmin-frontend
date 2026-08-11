@@ -34,7 +34,7 @@ import {
   getApplyButtonLabel,
   HiringProcessSteps,
   IconSectionShell,
-  JobDetailActionRow,
+  JobDetailHeroHeader,
   MapPlaceholder,
   MobileApplyInfoSection,
   MobileDeadlineCalendarSection,
@@ -127,7 +127,7 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                   className="h-[286px] w-full object-cover max-[720px]:h-[210px]"
                 />
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
-                  <JobDetailActionRow
+                  <JobDetailHeroHeader
                     orgName={org.name}
                     companyId={data.companyId}
                     showLogo
@@ -137,14 +137,10 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
                     interested={interested}
                     onToggleInterest={() => setInterested((v) => !v)}
                     onShare={handleShare}
+                    title={job.title}
+                    meta={heroSubline}
+                    intro={job.oneLineIntro}
                   />
-                  <p className="mt-3 text-[15px] font-normal text-[#667181]">{heroSubline}</p>
-                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px]">
-                    {job.title}
-                  </h1>
-                  <p className="mt-4 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">
-                    {job.oneLineIntro}
-                  </p>
                 </div>
               </section>
 

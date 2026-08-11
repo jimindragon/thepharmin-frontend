@@ -35,7 +35,7 @@ import {
   IconSectionShell,
   InfoRow,
   InfoRowList,
-  JobDetailActionRow,
+  JobDetailHeroHeader,
   MapPlaceholder,
   MobileApplyInfoSection,
   MobileDeadlineCalendarSection,
@@ -135,7 +135,7 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
                   className="h-[286px] w-full object-cover max-[720px]:h-[210px]"
                 />
                 <div className="px-7 pb-7 pt-6 max-[720px]:px-5">
-                  <JobDetailActionRow
+                  <JobDetailHeroHeader
                     orgName={org.institutionName}
                     companyId={data.companyId}
                     showLogo
@@ -145,14 +145,10 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
                     interested={interested}
                     onToggleInterest={() => setInterested((v) => !v)}
                     onShare={handleShare}
+                    title={job.title}
+                    meta={heroMeta}
+                    intro={job.summary}
                   />
-                  <p className="mt-3 text-[15px] font-normal text-[#667181]">{heroMeta}</p>
-                  <h1 className="mt-2 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px]">
-                    {job.title}
-                  </h1>
-                  <p className="mt-4 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181]">
-                    {job.summary}
-                  </p>
                 </div>
               </section>
 
