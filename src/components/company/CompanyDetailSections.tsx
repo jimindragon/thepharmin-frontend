@@ -440,8 +440,10 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
         </Link>
       }
     >
+      {/* 이 목록이 공고 탭 본문의 전부다 — ≤760px에서 섹션이 이미 전폭이므로 목록은 섹션 패딩(24px =
+          --shell-gutter/2)만큼 더 밀면 화면 끝에 닿는다. 채용관·공고 상세 "비슷한 공고"와 같은 한 줄이다. */}
       {activeJobs.length ? (
-        <CompanyJobsGrid jobs={activeJobs} />
+        <CompanyJobsGrid jobs={activeJobs} flush />
       ) : (
         <EmptyState
           message="현재 채용중인 공고가 없습니다. 관심 기업으로 저장해두면 새 공고가 올라올 때 알려드릴게요."
