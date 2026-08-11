@@ -22,7 +22,7 @@ import { homeSpotlightSlugs, recommendedJobs } from "@/data/recommendedJobs";
 import { useHorizontalCarousel } from "@/hooks/useHorizontalCarousel";
 import type { Job } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
-import { formatJobDeadlineLabel } from "@/utils/dday";
+import { formatJobDeadlineLabel, isJobDeadlineUrgent } from "@/utils/dday";
 
 function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
   const trackCompanies = activeTrack === "all" ? premiumCompanies : premiumCompanies.filter((company) => company.track === activeTrack);
@@ -297,7 +297,12 @@ function HomeRecommendationCard({
               {APPLY_METHOD_SHORT_LABELS[job.applyMethod]}
             </span>
           </div>
-          <strong className="text-[13px] font-medium text-danger">{formatJobDeadlineLabel(job)}</strong>
+          {/* 라벨과 색을 같은 판정에서 뽑는다. 종전에는 색이 무조건 text-danger라
+              formatJobDeadlineLabel이 내주는 "상시채용"·"마감"까지 빨갛게 나왔다 — 급할 게 없는
+              두 상태가 가장 급해 보였다. JobCard·공고 상세와 같은 isJobDeadlineUrgent를 쓴다. */}
+          <strong className={clsx("text-[13px] font-medium", isJobDeadlineUrgent(job) ? "text-danger" : "text-[#6b7280]")}>
+            {formatJobDeadlineLabel(job)}
+          </strong>
         </div>
       </div>
     </article>
