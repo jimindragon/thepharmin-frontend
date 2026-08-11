@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Bookmark, Flag, Share2, ThumbsUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { Button } from "@/components/ui/Button";
 import { myPageUser } from "@/config/myPageMenu";
 import { getPopularQnaEntries, getRelatedQnaEntries } from "@/data/qna";
@@ -295,8 +296,19 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
         </Link>
 
         <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:gap-6">
+          {/*
+            ≤760px 풀블리드 — 본문·댓글·"이런 글은 어때요?" 세 카드가 공고 상세·기업 상세와 같은 한 줄
+            (FLUSH_SECTION_CLASS)로 화면 폭을 채운다. 이 페이지만 회색 배경 위에 좌우로 물러난 카드였다.
+            카드 사이는 종전 space-y(≤760px 16px) 회색 간격 그대로 둔다 — 목록(FLUSH_LIST_CLASS)과 달리
+            이 셋은 서로 다른 성격의 섹션 덩어리라, 붙여서 divide-y로 가르면 한 장짜리 문서로 읽힌다.
+
+            padding은 축을 나눠 둔다: 좌우는 FLUSH_SECTION_CLASS의 max-[760px]:px-6(=24px, h1·칩이 서 있는
+            --shell-gutter/2 선)이 맡고 여기서는 변형 없는 px-7만 남긴다. p 단축형을 그대로 두면 같은 축에
+            변형이 둘 겹쳐 Tailwind 출력 순서에 기대게 된다(flushListStyles 주석의 규칙).
+            뒤로가기 행과 댓글 컴포저는 카드 안쪽 요소라 자리가 그대로다.
+          */}
           <div className="min-w-0 space-y-5 max-[760px]:space-y-4">
-            <article className="border border-border bg-white p-7 max-[760px]:p-5">
+            <article className={clsx("border border-border bg-white px-7 py-7 max-[760px]:py-5", FLUSH_SECTION_CLASS)}>
               {post.isBest ? (
                 <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
               ) : null}
@@ -341,7 +353,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
               />
             </article>
 
-            <section className="border border-border bg-white p-7 max-[760px]:p-5">
+            <section className={clsx("border border-border bg-white px-7 py-7 max-[760px]:py-5", FLUSH_SECTION_CLASS)}>
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">댓글 {totalCommentCount}</h2>
                 <CommentSortControl value={commentSort} onChange={setCommentSort} />
@@ -408,7 +420,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             </section>
 
             {relatedEntries.length ? (
-              <section className="border border-border bg-white p-7 max-[760px]:p-5">
+              <section className={clsx("border border-border bg-white px-7 py-7 max-[760px]:py-5", FLUSH_SECTION_CLASS)}>
                 <h2 className="text-[17px] font-bold tracking-[-0.01em] text-[#17202c] max-[760px]:text-[16px]">이런 글은 어때요?</h2>
                 <div className="mt-3 divide-y divide-[#edf1f5] border-t border-[#edf1f5]">
                   {relatedEntries.map((entry) => (
