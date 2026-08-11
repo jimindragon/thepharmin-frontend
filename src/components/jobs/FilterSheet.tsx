@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { Check, ChevronDown, RotateCcw } from "lucide-react";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { ModalShell } from "@/components/ui/ModalShell";
 import {
   emptyJobFilters,
@@ -159,6 +159,7 @@ function SheetCategoryPanel({
   const [tabsExpanded, setTabsExpanded] = useState(false);
   const [tabsOverflow, setTabsOverflow] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const activeTabRef = useRef<HTMLButtonElement>(null);
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
 
   /**
@@ -193,6 +194,39 @@ function SheetCategoryPanel({
   }, [categories, tabsExpanded]);
 
   /**
+   * 접힌 뒤 활성 탭을 가로 스크롤 안으로 되돌린다.
+   *
+   * 펼치는 순간 flex-wrap으로 가로 넘침이 사라지면서 브라우저가 scrollLeft를 0으로 클램프하고 그 값을 버린다 —
+   * 접기 전 위치를 복원하려 해도 원본이 남아 있지 않다. 그래서 접힌 뒤 활성 탭 기준으로 다시 계산한다.
+   * 접힘 경로는 셰브론(toggleTabs)과 탭 선택에 딸린 자동 접힘 둘인데 모두 tabsExpanded로 수렴해 여기 한 곳이면 된다.
+   *
+   * scrollIntoView를 쓰지 않는다 — 그 호출은 스크롤 조상을 전부 훑어 본문 세로 스크롤(bodyRef)까지 건드리는데,
+   * 탭 줄은 sticky인 데다 같은 타이밍에 위 두 자리가 이미 scrollTo({ top: 0 })을 부르고 있어 세로축이 다툰다.
+   * offsetLeft가 아니라 rect 차를 쓰는 것은 sticky 래퍼가 positioned라 탭의 offsetParent가 tabsRef가 아니어서다.
+   * 이미 보이는 탭은 건드리지 않는다(가장 가까운 가장자리로만 민다). 레이아웃 이펙트인 것은 페인트 전에 끝내야
+   * scrollLeft가 0인 한 프레임이 비치지 않기 때문이다.
+   */
+  useLayoutEffect(() => {
+    if (tabsExpanded) return;
+
+    const element = tabsRef.current;
+    const tab = activeTabRef.current;
+    if (!element || !tab) return;
+
+    // 폭도 rect에서 가져온다 — offsetWidth는 정수로 반올림돼 오른쪽 끝으로 밀 때 1px 못 미치고,
+    // 그만큼 탭의 오른쪽 테두리가 잘린다(390~700px 전 구간에서 0.73px).
+    const tabRect = tab.getBoundingClientRect();
+    const left = tabRect.left - element.getBoundingClientRect().left + element.scrollLeft;
+    const right = left + tabRect.width;
+
+    if (left < element.scrollLeft) {
+      element.scrollLeft = left;
+    } else if (right > element.scrollLeft + element.clientWidth) {
+      element.scrollLeft = right - element.clientWidth;
+    }
+  }, [tabsExpanded]);
+
+  /**
    * 펼침과 함께 목록을 맨 위로 되감는다. 탭 줄은 sticky라 흐름에 남아 있고, 목록을 내린 상태에서
    * 펼치면 머리에 붙은 줄이 아래로 커지며 보고 있던 행을 덮는다(브라우저가 스크롤을 보정해주지 않는다).
    */
@@ -225,6 +259,7 @@ function SheetCategoryPanel({
               return (
                 <button
                   key={category.id}
+                  ref={active ? activeTabRef : null}
                   type="button"
                   onClick={() => setActiveCategoryId(category.id)}
                   className={clsx(
