@@ -151,9 +151,14 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.88)_32%,rgba(6,8,13,0.6)_56%,rgba(6,8,13,0.2)_78%,rgba(6,8,13,0)_94%)] max-[760px]:bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.9)_40%,rgba(6,8,13,0.72)_70%,rgba(6,8,13,0.52)_88%,rgba(6,8,13,0.38)_100%)]" />
               <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
 
-              <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-6">
+              {/* ≤760px 아래 여백 24(pb-6) → 32(pb-8): CTA가 배너 바닥에 깔려 보였다. 아래를 8px 벌린 만큼
+                  부제→CTA 간격을 8px 줄여(mt-9 → max-[760px]:mt-7) 상쇄하므로, 제목·부제가 서 있는 자리와
+                  세로 예산은 그대로고 CTA만 8px 위로 올라온다. 761px 이상(pb-14/pb-10)은 손대지 않는다. */}
+              <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-8">
                 {/* 배너 높이가 고정(290/260/244)이라 제목·부제 크기가 곧 레이아웃 여유다.
-                    ≤760px 기준 세로 예산은 제목+부제 122px(244 − CTA 48 − mt-9 36 − pb 24 − mt-[14px] 14).
+                    ≤760px 기준 세로 예산은 제목+부제 126px(244 − CTA 44(h-11) − mt-7 28 − pb-8 32 − mt-[14px] 14).
+                    CTA 위(28)와 아래(32)를 재배분해도 합(60)이 종전(36+24)과 같아 이 예산은 변하지 않는다 —
+                    둘 중 하나만 손대면 그만큼 예산이 깎여 제목 첫 줄이 잘리므로 반드시 짝으로 움직일 것.
                     부제가 15px보다 크면 긴 부제(약국 슬라이드)가 2줄로 늘어나 이 예산을 넘고,
                     내용이 justify-end라 넘친 만큼 제목 첫 줄이 위로 잘린다. 키우기 전 반드시 실측할 것.
 
@@ -169,7 +174,7 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                 <p className="mt-[14px] max-w-[560px] break-keep text-[17px] font-normal text-[#c9ced3] max-[760px]:text-[15px]">
                   {slide.subtitle}
                 </p>
-                <div className="mt-9 flex flex-wrap items-center gap-5">
+                <div className="mt-9 flex flex-wrap items-center gap-5 max-[760px]:mt-7">
                   {/*
                     사진 위 단독 CTA — 어두운 변형.
                     ≤380px 축소는 페이저와 한 줄을 나눠 쓰던 시절의 처방이다(CTA 158 + 페이저 116 = 274라
