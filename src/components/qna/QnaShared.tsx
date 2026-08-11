@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MessageCircle, ThumbsUp } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getEntryCommentCount, getMyQnaComments, getMyQnaPosts, getPopularQnaTags, getQnaPostById, qnaOperationPrinciple } from "@/data/qna";
@@ -142,21 +142,49 @@ export function TrendingPostsPanel({
         실시간 인기 글
       </h2>
       <ol className="mt-4 space-y-4">
-        {entries.map((entry, index) => (
-          <li key={entry.id}>
-            <Link href={`/qna/${entry.id}${previewQuery}`} className="transition hover:opacity-70">
-              <span className="flex items-start gap-3">
-                <span className="text-[13px] font-medium text-[#6c7684]">{index + 1}</span>
-                <span className="min-w-0">
-                  <span className="line-clamp-2 text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
-                  <span className="mt-0.5 block text-[12px] font-normal text-[#a0a9b7]">
-                    #{entry.tags[0]} · 댓글 {getEntryCommentCount(entry)}
+        {entries.map((entry, index) => {
+          /* 태그가 빈 글이 섞여도 "#undefined"가 찍히지 않도록 조각을 만들 때 걸러 낸다(홈 인기글과 같은 방어) */
+          const tagLabel = entry.tags[0] ? `#${entry.tags[0]}` : null;
+          const commentCount = getEntryCommentCount(entry);
+
+          return (
+            <li key={entry.id}>
+              <Link href={`/qna/${entry.id}${previewQuery}`} className="transition hover:opacity-70">
+                <span className="flex items-start gap-3">
+                  <span className="text-[13px] font-medium text-[#6c7684]">{index + 1}</span>
+                  <span className="min-w-0">
+                    <span className="line-clamp-2 text-[14px] font-semibold text-[#1c232e]">{entry.title}</span>
+                    {/* 목록 카드(QnaHomeClient)와 같은 "회색 아이콘 + 숫자" 문법으로 맞춘다 — 같은 글의 같은 지표가
+                        자리마다 다른 문법으로 적혀 있으면 두 화면이 같은 것을 세고 있다고 읽히지 않는다.
+                        단어가 사라져 숫자만 남으므로 각 묶음이 role="img" + aria-label로 레이블을 직접 진다.
+                        role 없는 span에는 aria-label이 노출되지 않아(generic 롤), 안쪽을 aria-hidden으로 덮은
+                        순간 스크린리더에서 지표가 통째로 사라진다.
+
+                        이 행 전체가 <Link> 안이라 블록 요소를 쓸 수 없다 — 전부 span에 display만 바꿔 쓴다.
+                        아이콘 13px은 목록 카드의 14px을 이 줄의 글자 크기(13 → 12px)에 맞춰 내린 값이다.
+
+                        280px 사이드바에서 공감까지 붙으면 한 줄을 넘길 수 있다. 줄바꿈 대신 태그를 truncate한다 —
+                        두 줄이 되면 제목(line-clamp-2)과 높이가 같아져 무엇이 제목인지 흐려진다.
+                        지표 묶음은 shrink-0 + ml-auto로 오른쪽에 고정해, 태그 길이와 무관하게 행마다 같은 자리에 선다. */}
+                    <span className="mt-0.5 flex items-center gap-3 text-[12px] font-normal text-[#a0a9b7]">
+                      {tagLabel ? <span className="min-w-0 truncate">{tagLabel}</span> : null}
+                      <span className="ml-auto inline-flex shrink-0 items-center gap-3">
+                        <span role="img" aria-label={`댓글 ${commentCount}개`} className="inline-flex items-center gap-1">
+                          <MessageCircle size={13} aria-hidden="true" />
+                          <span aria-hidden="true">{commentCount}</span>
+                        </span>
+                        <span role="img" aria-label={`공감 ${entry.likeCount}개`} className="inline-flex items-center gap-1">
+                          <ThumbsUp size={13} aria-hidden="true" />
+                          <span aria-hidden="true">{entry.likeCount}</span>
+                        </span>
+                      </span>
+                    </span>
                   </span>
                 </span>
-              </span>
-            </Link>
-          </li>
-        ))}
+              </Link>
+            </li>
+          );
+        })}
       </ol>
     </section>
   );
