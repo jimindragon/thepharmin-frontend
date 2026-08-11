@@ -340,8 +340,17 @@ function PersonalRecommendationSection({
           그래서 같은 관용구(거터 되밀기 -mx, divide-y)만 손으로 가져오고 카드 쪽은 각 요소에서 직접 처리한다.
 
           border-l/border-t와 셀의 -ml-px/-mt-px는 칸을 맞대어 선을 하나로 합치는 짝이라 함께 푼다.
-          화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽히고, 낱장 사이 선은 divide-y가 그린다. */}
-      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:border-0">
+          화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽히고, 낱장 사이 선은 divide-y가 그린다.
+
+          단 위아래는 남긴다(border-t/border-b). divide-y는 낱장 "사이"에만 선을 그어 목록의 첫 줄 위와
+          마지막 줄 아래가 열려 있었는데, 풀블리드라 카드가 흰 배경 위 흰 블록이라 목록이 어디서
+          시작해 어디서 끝나는지 경계가 없었다. 색은 divide-y와 같은 --color-border로 맞춰 세 선이
+          한 줄기로 읽히게 한다(데스크톱 #dddddd와 다른 값이라 변형 쪽에서 덮어쓴다).
+
+          좌우만 끄는 데 border-0 대신 border-l-0을 쓴다 — border-0(단축)과 border-t/b(개별)는
+          서로 다른 속성이라 같은 변에서 부딪히면 승부가 Tailwind 출력 순서에 달린다.
+          변마다 규칙이 하나씩만 걸리게 두면 순서에 기대지 않는다. */}
+      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:border-b max-[760px]:border-l-0 max-[760px]:border-t max-[760px]:border-[var(--color-border)]">
         {visibleJobs.map((job) => (
           <div key={job.id} className="-ml-px -mt-px h-full max-[760px]:ml-0 max-[760px]:mt-0">
             <HomeRecommendationCard job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
