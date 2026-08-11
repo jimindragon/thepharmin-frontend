@@ -35,7 +35,7 @@ interface JobCardProps {
 const ROOT_CLASS = {
   default: "surface group relative shadow-none transition-colors hover:border-[#111111]/55 hover:bg-[#fbfcfc]",
   flush:
-    "group relative bg-white shadow-none transition-colors hover:bg-[#fbfcfc] min-[761px]:border min-[761px]:border-[var(--color-border)] min-[761px]:hover:border-[#111111]/55",
+    "group relative bg-white shadow-none transition-colors hover:bg-[#fbfcfc] min-[761px]:border min-[761px]:border-border min-[761px]:hover:border-[#111111]/55",
 } as const;
 
 /**

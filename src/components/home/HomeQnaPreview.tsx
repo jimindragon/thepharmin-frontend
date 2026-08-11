@@ -70,7 +70,7 @@ export function HomeQnaPreview() {
             <Link
               key={entry.id}
               href={`/qna/${entry.id}`}
-              className="group block border-[var(--color-border)] py-4 [-webkit-tap-highlight-color:transparent]"
+              className="group block border-border py-4 [-webkit-tap-highlight-color:transparent]"
             >
               <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111] transition-colors group-hover:text-[#333333] group-active:text-[#333333]">
                 {entry.title}

@@ -349,7 +349,7 @@ function PersonalRecommendationSection({
           좌우만 끄는 데 border-0 대신 border-l-0을 쓴다 — border-0(단축)과 border-t/b(개별)는
           서로 다른 속성이라 같은 변에서 부딪히면 승부가 Tailwind 출력 순서에 달린다.
           변마다 규칙이 하나씩만 걸리게 두면 순서에 기대지 않는다. */}
-      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:border-b max-[760px]:border-l-0 max-[760px]:border-t max-[760px]:border-[var(--color-border)]">
+      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:border-b max-[760px]:border-l-0 max-[760px]:border-t max-[760px]:border-border">
         {visibleJobs.map((job) => (
           <div key={job.id} className="-ml-px -mt-px h-full max-[760px]:ml-0 max-[760px]:mt-0">
             <HomeRecommendationCard job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
