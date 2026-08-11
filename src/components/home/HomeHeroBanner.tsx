@@ -1,13 +1,16 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
 import { LinkButton } from "@/components/ui/Button";
 import { getHeroSlideCtaLabel, homeHeroSlides, type HomeHeroSlide, type HomeTrackFilter } from "@/data/home";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const HERO_AUTOPLAY_ALL_TRACK_MS = 4500;
 const HERO_AUTOPLAY_OTHER_TRACK_MS = 6500;
+
+/** 스와이프로 볼 가로 이동량(px)의 하한. 이보다 짧으면 탭이 살짝 밀린 것으로 본다. */
+const HERO_SWIPE_MIN_DISTANCE_PX = 44;
 
 /**
  * 제목을 titleBreakAfter 지점에서 두 덩어리로 나눠 각각 줄바꿈을 막는다.
@@ -70,6 +73,35 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
     setSlideIndex((current) => (current + amount + visibleSlides.length) % visibleSlides.length);
   };
 
+  /*
+   * 터치 스와이프. 이 캐러셀은 슬라이드가 전부 겹쳐 놓인 채 opacity로만 교차되는 구조라
+   * (가로 스크롤 컨테이너가 아니다) 브라우저가 주는 스와이프가 없다 — ≤760px에서 ‹›를 걷어내면
+   * 점 인디케이터 탭만 남아 조작성이 후퇴한다. 그래서 여기서 직접 받는다.
+   *
+   * 세로 이동이 더 크면 무시한다: 배너가 화면 폭을 꽉 채우게 되어 페이지를 세로로 훑는 손가락이
+   * 거의 항상 배너 위를 지나가는데, 그때 곁들여 생긴 가로 흔들림으로 슬라이드가 넘어가면 안 된다.
+   * preventDefault는 하지 않는다(세로 스크롤을 뺏지 않는다) — 판정은 손을 뗀 뒤에만 한다.
+   */
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const onTouchStart = (event: TouchEvent) => {
+    const touch = event.touches[0];
+    touchStartRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
+  };
+
+  const onTouchEnd = (event: TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    const touch = event.changedTouches[0];
+    if (!start || !touch || visibleSlides.length <= 1) return;
+
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < HERO_SWIPE_MIN_DISTANCE_PX || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+    moveSlide(deltaX < 0 ? 1 : -1);
+  };
+
   return (
     /* 헤더~히어로 28px → 20px(≤760px): 모바일은 첫 화면에 들어오는 세로가 짧아 헤더 바로 아래 빈 띠가
        그대로 손실이다. 히어로가 화면 폭을 꽉 채우게 되면서 위 여백만 남아 뜨는 것도 어색해 한 단계 줄인다.
@@ -85,6 +117,8 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
         className="relative h-[290px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[260px] max-[760px]:h-[244px] max-[760px]:-mx-[calc(var(--shell-gutter)/2)]"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         {visibleSlides.map((slide, index) => {
           const isActive = index === currentIndex;
@@ -147,10 +181,10 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
           );
         })}
 
-        <div className="absolute inset-x-0 bottom-0 z-20 flex justify-end px-14 pb-6 max-[1024px]:px-10 max-[760px]:px-6">
-          {/* CTA와 같은 줄을 나눠 쓰므로 ≤380px에서는 페이저 쪽을 더 세게 줄인다 — CTA가 주행동이고 이쪽은 크롬이다.
-              화살표 아이콘 크기(18)는 유지해 탭 타깃을 지키고, 안쪽 여백만 좁힌다. */}
-          <div className="flex items-center gap-[14px] rounded-none bg-black/35 px-[14px] py-2 max-[380px]:gap-1.5 max-[380px]:px-1.5">
+        {/* 페이저는 761px 이상 전용이 됐다 — ≤760px는 배너 아래 점 인디케이터가 대신한다.
+            사진 위에 얹힌 검은 알약이 CTA와 같은 줄을 나눠 쓰느라 좁은 폭에서 서로 밀어내던 문제도 함께 사라진다. */}
+        <div className="absolute inset-x-0 bottom-0 z-20 flex justify-end px-14 pb-6 max-[1024px]:px-10 max-[760px]:hidden">
+          <div className="flex items-center gap-[14px] rounded-none bg-black/35 px-[14px] py-2">
             <button
               type="button"
               className="text-white/70 transition hover:text-white"
@@ -173,6 +207,35 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
           </div>
         </div>
       </div>
+
+      {/* ≤760px 점 인디케이터 — 사진 위가 아니라 배너 밖(바로 아래)에 둔다. 배너가 화면 폭을 꽉 채우게 되면서
+          안쪽 아래 구석은 CTA가 이미 쓰고 있고, 사진 위에 얹은 크롬은 슬라이드마다 배경 밝기가 달라 대비가 흔들린다.
+          현재 위치를 알리는 역할만 하므로 흰 바탕 위에서 회색/검정 두 톤이면 충분하다.
+
+          6px 점을 그대로 누르게 하면 탭 타깃이 6px밖에 안 되므로, 각 버튼 안에 투명 span을 겹쳐 히트 영역만
+          넓힌다(자식이 부모 밖으로 나가도 클릭은 버튼이 받는다). 레이아웃은 6px + gap 8px 그대로다.
+
+          세로는 40px, 가로는 14px이다. 가로도 40px로 하면 이웃 점의 히트 영역과 겹치고, 겹친 구간은 DOM에서
+          뒤에 있는(=오른쪽) 점이 전부 가져간다 — 실측했더니 3번째 점을 눌러도 4번째가 켜졌다. 점 간격(pitch)이
+          6+8=14px이라 겹치지 않는 최대 가로가 14px이고, 이 값이면 점 행 전체(4×14=56px)가 빈틈도 겹침도 없이
+          덮인다. 그래서 늘릴 수 있는 축은 세로뿐이다. 위아래로 17px씩 넘치지만 위는 배너 여백, 아래는 다음
+          섹션까지 56px이라 남의 탭을 가로채지 않는다. 점만으로 조작하게 두지 않으려고 스와이프를 함께 넣었다. */}
+      {visibleSlides.length > 1 ? (
+        <div className="mt-4 hidden items-center justify-center gap-2 max-[760px]:flex" role="group" aria-label="배너 선택">
+          {visibleSlides.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              className={`relative h-1.5 w-1.5 rounded-full transition-colors ${index === currentIndex ? "bg-[#111111]" : "bg-[#d1d6dd]"}`}
+              onClick={() => setSlideIndex(index)}
+              aria-label={`${index + 1}번째 배너 보기`}
+              aria-current={index === currentIndex}
+            >
+              <span className="absolute left-1/2 top-1/2 h-10 w-[14px] -translate-x-1/2 -translate-y-1/2" />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
