@@ -150,14 +150,69 @@ function IndustryStatCard({ icon: Icon, label, value }: { icon: LucideIcon; labe
  * 적용한다 — 병원·약국·연구 B 카드는 비교 기준으로 IndustryStatCard(박스형)를 그대로 둔다. 배경·보더 박스 없이
  * 아이콘+라벨+값만 남기고, 셀 사이 구분은 부모 그리드의 divide-x가 담당한다(대표 제품 리스트형과 같은
  * "여백+타이포" 문법). */
-function IndustryDividerStatCell({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+function IndustryDividerStatCell({
+  icon: Icon,
+  label,
+  value,
+  className,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  /** 그리드 안에서의 배치(col-span 등)를 호출부가 지정할 자리. 셀 내부 스타일은 여기서만 정한다. */
+  className?: string;
+}) {
   return (
-    <div className="px-4 py-2 text-center">
+    <div className={clsx("px-4 py-2 text-center", className)}>
       <Icon size={18} className="mx-auto text-[#6b7280]" aria-hidden />
       <p className="mt-2 text-[13px] font-normal text-[#8b95a1]">{label}</p>
       <p className="mt-1 text-[17px] font-bold text-[#17202c]">{value}</p>
     </div>
   );
+}
+
+interface StatCell {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}
+
+/**
+ * 산업 트랙 "기업 정보" B 카드(4셀)의 ≤760px 2열 배치를 정한다 — 어느 셀이 전폭을 쓰고 어느 셀이
+ * 행 머리(=위 구분선)인지.
+ *
+ * **전폭은 값 길이가 아니라 필드로 정한다.** 사업 분야만 문장형이고("보툴리눔 톡신·HA필러·바이오 화장품
+ * 제조 및 도소매") 나머지 셋은 라벨형 짧은 값이다(기관 유형 "CRO·CDMO", 직원 수 "501명 이상", 설립 연도
+ * "2011년"). 길이로 판정하면 임계값이 폰트·폭에 따라 어긋나고, 같은 필드가 기업마다 다른 칸에 놓인다.
+ *
+ * **구분선을 nth-child 산술로 긋지 않는 이유**(직전 구현은 `[&>*:nth-child(n+3)]:border-t`였다):
+ * 그 규칙은 "모든 셀이 한 칸씩 차지한다"를 전제로 3번째 자식부터 행 머리로 봤다. 전폭 셀이 생기면
+ * 그 전제가 깨진다 — 짧은 값이 3개면 3번째가 행에 혼자 남아 선이 반쪽만 그어지고(실제로 그렇게 보였다),
+ * 짧은 값이 1개뿐이면 2번째 자식인 사업 분야가 새 행인데도 선을 못 받는다.
+ * 그래서 ① 짝을 못 이루는 마지막 짧은 셀도 전폭으로 올려 반쪽 선을 없애고, ② 행 머리 여부는 열 누적으로
+ * 직접 계산한다. 첫 행은 카드 상단이라 선을 긋지 않는다.
+ *
+ * 761px 이상은 4셀이 한 행에 들어가 행 구분선 자체가 없다(세로선 divide-x가 그 역할) — 여기서 붙는
+ * 클래스가 전부 max-[760px] 변형이라 데스크톱 렌더에는 영향이 없다.
+ */
+function layOutStatCells(shortCells: StatCell[], wideCell: StatCell | null) {
+  const cells = [
+    ...shortCells.map((cell, index) => ({
+      ...cell,
+      wide: shortCells.length % 2 === 1 && index === shortCells.length - 1,
+    })),
+    ...(wideCell ? [{ ...wideCell, wide: true }] : []),
+  ];
+
+  const COLUMNS = 2;
+  let filled = 0;
+  return cells.map((cell, index) => {
+    const span = cell.wide ? COLUMNS : 1;
+    if (filled + span > COLUMNS) filled = 0;
+    const startsNewRow = filled === 0 && index > 0;
+    filled = (filled + span) % COLUMNS;
+    return { ...cell, startsNewRow };
+  });
 }
 
 /** job-detail/shared.tsx의 InfoRow와 동일한 시각 스타일을 로컬로 복제(사유는 IndustryStatCard와 동일) */
@@ -215,7 +270,14 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
   const employeeCount = detailValue(profile, "직원 수");
   const foundedYear = detailValue(profile, "설립 연도");
   const businessField = detailValue(profile, "사업 분야");
-  const hasCards = Boolean(orgType || employeeCount || foundedYear || businessField);
+  const statCells = layOutStatCells(
+    [
+      orgType ? { icon: Building2, label: "기관 유형", value: orgType } : null,
+      employeeCount ? { icon: Users, label: "직원 수", value: employeeCount } : null,
+      foundedYear ? { icon: Calendar, label: "설립 연도", value: foundedYear } : null,
+    ].filter((cell): cell is StatCell => Boolean(cell)),
+    businessField ? { icon: Factory, label: "사업 분야", value: businessField } : null,
+  );
 
   const address = detailValue(profile, "본사 위치");
   const homepage = detailValue(profile, "홈페이지");
@@ -234,13 +296,23 @@ export function CompanyDetailOverview({ profile }: { profile: CompanyProfile }) 
     >
       <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">기업 정보</h2>
 
-      {hasCards ? (
-        // divide-y는 2번째 자식(첫 행 우측 셀)에도 상단선을 긋는다 — 2열에서 행 구분은 3번째 자식부터
-        <div className="mt-6 grid grid-cols-4 divide-x divide-[#e8edf2] max-[640px]:grid-cols-2 max-[640px]:divide-x-0 max-[640px]:[&>*:nth-child(n+3)]:border-t max-[640px]:[&>*:nth-child(n+3)]:border-[#e8edf2]">
-          {orgType ? <IndustryDividerStatCell icon={Building2} label="기관 유형" value={orgType} /> : null}
-          {employeeCount ? <IndustryDividerStatCell icon={Users} label="직원 수" value={employeeCount} /> : null}
-          {foundedYear ? <IndustryDividerStatCell icon={Calendar} label="설립 연도" value={foundedYear} /> : null}
-          {businessField ? <IndustryDividerStatCell icon={Factory} label="사업 분야" value={businessField} /> : null}
+      {statCells.length ? (
+        /* 2열 전환을 640px → 760px로 올린다 — 641~760px의 4열은 셀 하나가 150px 남짓이라 640px 이하와 같은
+           값 잘림을 겪던 구간이고, 이 화면의 다른 모바일 분기(풀블리드·앵커 행)와도 경계가 갈렸다.
+           행 구분선은 nth-child 산술 대신 layOutStatCells가 셀별로 정한다(사유는 그 함수 주석). */
+        <div className="mt-6 grid grid-cols-4 divide-x divide-[#e8edf2] max-[760px]:grid-cols-2 max-[760px]:divide-x-0">
+          {statCells.map((cell) => (
+            <IndustryDividerStatCell
+              key={cell.label}
+              icon={cell.icon}
+              label={cell.label}
+              value={cell.value}
+              className={clsx(
+                cell.wide && "max-[760px]:col-span-2",
+                cell.startsNewRow && "max-[760px]:border-t max-[760px]:border-[#e8edf2]",
+              )}
+            />
+          ))}
         </div>
       ) : null}
 
