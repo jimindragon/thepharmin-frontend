@@ -162,10 +162,13 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                 <div className="mt-9 flex flex-wrap items-center gap-5">
                   {/*
                     사진 위 단독 CTA — 어두운 변형.
-                    이 줄은 우측 끝 페이저와 폭을 나눠 쓴다. 원래 치수로는 CTA 158 + 페이저 116 = 274라
-                    본문 폭이 274에 못 미치는 ≤369px에서 겹치고, 370~380px에서도 간격이 0~10px로 붙는다.
-                    배너 높이가 고정이고 제목이 이미 3줄로 상단에 붙어 있어(320px 기준 여유 0) 세로로 피할
-                    수 없으므로 ≤380px에서 가로로 줄인다. 높이(h-12)는 그대로 둬 터치 타깃을 지킨다.
+                    ≤380px 축소는 페이저와 한 줄을 나눠 쓰던 시절의 처방이다(CTA 158 + 페이저 116 = 274라
+                    본문 폭이 274에 못 미치는 ≤369px에서 겹쳤다). ≤760px에서 페이저가 배너 밖으로 나가며
+                    다툴 상대는 사라졌지만, 좁은 폭 회귀를 막아 둔 안전장치라 그대로 둔다.
+                    높이(h-12)는 어느 폭에서도 건드리지 않는다 — 터치 타깃이다.
+
+                    화살표는 LinkButton 기본 gap-2(8px)로 붙는다. 라벨이 "…보기"로 끝나 목적지가 있다는 신호가
+                    글자밖에 없었다. 16px은 14px 라벨 옆에서 글자보다 커 보이지 않는 크기다.
                   */}
                   <LinkButton
                     href={slide.href}
@@ -174,6 +177,7 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                     className="max-[380px]:px-3 max-[380px]:text-[13px]"
                   >
                     {getHeroSlideCtaLabel(slide)}
+                    <ChevronRight size={16} aria-hidden />
                   </LinkButton>
                 </div>
               </div>
