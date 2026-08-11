@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { CarouselControl } from "@/components/RecommendedJobs";
+import { DeadlineSoonSection } from "@/components/home/DeadlineSoonSection";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
@@ -374,6 +375,7 @@ export function HomePageClient() {
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={activeTrack} />
+          <DeadlineSoonSection />
           <PremiumCompanies activeTrack={activeTrack} />
           <RecruiterSolutionBanner />
           <ThemeCuration />
