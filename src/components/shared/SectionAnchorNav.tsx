@@ -9,6 +9,12 @@ export interface AnchorSection {
   id: string;
   /** 탭 문구. 섹션 제목을 그대로 쓰면 길어지는 자리(예: "자격 요건 및 우대사항")는 줄여 쓴다. */
   label: string;
+  /**
+   * 라벨 뒤에 붙는 건수. 0도 숫자로 찍는다(공란과 "없음"은 다른 뜻이다).
+   * 세는 대상이 없는 섹션(소개·정보처럼 항목이 아니라 서술인 자리)은 넘기지 않는다 —
+   * 공고 상세(jobDetailAnchors)는 전부 이 경우라 카운트를 쓰지 않는다.
+   */
+  count?: number;
 }
 
 /**
@@ -147,7 +153,12 @@ export function SectionAnchorNav({ sections, ariaLabel = "섹션 바로가기" }
               )}
             >
               {section.label}
-              {/* 인디케이터 — 칩·탭바의 박스 대신 밑선 2px. "현재 위치"만 알리고 층은 올리지 않는다. */}
+              {/* 건수는 활성 여부와 무관하게 회색을 유지한다 — 색이 라벨을 따라가면 숫자가 두 번째 라벨처럼
+                  강해져 "지금 어디"를 알리는 인디케이터와 경쟁한다. 크기는 라벨과 같은 13px. */}
+              {typeof section.count === "number" ? (
+                <span className="ml-1 font-normal text-[#8a94a3]">{section.count}</span>
+              ) : null}
+              {/* 인디케이터— 칩·탭바의 박스 대신 밑선 2px. "현재 위치"만 알리고 층은 올리지 않는다. */}
               {active ? <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#111111]" aria-hidden /> : null}
             </button>
           );

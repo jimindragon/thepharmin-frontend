@@ -154,6 +154,26 @@ export function getActiveJobCount(companyId: string) {
   return getActiveJobs(companyId).length;
 }
 
+/**
+ * 기업 상세가 세는 목적지별 건수(채용공고·면접 후기·기업 리뷰·뉴스).
+ *
+ * 라우트 탭 행(CompanyDetailTabs)과 ≤760px 섹션 앵커(SectionAnchorNav)가 같은 숫자를 쓴다 —
+ * 761px 이상에서는 탭 행이, ≤760px에서는 앵커 행이 그 숫자를 보여주는 구조라 두 곳이 어긋나면
+ * 폭을 넘나드는 순간 같은 항목의 건수가 달라진다. 값은 전부 실제 데이터 length다.
+ */
+export function getCompanyDetailCounts(companyId: string) {
+  const profile = companyProfiles.find((item) => item.id === companyId);
+  const countReviews = (type: "interview" | "company") =>
+    companyReviews.filter((review) => review.companyId === companyId && review.type === type).length;
+
+  return {
+    jobs: getActiveJobCount(companyId),
+    interviews: countReviews("interview"),
+    reviews: countReviews("company"),
+    news: profile?.news.length ?? 0,
+  };
+}
+
 function parseCount(value?: string) {
   if (!value) return null;
   const parsed = Number(value.replace(/,/g, ""));
