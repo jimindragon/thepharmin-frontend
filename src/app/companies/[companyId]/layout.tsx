@@ -32,7 +32,10 @@ export default async function CompanyLayout({ children, params }: CompanyLayoutP
   return (
     <>
       <Header />
-      <main className="bg-[#f5f6f7] pb-24 pt-6">
+      {/* ≤760px pt-0 — 히어로가 풀블리드(9a715c1)라 좌우로 헤더와 같은 폭을 쓰는데, 위로만 24px 띄우면
+          회색 띠 하나가 끼어 헤더에서 떨어져 나온 것처럼 보인다. 홈 히어로(23eae02)와 같은 처방이다.
+          브레드크럼은 이 폭에서 이미 숨어 있어(PageBreadcrumb의 max-[760px]:hidden) 여백 계산에 없다. */}
+      <main className="bg-[#f5f6f7] pb-24 pt-6 max-[760px]:pt-0">
         <div className="app-shell">
           <PageBreadcrumb className="mb-5" items={[{ label: "기업 인사이트" }, { label: profile.name }]} />
           <CompanyHero profile={profile} />
