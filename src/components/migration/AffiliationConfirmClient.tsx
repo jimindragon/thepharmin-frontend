@@ -194,11 +194,10 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
           {isHeavy ? "소속 정보 입력" : "회원 정보 확인"}
         </h1>
         {isHeavy ? (
-          // 기존 직종명을 문장에 그대로 넣는다 — 왜 다시 골라야 하는지가 납득돼야 한다.
+          // 회원이 할 일(소속 다시 선택)만 말한다 — 분류 체계 개편이나 항목 세분화는 우리 사정이지
+          // 이 화면에 선 사람이 알아야 할 것도, 할 수 있는 것도 아니다.
           <p className="mt-3 text-[15px] font-normal leading-[1.7] text-[#68717e]">
-            소속 분류 체계가 개편되었습니다.
-            <br />
-            기존 &lsquo;{occupation.label}&rsquo; 항목이 세분화되어 다시 선택이 필요합니다.
+            서비스 이용을 위해 소속 정보를 다시 선택해 주세요.
           </p>
         ) : (
           <p className="mt-3 text-[15px] font-normal leading-[1.7] text-[#68717e]">
