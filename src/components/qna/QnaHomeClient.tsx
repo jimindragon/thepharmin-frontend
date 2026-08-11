@@ -2,8 +2,8 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { ThumbsUp } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, ThumbsUp } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { PageHeader } from "@/components/PageHeader";
 import { PageTabBar } from "@/components/ui/PageTabBar";
@@ -175,6 +175,12 @@ function QnaListEmptyState() {
   );
 }
 
+/**
+ * 접힘 상태에서 보여줄 칩 2줄의 높이 — 칩 h-[36px] 두 줄 + 그 사이 gap-2(8px).
+ * 위 nav의 `max-[760px]:max-h-[80px]`와 같은 값이어야 한다(한쪽만 바꾸면 넘침 판정이 어긋난다).
+ */
+const CHIPS_COLLAPSED_MAX_HEIGHT = 36 * 2 + 8;
+
 interface QnaHomeClientProps {
   activeType: QnaType;
   canSwitchType: boolean;
@@ -188,6 +194,9 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
   const [categoryFilter, setCategoryFilter] = useState("전체");
   const [sortOption, setSortOption] = useState<QnaSortOption>("추천순");
   const [notice, setNotice] = useState("");
+  const [chipsExpanded, setChipsExpanded] = useState(false);
+  const [chipsOverflow, setChipsOverflow] = useState(false);
+  const chipsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     /** 상세페이지 "인기 태그" 클릭(/qna?type=...&tag=...)으로 들어왔을 때 해당 태그로 바로 필터링 */
@@ -195,9 +204,31 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
     const isValidTag = Boolean(tagParam) && qnaCategoryFilters[activeType].includes(tagParam!);
     setCategoryFilter(isValidTag ? tagParam! : "전체");
     setSortOption("추천순");
+    setChipsExpanded(false);
   }, [activeType]);
 
   const filterChips = useMemo(() => ["전체", ...qnaCategoryFilters[activeType]], [activeType]);
+
+  /**
+   * 펼치기 버튼을 낼지 판정한다. 칩 **개수**가 아니라 실제 넘침을 본다 — 같은 10개라도 390px에서는
+   * 4줄, 720px에서는 2줄이라 개수 기준은 어느 폭에선가 반드시 틀린다.
+   *
+   * 재는 값은 칩 묶음의 scrollHeight(=클램프와 무관한 콘텐츠 전체 높이)이고, 접힘 높이 80px과 비교한다.
+   * clientHeight와 비교하지 않는 이유는 펼친 상태에서 둘이 같아져 버튼이 사라지기 때문이다.
+   * ResizeObserver로 폭 변화(회전·리사이즈)를 따라가고, 칩 목록이 바뀌는 유형 전환은 deps가 잡는다.
+   * 서버 렌더와 첫 클라이언트 렌더는 모두 false라 하이드레이션 불일치가 없다.
+   */
+  useEffect(() => {
+    const element = chipsRef.current;
+    if (!element) return;
+
+    const measure = () => setChipsOverflow(element.scrollHeight > CHIPS_COLLAPSED_MAX_HEIGHT + 1);
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [filterChips]);
 
   const visibleEntries = useMemo(() => {
     const filtered = categoryFilter === "전체" ? entries : entries.filter((entry) => entry.tags.includes(categoryFilter));
@@ -268,27 +299,55 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           <MyActivityPanel activeType={activeType} variant="compact" showLabelLink className="mt-4 min-[761px]:hidden" />
         ) : null}
 
-        {/* 모바일은 wrap 대신 1행 가로 스크롤 — 10개짜리 태그 필터라 전부 보일 필요가 없고,
-            wrap하면 3줄 124px을 먹어 첫 화면에 글 카드가 한 장도 들어오지 않는다 */}
-        <nav
-          className="mt-8 flex flex-wrap gap-2 border-b border-border pb-3.5 max-[760px]:mt-6 max-[760px]:flex-nowrap max-[760px]:overflow-x-auto max-[760px]:pb-1"
-          aria-label="QNA 카테고리"
-        >
-          {filterChips.map((chip) => (
+        {/*
+          ≤760px도 데스크톱과 같은 wrap이다. 한때 1행 가로 스크롤로 접었지만(3줄 124px을 먹어 첫 화면에 글
+          카드가 한 장도 안 들어온다는 이유), 실기기에서는 화면 밖 칩이 있다는 사실 자체가 보이지 않아
+          10개 중 3개만 있는 필터로 읽혔다. 대신 접힘 2줄 + 펼치기로 세로 예산을 지키면서 나머지가 있다는
+          것도 알린다 — 잘린 칩의 일부가 둘째 줄 끝에 보이고, ∨ 버튼이 더 있음을 확정한다.
+
+          바깥 flex는 칩 묶음과 펼치기 버튼을 좌/우로 가른다. 버튼을 칩과 같은 wrap 안에 두면 마지막 칩
+          뒤를 따라다녀 행 중간에 서고, 접힘 상태에서는 잘린 영역으로 넘어가 아예 안 보인다.
+          761px 이상에서는 자식이 칩 묶음 하나뿐이라(버튼은 min-[761px]:hidden, 칩 묶음은 flex-1)
+          종전 `nav.flex.flex-wrap`과 렌더가 같다.
+        */}
+        <nav className="mt-8 flex items-start gap-2 border-b border-border pb-3.5 max-[760px]:mt-6" aria-label="QNA 카테고리">
+          <div
+            ref={chipsRef}
+            className={clsx(
+              "flex flex-1 flex-wrap gap-2",
+              /* 80px = CHIPS_COLLAPSED_MAX_HEIGHT. 값을 문자열로 조립하면 Tailwind가 스캔하지 못해 리터럴로 적는다 */
+              !chipsExpanded && "max-[760px]:max-h-[80px] max-[760px]:overflow-hidden",
+            )}
+          >
+            {filterChips.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => setCategoryFilter(chip)}
+                className={clsx(
+                  "h-[36px] shrink-0 whitespace-nowrap px-4 text-[13px] font-medium transition-colors",
+                  categoryFilter === chip
+                    ? "border border-[#111111] bg-[#111111] text-white"
+                    : "border border-[#dce2ea] bg-white text-[#3d4653] hover:border-[#cfd8e3] hover:bg-[#f7f8fa] hover:text-[#111111]",
+                )}
+              >
+                {chip === "전체" ? chip : `#${chip}`}
+              </button>
+            ))}
+          </div>
+          {/* 2줄에 다 들어가면 렌더하지 않는다 — 누를 것이 없는 버튼은 "더 있다"는 거짓 신호다.
+              -mt-0.5는 40px 버튼을 36px 첫 줄 가운데에 맞춘다(위아래 2px씩). */}
+          {chipsOverflow ? (
             <button
-              key={chip}
               type="button"
-              onClick={() => setCategoryFilter(chip)}
-              className={clsx(
-                "h-[36px] shrink-0 whitespace-nowrap px-4 text-[13px] font-medium transition-colors",
-                categoryFilter === chip
-                  ? "border border-[#111111] bg-[#111111] text-white"
-                  : "border border-[#dce2ea] bg-white text-[#3d4653] hover:border-[#cfd8e3] hover:bg-[#f7f8fa] hover:text-[#111111]",
-              )}
+              onClick={() => setChipsExpanded((current) => !current)}
+              aria-expanded={chipsExpanded}
+              aria-label={chipsExpanded ? "카테고리 접기" : "카테고리 모두 보기"}
+              className="-mt-0.5 grid h-10 w-10 shrink-0 place-items-center text-[#596373] transition-colors hover:text-[#111111] min-[761px]:hidden"
             >
-              {chip === "전체" ? chip : `#${chip}`}
+              <ChevronDown size={18} className={clsx("transition-transform", chipsExpanded && "rotate-180")} aria-hidden="true" />
             </button>
-          ))}
+          ) : null}
         </nav>
 
         <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:mt-6 max-[760px]:gap-6">
