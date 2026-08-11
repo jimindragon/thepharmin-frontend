@@ -221,8 +221,16 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
 
             {/* ≤640px basis-full: 이 겹만 둘째 줄로 넘기는 장치다(앞의 두 항목은 첫 줄에 다 들어간다).
                 mt-3은 종전에 겹이 갖고 있던 값과 같다 — 첫 줄 높이는 메인 칸이 정하므로 태그행과의
-                간격이 종전 그대로 12px이다. mt-auto(>640px 바닥 고정)는 변형이 붙은 이 값에 진다. */}
-            <div className="mt-auto text-right max-[640px]:mt-3 max-[640px]:flex max-[640px]:basis-full max-[640px]:items-center max-[640px]:gap-2 max-[640px]:text-left">
+                간격이 종전 그대로 12px이다. mt-auto(>640px 바닥 고정)는 변형이 붙은 이 값에 진다.
+
+                ≤640px justify-between: 이 줄은 basis-full이라 폭을 다 받는데 내용은 두 배지뿐이라,
+                좌측 정렬로 두면 오른쪽 절반이 빈 채로 남는다. 북마크가 우상단으로 올라가기 전에는
+                이 줄의 flex-row-reverse+justify-between이 북마크를 오른쪽 끝에 세워 양끝이 잡혀
+                있었다 — 그 앵커를 요소를 옮기지 않고 줄 자체의 정렬로 되살린다.
+                gap-2는 남긴다. 양끝 정렬이 남는 폭을 배분하는 것과 별개로 gap은 두 배지 사이의
+                최소 간격 바닥값이라, 마감이 "상시채용"이고 배지가 "홈페이지 지원"처럼 둘 다 긴
+                조합에서 폭이 빠듯해져도 글자끼리 붙지 않는다. */}
+            <div className="mt-auto text-right max-[640px]:mt-3 max-[640px]:flex max-[640px]:basis-full max-[640px]:items-center max-[640px]:justify-between max-[640px]:gap-2 max-[640px]:text-left">
               <strong className={clsx("block whitespace-nowrap text-[15px] font-bold leading-none", danger ? "text-danger" : "text-brand")}>
                 {deadlineText}
               </strong>
