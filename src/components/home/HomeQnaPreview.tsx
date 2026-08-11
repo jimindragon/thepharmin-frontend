@@ -4,7 +4,8 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getEntryCommentCount, getEntryLikeCount, getPopularQnaEntries } from "@/data/qna";
 
-const HOME_QNA_LIMIT = 3;
+/** 2열 × 2행. 홀수로 두면 마지막 행 오른쪽 칸이 빈다 — 열 수를 바꾸면 이 값도 배수로 맞출 것. */
+const HOME_QNA_LIMIT = 4;
 
 /**
  * 채용 QNA는 "industry"만 가져온다. 하드코딩이지 기본값이 아니다.
@@ -32,8 +33,21 @@ export function HomeQnaPreview() {
   return (
     <section className="mt-16" aria-label="채용 QNA 인기글">
       <SectionHeader title="채용 QNA 인기글" viewAll={{ href: "/qna" }} />
-      {/* 첫 줄 위·마지막 줄 아래에는 선이 없다(divide-y). 섹션 사이는 mt-16이 이미 가른다. */}
-      <div className="divide-y divide-[var(--color-border)]">
+      {/*
+        데스크톱 2열. 1열 전폭에서는 1240~1320px 행에 15px 제목 한 줄만 서서 오른쪽 절반이 비었고,
+        바로 위 두 섹션(마감 임박·주목할 만한 공고)이 모두 2열이라 홈에서 이 목록만 리듬이 달랐다.
+
+        행 구분선을 divide-y로 그리지 않는다 — divide-y는 "2번째 자식부터 상단선"이라 2열 그리드에서는
+        첫 행 오른쪽 칸에도 선이 생긴다(mobile-guidelines 3절). 대신 "둘째 행 첫 칸부터"를
+        nth-child로 명시한다: 2열이면 n+3, ≤760px 1열로 접히면 n+2다.
+        두 규칙은 같은 값(border-top-width:1px)을 걸어 겹치는 구간에서도 다툼이 없다 —
+        ≤760px에서는 둘이 합쳐져 2·3·4번이 선을 받고, 761px 이상에서는 앞의 것만 남아 3·4번이 받는다.
+        어느 쪽이든 첫 줄 위·마지막 줄 아래에는 선이 없다. 섹션 사이는 mt-16이 이미 가른다.
+
+        세로 gap은 주지 않는다. 칸이 맞닿아야 border-t가 두 행을 가르는 그 선이 된다(종전 divide-y와 같은 자리).
+        선 색은 각 행이 직접 들고 있다(아래 Link) — 컨테이너 선택자에 색까지 얹으면 규칙이 두 배로 길어진다.
+      */}
+      <div className="grid grid-cols-2 gap-x-10 [&>*:nth-child(n+3)]:border-t max-[760px]:grid-cols-1 max-[760px]:[&>*:nth-child(n+2)]:border-t">
         {popularQnaEntries.map((entry) => {
           // 태그가 빈 글이 섞여도 "#undefined"가 찍히지 않도록 조각을 모아서 잇는다.
           const meta = [
@@ -56,7 +70,7 @@ export function HomeQnaPreview() {
             <Link
               key={entry.id}
               href={`/qna/${entry.id}`}
-              className="group block py-4 [-webkit-tap-highlight-color:transparent]"
+              className="group block border-[var(--color-border)] py-4 [-webkit-tap-highlight-color:transparent]"
             >
               <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111] transition-colors group-hover:text-[#333333] group-active:text-[#333333]">
                 {entry.title}
