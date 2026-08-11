@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, RotateCcw, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { SelectedFilterChips } from "@/components/SelectedFilterChips";
+import { isFilterStateKey, selectedIds } from "@/hooks/useJobFilters";
 import type {
   AppliedFilterChip,
   FilterDefinition,
@@ -46,14 +47,9 @@ const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string; tra
   { key: "salaryIncludeUnknown", label: "급여 미표기 포함", tracks: ["hospital"] },
 ];
 
-export function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
-  return key.endsWith("Ids");
-}
-
-export function selectedIds(filters: JobFilters, key: FilterStateKey | SingleFilterStateKey) {
-  const value = filters[key];
-  return Array.isArray(value) ? value : value ? [value] : [];
-}
+// 필터 상태의 모양을 다루는 두 헬퍼는 훅 쪽 정본을 그대로 쓴다. 여기서 다시 내보내는 것은
+// 마이페이지 관심조건 화면이 이 경로로 가져다 쓰고 있기 때문이다(호출부는 손대지 않는다).
+export { isFilterStateKey, selectedIds };
 
 function optionLabel(options: FilterOption[], id: string) {
   return options.find((option) => option.id === id)?.label ?? id;

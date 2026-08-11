@@ -123,6 +123,17 @@ function toggleId(items: string[], id: string) {
   return items.includes(id) ? without(items, id) : [...items, id];
 }
 
+/** 상태 키가 배열형(다중 선택)인지. 단일 선택 키는 문자열 하나를 담는다. */
+export function isFilterStateKey(key: FilterStateKey | SingleFilterStateKey): key is FilterStateKey {
+  return key.endsWith("Ids");
+}
+
+/** 다중·단일을 가리지 않고 "지금 선택된 id 목록"으로 읽는다. 옵션 목록 렌더와 개수 표시가 함께 쓴다. */
+export function selectedIds(filters: JobFilters, key: FilterStateKey | SingleFilterStateKey) {
+  const value = filters[key];
+  return Array.isArray(value) ? value : value ? [value] : [];
+}
+
 function csv(value: string | null) {
   return value ? value.split(",").map((item) => item.trim()).filter(Boolean) : [];
 }
@@ -329,6 +340,16 @@ export function toggleResearchFieldInFilters(filters: JobFilters, id: string): J
     researchFieldCategoryIds: categoryId ? without(filters.researchFieldCategoryIds, categoryId) : filters.researchFieldCategoryIds,
     researchFieldIds: [...filters.researchFieldIds, id],
   };
+}
+
+/** 다중 선택 필터 토글의 순수 버전. */
+export function toggleMultiFilterInFilters(filters: JobFilters, key: FilterStateKey, id: string): JobFilters {
+  return { ...filters, [key]: toggleId(filters[key], id) };
+}
+
+/** 단일 선택 필터 지정의 순수 버전. 같은 값을 다시 고르거나 "any"를 고르면 해제로 친다. */
+export function setSingleFilterInFilters(filters: JobFilters, key: SingleFilterStateKey, id: string | null): JobFilters {
+  return { ...filters, [key]: id === "any" || filters[key] === id ? null : id };
 }
 
 /** 칩 하나를 걷어낸 필터를 돌려주는 순수 버전. `keyword` 칩은 호출부에서 `keywordInput` UI 상태도 함께 비워야 한다. */
@@ -573,15 +594,22 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
 
   const toggleMultiFilter = (key: FilterStateKey, id: string) => {
     markManualChange();
-    setFilters((current) => ({ ...current, [key]: toggleId(current[key], id) }));
+    setFilters((current) => toggleMultiFilterInFilters(current, key, id));
   };
 
   const setSingleFilter = (key: SingleFilterStateKey, id: string | null) => {
     markManualChange();
-    setFilters((current) => ({
-      ...current,
-      [key]: id === "any" || current[key] === id ? null : id,
-    }));
+    setFilters((current) => setSingleFilterInFilters(current, key, id));
+  };
+
+  /**
+   * 여러 값을 한 번에 확정한다. 모바일 필터 시트처럼 시트 안에서 임시(draft)로 고르다가
+   * "적용"에서 한 번에 반영하는 흐름을 위한 입구다 — 개별 setter와 달리 draft 통째로 받는다.
+   */
+  const applyFilters = (next: JobFilters) => {
+    markManualChange();
+    setJobLimitMessage("");
+    setFilters(next);
   };
 
   const toggleRegion = (id: string) => {
@@ -709,6 +737,7 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     toggleResearchField,
     toggleMultiFilter,
     setSingleFilter,
+    applyFilters,
     toggleRegion,
     setMetropolitanRegions,
     clearRegions,

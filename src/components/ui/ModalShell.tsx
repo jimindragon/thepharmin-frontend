@@ -41,11 +41,32 @@ const HEADER_BY_VARIANT = {
   },
 } as const;
 
+/**
+ * 어느 폭부터 "가운데 다이얼로그"가 아니라 "화면 하단에 붙는 바텀시트"가 되는지.
+ *
+ * 480 — 기본값. 지금까지의 모든 모달이 쓰던 경계다.
+ * 760 — 하단 탭바·모바일 전용 화면과 같은 경계(MobileTabBar의 min-[761px]:hidden). 모바일에서
+ *       시트가 본체인 화면(공고 필터)이 쓴다. 그 구간에선 좌우 여백도 지워 화면 폭을 꽉 채우고,
+ *       뒤의 목록이 살짝 비치도록 100dvh가 아니라 86dvh에서 멈춘다.
+ *
+ * 두 항목 모두 완성된 클래스 문자열이어야 한다 — Tailwind는 조립된 클래스명을 스캔하지 못한다.
+ */
+const SHEET_BREAKPOINT_CLASSES = {
+  480: {
+    overlay: "max-[480px]:pb-0",
+    panel: "max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end",
+  },
+  760: {
+    overlay: "max-[760px]:px-0 max-[760px]:pb-0",
+    panel: "max-[760px]:max-h-[86dvh] max-[760px]:max-w-none max-[760px]:self-end",
+  },
+} as const;
+
 export function ModalShell({
   title,
   onClose,
   children,
-  /** 패널 최대 폭 Tailwind 클래스. 480px 이하에서는 max-w-none이 이겨 전체 폭 바텀시트가 된다. */
+  /** 패널 최대 폭 Tailwind 클래스. 시트 구간에서는 max-w-none이 이겨 전체 폭 바텀시트가 된다. */
   maxWidth = "max-w-[560px]",
   /** 스크린리더용 이름. 미지정 시 title을 쓴다 — 제목이 ReactNode일 때만 지정할 것. */
   ariaLabel,
@@ -53,6 +74,8 @@ export function ModalShell({
   headerVariant = "plain",
   /** 제목 아래 한 줄. headerVariant가 emphasis·caption일 때만 렌더된다. */
   description,
+  /** 바텀시트로 바뀌는 상한 폭. 기본 480은 기존 모달의 동작 그대로다. */
+  sheetBreakpoint = 480,
 }: {
   title: ReactNode;
   onClose: () => void;
@@ -61,6 +84,7 @@ export function ModalShell({
   ariaLabel?: string;
   headerVariant?: keyof typeof HEADER_BY_VARIANT;
   description?: ReactNode;
+  sheetBreakpoint?: keyof typeof SHEET_BREAKPOINT_CLASSES;
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -74,10 +98,11 @@ export function ModalShell({
   }, []);
 
   const headerStyle = HEADER_BY_VARIANT[headerVariant];
+  const sheetStyle = SHEET_BREAKPOINT_CLASSES[sheetBreakpoint];
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6 max-[480px]:pb-0"
+      className={clsx("fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 py-6", sheetStyle.overlay)}
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}
@@ -86,7 +111,8 @@ export function ModalShell({
       <div
         className={clsx(
           "flex w-full flex-col border border-[#d8dee6] bg-white shadow-[0_18px_48px_rgba(0,0,0,0.22)]",
-          "max-h-[92dvh] max-[480px]:max-h-[calc(100dvh-24px)] max-[480px]:max-w-none max-[480px]:self-end",
+          "max-h-[92dvh]",
+          sheetStyle.panel,
           maxWidth,
         )}
       >
