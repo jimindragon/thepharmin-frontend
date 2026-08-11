@@ -63,23 +63,28 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
               <div
                 key={company.id}
                 data-carousel-item
-                className="premium-company-card relative z-0 flex min-h-[240px] w-[300px] shrink-0 flex-col border-r border-[#dddddd] px-7 py-[28px] transition-colors duration-[180ms] last:border-r-0"
+                /* ≤760px 카드 폭 300 → 200. 본문 폭 342 안에서 300은 다음 카드가 41px(≈0.14장)만 비어져
+                   "옆에 더 있다"가 잘 안 읽혔다. 200이면 1.71장이 보여 두 번째 카드가 확실히 걸린다.
+                   좁아진 만큼 안쪽 여백도 함께 줄이지 않으면 글이 설 자리가 없다(200 − px-7×2 = 144). */
+                className="premium-company-card relative z-0 flex min-h-[240px] w-[300px] shrink-0 flex-col border-r border-[#dddddd] px-7 py-[28px] transition-colors duration-[180ms] last:border-r-0 max-[760px]:min-h-[200px] max-[760px]:w-[200px] max-[760px]:px-5 max-[760px]:py-5"
               >
                 <Link href={`/companies/${company.id}`} className="absolute inset-0 z-10">
                   <span className="sr-only">{company.name} 기업정보 보기</span>
                 </Link>
-                {/* 로고 유무와 무관하게 고정 높이로 렌더 — 폴백 텍스트도 이 안에서 세로 중앙 정렬되어 아래 요소들의 시작 위치가 모든 카드에서 동일하다 */}
+                {/* 로고 유무와 무관하게 고정 높이로 렌더 — 폴백 텍스트도 이 안에서 세로 중앙 정렬되어 아래 요소들의 시작 위치가 모든 카드에서 동일하다.
+                    ≤760px 로고 최대 폭 160 → 140: 카드 안쪽 폭이 딱 160px(200 − px-5×2)이라 160을 그대로 두면 로고가 좌우로 꽉 차 여백이 사라진다. */}
                 <div className="flex h-10 items-center">
                   {logoSrc ? (
-                    <img src={logoSrc} alt={company.name} className="max-h-[34px] w-auto max-w-[160px] object-contain" />
+                    <img src={logoSrc} alt={company.name} className="max-h-[34px] w-auto max-w-[160px] object-contain max-[760px]:max-w-[140px]" />
                   ) : (
-                    <span className="max-w-[160px] truncate text-[13px] font-medium text-[#171b20]/60">{getCompanyInitial(company.name)}</span>
+                    <span className="max-w-[160px] truncate text-[13px] font-medium text-[#171b20]/60 max-[760px]:max-w-[140px]">{getCompanyInitial(company.name)}</span>
                   )}
                 </div>
-                <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f]")}>{company.name}</h3>
+                {/* ≤760px 세로 여백 한 단계씩: 로고→이름 24→16, 이름→설명 8→6, 설명→풋터 24→16, 구분선→풋터 글 12→10 */}
+                <h3 className={clsx(typeScale.cardTitle, "mt-6 truncate text-[#15191f] max-[760px]:mt-4")}>{company.name}</h3>
                 {/* min-h로 한 줄 캡션도 두 줄 높이를 차지 — 풋터 구분선 시작 위치를 카드마다 통일한다 */}
-                <p className="mt-2 line-clamp-2 min-h-[42px] text-[13px] font-normal leading-[1.6] text-[#777777]">{description}</p>
-                <div className="mt-6 border-t border-[#ececec] pt-3">
+                <p className="mt-2 line-clamp-2 min-h-[42px] text-[13px] font-normal leading-[1.6] text-[#777777] max-[760px]:mt-1.5">{description}</p>
+                <div className="mt-6 border-t border-[#ececec] pt-3 max-[760px]:mt-4 max-[760px]:pt-2.5">
                   <Link
                     href={`/companies/${company.id}/jobs`}
                     className="relative z-20 flex items-center justify-between"
