@@ -1138,13 +1138,21 @@ export function RecruitmentCalendarClient() {
               {activeTab === "all" ? (
                 <div className="border-b border-[#e7ebef] px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    {/* 모바일은 wrap 대신 1행 가로 스크롤 — 트랙 칩 5개가 2줄로 접히면 미니 캘린더가 첫 화면 밖으로 밀린다 */}
-                    <div className="flex flex-wrap items-center gap-2.5 max-[760px]:flex-nowrap max-[760px]:overflow-x-auto max-[760px]:pb-1">
+                    {/* 모바일은 wrap 대신 1행 가로 스크롤 — 트랙 칩 5개가 2줄로 접히면 미니 캘린더가 첫 화면 밖으로 밀린다.
+                        pb-1 → py-1: 아래 칩의 히트 영역이 위아래로 2px씩 넘치는데, 이 행은 overflow-x-auto라
+                        (overflow-y도 함께 auto가 되어) 패딩 박스 밖을 잘라낸다 — 잘린 영역은 탭도 받지 못한다. */}
+                    <div className="flex flex-wrap items-center gap-2.5 max-[760px]:flex-nowrap max-[760px]:overflow-x-auto max-[760px]:py-1">
                       {calendarTrackOptions.map((track) => (
                         <button
                           key={track.id}
                           type="button"
-                          className={`h-10 shrink-0 border px-5 text-[13px] font-medium ${
+                          /* 40 → 36(h-9), 좌우 20 → 18. 칩 5개가 한 행을 꽉 채우는 자리라 알약이 두툼하면
+                             화면 위쪽을 그대로 먹는다. 36px은 터치 타깃 하한(40) 아래라 히트 영역만
+                             after로 위아래 2px씩 되돌려 40px을 지킨다(보이는 상자는 36 그대로).
+                             가상 요소의 클릭은 원래 요소가 받으므로 DOM은 그대로 둔다.
+                             -3px인 이유: absolute의 기준은 패딩 상자(=36 − 테두리 2)라 테두리 1px을 함께 되갚아야
+                             바깥으로 정확히 2px이 나간다(34 + 3 + 3 = 40). */
+                          className={`relative h-9 shrink-0 border px-[18px] text-[13px] font-medium after:absolute after:inset-x-0 after:-inset-y-[3px] after:content-[''] ${
                             trackFilter === track.id
                               ? "border-[#111111] bg-[#111111] text-white shadow-[0_10px_18px_rgba(17,17,17,0.10)]"
                               : "border-[#dfe4eb] bg-white text-[#4b535f] hover:border-[#111111]"
