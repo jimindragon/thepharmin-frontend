@@ -290,7 +290,8 @@ export function ThemeHubClient({ themeId, theme }: { themeId: ThemeId; theme: Th
                 <h2 className="text-[18px] font-bold text-[#111111]">
                   이 채용관의 공고 <span>{themeJobs.length}</span>
                 </h2>
-                <SortButtons sortOption={sortOption} onChange={setSortOption} />
+                {/* 제목과 한 줄을 나눠 쓰는 자리라 ≤760px는 텍스트 토글 — 박스 3칸이면 제목이 두 줄로 접힌다 */}
+                <SortButtons sortOption={sortOption} onChange={setSortOption} variant="text" />
               </div>
 
               {sortedJobs.length === 0 ? (
