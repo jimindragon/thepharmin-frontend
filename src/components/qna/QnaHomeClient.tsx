@@ -357,7 +357,10 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
           ) : null}
         </nav>
 
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:mt-6 max-[760px]:gap-6">
+        {/* gap-8·max-[760px]:gap-6은 두 열 사이의 가로 거터다. ≤1040px에서 1열로 접히면 같은 값이
+            "목록 → 사이드 패널" 세로 이음새로 재사용돼 패널 사이(20/16px)보다 넓어진다 —
+            그 구간에서만 row gap을 패널 리듬에 맞춘다. 상세(QnaDetailClient)와 같은 처방이다. */}
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[1040px]:gap-y-5 max-[760px]:mt-6 max-[760px]:gap-6 max-[760px]:gap-y-4">
           <div>
             {/* ≤760px 정렬은 박스가 아니라 텍스트라 밑선 정렬이 어긋난다 — 그 폭에서만 가운데로 맞춘다 */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 min-[761px]:items-end">
@@ -376,7 +379,11 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
             )}
           </div>
 
-          <aside className="space-y-5 max-[760px]:space-y-4">
+          {/* 간격은 space-y가 아니라 gap이다 — space-y는 hidden **클래스**(display:none) 형제를 걸러 내지
+              못해, 아래 max-[1040px]:hidden 패널들 뒤의 첫 가시 패널이 마진을 하나 물려받았다
+              (상세 QnaDetailClient의 aside 주석에 자세히). display:none 자식은 flex 아이템이 아니라
+              gap은 애초에 그 간격을 만들지 않는다. */}
+          <aside className="flex flex-col gap-5 max-[760px]:gap-4">
             {/* 1열에서는 본문 목록과 완전 중복 (추천순 상위 = 인기 글, 칩 nav = 태그 풀) */}
             <TrendingPostsPanel entries={popularEntries} previewQuery={previewQuery} className="max-[1040px]:hidden" />
             {isLoggedIn ? <MyActivityPanel activeType={activeType} className="max-[1040px]:hidden" /> : null}
