@@ -76,6 +76,11 @@ export function ModalShell({
   description,
   /** 바텀시트로 바뀌는 상한 폭. 기본 480은 기존 모달의 동작 그대로다. */
   sheetBreakpoint = 480,
+  /**
+   * 패널에 덧붙일 클래스. 기본 클래스 뒤에 와서 높이 같은 값을 호출부가 덮어쓸 수 있다.
+   * 미지정이면 아무것도 붙지 않는다 — 기존 사용처의 렌더는 그대로다.
+   */
+  panelClassName,
 }: {
   title: ReactNode;
   onClose: () => void;
@@ -85,6 +90,7 @@ export function ModalShell({
   headerVariant?: keyof typeof HEADER_BY_VARIANT;
   description?: ReactNode;
   sheetBreakpoint?: keyof typeof SHEET_BREAKPOINT_CLASSES;
+  panelClassName?: string;
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -114,6 +120,7 @@ export function ModalShell({
           "max-h-[92dvh]",
           sheetStyle.panel,
           maxWidth,
+          panelClassName,
         )}
       >
         {/* 헤더 */}

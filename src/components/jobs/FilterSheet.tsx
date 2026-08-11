@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { Check, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { ModalShell } from "@/components/ui/ModalShell";
 import {
   emptyJobFilters,
@@ -141,15 +141,23 @@ function SheetCategoryPanel({
   selectedSubcategoryIds,
   onToggleCategory,
   onToggleSubcategory,
+  scrollRef,
 }: {
   categories: JobCategoryOption[];
   selectedCategoryIds: string[];
   selectedSubcategoryIds: string[];
   onToggleCategory: (id: string) => void;
   onToggleSubcategory: (id: string) => void;
+  /** 이 패널을 담은 본문 스크롤 영역. 탭을 바꾸면 맨 위로 되돌린다. */
+  scrollRef: RefObject<HTMLDivElement | null>;
 }) {
   const [activeCategoryId, setActiveCategoryId] = useState(categories[0]?.id ?? "");
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
+
+  // 탭 전환은 목록을 통째로 갈아끼우지만 스크롤 위치는 남는다 — 새 목록의 중간부터 보이지 않도록 되감는다.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [activeCategoryId, scrollRef]);
 
   return (
     <>
@@ -223,6 +231,15 @@ export function FilterSheet({
 }) {
   const [draft, setDraft] = useState<JobFilters>(filters);
   const resultCount = countJobs(draft);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * 2단 시트만 높이를 못 박는다. 카테고리마다 소분류 수가 달라(산업 직무: 3~7개) 목록 길이대로 두면
+   * 탭을 옮길 때마다 하단에 붙은 시트의 윗변이 오르내린다. 560px는 최다 케이스(8행 384px + 헤더·탭·푸터
+   * 약 173px)를 스크롤 없이 담는 높이이고, 화면이 더 낮으면 기존 상한인 86dvh가 이긴다.
+   * 항목이 한 벌뿐인 options·group 시트는 출렁일 일이 없어 지금의 auto 높이 그대로 둔다.
+   */
+  const twoTier = definition.kind === "job" || definition.kind === "researchField";
 
   const toggleOption = (stateKey: FilterStateKey | SingleFilterStateKey, selection: "single" | "multiple", id: string) => {
     setDraft((current) =>
@@ -233,8 +250,14 @@ export function FilterSheet({
   };
 
   return (
-    <ModalShell title={definition.label} onClose={onClose} maxWidth="max-w-[520px]" sheetBreakpoint={760}>
-      <div className="min-h-0 flex-1 overflow-y-auto px-4">
+    <ModalShell
+      title={definition.label}
+      onClose={onClose}
+      maxWidth="max-w-[520px]"
+      sheetBreakpoint={760}
+      panelClassName={twoTier ? "max-[760px]:h-[min(560px,86dvh)]" : undefined}
+    >
+      <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto px-4">
         {definition.kind === "job" ? (
           <SheetCategoryPanel
             categories={definition.categories}
@@ -242,6 +265,7 @@ export function FilterSheet({
             selectedSubcategoryIds={draft.jobSubcategoryIds}
             onToggleCategory={(id) => setDraft((current) => toggleJobCategoryInFilters(current, id))}
             onToggleSubcategory={(id) => setDraft((current) => toggleJobSubcategoryInFilters(current, id))}
+            scrollRef={bodyRef}
           />
         ) : definition.kind === "researchField" ? (
           <SheetCategoryPanel
@@ -250,6 +274,7 @@ export function FilterSheet({
             selectedSubcategoryIds={draft.researchFieldIds}
             onToggleCategory={(id) => setDraft((current) => toggleResearchFieldCategoryInFilters(current, id))}
             onToggleSubcategory={(id) => setDraft((current) => toggleResearchFieldInFilters(current, id))}
+            scrollRef={bodyRef}
           />
         ) : definition.kind === "options" ? (
           <SheetOptionList
