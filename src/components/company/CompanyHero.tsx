@@ -31,11 +31,31 @@ function institutionHeroBadges(profile: CompanyProfile): string[] | null {
   return badges;
 }
 
+/**
+ * hero 뱃지 줄 — 배지는 무채색 절제 스타일 통일(STEP 3a-2), 반투명 흰 보더 + 흰 텍스트, 강조용 채움색 없음.
+ *
+ * 폭에 따라 **자리가 달라져** 두 군데서 렌더한다(둘 중 하나는 항상 display:none이라 화면에도, 스크린리더에도
+ * 한 벌만 잡힌다). 761px 이상은 로고 오른쪽 텍스트 열 안, 한줄소개 아래 — 종전 그대로다. ≤760px는 로고·제목
+ * 행에서 빠져나와 전폭 한 줄로 깔린다: 좁은 화면에서 텍스트 열이 로고 폭(92px)만큼 줄어 배지가 한 줄에
+ * 하나씩 세로로 쌓이던 자리다. CSS만으로 옮길 수 없는 이동이다 — 두 자리의 부모가 서로 다르다.
+ */
+function HeroBadges({ badges, className }: { badges: string[]; className: string }) {
+  return (
+    <div className={`flex flex-wrap gap-2 ${className}`}>
+      {badges.map((badge) => (
+        <span key={badge} className="inline-flex h-8 items-center border border-white/30 px-3 text-[12px] font-medium text-white">
+          {badge}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /** 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심 기업 저장 버튼). [companyId]/layout.tsx가 모든 탭 페이지에서 공유한다 */
 export function CompanyHero({ profile }: { profile: CompanyProfile }) {
   const [interested, setInterested] = useState(false);
   const [shared, setShared] = useState(false);
-  const institutionBadges = institutionHeroBadges(profile);
+  const badges = institutionHeroBadges(profile) ?? profile.tags;
 
   const shareCompany = async () => {
     const url = window.location.href;
@@ -70,28 +90,27 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
             <div className="min-w-0">
               <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
               <p className="mt-3 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
-              {/* 배지는 무채색 절제 스타일 통일(STEP 3a-2) — 반투명 흰 보더 + 흰 텍스트, 강조용 채움색 없음 */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {(institutionBadges ?? profile.tags).map((badge) => (
-                  <span
-                    key={badge}
-                    className="inline-flex h-8 items-center border border-white/30 px-3 text-[12px] font-medium text-white"
-                  >
-                    {badge}
-                  </span>
-                ))}
-              </div>
+              <HeroBadges badges={badges} className="mt-4 max-[760px]:hidden" />
             </div>
           </div>
+          {/* ≤760px 자리 — 로고·제목 행 다음, 액션 버튼 앞. 부모가 세로 flex(max-[820px]:flex-col)라 전폭을 받는다.
+              -mt-2는 부모 gap-6(24px)을 한줄소개와의 간격 16px(=데스크톱 mt-4)로 되돌린다 — 배지는 소개 문구에
+              딸린 줄이지, 버튼과 등거리로 떠 있는 별개 블록이 아니다. */}
+          <HeroBadges badges={badges} className="-mt-2 w-full min-[761px]:hidden" />
           <div className="flex shrink-0 gap-2 max-[640px]:w-full">
             <button
               type="button"
               onClick={() => setInterested((current) => !current)}
               className="inline-flex h-11 items-center justify-center gap-2 bg-white px-4 text-[13px] font-medium text-[#17212c] transition hover:bg-[#f4f4f4] max-[640px]:flex-1"
               aria-pressed={interested}
+              aria-label="관심 기업으로 저장"
             >
               <Bookmark size={16} fill={interested ? "currentColor" : "none"} />
-              관심 기업으로 저장
+              {/* ≤760px는 "관심 기업"으로 줄인다 — 반쪽 칸(w-full flex-1) 안에서 원문이 두 줄로 접혔다.
+                  아이콘(북마크)이 남아 동작은 그대로 읽히고, 옆의 "공유"와 글자 수가 비슷해져 2열이 균형을 잡는다.
+                  aria-label로 전체 문구를 남겨 스크린리더가 듣는 이름은 폭과 무관하게 같다. */}
+              <span className="max-[760px]:hidden">관심 기업으로 저장</span>
+              <span className="min-[761px]:hidden">관심 기업</span>
             </button>
             <button
               type="button"
