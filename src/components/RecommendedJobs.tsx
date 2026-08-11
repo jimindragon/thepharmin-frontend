@@ -112,12 +112,20 @@ function LogoLine({
   logoUrl,
   width,
   height,
+  compactOnMobile = false,
 }: {
   company: string;
   logoUrl: string | undefined;
   width: number;
   height: number;
+  /**
+   * ≤760px에서 회사명 글자와 구분선을 접고 로고만 남긴다.
+   * 칸이 좁아 이름이 두어 글자로 잘리는 자리(STANDARD 2열)에서만 켠다 — 기본값은 꺼짐이라
+   * PREMIUM은 종전 그대로다. 로고가 없는 기업은 로고 칸이 이니셜로 채워지므로 접어도 식별이 남는다.
+   */
+  compactOnMobile?: boolean;
 }) {
+  const mobileHidden = compactOnMobile ? " max-[760px]:hidden" : "";
   return (
     <div className="flex items-center">
       {logoUrl ? (
@@ -135,8 +143,8 @@ function LogoLine({
           {getCompanyInitial(company)}
         </span>
       )}
-      <div className="mx-[10px] w-px shrink-0 bg-[#eeeeee]" style={{ height }} />
-      <p className="min-w-0 truncate text-[12px] font-medium text-[#6f7785]">{company}</p>
+      <div className={`mx-[10px] w-px shrink-0 bg-[#eeeeee]${mobileHidden}`} style={{ height }} />
+      <p className={`min-w-0 truncate text-[12px] font-medium text-[#6f7785]${mobileHidden}`}>{company}</p>
     </div>
   );
 }
@@ -260,15 +268,25 @@ function StandardCard({ job }: { job: RecommendedJob }) {
     <article className="flex h-full min-h-[130px] flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-sm transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_6px_18px_rgba(12,18,24,0.06)]">
       <div className="flex flex-1 flex-col px-5 pb-5 pt-5">
         <div className="mb-2">
-          <LogoLine company={job.company} logoUrl={job.logoUrl} width={74} height={30} />
+          {/* 2열이 되면 로고(74) 옆에 이름이 쓸 폭이 40px도 안 남아 "셀…"·"제…"처럼 두어 글자로 잘렸다.
+              그 정도로 잘린 이름은 정보가 아니라 잡음이라 ≤760px에서는 로고만 남긴다. */}
+          <LogoLine company={job.company} logoUrl={job.logoUrl} width={74} height={30} compactOnMobile />
         </div>
         <h3 className="truncate text-[15px] font-bold text-[#202734]">{job.title}</h3>
-        <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
+        {/* ≤760px 2열이 되며 이 줄이 쓸 폭이 절반으로 줄었다(390px 기준 안쪽 124px).
+            최악은 "홈페이지 지원"과 "오늘 마감"이 같은 카드에서 만나는 경우로, 둘을 더하면 폭을 넘긴다.
+            지원방식은 접히지 않게 잘라내고(부가 정보라 잘려도 감당된다) 마감은 온전히 남긴다 —
+            반대로 두면 "오늘 / 마감"으로 접혀 카드 높이가 이 카드만 늘어난다.
+            gap-2는 잘린 말줄임과 마감 글자가 맞붙지 않게 하는 최소 간격이다.
+            셋 다 ≤760px 전용이라 데스크톱은 종전 그대로(그쪽은 폭이 남아 잘릴 일이 없다). */}
+        <div className="mt-auto flex items-center justify-between pt-2 max-[760px]:gap-2">
+          <span className="text-[11px] font-medium text-[#6b7481] max-[760px]:min-w-0 max-[760px]:truncate">
+            {APPLY_METHOD_SHORT_LABELS[job.applyMethod]}
+          </span>
           {/* 종전에는 "상시"만 갈라내 나머지가 전부 빨강이었다 — 이미 마감된 공고와 D-30이
               마감 당일과 같은 색으로 섰다. 판정을 위 ddayColorClass 하나로 모은다.
               표시는 축약형(dDayShort), 판정은 원본(job.dDay)이다. */}
-          <strong className={`text-[13px] font-medium ${ddayColorClass(job.dDay)}`}>
+          <strong className={`text-[13px] font-medium max-[760px]:shrink-0 ${ddayColorClass(job.dDay)}`}>
             {dDayShort}
           </strong>
         </div>
@@ -386,7 +404,12 @@ export function RecommendedJobsGrid({
     zones.push({
       key: "standard",
       node: (
-        <div className="grid grid-cols-5 gap-[14px] max-[1180px]:grid-cols-4 max-[900px]:grid-cols-3 max-[760px]:grid-cols-2 max-[640px]:grid-cols-1">
+        /* STANDARD만 ≤640px에서 1열로 떨어지던 걸 걷어내 폰 폭까지 2열로 둔다(기준 열 수 5는 그대로라
+           useFeaturedJobs의 ZONE_PAGE_SIZE와 어긋나지 않는다). 이 존은 카드가 열 몇 장씩 깔리는
+           자리라 1열이 되면 홈 아래쪽이 카드 한 장짜리 기둥으로 한없이 길어진다. 카드 안에 로고·제목·
+           마감뿐이라(P·F와 달리 이미지도 태그도 없다) 좁은 칸에서도 버틴다 — 마감 임박 카드와 같은 밀도다.
+           P·F는 이미지·태그를 안고 있어 ≤640px 1열을 그대로 둔다. */
+        <div className="grid grid-cols-5 gap-[14px] max-[1180px]:grid-cols-4 max-[900px]:grid-cols-3 max-[760px]:grid-cols-2">
           {standardJobs.map((job) => cardLink(job.id, job.jobSlug, <StandardCard job={job} />))}
         </div>
       ),
