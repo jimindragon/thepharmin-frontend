@@ -19,7 +19,12 @@ interface ButtonStyle {
  * on the same screen.
  *
  * variant="gradient-dark"는 같은 규칙의 어두운 변형 — 사진 히어로 위 CTA와
- * 페이지 대표 진입 CTA에 쓴다. 폼 제출·본문 CTA는 "gradient"를 유지한다.
+ * 페이지 대표 진입 CTA에 쓴다.
+ *
+ * 폼 제출 버튼은 그 폼이 어디에 서 있는지로 갈린다. 페이지 본문에 직접 놓인 폼은
+ * 제출이 그 화면의 유일한 CTA라 "gradient"를 그대로 쓰고, ModalShell 레이어 안의
+ * 제출은 "primary"로 한 단 낮춘다 — 레이어를 여는 진입 CTA가 뒤에 그대로 서 있어
+ * 같은 무게의 그라데이션 둘이 겹치면 어느 쪽이 지금 할 일인지 흐려진다.
  */
 function getButtonStyle(variant: ButtonVariant, tone: ButtonTone, size: ButtonSize, disabled?: boolean): ButtonStyle {
   const height = size === "lg" ? "h-12" : size === "sm" ? "h-9" : "h-11";
