@@ -103,13 +103,19 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
     return (
       <div className="mt-6 border border-border bg-white px-4 py-3">
         <div className="flex items-center gap-3">
-          <ComposerAvatar />
+          {/* ≤760px에서는 아바타와 연필 아이콘을 걷어낸다. 둘 다 "여기가 글쓰기 자리"라는 같은 말을 하는데,
+              그 폭에서 문구를 자르는 값이 정확히 그 둘이다(아바타 32 + gap 12 + 아이콘 14 + gap 8 = 66px).
+              남는 것은 placeholder 문구와 "질문하기" 버튼 — 무엇을 하는 자리인지는 그 둘로 충분하다.
+              span 래퍼를 쓰는 이유는 QnaAuthorAvatar가 className을 받지 않기 때문이다. */}
+          <span className="max-[760px]:hidden">
+            <ComposerAvatar />
+          </span>
           <button
             type="button"
             onClick={handleExpand}
             className="flex flex-1 items-center gap-2 truncate text-left text-[13px] font-normal text-[#a0a9b7]"
           >
-            <Pencil size={14} className="shrink-0" aria-hidden="true" />
+            <Pencil size={14} className="shrink-0 max-[760px]:hidden" aria-hidden="true" />
             <span className="truncate">커리어·이직·전형 경험을 나눠보세요</span>
           </button>
           {/* 목록 상단의 글쓰기 진입 CTA — 페이지 대표 CTA라 어두운 변형.
