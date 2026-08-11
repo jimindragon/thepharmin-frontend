@@ -71,10 +71,18 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
   };
 
   return (
-    <section className="pt-7">
-      {/* ≤760px 높이 230→244: 텍스트 블록이 justify-end라 pt로는 제목이 안 내려온다. 제목 위 숨 쉴 공간(18.3→32.3px)을 만드는 레버는 배너 높이뿐이다. */}
+    /* 헤더~히어로 28px → 20px(≤760px): 모바일은 첫 화면에 들어오는 세로가 짧아 헤더 바로 아래 빈 띠가
+       그대로 손실이다. 히어로가 화면 폭을 꽉 채우게 되면서 위 여백만 남아 뜨는 것도 어색해 한 단계 줄인다.
+       761px 이상은 pt-7 그대로다. */
+    <section className="pt-7 max-[760px]:pt-5">
+      {/* ≤760px 높이 230→244: 텍스트 블록이 justify-end라 pt로는 제목이 안 내려온다. 제목 위 숨 쉴 공간(18.3→32.3px)을 만드는 레버는 배너 높이뿐이다.
+          ≤760px 풀블리드 — 셸(.app-shell)이 좌우로 물러난 만큼(--shell-gutter/2) 음수 마진으로 되민다.
+          FLUSH_SECTION_CLASS를 그대로 쓰지 않는 이유는 CompanyHero와 같다: 배경 이미지·그라디언트가 절대 배치라
+          좌우 패딩은 이 껍데기가 아니라 아래 콘텐츠 층(relative z-10)이 가진다. 그쪽 px-6(=24px)이 곧 화면 여백이 되어
+          아래 섹션 제목이 서 있는 선과 같아진다. 높이(244)는 건드리지 않는다 — 제목 잘림 예산은 아래 h1 주석 참고.
+          폭이 늘어난 만큼(342→390 @390px) 제목이 쓸 수 있는 가로가 커져 줄 수는 오히려 줄거나 같다. */}
       <div
-        className="relative h-[290px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[260px] max-[760px]:h-[244px]"
+        className="relative h-[290px] overflow-hidden bg-[#0a0c10] text-white max-[1024px]:h-[260px] max-[760px]:h-[244px] max-[760px]:-mx-[calc(var(--shell-gutter)/2)]"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
@@ -93,7 +101,10 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{ objectPosition: slide.imagePosition ?? "center" }}
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.88)_32%,rgba(6,8,13,0.6)_56%,rgba(6,8,13,0.2)_78%,rgba(6,8,13,0)_94%)]" />
+              {/* ≤760px는 별도 곡선을 쓴다. 데스크톱은 글이 좌측 720px 안에 머물러 우측이 훤히 비어도 되지만,
+                  풀블리드가 되면 제목이 화면 폭 끝(392px 중 342px = 88%)까지 뻗어 종전 곡선의 밝은 구간과 겹친다.
+                  CompanyHero 풀블리드 때와 같은 처방 — 끝값을 0 → 0.38로 올려 글이 얹히는 폭 전체에 어두운 바탕을 깐다. */}
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.88)_32%,rgba(6,8,13,0.6)_56%,rgba(6,8,13,0.2)_78%,rgba(6,8,13,0)_94%)] max-[760px]:bg-[linear-gradient(90deg,rgba(6,8,13,0.95)_0%,rgba(6,8,13,0.9)_40%,rgba(6,8,13,0.72)_70%,rgba(6,8,13,0.52)_88%,rgba(6,8,13,0.38)_100%)]" />
               <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.32)_100%)]" />
 
               <div className="relative z-10 flex h-full flex-col justify-end px-14 pb-14 max-[1024px]:px-10 max-[1024px]:pb-10 max-[760px]:px-6 max-[760px]:pb-6">
