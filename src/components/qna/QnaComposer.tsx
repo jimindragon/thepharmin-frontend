@@ -119,7 +119,9 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
             <span className="truncate">커리어·이직·전형 경험을 나눠보세요</span>
           </button>
           {/* 목록 상단의 글쓰기 진입 CTA — 페이지 대표 CTA라 어두운 변형.
-              시트의 등록 버튼은 폼 제출이므로 기존 gradient를 유지한다. */}
+              시트의 등록 버튼은 검정 솔리드다 — 레이어로 분리하면서 트리거와 등록이 한 화면에
+              공존하게 됐고, 그라데이션 두 개가 같은 무게로 서면 어느 쪽이 지금 할 일인지 흐려진다.
+              진입 CTA는 목록 위에서 눈에 띄어야 하니 여기에 남기고, 등록은 한 단 낮춘다. */}
           <Button type="button" variant="gradient-dark" size="sm" onClick={handleOpen} className="shrink-0">
             질문하기
           </Button>
@@ -219,7 +221,9 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
               />
               익명으로 작성
             </label>
-            <Button type="button" variant="gradient" size="sm" onClick={handleSubmit} disabled={!draft.trim()}>
+            {/* 상세 화면 댓글 등록과 같은 문법(variant="primary") — 레이어 안에서 확정하는 동작은
+                레이어를 여는 동작보다 한 단 낮은 무게로 세운다 */}
+            <Button type="button" variant="primary" size="sm" onClick={handleSubmit} disabled={!draft.trim()}>
               등록
             </Button>
           </div>
