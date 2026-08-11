@@ -10,6 +10,7 @@ import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
 import { EntityLogo } from "@/components/ui/EntityLogo";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { typeScale } from "@/components/ui/Typography";
 import { APPLY_METHOD_SHORT_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
@@ -35,10 +36,10 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
 
   return (
     <section className="mt-14">
-      <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>업계를 이끄는 기업</h2>
-        <div className="flex items-center gap-3">
-          <div className="hidden md:block">
+      <SectionHeader
+        title="업계를 이끄는 기업"
+        action={
+          <div className="hidden shrink-0 md:block">
             <CarouselControl
               onPrev={scrollPrev}
               onNext={scrollNext}
@@ -48,8 +49,9 @@ function PremiumCompanies({ activeTrack }: { activeTrack: HomeTrackFilter }) {
               nextLabel="다음 기업"
             />
           </div>
-        </div>
-      </div>
+        }
+        viewAll={{ href: "/companies" }}
+      />
       <div ref={containerRef} className="premium-scrollbar overflow-x-auto border border-[#dddddd] bg-white">
         <div className="flex min-w-max">
           {visibleCompanies.map((company) => {
@@ -116,19 +118,23 @@ function ThemeCuration() {
 
   return (
     <section className="mt-16">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>테마별 공고</h2>
-        <div className="hidden md:block">
-          <CarouselControl
-            onPrev={scrollPrev}
-            onNext={scrollNext}
-            canGoPrev={canScrollPrev}
-            canGoNext={canScrollNext}
-            prevLabel="이전 테마"
-            nextLabel="다음 테마"
-          />
-        </div>
-      </div>
+      {/* viewAll이 없는 유일한 캐러셀 섹션 — 테마 목록 페이지(/themes)가 없고 라우트는 /themes/[themeId]뿐이라
+          걸 곳이 없다. 이 캐러셀 자체가 테마 색인이고 가로 스크롤 컨테이너라 모바일에서 손가락으로 밀린다. */}
+      <SectionHeader
+        title="테마별 공고"
+        action={
+          <div className="hidden shrink-0 md:block">
+            <CarouselControl
+              onPrev={scrollPrev}
+              onNext={scrollNext}
+              canGoPrev={canScrollPrev}
+              canGoNext={canScrollNext}
+              prevLabel="이전 테마"
+              nextLabel="다음 테마"
+            />
+          </div>
+        }
+      />
       <div ref={containerRef} className="premium-scrollbar flex gap-4 overflow-x-auto pb-2">
         {themeCurationCards.map((card) => (
           <Link key={card.id} href={card.href} data-carousel-item className="min-w-[254px] overflow-hidden border border-[#e5e5e5] bg-white transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)]">
@@ -236,12 +242,7 @@ function PersonalRecommendationSection({
 
   return (
     <section className="mt-16">
-      <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>나를 위한 추천 공고</h2>
-        <Link href="/jobs" className="text-[13px] font-medium text-[#777777] hover:text-[#111111]">
-          전체보기 ›
-        </Link>
-      </div>
+      <SectionHeader title="나를 위한 추천 공고" viewAll={{ href: "/jobs" }} />
       <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[900px]:grid-cols-1">
         {visibleJobs.map((job) => (
           <div key={job.id} className="-ml-px -mt-px h-full">

@@ -8,7 +8,7 @@ import { JobListToolbar } from "@/components/JobListToolbar";
 import { Pagination } from "@/components/Pagination";
 import { SearchFilterPanel } from "@/components/SearchFilterPanel";
 import { SidebarQuickLinks } from "@/components/SidebarQuickLinks";
-import { typeScale } from "@/components/ui/Typography";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { trackFilterConfigs } from "@/config/jobFilters/index";
 import { trackToJobTrack, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
@@ -108,9 +108,8 @@ export function HomeJobsSection({
   return (
     <section className="mt-20 bg-[#f5f6f7] py-16 max-[760px]:py-10">
       <div className="app-shell">
-        <div className="mb-5 flex items-center gap-2">
-          <h2 className={clsx(typeScale.sectionTitle, "text-[#111111]")}>공고 둘러보기</h2>
-        </div>
+        {/* 이 섹션이 곧 공고 전체 목록이라 "전체 보기"가 갈 곳이 없다 — 제목만 있는 SectionHeader다. */}
+        <SectionHeader title="공고 둘러보기" />
 
         {showTrackTabs ? <CategoryTabs activeTrack={activeJobTrack} onChange={filterState.setTrack} /> : null}
 
