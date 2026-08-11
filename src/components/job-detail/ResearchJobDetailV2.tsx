@@ -120,7 +120,12 @@ export function ResearchJobDetailV2({ data, jobRecord }: { data: ResearchJobDeta
         <div className="app-shell">
           <div className="mt-5 grid grid-cols-[minmax(0,1fr)_318px] gap-6 max-[1120px]:grid-cols-1">
             {/* ── 본문 ──────────────────────────────────────────────────── */}
-            <div className="min-w-0 space-y-5">
+            {/* 종전 space-y-5와 같은 20px 리듬이지만 gap으로 준다. space-y-*는 자식에게
+                margin-top·margin-bottom을 **둘 다** 걸고(후자는 0) 그 선택자 특이도가 (0,3,0)이라,
+                앵커 한 자리만 붙이려고 `> nav`(0,1,1)로 마진을 덮으면 조용히 진다.
+                gap에는 경쟁할 마진 선언이 없어 [&>nav]:-mb-5 한 줄이 그대로 먹는다 —
+                섹션 앵커 바로 아래 20px만 지우고 나머지 섹션 사이 간격은 그대로 둔다. */}
+            <div className="flex min-w-0 flex-col gap-5 [&>nav]:-mb-5">
               {/* 히어로 */}
               <section className="overflow-hidden rounded-[var(--radius)] border border-border bg-white shadow-[var(--shadow)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
