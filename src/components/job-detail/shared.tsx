@@ -761,24 +761,25 @@ export function JobDetailHeroHeader({
  * `detailLabel`은 첫 버튼 문구만 바꾼다 — 병원·약국·연구는 "기관 정보 더보기"(기관 단위 명칭에 더 맞음), 산업은
  * 기본값 "기업 정보 더보기"를 그대로 쓴다. 나머지 두 버튼("기업 리뷰 보기"/"면접 후기 보기")은 4트랙 공통이다. */
 export function CompanyCtaButtons({ companyId, detailLabel = "기업 정보 더보기" }: { companyId: string; detailLabel?: string }) {
+  /* ≤760px는 2열 그리드다 — 주 CTA(기업 정보 더보기)가 첫 행 전폭, 보조 둘이 둘째 행을 나눠 쓴다.
+     종전 max-[640px]:flex-col은 세 버튼을 세로로 세우면서 h-11을 통째로 잃고 있었다: 세로 flex에서
+     flex-1은 주축(=세로)의 flex-basis를 0으로 잡아 높이 지정을 이긴다. 실측 21·23·23px으로,
+     지정한 44px의 절반도 안 되는 터치 타깃이었다. grid에서는 flex-* 자체가 무시되어 h-12가 그대로 선다. */
+  const baseButton = "inline-flex h-11 flex-1 items-center justify-center px-5 text-[13px] transition max-[760px]:h-12";
+  const secondaryButton = "border border-border bg-white font-medium text-[#4f5a66] hover:border-brand hover:text-brand";
+
   return (
-    <div className="mt-9 flex flex-wrap gap-2 max-[640px]:flex-col">
+    <div className="mt-9 flex flex-wrap gap-2 max-[760px]:grid max-[760px]:grid-cols-2">
       <Link
         href={`/companies/${companyId}`}
-        className="inline-flex h-11 flex-1 items-center justify-center bg-brand px-5 text-[13px] font-semibold text-white transition hover:bg-[var(--color-brand-dark)]"
+        className={clsx(baseButton, "bg-brand font-semibold text-white hover:bg-[var(--color-brand-dark)] max-[760px]:col-span-2")}
       >
         {detailLabel}
       </Link>
-      <Link
-        href={`/companies/${companyId}/reviews`}
-        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[13px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-      >
+      <Link href={`/companies/${companyId}/reviews`} className={clsx(baseButton, secondaryButton)}>
         기업 리뷰 보기
       </Link>
-      <Link
-        href={`/companies/${companyId}/interviews`}
-        className="inline-flex h-11 flex-1 items-center justify-center border border-border bg-white px-5 text-[13px] font-medium text-[#4f5a66] transition hover:border-brand hover:text-brand"
-      >
+      <Link href={`/companies/${companyId}/interviews`} className={clsx(baseButton, secondaryButton)}>
         면접 후기 보기
       </Link>
     </div>
