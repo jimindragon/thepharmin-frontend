@@ -10,6 +10,7 @@ import { DeadlineSoonSection } from "@/components/home/DeadlineSoonSection";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
+import { HomeQnaPreview } from "@/components/home/HomeQnaPreview";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { typeScale } from "@/components/ui/Typography";
@@ -383,6 +384,7 @@ export function HomePageClient() {
           {/* 홈에서만 STANDARD를 2줄(10장)로 줄이고 그 앞에 헤드헌팅 안내 행을 둔다 —
               트랙 랜딩은 해당 트랙 전량을 보여주는 자리라 옵션을 넘기지 않는다. */}
           <FeaturedJobsSection jobs={homeFeaturedJobs} showHeadhuntingBanner standardLimit={10} />
+          <HomeQnaPreview />
         </div>
         <HomeJobsSection bookmarkedIds={bookmarkedIds} onToggleBookmark={toggleBookmark} activeTrack={activeTrack} />
       </main>
