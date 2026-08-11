@@ -49,7 +49,9 @@ export function CompanyDetailTabs({ companyId }: { companyId: string }) {
   return (
     <nav
       className={clsx(
-        "mt-6 flex h-11 w-fit max-w-full overflow-x-auto overflow-y-hidden border border-border bg-white",
+        // ≤760px mt-0 — 히어로 직후에 바로 붙인다(히어로~탭 행 잔여 24px 제거). 아래 본문과의 간격도
+        // layout.tsx의 children 래퍼가 같은 폭에서 mt-0이라, 히어로·탭 행·본문이 틈 없이 이어진다.
+        "mt-6 flex h-11 w-fit max-w-full overflow-x-auto overflow-y-hidden border border-border bg-white max-[760px]:mt-0",
         isOverview && "max-[760px]:hidden",
       )}
       role="tablist"

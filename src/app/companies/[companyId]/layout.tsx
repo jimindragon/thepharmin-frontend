@@ -40,7 +40,11 @@ export default async function CompanyLayout({ children, params }: CompanyLayoutP
           <PageBreadcrumb className="mb-5" items={[{ label: "기업 인사이트" }, { label: profile.name }]} />
           <CompanyHero profile={profile} />
           <CompanyDetailTabs companyId={companyId} />
-          <div className="mt-6">{children}</div>
+          {/* ≤760px mt-0 — 이 폭에서 히어로 바로 아래 오는 것은 어느 탭에서든 흰 탭 행 하나다(하위 탭은
+              CompanyDetailTabs, 개요는 그 자리를 넘겨받은 SectionAnchorNav). 둘 다 sticky 바라 히어로에
+              붙어 있어야 스크롤 중 헤더 밑으로 이어지고, 사이에 24px 회색 띠가 끼면 바가 아니라 카드처럼 뜬다.
+              개요에서 이 mt가 곧 히어로~앵커 간격이고 하위 탭에서는 탭 행~본문 간격이라, 한 줄로 두 자리가 같이 0이 된다. */}
+          <div className="mt-6 max-[760px]:mt-0">{children}</div>
         </div>
       </main>
     </>
