@@ -45,8 +45,22 @@ export function HomeQnaPreview() {
             .join(" · ");
 
           return (
-            <Link key={entry.id} href={`/qna/${entry.id}`} className="block py-4 transition-colors hover:bg-[#fafafa]">
-              <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111]">{entry.title}</p>
+            /* 반응은 배경이 아니라 제목 글자색으로 준다. 이 목록은 카드가 아니라 글줄이라
+               행 배경을 칠하면 회색 판이 하나 생기는데, 그 판의 좌우 끝이 행의 인셋(셸 여백)에
+               맞춰 서서 풀블리드로 화면 끝까지 가는 아래 섹션들과 어긋난 선을 하나 더 만든다.
+
+               터치 잔상까지 배경 없이 두려면 -webkit-tap-highlight-color도 함께 꺼야 한다 —
+               모바일 브라우저 기본값이 탭 순간 링크 위에 반투명 회색 판을 덧칠하는데,
+               그게 방금 걷어낸 hover 배경과 같은 것이 손가락으로만 보이는 꼴이 된다.
+               전역으로 끄지 않고 이 행에만 건다. */
+            <Link
+              key={entry.id}
+              href={`/qna/${entry.id}`}
+              className="group block py-4 [-webkit-tap-highlight-color:transparent]"
+            >
+              <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111] transition-colors group-hover:text-[#333333] group-active:text-[#333333]">
+                {entry.title}
+              </p>
               <p className="mt-1.5 text-[13px] font-normal text-[#8b95a1]">{meta}</p>
             </Link>
           );
