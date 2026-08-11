@@ -13,6 +13,31 @@ const HERO_AUTOPLAY_OTHER_TRACK_MS = 6500;
 const HERO_SWIPE_MIN_DISTANCE_PX = 44;
 
 /**
+ * 히어로 CTA를 흰 버튼으로 바꿔 보는 비교용 플래그. false가 기본이고, 그때는 현재 배포 화면과
+ * 완전히 같다(variant='gradient-dark' 그대로). 사진 위에서 어떤 쪽이 나은지 눈으로 대볼 때만 켠다.
+ *
+ * 켤 때 className만으로는 덮이지 않는다 — gradient-dark는 backgroundImage·textShadow·transition을
+ * 인라인 style로 주입하고(Button.tsx getButtonStyle), 인라인은 항상 클래스를 이긴다.
+ * 다만 LinkButton이 `{...computed.style, ...style}` 순으로 병합해 호출부 style이 뒤에 오므로,
+ * 덮어야 하는 값만 아래 style로 무력화하고 배경/hover는 클래스로 준다.
+ * hover가 클래스로 도는 이상 filter도 같이 꺼야 한다 — 남겨 두면 hover:brightness-110이
+ * 흰 계열 hover 배경을 다시 흰색으로 되돌려 눌러도 변화가 안 보인다.
+ *
+ * Button.tsx의 gradient-dark 원본은 건드리지 않는다 — 기업 랜딩·기업 헤더·QNA가 함께 쓴다.
+ */
+const HERO_CTA_SOLID_WHITE: boolean = false;
+
+const HERO_CTA_SOLID_WHITE_CLASS = "bg-white hover:bg-[#f3f3f3]";
+
+const HERO_CTA_SOLID_WHITE_STYLE = {
+  backgroundImage: "none",
+  color: "#111111",
+  textShadow: "none",
+  filter: "none",
+  transition: "background-color 160ms ease",
+} as const;
+
+/**
  * 제목을 titleBreakAfter 지점에서 두 덩어리로 나눠 각각 줄바꿈을 막는다.
  * 덩어리 사이의 공백만 유일한 줄바꿈 기회가 되므로, 좁으면 그 지점에서 꺾이고 넓으면 한 줄로 이어진다.
  * (<wbr>는 기회를 "추가"할 뿐이라 탐욕적 줄채움이 여전히 뒤쪽 공백을 골라 이 목적에 쓸 수 없다.)
@@ -193,7 +218,10 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                     href={slide.href}
                     variant="gradient-dark"
                     size="lg"
-                    className="max-[760px]:h-11 max-[760px]:px-5 max-[380px]:px-3 max-[380px]:text-[13px]"
+                    className={`max-[760px]:h-11 max-[760px]:px-5 max-[380px]:px-3 max-[380px]:text-[13px]${
+                      HERO_CTA_SOLID_WHITE ? ` ${HERO_CTA_SOLID_WHITE_CLASS}` : ""
+                    }`}
+                    style={HERO_CTA_SOLID_WHITE ? HERO_CTA_SOLID_WHITE_STYLE : undefined}
                   >
                     {getHeroSlideCtaLabel(slide)}
                     <ChevronRight size={16} aria-hidden />
