@@ -447,8 +447,13 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             음수 마진은 자식이 아니라 aside가 받으므로 space-y와 부딪히지 않는다(가이드라인 3절).
           */}
           <aside className="space-y-5 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:space-y-4 max-[760px]:[&>*]:border-x-0 max-[760px]:[&>*]:px-6">
-            <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} />
-            {isLoggedIn ? <MyActivityPanel activeType={post.qnaType} /> : null}
+            {/* 1열에서는 바로 위 "이런 글은 어때요?"와 성격이 겹친다 — 댓글 뒤에 글 목록이 두 벌 이어진다 */}
+            <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} className="max-[1040px]:hidden" />
+            {/* 1열에서는 댓글 전체 아래로 밀려 도달률이 사실상 0이다. /qna/activity 진입점은 허브가
+                모든 폭에서 보장하므로(≤1040px는 compact 사본) 상세는 그 폭에서 면제한다. */}
+            {isLoggedIn ? <MyActivityPanel activeType={post.qnaType} className="max-[1040px]:hidden" /> : null}
+            {/* 1열에서도 남긴다 — 상세에는 허브의 카테고리 칩 nav 같은 중복 대상이 없고,
+                태그로 목록을 여는 유일한 통로다(tagHref). 칩 wrap이라 전폭에서도 형태가 무너지지 않는다. */}
             <PopularTagsPanel activeType={post.qnaType} tagHref={popularTagHref} />
             <QnaOperationPrinciplePanel />
           </aside>
