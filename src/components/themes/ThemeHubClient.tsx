@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { FLUSH_LIST_CLASS } from "@/components/flushListStyles";
 import { Header } from "@/components/Header";
 import { JobCard } from "@/components/JobCard";
 import { PageHeader } from "@/components/PageHeader";
@@ -299,13 +300,18 @@ export function ThemeHubClient({ themeId, theme }: { themeId: ThemeId; theme: Th
                   현재 채용 중인 공고가 없습니다.
                 </div>
               ) : (
-                <div className="flex flex-col gap-1.5">
+                /* 스크랩·QNA와 같은 풀블리드 문법(FLUSH_LIST_CLASS + variant="flush").
+                   min-[761px]:gap-1.5는 이 목록만 쓰던 6px 리듬을 데스크톱에서 그대로 지키기 위한 것이다 —
+                   FLUSH_LIST_CLASS의 기본 gap-3(12px)을 변형 없이 덮으면 어느 쪽이 이길지가 Tailwind
+                   출력 순서에 달리므로, min-/max- 두 변형이 서로 배타가 되게 갈라 둔다. */
+                <div className={clsx(FLUSH_LIST_CLASS, "min-[761px]:gap-1.5")}>
                   {sortedJobs.map((job) => (
                     <JobCard
                       key={job.id}
                       job={job}
                       isBookmarked={bookmarkedIds.includes(job.id)}
                       onToggleBookmark={toggleBookmark}
+                      variant="flush"
                     />
                   ))}
                 </div>
