@@ -235,10 +235,10 @@ export function FilterSheet({
 
   /**
    * 2단 시트만 높이를 못 박는다. 카테고리마다 소분류 수가 달라(산업 직무: 3~7개) 목록 길이대로 두면
-   * 탭을 옮길 때마다 하단에 붙은 시트의 윗변이 오르내린다. 580px는 최다 케이스(8행 384px + 헤더·푸터
-   * 138px + 탭 줄 57px = 579px)를 스크롤 없이 담는 높이이고, 화면이 더 낮으면 기존 상한인 86dvh가 이긴다.
-   * 종전 560px는 탭 줄 여백을 넓히기(pt-1/pb-2 → pt-2.5/pb-3, +10px) 전에도 8행에 9px 모자랐다 —
-   * 20px 올린 건 그 부족분과 여백 증가분을 함께 메운 값이다.
+   * 탭을 옮길 때마다 하단에 붙은 시트의 윗변이 오르내린다. 581px는 최다 케이스(8행 384px + 탭 줄 57px
+   * + 헤더·푸터 140px = 581px)를 그대로 담는 높이이고, 화면이 더 낮으면 기존 상한인 86dvh가 이긴다.
+   * 종전 560px는 탭 줄 여백을 넓히기(pt-1/pb-2 → pt-2.5/pb-3, +10px) 전에도 8행에 11px 모자랐다.
+   * 21px 올린 건 그 부족분과 여백 증가분(합 21px)을 남김없이 메운 값이다.
    * 항목이 한 벌뿐인 options·group 시트는 출렁일 일이 없어 지금의 auto 높이 그대로 둔다.
    */
   const twoTier = definition.kind === "job" || definition.kind === "researchField";
@@ -257,7 +257,7 @@ export function FilterSheet({
       onClose={onClose}
       maxWidth="max-w-[520px]"
       sheetBreakpoint={760}
-      panelClassName={twoTier ? "max-[760px]:h-[min(580px,86dvh)]" : undefined}
+      panelClassName={twoTier ? "max-[760px]:h-[min(581px,86dvh)]" : undefined}
     >
       <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto px-4">
         {definition.kind === "job" ? (
