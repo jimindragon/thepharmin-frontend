@@ -175,6 +175,33 @@ function shortDDay(dDay: string): string {
   return dDay;
 }
 
+/** JobCard의 긴급 판정과 같은 경계 — 마감 7일 이내. */
+const URGENT_DDAY_MAX_DAYS = 7;
+
+/**
+ * 이 파일 카드들의 D-day 긴급(빨강) 판정.
+ *
+ * 카드가 받는 건 Job이 아니라 RecommendedJob(광고 티어 뷰모델)이라 isJobDeadlineUrgent(job)를
+ * 그대로 부를 수 없다. 대신 dDay 문자열에서 되읽는다 — 이 값은 recommendedJobs.ts가 한 곳에서
+ * formatJobDeadlineLabel(job)로 만든 것이라(손입력 값이 섞이지 않는다) 라벨만으로 원래 판정을
+ * 그대로 복원할 수 있다. 그 함수가 내는 네 가지가 아래 분기와 1:1로 맞물린다.
+ *   "오늘 마감" → 긴급 / "D-n" → n ≤ 7이면 긴급 / "상시채용"·"마감" → 아님
+ * 결과는 isJobDeadlineUrgent(오늘 마감이거나 0 ≤ 남은 일수 ≤ 7)와 같다.
+ *
+ * dDay가 손입력으로 바뀌거나 형식이 늘어나면 이 파싱이 조용히 회색으로 떨어진다 —
+ * 그때는 라벨을 되읽지 말고 RecommendedJob에 판정 결과를 필드로 실어 내려보낼 것.
+ */
+function isUrgentDDay(dDay: string): boolean {
+  if (dDay === "오늘 마감") return true;
+  const daysLeft = dDay.match(/^D-(\d+)$/);
+  return daysLeft ? Number(daysLeft[1]) <= URGENT_DDAY_MAX_DAYS : false;
+}
+
+/** 세 등급 카드가 공유하는 D-day 색. 한 곳에서 갈라야 등급마다 규칙이 어긋나지 않는다. */
+function ddayColorClass(dDay: string): string {
+  return isUrgentDDay(dDay) ? "text-danger" : "text-[#6b7280]";
+}
+
 function PremiumCard({ job }: { job: RecommendedJob }) {
   return (
     <article className="flex h-full flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-none transition duration-[180ms] hover:border-[#d5d5d5] hover:shadow-[0_6px_18px_rgba(12,18,24,0.07)]">
@@ -197,7 +224,7 @@ function PremiumCard({ job }: { job: RecommendedJob }) {
         </div>
         <div className="mt-auto flex items-center justify-between pt-3">
           <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
-          <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
+          <strong className={`text-[13px] font-medium ${ddayColorClass(job.dDay)}`}>{job.dDay}</strong>
         </div>
       </div>
     </article>
@@ -220,7 +247,7 @@ function FeaturedCard({ job }: { job: RecommendedJob }) {
         <p className="mt-1 truncate text-[12px] font-normal text-[#9ca3af]">{job.condition}</p>
         <div className="mt-auto flex items-center justify-between pt-3">
           <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
-          <strong className="text-[13px] font-medium text-danger">{job.dDay}</strong>
+          <strong className={`text-[13px] font-medium ${ddayColorClass(job.dDay)}`}>{job.dDay}</strong>
         </div>
       </div>
     </article>
@@ -229,7 +256,6 @@ function FeaturedCard({ job }: { job: RecommendedJob }) {
 
 function StandardCard({ job }: { job: RecommendedJob }) {
   const dDayShort = shortDDay(job.dDay);
-  const isJangsi = dDayShort === "상시";
   return (
     <article className="flex h-full min-h-[130px] flex-col overflow-hidden border border-[#e5e5e5] bg-white shadow-sm transition duration-[180ms] hover:border-[#dcdcdc] hover:shadow-[0_6px_18px_rgba(12,18,24,0.06)]">
       <div className="flex flex-1 flex-col px-5 pb-5 pt-5">
@@ -239,7 +265,10 @@ function StandardCard({ job }: { job: RecommendedJob }) {
         <h3 className="truncate text-[15px] font-bold text-[#202734]">{job.title}</h3>
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="text-[11px] font-medium text-[#6b7481]">{APPLY_METHOD_SHORT_LABELS[job.applyMethod]}</span>
-          <strong className={`text-[13px] font-medium ${isJangsi ? "text-[#6b7280]" : "text-danger"}`}>
+          {/* 종전에는 "상시"만 갈라내 나머지가 전부 빨강이었다 — 이미 마감된 공고와 D-30이
+              마감 당일과 같은 색으로 섰다. 판정을 위 ddayColorClass 하나로 모은다.
+              표시는 축약형(dDayShort), 판정은 원본(job.dDay)이다. */}
+          <strong className={`text-[13px] font-medium ${ddayColorClass(job.dDay)}`}>
             {dDayShort}
           </strong>
         </div>
