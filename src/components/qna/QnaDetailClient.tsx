@@ -295,11 +295,19 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
           채용 QNA
         </Link>
 
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[760px]:gap-6">
+        {/*
+          gap-8·max-[760px]:gap-6은 두 열 **사이**의 가로 거터다. ≤1040px에서 1열로 접히면 같은 값이
+          세로 이음새로 재사용되는데, 그 자리가 본문 카드 리듬(gap-5 / ≤760px gap-4)보다 넓어
+          "본문 3장 → 사이드 패널" 접합부만 혼자 벌어져 보였다. 그래서 1열 구간에서만 row gap을
+          카드 리듬과 같은 값으로 눌러 둔다 — 가로 거터는 2열 폭에서 그대로 32px이다.
+          같은 축(row)에 gap과 gap-y가 겹치지만 Tailwind가 gap → gap-x → gap-y 순으로 출력하고
+          max-* 변형은 폭 내림차순(1040 → 760)이라, 좁은 쪽 gap-y가 항상 이긴다.
+        */}
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_280px] gap-8 max-[1040px]:grid-cols-1 max-[1040px]:gap-y-5 max-[760px]:gap-6 max-[760px]:gap-y-4">
           {/*
             ≤760px 풀블리드 — 본문·댓글·"이런 글은 어때요?" 세 카드가 공고 상세·기업 상세와 같은 한 줄
             (FLUSH_SECTION_CLASS)로 화면 폭을 채운다. 이 페이지만 회색 배경 위에 좌우로 물러난 카드였다.
-            카드 사이는 종전 space-y(≤760px 16px) 회색 간격 그대로 둔다 — 목록(FLUSH_LIST_CLASS)과 달리
+            카드 사이는 종전 회색 간격(≤760px 16px) 그대로 둔다 — 목록(FLUSH_LIST_CLASS)과 달리
             이 셋은 서로 다른 성격의 섹션 덩어리라, 붙여서 divide-y로 가르면 한 장짜리 문서로 읽힌다.
 
             padding은 축을 나눠 둔다: 좌우는 FLUSH_SECTION_CLASS의 max-[760px]:px-6(=24px, h1·칩이 서 있는
@@ -307,7 +315,7 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             변형이 둘 겹쳐 Tailwind 출력 순서에 기대게 된다(flushListStyles 주석의 규칙).
             뒤로가기 행과 댓글 컴포저는 카드 안쪽 요소라 자리가 그대로다.
           */}
-          <div className="min-w-0 space-y-5 max-[760px]:space-y-4">
+          <div className="flex min-w-0 flex-col gap-5 max-[760px]:gap-4">
             <article className={clsx("border border-border bg-white px-7 py-7 max-[760px]:py-5", FLUSH_SECTION_CLASS)}>
               {post.isBest ? (
                 <span className="mb-2.5 inline-flex h-6 items-center bg-[#111111] px-2 text-[12px] font-semibold text-white">BEST</span>
@@ -444,9 +452,15 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
                  상대로 이미 쓰는 방식).
               2) 패널들의 안쪽 여백이 p-5 단축형이다. 단축형과 px 변형을 같은 요소에서 겹치면 승부가
                  Tailwind 출력 순서에 달리는데, 자식 선택자 쪽은 그 다툼 자체가 없다.
-            음수 마진은 자식이 아니라 aside가 받으므로 space-y와 부딪히지 않는다(가이드라인 3절).
+            음수 마진은 자식이 아니라 aside가 받으므로 자식 간격(gap)과 부딪히지 않는다(가이드라인 3절).
+
+            패널 간격은 space-y가 아니라 gap이다. space-y의 셀렉터는 `> :not([hidden]) ~ :not([hidden])`으로
+            HTML **속성** hidden만 거르는데, 아래 패널들이 쓰는 것은 max-[1040px]:hidden **클래스**(display:none)라
+            숨은 패널도 형제로 카운트됐다. 그래서 ≤1040px에서 첫 가시 패널이 마진을 하나 물려받아
+            (본문↔사이드 접합부에 grid row gap 위로 20/16px 순증) 그 자리만 벌어져 보였다.
+            display:none 자식은 flex 아이템으로 존재하지 않으므로 gap은 그 간격을 아예 만들지 않는다.
           */}
-          <aside className="space-y-5 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:space-y-4 max-[760px]:[&>*]:border-x-0 max-[760px]:[&>*]:px-6">
+          <aside className="flex flex-col gap-5 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:gap-4 max-[760px]:[&>*]:border-x-0 max-[760px]:[&>*]:px-6">
             {/* 1열에서는 바로 위 "이런 글은 어때요?"와 성격이 겹친다 — 댓글 뒤에 글 목록이 두 벌 이어진다 */}
             <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} className="max-[1040px]:hidden" />
             {/* 1열에서는 댓글 전체 아래로 밀려 도달률이 사실상 0이다. /qna/activity 진입점은 허브가
