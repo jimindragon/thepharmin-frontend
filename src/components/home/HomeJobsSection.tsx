@@ -14,7 +14,7 @@ import { trackToJobTrack, type HomeTrackFilter } from "@/data/home";
 import { jobs } from "@/data/jobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
-import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
+import type { Job, JobFilters, SortOption, UserJobPreference } from "@/types/jobs";
 import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
 const PAGE_SIZE = 6;
@@ -80,6 +80,9 @@ export function HomeJobsSection({
   }, [activeJobTrack]);
 
   const filteredJobs = useMemo(() => filterJobsByFilters(jobs, filterState.filters), [filterState.filters]);
+
+  // 모바일 필터 시트가 draft로 결과 수를 미리 세는 데 쓴다 — 위 목록과 같은 함수·같은 옵션이라 셈이 갈리지 않는다.
+  const countJobs = (nextFilters: JobFilters) => filterJobsByFilters(jobs, nextFilters).length;
   const hourlyFilterActive = filterState.filters.hourlyPayRangeId !== null;
 
   // 필터(분야 포함)나 정렬이 바뀌면 이전 페이지에 머물러 있지 않도록 1페이지로 되돌린다.
@@ -132,6 +135,8 @@ export function HomeJobsSection({
               onSetSpecialFilter={filterState.setSpecialFilter}
               onRemoveAppliedFilter={filterState.removeAppliedFilter}
               onResetAll={filterState.resetFilters}
+              onApplyFilters={filterState.applyFilters}
+              countJobs={countJobs}
             />
 
             <JobListToolbar

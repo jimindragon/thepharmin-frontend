@@ -18,7 +18,7 @@ import { jobs } from "@/data/jobs";
 import { filterJobsByFilters, useJobFilters } from "@/hooks/useJobFilters";
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs";
 import { getStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
-import type { Job, SortOption, UserJobPreference } from "@/types/jobs";
+import type { Job, JobFilters, SortOption, UserJobPreference } from "@/types/jobs";
 import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
 const PAGE_SIZE = 8;
@@ -64,6 +64,9 @@ export default function JobsPage() {
   const filteredJobs = useMemo(() => {
     return filterJobsByFilters(jobs, filterState.filters);
   }, [filterState.filters]);
+
+  // 모바일 필터 시트가 draft로 결과 수를 미리 세는 데 쓴다 — 목록과 같은 함수라 셈이 갈리지 않는다.
+  const countJobs = (nextFilters: JobFilters) => filterJobsByFilters(jobs, nextFilters).length;
 
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
   // 필터로 목록이 짧아졌는데 currentPage가 아직 뒤 페이지에 남아 있는 경우를 막는다 — 슬라이스와 Pagination이 같은 값을 쓴다.
@@ -124,6 +127,8 @@ export default function JobsPage() {
                 onSetSpecialFilter={filterState.setSpecialFilter}
                 onRemoveAppliedFilter={filterState.removeAppliedFilter}
                 onResetAll={filterState.resetFilters}
+                onApplyFilters={filterState.applyFilters}
+                countJobs={countJobs}
               />
 
               <RecommendedJobs

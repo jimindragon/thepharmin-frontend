@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, RotateCcw, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { SelectedFilterChips } from "@/components/SelectedFilterChips";
+import { FilterSheet, countForDefinition } from "@/components/jobs/FilterSheet";
 import { isFilterStateKey, selectedIds } from "@/hooks/useJobFilters";
 import type {
   AppliedFilterChip,
@@ -37,6 +38,41 @@ interface SearchFilterPanelProps {
   onSetSpecialFilter: (key: SpecialJobFilterKey, checked: boolean) => void;
   onRemoveAppliedFilter: (chip: AppliedFilterChip) => void;
   onResetAll: () => void;
+  /** 모바일 시트가 draft를 통째로 확정할 때 쓰는 입구. 개별 setter와 달리 한 번에 반영한다. */
+  onApplyFilters: (filters: JobFilters) => void;
+  /** 시트 CTA의 "N개 공고 보기". 목록과 같은 필터 함수를 호출부가 넘긴다 — 여기서 규칙을 다시 쓰지 않는다. */
+  countJobs: (filters: JobFilters) => number;
+}
+
+/** 모바일 트리거 행의 칩 하나. 시트를 여는 칩(hasSheet)과 값 자체를 토글하는 칩 둘 다를 그린다. */
+function MobileFilterChip({
+  label,
+  count,
+  active,
+  hasSheet,
+  onClick,
+}: {
+  label: string;
+  count?: number;
+  active: boolean;
+  hasSheet?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={hasSheet ? undefined : active}
+      className={clsx(
+        "inline-flex h-[36px] shrink-0 items-center gap-1.5 whitespace-nowrap border px-3.5 text-[13px] font-medium transition-colors",
+        active ? "border-[#111111] bg-[#111111] text-white" : "border-[#d7d7d7] bg-white text-[#444444]",
+      )}
+    >
+      {label}
+      {count ? <span className="font-semibold">{count}</span> : null}
+      {hasSheet ? <ChevronDown size={14} className={active ? "text-white/70" : "text-[#8b95a4]"} /> : null}
+    </button>
+  );
 }
 
 const specialFilterOptions: Array<{ key: SpecialJobFilterKey; label: string; tracks?: JobTrack[] }> = [
@@ -288,12 +324,19 @@ export function SearchFilterPanel({
   onSetSpecialFilter,
   onRemoveAppliedFilter,
   onResetAll,
+  onApplyFilters,
+  countJobs,
 }: SearchFilterPanelProps) {
   const [openFilterId, setOpenFilterId] = useState<string | null>(null);
+  // 데스크톱 인라인 드롭다운과 모바일 시트는 서로 다른 상태를 쓴다 — 한쪽이 열린 채 폭이 바뀌어도 엉키지 않는다.
+  const [sheetFilterId, setSheetFilterId] = useState<string | null>(null);
   const openDefinition = config.filters.find((definition) => definition.id === openFilterId) ?? null;
+  const sheetDefinition = config.filters.find((definition) => definition.id === sheetFilterId) ?? null;
+  const visibleSpecialFilters = specialFilterOptions.filter((option) => !option.tracks || option.tracks.includes(track));
 
   useEffect(() => {
     setOpenFilterId(null);
+    setSheetFilterId(null);
   }, [track]);
 
   return (
@@ -323,19 +366,61 @@ export function SearchFilterPanel({
               className="min-w-0 flex-1 text-[15px] font-normal text-text placeholder:text-[#8d8d8d]"
               placeholder={siteConfig.searchPlaceholder}
               aria-label="채용공고 검색어"
+              enterKeyHint="search"
             />
           </div>
 
+          {/* ≤760px에서는 전폭 검색 버튼을 접는다 — 키보드의 검색 키(enterKeyHint)와 엔터가 같은 일을 하고,
+              그 한 줄이 곧 필터 블록 높이라 접는 값이 크다. 데스크톱은 그대로 둔다. */}
           <button
             type="button"
             onClick={onSubmitKeyword}
-            className="h-[44px] w-[88px] bg-[#050505] text-[13px] font-medium text-white transition-colors hover:bg-[#222222] max-[720px]:w-full"
+            className="h-[44px] w-[88px] bg-[#050505] text-[13px] font-medium text-white transition-colors hover:bg-[#222222] max-[760px]:hidden max-[720px]:w-full"
           >
             검색
           </button>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        {/* ── 모바일(≤760px) 트리거 행 ────────────────────────────────────────────
+            데스크톱의 pill 줄(6종)·체크박스 줄(3~5종)·펼쳐지는 패널 3층을 가로 스크롤 한 줄로 접는다.
+            드롭다운 6종은 시트를 열고, 특수 조건 체크박스는 칩 자체가 토글이다(시트 없음). */}
+        <div className="mt-3 -mx-3.5 flex gap-2 overflow-x-auto px-3.5 [-ms-overflow-style:none] [scrollbar-width:none] min-[761px]:hidden [&::-webkit-scrollbar]:hidden">
+          {config.filters.map((definition) => {
+            const count = countForDefinition(definition, filters);
+
+            return (
+              <MobileFilterChip
+                key={definition.id}
+                label={definition.label}
+                count={count}
+                active={count > 0}
+                hasSheet
+                onClick={() => setSheetFilterId(definition.id)}
+              />
+            );
+          })}
+
+          {visibleSpecialFilters.map((option) => (
+            <MobileFilterChip
+              key={option.key}
+              label={option.label}
+              active={filters[option.key]}
+              onClick={() => onSetSpecialFilter(option.key, !filters[option.key])}
+            />
+          ))}
+
+          <button
+            type="button"
+            onClick={onResetAll}
+            className="inline-flex h-[36px] shrink-0 items-center gap-1.5 whitespace-nowrap border border-[#d9dee5] bg-white px-3.5 text-[13px] font-medium text-[#667080] transition-colors hover:border-brand hover:text-brand"
+          >
+            <RotateCcw size={15} />
+            초기화
+          </button>
+        </div>
+
+        {/* 데스크톱(≥761px) pill 줄 — 인라인 드롭다운을 여는 현행 트리거. 모바일에서는 위 칩 행이 대신한다. */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 max-[760px]:hidden">
           {config.filters.map((definition) => {
             const open = openFilterId === definition.id;
             const summary = summaryForDefinition(definition, filters);
@@ -374,8 +459,9 @@ export function SearchFilterPanel({
           </button>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2 border-t border-[#e3e5e8] pt-3">
-          {specialFilterOptions.filter((option) => !option.tracks || option.tracks.includes(track)).map((option) => (
+        {/* 데스크톱(≥761px) 특수 조건 체크박스 줄. 모바일에서는 같은 값이 칩 토글로 올라가 있다. */}
+        <div className="mt-3 flex flex-wrap gap-2 border-t border-[#e3e5e8] pt-3 max-[760px]:hidden">
+          {visibleSpecialFilters.map((option) => (
             <label
               key={option.key}
               className="inline-flex h-[36px] cursor-pointer items-center gap-2 border border-[#d7d7d7] bg-white px-3 text-[13px] font-medium text-[#444444] transition-colors hover:border-[#111111] hover:text-[#111111]"
@@ -392,7 +478,7 @@ export function SearchFilterPanel({
         </div>
 
         {openDefinition ? (
-          <div className="dropdown-panel mt-2 border border-[#dddddd] bg-white px-3.5 py-3.5">
+          <div className="dropdown-panel mt-2 border border-[#dddddd] bg-white px-3.5 py-3.5 max-[760px]:hidden">
             {openDefinition.kind === "job" ? (
               <JobFilterPanel
                 categories={openDefinition.categories}
@@ -431,7 +517,26 @@ export function SearchFilterPanel({
         ) : null}
       </section>
 
-      <SelectedFilterChips chips={appliedChips} onRemove={onRemoveAppliedFilter} />
+      {/* 조건이 하나도 없을 때의 "적용 조건 / 선택된 조건 없음" 안내는 모바일에서 접는다 —
+          칩 행이 이미 "무엇이 몇 개 걸렸는지"를 보여주고 있어 한 줄을 더 쓸 값이 없다.
+          하나라도 걸리면 다시 나온다 — 칩을 하나씩 떼는 자리는 여기뿐이다. */}
+      <div className={clsx(appliedChips.length === 0 && "max-[760px]:hidden")}>
+        <SelectedFilterChips chips={appliedChips} onRemove={onRemoveAppliedFilter} />
+      </div>
+
+      {sheetDefinition ? (
+        <FilterSheet
+          key={sheetDefinition.id}
+          definition={sheetDefinition}
+          filters={filters}
+          countJobs={countJobs}
+          onApply={(next) => {
+            onApplyFilters(next);
+            setSheetFilterId(null);
+          }}
+          onClose={() => setSheetFilterId(null)}
+        />
+      ) : null}
     </div>
   );
 }
