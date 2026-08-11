@@ -19,6 +19,14 @@ const HERO_SWIPE_MIN_DISTANCE_PX = 44;
  *
  * 덩어리를 붙들면 폭이 아주 좁을 때 잘리므로 nowrap은 360px 이상에서만 건다 — 그 아래는 기존 자동 줄바꿈 그대로다.
  * 문구는 title 하나에서만 오고, titleBreakAfter가 title의 접두어가 아니면 자동 줄바꿈으로 되돌아간다.
+ *
+ * ≤640px에서는 이 지점을 "기회"가 아니라 강제 줄바꿈으로 승격한다. 덩어리만 잡아 두면 줄 수가 문구
+ * 길이에 딸려가, 짧은 제목 하나만 1줄로 남고 나머지 셋은 2줄이 되어 슬라이드를 넘길 때 제목·부제·CTA가
+ * 통째로 25px씩 오르내린다(실측: 자연 복원 폭이 연구 378px / 산업 400px / 병원 421px / 약국 427px로 제각각).
+ * 네 장 모두 같은 자리에서 꺾이게 하면 넘겨도 글 블록이 제자리에 선다.
+ * 표준 경계(640)를 쓰는 이유는 여기서 깨져서가 아니라 반대다 — 폰 폭(≤430) 전체를 여유 있게 덮으면서
+ * 641px 이상은 네 장이 이미 다 같이 한 줄이라, 문구가 바뀌어도 규칙이 흔들리지 않는 가장 가까운 표준값이다.
+ * display:none인 <br>은 줄바꿈을 만들지 않으므로 641px 이상은 종전 자동 동작 그대로다.
  */
 function renderSlideTitle(slide: HomeHeroSlide) {
   const lead = slide.titleBreakAfter;
@@ -27,6 +35,7 @@ function renderSlideTitle(slide: HomeHeroSlide) {
   return (
     <>
       <span className="min-[360px]:whitespace-nowrap">{lead}</span>{" "}
+      <br className="hidden max-[640px]:inline" />
       <span className="min-[360px]:whitespace-nowrap">{slide.title.slice(lead.length + 1)}</span>
     </>
   );
