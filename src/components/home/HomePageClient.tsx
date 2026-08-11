@@ -200,7 +200,7 @@ function HomeRecommendationCard({
        로고는 아래 상단 행에 32px로 다시 들어가고, 남은 폭은 전부 글로 간다.
        min-h-[156px]도 함께 푼다(max-[760px]:min-h-0): 2열 시절 좌우 높이를 맞추려고 잡아 둔 바닥값이라
        세로로 쌓인 뒤에는 짧은 카드에 빈 칸만 남긴다. 높이는 내용이 정하게 둔다. */
-    <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc] max-[760px]:min-h-0 max-[760px]:flex-col">
+    <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc] max-[760px]:min-h-0 max-[760px]:flex-col max-[760px]:border-0">
       <Link
         href={job.slug && hasJobDetail(job.slug) ? `/jobs/${job.slug}` : "/jobs"}
         className="absolute inset-0 z-10"
@@ -228,9 +228,11 @@ function HomeRecommendationCard({
       {/* 세로 구분선 — 좌우 2열을 가르는 선이라 세로 스택이 되는 ≤760px에서는 의미가 없다 */}
       <div className="w-px shrink-0 self-stretch bg-[#eeeeee] max-[760px]:hidden" />
       {/* 정보 영역
-          ≤760px 안쪽 여백 22 → 20. 20(p-5)이 모바일 가이드라인의 카드 패딩 바닥값이라 위아래로 내려갈 수 있는
-          한 단계가 이게 전부다 — 나머지는 아래 요소 사이 간격(제목→태그 10→8, 태그→풋터 12→10)에서 만든다. */}
-      <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px] max-[760px]:px-5 max-[760px]:pt-5">
+          ≤760px 세로 여백 22 → 20. 나머지는 아래 요소 사이 간격(제목→태그 10→8, 태그→풋터 12→10)에서 만든다.
+          좌우는 20(px-5)이 아니라 24(px-6)다 — 카드가 풀블리드가 된 뒤로 이 패딩이 곧 화면 여백이라,
+          카드 안쪽 값이 아니라 같은 화면의 섹션 제목이 서 있는 --shell-gutter/2(=24px) 선을 따라야 한다.
+          FLUSH_SECTION_CLASS·FLUSH_GRID_CLASS가 px-6으로 맞춘 선과 같다. */}
+      <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px] max-[760px]:px-6 max-[760px]:pt-5">
         {/* 상단 행. >760px에서는 이 겹이 흐름에서 자리를 차지하지 않는다 — 로고·회사명이 hidden이고
             북마크만 남는데 그건 absolute라 흐름 밖이다. 이 겹 자체는 static이므로 북마크의 기준 상자도
             종전과 같은 바깥 정보 칸(relative)이라, 데스크톱 렌더는 한 픽셀도 달라지지 않는다.
@@ -327,9 +329,19 @@ function PersonalRecommendationSection({
   return (
     <section className="mt-16">
       <SectionHeader title="나를 위한 추천 공고" viewAll={{ href: "/jobs" }} />
-      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[900px]:grid-cols-1">
+      {/* ≤760px 풀블리드 1열. 브레이크포인트를 900 → 760으로 내려 이 파일의 다른 모바일 분기와 한 줄로 맞춘다
+          (761~900px는 이제 2열이다 — 아래 태그 처리 참고).
+
+          FLUSH_GRID_CLASS를 그대로 쓰지 않았다. 그 상수의 [&>*]:border-0 / [&>*]:px-6은 그리드 직계 자식이
+          곧 카드일 때를 전제하는데, 여기는 -ml-px/-mt-px 테두리 겹치기용 셀 래퍼가 한 겹 끼어 있어
+          자식 선택자가 래퍼에 걸린다 — 카드 테두리는 안 지워지고 패딩만 이중(24+20)으로 얹힌다.
+          그래서 같은 관용구(거터 되밀기 -mx, divide-y)만 손으로 가져오고 카드 쪽은 각 요소에서 직접 처리한다.
+
+          border-l/border-t와 셀의 -ml-px/-mt-px는 칸을 맞대어 선을 하나로 합치는 짝이라 함께 푼다.
+          화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽히고, 낱장 사이 선은 divide-y가 그린다. */}
+      <div className="grid grid-cols-2 border-l border-t border-[#dddddd] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:border-0">
         {visibleJobs.map((job) => (
-          <div key={job.id} className="-ml-px -mt-px h-full">
+          <div key={job.id} className="-ml-px -mt-px h-full max-[760px]:ml-0 max-[760px]:mt-0">
             <HomeRecommendationCard job={job} isBookmarked={bookmarkedIds.includes(job.id)} onToggleBookmark={onToggleBookmark} />
           </div>
         ))}
