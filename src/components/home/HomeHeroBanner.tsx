@@ -166,7 +166,11 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                     ≤380px 축소는 페이저와 한 줄을 나눠 쓰던 시절의 처방이다(CTA 158 + 페이저 116 = 274라
                     본문 폭이 274에 못 미치는 ≤369px에서 겹쳤다). ≤760px에서 페이저가 배너 밖으로 나가며
                     다툴 상대는 사라졌지만, 좁은 폭 회귀를 막아 둔 안전장치라 그대로 둔다.
-                    높이(h-12)는 어느 폭에서도 건드리지 않는다 — 터치 타깃이다.
+
+                    ≤760px 안쪽 여백 축소: 높이 48(h-12) → 44(h-11), 좌우 24(px-6) → 20(px-5).
+                    라벨이 짧아(“연구 공고 15건 보기 ›”) 알약이 글자에 비해 두툼했다. 44px은 iOS/안드로이드가
+                    권하는 터치 타깃 하한과 같은 값이라 여기가 바닥이다 — 더 줄이지 않는다.
+                    글자(14px)는 15px 바닥 규칙 아래라 손대지 않는다. 761px 이상은 h-12/px-6 그대로다.
 
                     화살표는 LinkButton 기본 gap-2(8px)로 붙는다. 라벨이 "…보기"로 끝나 목적지가 있다는 신호가
                     글자밖에 없었다. 16px은 14px 라벨 옆에서 글자보다 커 보이지 않는 크기다.
@@ -175,7 +179,7 @@ export function HomeHeroBanner({ activeTrack }: { activeTrack: HomeTrackFilter }
                     href={slide.href}
                     variant="gradient-dark"
                     size="lg"
-                    className="max-[380px]:px-3 max-[380px]:text-[13px]"
+                    className="max-[760px]:h-11 max-[760px]:px-5 max-[380px]:px-3 max-[380px]:text-[13px]"
                   >
                     {getHeroSlideCtaLabel(slide)}
                     <ChevronRight size={16} aria-hidden />
