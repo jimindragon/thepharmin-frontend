@@ -1,4 +1,6 @@
+import clsx from "clsx";
 import type { Metadata } from "next";
+import { FLUSH_GRID_CLASS } from "@/components/flushListStyles";
 import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell";
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
@@ -37,8 +39,12 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
       applyHalf: review.applyHalf,
     }));
 
+  /* ≤760px에서 이 목록이 화면 본문의 전부다 — 회색 배경 위 카드 격자가 아니라 전폭 낱장 목록으로 접는다.
+     탭 행·본문 카드가 이미 전폭이라 목록만 액자로 남으면 한 화면 안에서 두 문법이 부딪힌다.
+     border-y는 흰 블록의 시작·끝을 확정하는 자리다: 섹션 카드(FLUSH_SECTION_CLASS)와 달리 이 목록에는
+     감싸는 셸이 없어, 위아래 1px이 없으면 회색 배경으로 그대로 번진다. */
   const body = (
-    <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+    <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS, "max-[760px]:border-y max-[760px]:border-border")}>
       <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
       {items.map((item) => (
         <CompanyReviewCard key={item.id} review={item} />

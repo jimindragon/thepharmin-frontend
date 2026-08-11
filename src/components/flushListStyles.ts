@@ -34,3 +34,21 @@ export const FLUSH_LIST_CLASS =
  */
 export const FLUSH_SECTION_CLASS =
   "max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:border-x-0 max-[760px]:px-6";
+
+/**
+ * ≤760px 풀블리드 **그리드 목록**. 위 FLUSH_LIST_CLASS의 그리드판이다 — 카드가 flex 한 줄이 아니라
+ * 여러 열로 깔리는 목록(기업 상세 면접 후기·기업 리뷰·뉴스 탭)을 좁은 화면에서 1열 낱장 목록으로 접는다.
+ *
+ * 열 정의(grid-cols-*·gap)는 호출부가 그대로 갖고, 여기서는 ≤760px 변형만 얹는다. 클래스가 전부
+ * 변형 붙은 유틸리티라 761px 이상에는 한 줄도 적용되지 않는다 — 데스크톱 렌더에 영향이 없다.
+ *
+ * 카드 쪽 손질까지 여기서 한다([&>*]). 카드마다 flush 프로퍼티를 뚫는 대신 목록이 자식을 직접
+ * 눌러쓰는 이유는, 이 자리에 오는 카드가 후기 카드 한 종류가 아니기 때문이다 — 첫 칸에 작성 유도
+ * 카드(CompanyReviewWriteCard)나 열람권 상태 카드(InterviewAccessStatusCard)가 서고, 뉴스 탭은
+ * 아예 인라인 <a>다. 세 컴포넌트에 같은 프로퍼티를 각각 심는 것보다 목록 한 줄이 덜 침습적이다.
+ *   - border-0 — 낱장 사이 선은 divide-y가 그린다. 화면 끝에 닿은 세로선은 잘린 자국으로 읽힌다.
+ *   - px-6 — 카드 안쪽 좌우 패딩이 그대로 화면 여백이 되므로 같은 화면의 h1·탭이 선 24px에 맞춘다.
+ *     세로 패딩은 카드가 쓰던 값을 그대로 둔다(p 단축형을 쓰는 카드도 자식 선택자 쪽이 이긴다).
+ */
+export const FLUSH_GRID_CLASS =
+  "max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:grid-cols-1 max-[760px]:gap-0 max-[760px]:divide-y max-[760px]:divide-[var(--color-border)] max-[760px]:[&>*]:border-0 max-[760px]:[&>*]:px-6";

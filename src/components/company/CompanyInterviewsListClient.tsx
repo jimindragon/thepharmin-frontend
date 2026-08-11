@@ -1,6 +1,8 @@
 "use client";
 
+import clsx from "clsx";
 import { useEffect, useState } from "react";
+import { FLUSH_GRID_CLASS } from "@/components/flushListStyles";
 import { CompanyReviewCard, type CompanyReviewCardItem, type CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
 import { InterviewAccessStatusCard, type InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -52,7 +54,16 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
 
   return (
     <div>
-      <div className="grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1">
+      {/* ≤760px 전폭 낱장 목록 — 기업 리뷰 탭과 같은 한 줄이다(FLUSH_GRID_CLASS + border-y).
+          잠금 카드(LockedContent)와 열람권 상태 카드의 내부 렌더는 건드리지 않는다: 바뀌는 것은
+          그것들을 담는 목록의 폭과 카드 좌우 여백뿐이다. */}
+      <div
+        className={clsx(
+          "grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1",
+          FLUSH_GRID_CLASS,
+          "max-[760px]:border-y max-[760px]:border-border",
+        )}
+      >
         <InterviewAccessStatusCard userState={displayState} credits={credits} writeHref={writeHref} />
         {items.map((item) => {
           const unlocked = unlockedIds.includes(item.id);
