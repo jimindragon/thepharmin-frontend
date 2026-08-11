@@ -37,6 +37,7 @@
 - 고정 폭은 w-full max-w-[Npx] 관용구를 사용한다. w-[Npx] 단독 사용 금지(가로 스크롤 캐러셀 내부 제외).
 - truncate/line-clamp-1은 좁은 폭에서 정보 손실이 크다. 모바일 분기에서 line-clamp-2 이상으로 완화를 검토한다.
 - 그리드 아이템은 기본 min-width: auto라 콘텐츠(가로 스크롤 행 등)가 열 폭을 밀어내 문서 오버플로를 만들 수 있다. 그리드 열은 minmax(0,1fr)로 선언하거나 아이템에 min-w-0을 준다. 선례: RecruitmentCalendarClient 모바일 지원 일정 사본 (globals.css .jobs-layout의 ≤1180px 오버라이드가 1fr이라 보호 없음)
+- space-y-N은 자식에 margin-top과 margin-bottom: 0을 함께 걸며 선택자 특이도가 (0,3,0)이라, 자식의 음수 마진·mb 유틸이 조용히 진다. 자식 마진과 경쟁이 생기면 space-y 대신 flex flex-col gap-N으로 전환한다 (같은 리듬, 경쟁 없음). 선례: 공고 상세 앵커 직하 여백 (9977b3b)
 - 목표는 "페이지를 짧게"가 아니라 "한 화면 정보 밀도 높이기"다. 스크롤 길이 자체는 문제가 아니다.
 
 ## 4. 타이포그래피 — 위계 압축 (≤760px)
