@@ -408,15 +408,6 @@ export function SearchFilterPanel({
               onClick={() => onSetSpecialFilter(option.key, !filters[option.key])}
             />
           ))}
-
-          <button
-            type="button"
-            onClick={onResetAll}
-            className="inline-flex h-[36px] shrink-0 items-center gap-1.5 whitespace-nowrap border border-[#d9dee5] bg-white px-3.5 text-[13px] font-medium text-[#667080] transition-colors hover:border-brand hover:text-brand"
-          >
-            <RotateCcw size={15} />
-            초기화
-          </button>
         </div>
 
         {/* 데스크톱(≥761px) pill 줄 — 인라인 드롭다운을 여는 현행 트리거. 모바일에서는 위 칩 행이 대신한다. */}
@@ -519,9 +510,28 @@ export function SearchFilterPanel({
 
       {/* 조건이 하나도 없을 때의 "적용 조건 / 선택된 조건 없음" 안내는 모바일에서 접는다 —
           칩 행이 이미 "무엇이 몇 개 걸렸는지"를 보여주고 있어 한 줄을 더 쓸 값이 없다.
-          하나라도 걸리면 다시 나온다 — 칩을 하나씩 떼는 자리는 여기뿐이다. */}
-      <div className={clsx(appliedChips.length === 0 && "max-[760px]:hidden")}>
-        <SelectedFilterChips chips={appliedChips} onRemove={onRemoveAppliedFilter} />
+          하나라도 걸리면 다시 나온다 — 칩을 하나씩 떼는 자리는 여기뿐이다.
+
+          모바일 "전체 초기화"도 여기 붙는다. 트리거 칩 행은 가로로 955px까지 늘어나 그 끝에 두면
+          칩 아홉 개를 지나야 닿는데, 이 줄은 초기화가 의미 있을 때(=조건이 걸렸을 때)만 나타나고
+          자리도 고정이다. 데스크톱은 pill 줄 오른쪽 끝의 기존 버튼을 그대로 쓴다. */}
+      <div
+        className={clsx(
+          "max-[760px]:flex max-[760px]:items-start max-[760px]:gap-2",
+          appliedChips.length === 0 && "max-[760px]:hidden",
+        )}
+      >
+        <div className="max-[760px]:min-w-0 max-[760px]:flex-1">
+          <SelectedFilterChips chips={appliedChips} onRemove={onRemoveAppliedFilter} />
+        </div>
+        <button
+          type="button"
+          onClick={onResetAll}
+          className="mt-3 hidden h-[36px] shrink-0 items-center gap-1.5 whitespace-nowrap border border-[#d9dee5] bg-white px-3 text-[13px] font-medium text-[#667080] transition-colors hover:border-brand hover:text-brand max-[760px]:inline-flex"
+        >
+          <RotateCcw size={14} />
+          전체 초기화
+        </button>
       </div>
 
       {sheetDefinition ? (
