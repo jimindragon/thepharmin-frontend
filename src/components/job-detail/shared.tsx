@@ -100,8 +100,9 @@ export function getCompanyDetailHref(companyId?: string) {
  * 좁은 화면에서는 옆 기관 소개문이 들어갈 폭을 남겨야 한다. 76은 390px에서 어느 트랙도 소개문 줄 수가
  * 늘지 않는 값이다(연구는 80까지, 산업은 90까지가 한계라 둘 중 좁은 쪽에 맞춘다).
  * 모바일에서도 로고는 커진다 — 폭이 아니라 padding 8→0에서 오는 몫이다.
- * sm은 중단점이 다르다. 헤더 좌측 묶음이 max-[560px]에서 세로로 접혀 그때부터 기관명이 로고와 폭을 나눠 쓰기 때문에,
- * 긴 이름("한국과학기술연구원(KIST)")이 두 줄로 접히지 않는 100까지 그 지점에서 줄인다.
+ * sm은 중단점이 다르다. 헤더 좌측 묶음이 max-[560px]에서 [로고][기관명/관심 기업] 두 칸으로 접혀 그때부터
+ * 기관명이 로고와 폭을 나눠 쓰기 때문에, 그 지점에서 76×35로 줄인다(100×46의 0.76배 — 폭만 줄이면 칸 비율이
+ * 어긋난다). 긴 이름("한국과학기술연구원(KIST)")에 필요한 폭을 기관명 칸에 넘기는 것이 이 축소의 목적이다.
  *
  * 테두리·배경·그림자는 뺐다. 주변이 흰 카드라 bg-white는 보이지 않고 rounded-[var(--radius)]는 0으로 계산되며,
  * 칸이 로고 비율에 맞은 뒤로는 테두리로 감쌀 빈 공간 자체가 없다 — wide를 쓰는 다른 두 자리와도 같아진다.
@@ -127,7 +128,7 @@ export function CompanyLogo({
       width={isLarge ? 140 : 130}
       height={isLarge ? 68 : 46}
       padding={0}
-      className={clsx("shrink-0", isLarge ? "max-[640px]:!w-[76px]" : "max-[560px]:!w-[100px]")}
+      className={clsx("shrink-0", isLarge ? "max-[640px]:!w-[76px]" : "max-[560px]:!h-[35px] max-[560px]:!w-[76px]")}
       fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(name)}</span>}
     />
   );
