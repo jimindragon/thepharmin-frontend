@@ -20,7 +20,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
+import { FLUSH_GRID_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/sectionAnchorStyles";
 import { STAT_ROW_CELL, STAT_ROW_ICON, STAT_ROW_LABEL, STAT_ROW_LIST, STAT_ROW_VALUE } from "@/components/shared/statRowStyles";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
@@ -499,14 +499,19 @@ export function CompanyNewsSection({ profile }: { profile: CompanyProfile }) {
         </a>
       }
     >
+      {/* ≤760px 전폭 낱장 목록 — 후기·리뷰 탭과 같은 한 줄(FLUSH_GRID_CLASS). 여기는 섹션 카드 안이라
+          border-y를 더하지 않는다: 흰 블록의 시작·끝은 섹션이 이미 확정한다.
+          카드 자체의 좌우 패딩(px-6)은 목록이 [&>*]로 주지만, 이 카드는 이미지와 글이 층으로 나뉘어 있어
+          그 px가 <a>가 아니라 글 층으로 가야 한다 — 이미지는 화면 끝까지 닿는 편이 맞다. 그래서 목록의
+          [&>*]:px-6은 아래 [&>a]:px-0으로 되돌리고, 글 층이 같은 24px을 직접 든다. */}
       {profile.news.length ? (
-        <div className="grid grid-cols-4 gap-3 max-[1100px]:grid-cols-2 max-[620px]:grid-cols-1">
+        <div className={clsx("grid grid-cols-4 gap-3 max-[1100px]:grid-cols-2 max-[620px]:grid-cols-1", FLUSH_GRID_CLASS, "max-[760px]:[&>a]:px-0")}>
           {profile.news.map((news) => (
             <a key={news.id} href={news.href} target="_blank" rel="noreferrer" className="group overflow-hidden border border-[#e0e6ee] bg-white transition hover:border-[#111111]">
               <div className="h-[122px] bg-[#eef1f4]">
                 <img src={news.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
               </div>
-              <div className="p-4">
+              <div className="px-4 py-4 max-[760px]:px-6">
                 <p className="text-[12px] font-normal text-[#8a95a5]">{news.date}</p>
                 {/* min-h는 "2줄분 높이" — 16px × leading-1.45 ≈ 23.2px × 2줄 = 46.4px라 48px로 잡는다(14px 시절엔 40px) */}
                 <h3 className="mt-2 line-clamp-2 min-h-[48px] text-[16px] font-semibold leading-[1.45] text-[#202733]">{news.title}</h3>
