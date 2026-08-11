@@ -66,12 +66,17 @@ export function SectionShell({
       id={id}
       className={clsx("border border-border bg-white px-6 py-6 shadow-[var(--shadow)]", FLUSH_SECTION_CLASS, SECTION_ANCHOR_SCROLL_MT_CLASS)}
     >
+      {/* min-w-0 / shrink-0 + whitespace-nowrap는 한 쌍이다. 없으면 flex 기본값(min-width:auto)이 제목 덩어리를
+          내용 폭 밑으로 못 줄여, 남는 폭을 액션이 뒤집어쓰고 "전체 보 / 기"로 접힌다. ≤760px에서 description이 있는
+          섹션(면접 후기·기업 리뷰)이 실제로 그랬다 — 링크가 2줄(42.9px)로 렌더됐다. 줄여야 할 쪽은 긴 제목·설명이지
+          두 단어짜리 액션이 아니다. 홈의 SectionHeader와 같은 처방이되 컴포넌트를 공유하지는 않는다: 이쪽은
+          타이포(20px/#202733)도 설명 슬롯도 액션 종류(외부 링크·"더보기")도 달라 합치면 한쪽이 끌려간다. */}
       <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
           {description ? <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8594]">{description}</p> : null}
         </div>
-        {action}
+        {action ? <div className="shrink-0 whitespace-nowrap">{action}</div> : null}
       </div>
       {children}
     </section>
