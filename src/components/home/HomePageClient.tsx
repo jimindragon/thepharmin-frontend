@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { CarouselControl } from "@/components/RecommendedJobs";
-import { DeadlineSoonSection } from "@/components/home/DeadlineSoonSection";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { HomeHeroBanner } from "@/components/home/HomeHeroBanner";
 import { HomeJobsSection } from "@/components/home/HomeJobsSection";
@@ -385,7 +384,8 @@ export function HomePageClient() {
       <main className="pb-0">
         <div className="app-shell">
           <HomeHeroBanner activeTrack={activeTrack} />
-          <DeadlineSoonSection />
+          {/* 마감 임박 공고(DeadlineSoonSection)가 여기 있었다 — 데이터 보강 후 이 자리로 돌아온다.
+              컴포넌트는 지우지 않았으니 import 한 줄과 이 줄만 되살리면 된다. */}
           <PremiumCompanies activeTrack={activeTrack} />
           <RecruiterSolutionBanner />
           <ThemeCuration />

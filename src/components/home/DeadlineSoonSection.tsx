@@ -1,5 +1,7 @@
 "use client";
 
+// 현재 홈에서 미렌더 상태 — 데이터 보강 후 복귀 예정(HomePageClient의 히어로 바로 아래 자리).
+
 import clsx from "clsx";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
