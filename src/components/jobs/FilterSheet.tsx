@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, ChevronDown, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { ModalShell } from "@/components/ui/ModalShell";
 import {
@@ -134,6 +134,10 @@ function SheetOptionList({
 /**
  * 직무·연구 분야용 2단. 데스크톱 JobFilterPanel의 좌우 2열을 세로로 눕힌 것이다 —
  * 대분류는 가로 스크롤 탭, 소분류는 그 아래 목록. 탭 줄은 스크롤해도 머리에 남는다.
+ *
+ * 탭 줄은 접힘이 기본(한 줄 가로 스크롤)이고, 넘칠 때만 ∨ 버튼이 붙어 다단 wrap으로 펼쳐진다.
+ * 산업 직무 10개는 390px에서 가로로 940px 가까이 늘어나 화면 밖 카테고리가 있다는 사실 자체가
+ * 안 보인다 — QNA 카테고리 칩 줄이 같은 이유로 쓰는 방식을 여기로 가져왔다.
  */
 function SheetCategoryPanel({
   categories,
@@ -152,42 +156,106 @@ function SheetCategoryPanel({
   scrollRef: RefObject<HTMLDivElement | null>;
 }) {
   const [activeCategoryId, setActiveCategoryId] = useState(categories[0]?.id ?? "");
+  const [tabsExpanded, setTabsExpanded] = useState(false);
+  const [tabsOverflow, setTabsOverflow] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
 
-  // 탭 전환은 목록을 통째로 갈아끼우지만 스크롤 위치는 남는다 — 새 목록의 중간부터 보이지 않도록 되감는다.
+  /**
+   * 탭 전환은 목록을 통째로 갈아끼우지만 스크롤 위치는 남는다 — 새 목록의 중간부터 보이지 않도록 되감는다.
+   * 펼친 상태였다면 같이 접는다. 탭을 골랐다는 건 카테고리 고르기가 끝났다는 뜻이고, 펼친 탭 줄은
+   * 목록 자리를 100px 넘게 먹어 정작 골라야 할 소분류가 밀린다.
+   */
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
+    setTabsExpanded(false);
   }, [activeCategoryId, scrollRef]);
+
+  /**
+   * ∨ 버튼을 낼지 판정한다. 카테고리 **개수**가 아니라 실제 넘침을 본다 — 같은 10개라도 폭에 따라
+   * 다르고, 병원·약국 트랙처럼 2개뿐이면 한 줄에 다 들어와 버튼이 "누를 것 없는 거짓 신호"가 된다.
+   *
+   * QNA(항상 wrap + max-h 클램프)와 달리 여기는 접힘이 가로 스크롤이라 넘침 축이 가로다.
+   * 펼친 동안은 재지 않고 직전 값을 유지한다 — wrap으로 바뀌면 가로 넘침이 사라져 scrollWidth와
+   * clientWidth가 같아지고, 그대로 재면 접기 버튼이 스스로 사라진다.
+   * ResizeObserver로 폭 변화(회전·리사이즈)를 따라가고, 카테고리 목록 교체는 deps가 잡는다.
+   */
+  useEffect(() => {
+    const element = tabsRef.current;
+    if (!element || tabsExpanded) return;
+
+    const measure = () => setTabsOverflow(element.scrollWidth > element.clientWidth + 1);
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [categories, tabsExpanded]);
+
+  /**
+   * 펼침과 함께 목록을 맨 위로 되감는다. 탭 줄은 sticky라 흐름에 남아 있고, 목록을 내린 상태에서
+   * 펼치면 머리에 붙은 줄이 아래로 커지며 보고 있던 행을 덮는다(브라우저가 스크롤을 보정해주지 않는다).
+   */
+  const toggleTabs = () => {
+    setTabsExpanded((current) => !current);
+    scrollRef.current?.scrollTo({ top: 0 });
+  };
 
   return (
     <>
       <div className="sticky top-0 z-10 -mx-4 border-b border-[#eef1f4] bg-white px-4 pb-3 pt-2.5">
-        <div className="flex gap-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {categories.map((category) => {
-            const count =
-              category.subcategories.filter((subcategory) => selectedSubcategoryIds.includes(subcategory.id)).length +
-              (selectedCategoryIds.includes(category.id) ? 1 : 0);
-            const active = category.id === activeCategory?.id;
+        {/* 바깥 flex가 탭 묶음과 ∨ 버튼을 좌/우로 가른다. 버튼을 탭과 같은 묶음에 두면 마지막 탭을
+            따라다녀 접힘 상태에서는 화면 밖으로 밀려난다(QNA 칩 줄과 같은 구조). */}
+        <div className="flex items-start gap-2">
+          <div
+            ref={tabsRef}
+            className={clsx(
+              "flex min-w-0 flex-1 gap-1.5",
+              tabsExpanded
+                ? "flex-wrap"
+                : "overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+            )}
+          >
+            {categories.map((category) => {
+              const count =
+                category.subcategories.filter((subcategory) => selectedSubcategoryIds.includes(subcategory.id)).length +
+                (selectedCategoryIds.includes(category.id) ? 1 : 0);
+              const active = category.id === activeCategory?.id;
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => setActiveCategoryId(category.id)}
-                className={clsx(
-                  "h-[34px] shrink-0 whitespace-nowrap border px-3 text-[13px] font-medium transition-colors",
-                  active
-                    ? "border-[#111111] bg-[#111111] text-white"
-                    : count
-                      ? "border-[#111111] bg-white text-[#111111]"
-                      : "border-[#dfe4ea] bg-white text-[#5a6472]",
-                )}
-              >
-                {category.label}
-                {count ? ` ${count}` : ""}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setActiveCategoryId(category.id)}
+                  className={clsx(
+                    "h-[34px] shrink-0 whitespace-nowrap border px-3 text-[13px] font-medium transition-colors",
+                    active
+                      ? "border-[#111111] bg-[#111111] text-white"
+                      : count
+                        ? "border-[#111111] bg-white text-[#111111]"
+                        : "border-[#dfe4ea] bg-white text-[#5a6472]",
+                  )}
+                >
+                  {category.label}
+                  {count ? ` ${count}` : ""}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 한 줄에 다 들어가면 렌더하지 않는다 — 병원·약국 트랙은 카테고리가 2개뿐이라 늘 이 경우다.
+              -my-[3px]는 40px 버튼을 34px 탭 줄 안에 눕힌다(위아래 3px씩) — 줄 높이는 그대로 34px. */}
+          {tabsOverflow ? (
+            <button
+              type="button"
+              onClick={toggleTabs}
+              aria-expanded={tabsExpanded}
+              aria-label={tabsExpanded ? "카테고리 접기" : "카테고리 모두 보기"}
+              className="-my-[3px] grid h-10 w-10 shrink-0 place-items-center text-[#596373] transition-colors hover:text-[#111111]"
+            >
+              <ChevronDown size={18} className={clsx("transition-transform", tabsExpanded && "rotate-180")} aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
       </div>
 
