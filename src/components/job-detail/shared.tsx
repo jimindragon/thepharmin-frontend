@@ -8,6 +8,14 @@ import { JobCard } from "@/components/JobCard";
 import { FLUSH_LIST_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { AddToCalendarSheet } from "@/components/shared/AddToCalendarSheet";
 import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/sectionAnchorStyles";
+import {
+  STAT_ROW_CAPTION,
+  STAT_ROW_CELL,
+  STAT_ROW_ICON,
+  STAT_ROW_LABEL,
+  STAT_ROW_LIST,
+  STAT_ROW_VALUE,
+} from "@/components/shared/statRowStyles";
 import { EntityLogo } from "@/components/ui/EntityLogo";
 import { APPLY_METHOD_LABELS } from "@/config/applyMethods";
 import { companyLogos } from "@/config/companyImages";
@@ -274,9 +282,10 @@ export function IconSectionShell({
   );
 }
 
-/** 상단 3열 요약 카드 그리드. SummaryStatCell과 함께 써서 라벨/값 크기·weight·여백·정렬·아이콘이 구조적으로 항상 같게 만든다. */
+/** 상단 3열 요약 카드 그리드. SummaryStatCell과 함께 써서 라벨/값 크기·weight·여백·정렬·아이콘이 구조적으로 항상 같게 만든다.
+ *  ≤760px는 세로 카드 대신 행 리스트로 눕는다(처방·사유는 statRowStyles). */
 export function SummaryStatGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-3 gap-4 max-[720px]:grid-cols-1">{children}</div>;
+  return <div className={clsx("grid grid-cols-3 gap-4", STAT_ROW_LIST)}>{children}</div>;
 }
 
 export function SummaryStatCell({
@@ -291,11 +300,13 @@ export function SummaryStatCell({
   caption?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-5 text-center">
-      <Icon size={20} className="mx-auto text-[#6b7280]" aria-hidden />
-      <p className="mt-2 text-[12.5px] font-medium text-[#8893a2]">{label}</p>
-      <div className="mt-2 text-[17px] font-bold leading-snug text-[#2f3845]">{value}</div>
-      {caption ? <p className="mt-1 text-[12px] font-normal text-[#a0a9b7]">{caption}</p> : null}
+    <div className={clsx("rounded-[var(--radius)] border border-[#e2e8ef] bg-[#fbfcfd] px-4 py-5 text-center", STAT_ROW_CELL)}>
+      <Icon size={20} className={clsx("mx-auto text-[#6b7280]", STAT_ROW_ICON)} aria-hidden />
+      <p className={clsx("mt-2 text-[12.5px] font-medium text-[#8893a2]", STAT_ROW_LABEL)}>{label}</p>
+      <div className={clsx("mt-2 text-[17px] font-bold leading-snug text-[#2f3845]", STAT_ROW_VALUE)}>{value}</div>
+      {caption ? (
+        <p className={clsx("mt-1 text-[12px] font-normal text-[#a0a9b7]", STAT_ROW_CAPTION)}>{caption}</p>
+      ) : null}
     </div>
   );
 }
