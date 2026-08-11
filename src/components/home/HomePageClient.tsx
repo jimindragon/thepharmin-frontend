@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowRight, Bookmark } from "lucide-react";
+import { ArrowRight, Bookmark, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Header } from "@/components/Header";
@@ -121,13 +121,25 @@ function RecruiterSolutionBanner() {
   return (
     <section className="mt-6 border border-border bg-[#fafafa] px-6 py-5">
       {/* 행 전체가 링크라 반전도 행 전체에서 걸리게 한다 — 버튼 span에만 hover를 두면
-          문구 쪽에 커서를 올렸을 때 클릭은 되는데 버튼은 반응하지 않아 어긋나 보인다. */}
-      <Link href="/business" className="group flex items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start">
-        <p className="text-[15px] font-medium text-[#333333]">채용을 준비 중인 담당자이신가요?</p>
-        <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors group-hover:bg-[#111111] group-hover:text-white">
-          채용 솔루션 알아보기
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-        </span>
+          문구 쪽에 커서를 올렸을 때 클릭은 되는데 버튼은 반응하지 않아 어긋나 보인다.
+          ≤760px 재구성은 RecommendedJobs의 HeadhuntingNoticeRow와 한 벌이다 — 한쪽만 고치지 말 것. */}
+      <Link href="/business" className="group flex items-center justify-between gap-6">
+        {/* 문구+버튼을 한 겹 더 싸서, 데스크톱은 이 겹이 폭을 다 먹고 좌우로 벌리고(종전과 같은 렌더)
+            ≤760px는 세로로 쌓여 좌측 정렬 덩어리가 된다. 우측 아이콘은 이 겹 밖이라 항상 행 끝에 선다. */}
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
+          <p className="text-[15px] font-medium text-[#333333]">
+            채용을 준비 중인{" "}
+            <br className="hidden max-[760px]:inline" />
+            담당자이신가요?
+          </p>
+          <span className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors group-hover:bg-[#111111] group-hover:text-white">
+            채용 솔루션 알아보기
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+          </span>
+        </div>
+        {/* ≤760px 전용 장식. 문구가 2줄로 접히며 우측에 생긴 빈 칸을 메우는 역할이라 정보를 얹지 않는다 —
+            점 인디케이터와 같은 #d1d6dd로 눌러 두어 문구·버튼과 위계를 다투지 않게 한다. */}
+        <Building2 className="hidden h-9 w-9 shrink-0 text-[#d1d6dd] max-[760px]:block" strokeWidth={1.5} aria-hidden />
       </Link>
     </section>
   );

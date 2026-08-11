@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Info, UserRoundSearch } from "lucide-react";
 import { APPLY_METHOD_SHORT_LABELS } from "@/config/applyMethods";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 import { useDropdownMenu } from "@/hooks/useDropdownMenu";
@@ -282,15 +282,25 @@ function cardLink(id: number, slug: string | undefined, children: React.ReactNod
  */
 function HeadhuntingNoticeRow() {
   return (
-    <div className="flex items-center justify-between gap-6 border border-border bg-[#fafafa] px-6 py-5 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
-      <p className="min-w-0 text-[15px] font-medium text-[#333333]">내 경력에 맞는 포지션을 제안받아 보세요</p>
-      <Link
-        href="/headhunting"
-        className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white"
-      >
-        헤드헌팅 알아보기
-        <ArrowRight size={14} />
-      </Link>
+    <div className="flex items-center justify-between gap-6 border border-border bg-[#fafafa] px-6 py-5">
+      {/* 문구+버튼을 한 겹 더 싸서, 데스크톱은 이 겹이 폭을 다 먹고 좌우로 벌리고(종전과 같은 렌더)
+          ≤760px는 세로로 쌓여 좌측 정렬 덩어리가 된다. 우측 아이콘은 이 겹 밖이라 항상 행 끝에 선다. */}
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
+        <p className="min-w-0 text-[15px] font-medium text-[#333333]">
+          내 경력에 맞는{" "}
+          <br className="hidden max-[760px]:inline" />
+          포지션을 제안받아 보세요
+        </p>
+        <Link
+          href="/headhunting"
+          className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white"
+        >
+          헤드헌팅 알아보기
+          <ArrowRight size={14} />
+        </Link>
+      </div>
+      {/* ≤760px 전용 장식 — 홈 RecruiterSolutionBanner와 같은 규격(36px, #d1d6dd, strokeWidth 1.5). */}
+      <UserRoundSearch className="hidden h-9 w-9 shrink-0 text-[#d1d6dd] max-[760px]:block" strokeWidth={1.5} aria-hidden />
     </div>
   );
 }
