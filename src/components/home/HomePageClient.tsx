@@ -195,7 +195,12 @@ function HomeRecommendationCard({
 }) {
   const logoUrl = job.logoUrl ?? companyLogos[job.company];
   return (
-    <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc]">
+    /* ≤760px는 [로고칸 | 세로선 | 정보]의 좌우 2열을 버리고 세로 스택으로 바꾼다. 카드가 화면 폭 하나를
+       통째로 쓰는 1열 배치에서 130px짜리 로고 칸은 제목·태그가 쓸 폭을 그만큼 깎기만 한다 —
+       로고는 아래 상단 행에 32px로 다시 들어가고, 남은 폭은 전부 글로 간다.
+       min-h-[156px]도 함께 푼다(max-[760px]:min-h-0): 2열 시절 좌우 높이를 맞추려고 잡아 둔 바닥값이라
+       세로로 쌓인 뒤에는 짧은 카드에 빈 칸만 남긴다. 높이는 내용이 정하게 둔다. */
+    <article className="group relative z-0 flex h-full min-h-[156px] border border-[#e5e5e5] bg-white transition duration-[180ms] hover:z-10 hover:border-[#dcdcdc] hover:shadow-[0_4px_16px_rgba(12,18,24,0.05)] focus-within:z-10 focus-within:border-[#dcdcdc] max-[760px]:min-h-0 max-[760px]:flex-col">
       <Link
         href={job.slug && hasJobDetail(job.slug) ? `/jobs/${job.slug}` : "/jobs"}
         className="absolute inset-0 z-10"
@@ -203,11 +208,11 @@ function HomeRecommendationCard({
       >
         <span className="sr-only">{job.title} 상세 보기</span>
       </Link>
-      {/* 로고 영역: 박스 없이 이미지만, 없으면 이니셜
-          ≤760px 칸 폭 130 → 112(좌우 여백 20 → 16). 로고가 실제로 쓰는 폭은 90 → 80이 된다.
-          로고는 가로형이라 폭이 줄어도 높이 40 안에서 여유가 있고, 여기서 나온 18px은 전부 우측 정보 열로 간다
-          (카드가 화면 폭 하나를 통째로 쓰는 1열 배치라 제목·태그가 잘리는 쪽이 손해가 크다). */}
-      <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[760px]:w-[112px] max-[760px]:px-4">
+      {/* 로고 영역(>760px 전용): 박스 없이 이미지만, 없으면 이니셜.
+          ≤760px에서는 이 칸을 통째로 접고 아래 상단 행의 32px 인스턴스가 대신한다 —
+          !w-full로 EntityLogo의 인라인 width를 덮는 건 "칸이 폭을 정하는" 이 열에서만 맞는 처방이라,
+          인라인 행에 그대로 들고 갈 수 없어 인스턴스를 따로 둔다. */}
+      <div className="flex w-[130px] shrink-0 items-center justify-center px-5 max-[760px]:hidden">
         {/* JobCard와 같은 규격 — 폭은 칸이 정하므로 !w-full로 EntityLogo의 인라인 width를 덮는다.
             height 40 + padding 0은 종전 `max-h-10 w-full object-contain`과 같은 렌더 결과다. */}
         <EntityLogo
@@ -220,30 +225,65 @@ function HomeRecommendationCard({
           fallback={<span className="text-[13px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>}
         />
       </div>
-      {/* 세로 구분선 */}
-      <div className="w-px shrink-0 self-stretch bg-[#eeeeee]" />
+      {/* 세로 구분선 — 좌우 2열을 가르는 선이라 세로 스택이 되는 ≤760px에서는 의미가 없다 */}
+      <div className="w-px shrink-0 self-stretch bg-[#eeeeee] max-[760px]:hidden" />
       {/* 정보 영역
           ≤760px 안쪽 여백 22 → 20. 20(p-5)이 모바일 가이드라인의 카드 패딩 바닥값이라 위아래로 내려갈 수 있는
           한 단계가 이게 전부다 — 나머지는 아래 요소 사이 간격(제목→태그 10→8, 태그→풋터 12→10)에서 만든다. */}
       <div className="relative flex min-w-0 flex-1 flex-col px-[22px] pb-[20px] pt-[22px] max-[760px]:px-5 max-[760px]:pt-5">
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onToggleBookmark(job.id);
-          }}
-          className={clsx("absolute right-[14px] top-[14px] z-20 grid h-8 w-8 place-items-center text-[#b4bac3] hover:text-[#111111]", isBookmarked && "text-[#111111]")}
-          aria-label={`${job.title} 저장 ${isBookmarked ? "해제" : "추가"}`}
-        >
-          <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
-        </button>
+        {/* 상단 행. >760px에서는 이 겹이 흐름에서 자리를 차지하지 않는다 — 로고·회사명이 hidden이고
+            북마크만 남는데 그건 absolute라 흐름 밖이다. 이 겹 자체는 static이므로 북마크의 기준 상자도
+            종전과 같은 바깥 정보 칸(relative)이라, 데스크톱 렌더는 한 픽셀도 달라지지 않는다.
+            ≤760px에서만 [32px 로고][회사명][북마크] 인라인 행으로 켜진다.
+            북마크는 인스턴스를 둘로 늘리지 않고 위치만 바꾼다(absolute → static + ml-auto) —
+            같은 버튼을 두 벌 두면 onToggleBookmark·aria-label이 갈라져 나중에 어긋난다. */}
+        <div className="max-[760px]:flex max-[760px]:items-center max-[760px]:gap-2.5">
+          {/* EntityLogo 루트가 자기 display(grid)를 갖고 있어 hidden을 같은 요소에 얹으면 둘 다 변형 없는
+              display 유틸리티라 승부가 Tailwind 출력 순서에 달린다. 껍데기 한 겹으로 확정한다. */}
+          <span className="hidden shrink-0 max-[760px]:block">
+            <EntityLogo
+              name={job.company}
+              logoUrl={logoUrl}
+              variant="wide"
+              size={32}
+              padding={0}
+              fallback={<span className="text-[12px] font-semibold text-[#596373]">{getCompanyInitial(job.company)}</span>}
+            />
+          </span>
+          <p className="hidden min-w-0 flex-1 truncate text-[13px] font-medium text-[#6b7280] max-[760px]:block">{job.company}</p>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleBookmark(job.id);
+            }}
+            className={clsx(
+              "absolute right-[14px] top-[14px] z-20 grid h-8 w-8 place-items-center text-[#b4bac3] hover:text-[#111111] max-[760px]:static max-[760px]:ml-auto max-[760px]:shrink-0",
+              isBookmarked && "text-[#111111]",
+            )}
+            aria-label={`${job.title} 저장 ${isBookmarked ? "해제" : "추가"}`}
+          >
+            <Bookmark size={22} fill={isBookmarked ? "currentColor" : "none"} />
+          </button>
+        </div>
         {/* ≤760px 타이포: 제목 17 → 16(위계 압축표). 회사명 13·태그 12는 15px 바닥 아래라 그대로 둔다 —
-            이 카드에서 줄일 수 있는 글자는 제목 하나뿐이다. */}
-        <p className="truncate pr-8 text-[13px] font-medium text-[#6b7280]">{job.company}</p>
-        <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111] max-[760px]:text-[16px]")}>{job.title}</h3>
-        <div className="mt-2.5 flex flex-wrap gap-2 max-[760px]:mt-2">
+            이 카드에서 줄일 수 있는 글자는 제목 하나뿐이다.
+            회사명은 ≤760px에서 위 상단 행이 대신 그리므로 이 줄은 접는다. pr-8은 데스크톱에서만 살아 있는
+            북마크(absolute)를 피하는 여백이라 모바일에서는 어차피 무의미하다. */}
+        <p className="truncate pr-8 text-[13px] font-medium text-[#6b7280] max-[760px]:hidden">{job.company}</p>
+        {/* mt-0.5는 바로 위에 회사명이 붙어 있을 때의 값이다. ≤760px는 위가 32px 로고 행이라 그대로 두면
+            제목이 로고에 달라붙는다. */}
+        <h3 className={clsx(typeScale.cardTitle, "mt-0.5 truncate text-[#111111] max-[760px]:mt-2 max-[760px]:text-[16px]")}>{job.title}</h3>
+        {/* ≤760px 태그는 접지 않고 한 줄로 고정하고 넘치면 자른다 — 세로 스택이 되며 카드 높이가 내용에
+            딸려가게 됐으므로, 태그가 2줄로 접히는 카드만 혼자 키가 커져 목록의 세로 리듬이 흔들린다.
+            잘라내는 쪽은 태그가 원래 보조 정보라 감당할 수 있다(제목은 그대로 1줄 truncate).
+            shrink-0·nowrap이 없으면 flex가 태그를 min-content까지 눌러 태그 안에서 글자가 접힌다 —
+            "1줄 고정"이 아니라 "찌그러진 2줄"이 되므로 셋은 한 벌이다.
+            slice(0,4)는 잘라내기와 무관하게 남긴다. overflow-hidden은 넘친 걸 가릴 뿐이라
+            태그가 20개면 20개를 다 렌더한 뒤 가리게 된다 — 렌더 자체의 상한은 여기가 유일하다. */}
+        <div className="mt-2.5 flex flex-wrap gap-2 max-[760px]:mt-2 max-[760px]:flex-nowrap max-[760px]:overflow-hidden">
           {(job.coreKeywords ?? []).slice(0, 4).map((tag) => (
-            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c]">
+            <span key={tag} className="border border-[#f0f0f0] bg-[#f6f6f6] px-2 py-0.5 text-[12px] font-medium text-[#777f8c] max-[760px]:shrink-0 max-[760px]:whitespace-nowrap">
               {tag}
             </span>
           ))}
