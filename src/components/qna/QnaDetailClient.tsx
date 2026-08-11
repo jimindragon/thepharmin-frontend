@@ -433,7 +433,20 @@ export function QnaDetailClient({ post, backHref, previewQuery, isLoggedIn }: Qn
             ) : null}
           </div>
 
-          <aside className="space-y-5 max-[760px]:space-y-4">
+          {/*
+            ≤760px 풀블리드 — 위 본문 3카드가 화면 폭을 채우는 폭에서 사이드 패널만 셸 인셋(좌우 24px)에
+            남아 있었다. 사이드바가 본문 아래로 밀리는 폭이라 같은 세로줄에 좌측 선이 두 개 서고,
+            한 페이지의 흰 블록들이 서로 다른 곳에서 시작하는 것으로 읽혔다.
+
+            본문처럼 카드마다 FLUSH_SECTION_CLASS를 붙이지 않고 aside가 자식을 직접 눌러쓴다. 두 가지 이유다.
+              1) 네 패널 중 QnaOperationPrinciplePanel에는 className 통로가 없다. 그 하나 때문에
+                 프로퍼티를 뚫는 것보다 목록 한 줄이 덜 침습적이다(FLUSH_GRID_CLASS가 카드 3종을
+                 상대로 이미 쓰는 방식).
+              2) 패널들의 안쪽 여백이 p-5 단축형이다. 단축형과 px 변형을 같은 요소에서 겹치면 승부가
+                 Tailwind 출력 순서에 달리는데, 자식 선택자 쪽은 그 다툼 자체가 없다.
+            음수 마진은 자식이 아니라 aside가 받으므로 space-y와 부딪히지 않는다(가이드라인 3절).
+          */}
+          <aside className="space-y-5 max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:space-y-4 max-[760px]:[&>*]:border-x-0 max-[760px]:[&>*]:px-6">
             <TrendingPostsPanel entries={trendingEntries} previewQuery={previewQuery} />
             {isLoggedIn ? <MyActivityPanel activeType={post.qnaType} /> : null}
             <PopularTagsPanel activeType={post.qnaType} tagHref={popularTagHref} />
