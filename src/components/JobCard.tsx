@@ -121,10 +121,12 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
         <div className="w-px shrink-0 self-stretch bg-[#eeeeee] max-[480px]:hidden" />
 
         {/* 정보 컬럼 */}
-        {/* ≤640px: flex-wrap + 메인 basis-full → 우측 side가 둘째 줄로 내려간다 */}
+        {/* ≤640px: flex-wrap + D-day 겹의 basis-full → 마감·지원방법만 둘째 줄로 내려간다.
+            메인은 basis-0(flex-1)이라 첫 줄에서 북마크(40px, shrink-0)와 폭을 나눈다 —
+            종전처럼 메인에 basis-full을 주면 북마크까지 둘째 줄로 딸려 내려간다. */}
         <div className={clsx("flex min-w-0 flex-1 px-[22px] py-4 max-[640px]:flex-wrap", INFO_COL_CLASS[variant])}>
           {/* 정보 메인 */}
-          <div className="min-w-0 flex-1 max-[640px]:basis-full">
+          <div className="min-w-0 flex-1">
             {companyDetailHref ? (
               <Link
                 href={companyDetailHref}
@@ -184,9 +186,17 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
           </div>
 
           {/* 우측 side: 북마크(상단) + D-day·지원방법(mt-auto 바닥 고정) */}
-          {/* ≤640px: 둘째 줄에서 가로 한 줄로. flex-row-reverse라 DOM 순서(북마크→D-day)가
-              시각적으로 [D-day·지원방법 … 북마크]로 뒤집힌다. ml-3 → mt-3으로 교체 */}
-          <div className="ml-3 flex shrink-0 flex-col items-end max-[640px]:ml-0 max-[640px]:mt-3 max-[640px]:w-full max-[640px]:flex-row-reverse max-[640px]:items-center max-[640px]:justify-between">
+          {/* ≤640px: 이 겹을 display:contents로 접어 두 자식을 정보 칸의 직계 flex 항목으로 올린다.
+              북마크는 첫 줄 끝(=카드 우상단)에 서고, basis-full을 받은 D-day·지원방법만 둘째 줄로
+              내려간다. 종전에는 겹째로 둘째 줄에 내려간 뒤 flex-row-reverse가 북마크를 그 줄의
+              오른쪽 끝(=카드 우하단)에 세웠다 — 북마크만 폭 구간에 따라 자리가 갈리던 것을
+              전 폭 우상단 하나로 통일한다. 배지 두 개는 종전대로 하단에 남는다.
+              겹을 지우지 않고 접기만 하는 이유: >640px는 이 겹의 flex-col + items-end가
+              [북마크 / D-day] 세로 쌓기를 그대로 담당해야 하고, 폭마다 버튼 인스턴스를 따로 두면
+              onToggleBookmark·aria-label이 갈라져 나중에 어긋난다.
+              display 유틸리티가 둘(flex·contents)이지만 승부가 출력 순서에 달리지 않는다 —
+              변형 없는 flex < 변형 붙은 max-[640px]:contents로 확정된다. */}
+          <div className="ml-3 flex shrink-0 flex-col items-end max-[640px]:contents">
             <button
               type="button"
               onClick={(event) => {
@@ -196,8 +206,12 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
               className={clsx(
                 // -mr-[13px]: 40px 버튼 안에서 21px 아이콘이 중앙정렬(9.5px) + 획 안쪽 여백(3.63px)
                 // = 13.13px 만큼 그림이 안쪽에 그려진다. 누르는 영역 40px은 그대로 두고 상자만 밀어
-                // 아이콘 획 끝을 아래 D-day·배지의 오른쪽 정렬선에 맞춘다.
-                "relative z-20 -mr-[13px] grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius)] transition-colors",
+                // 아이콘 획 끝을 정보 칸의 오른쪽 패딩선(>640px 기준 아래 D-day·배지의 정렬선)에 맞춘다.
+                // 폭과 무관하게 h-10 w-10이라 ≤640px에서도 누르는 영역은 40×40 그대로다.
+                // ≤640px ml-3: 겹의 ml-3이 contents와 함께 사라지므로 버튼이 직접 갖는다 —
+                // 제목·태그가 쓰는 칸과 데스크톱과 같은 12px을 띄운다. 북마크가 absolute가 아니라
+                // 흐름 안에 있어 메인 칸이 그만큼 좁아지므로, 겹침을 pr로 피할 필요가 없다.
+                "relative z-20 -mr-[13px] grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius)] transition-colors max-[640px]:ml-3",
                 isBookmarked ? "text-brand" : "text-[#a0a9b7] hover:bg-[#f4f7f9] hover:text-brand",
               )}
               aria-label={`${job.title} ${isBookmarked ? "스크랩 해제" : "스크랩"}`}
@@ -205,7 +219,10 @@ export function JobCard({ job, isBookmarked, onToggleBookmark, showHourlyBadge, 
               <Bookmark size={21} strokeWidth={1.7} fill={isBookmarked ? "currentColor" : "none"} />
             </button>
 
-            <div className="mt-auto text-right max-[640px]:mt-0 max-[640px]:flex max-[640px]:items-center max-[640px]:gap-2 max-[640px]:text-left">
+            {/* ≤640px basis-full: 이 겹만 둘째 줄로 넘기는 장치다(앞의 두 항목은 첫 줄에 다 들어간다).
+                mt-3은 종전에 겹이 갖고 있던 값과 같다 — 첫 줄 높이는 메인 칸이 정하므로 태그행과의
+                간격이 종전 그대로 12px이다. mt-auto(>640px 바닥 고정)는 변형이 붙은 이 값에 진다. */}
+            <div className="mt-auto text-right max-[640px]:mt-3 max-[640px]:flex max-[640px]:basis-full max-[640px]:items-center max-[640px]:gap-2 max-[640px]:text-left">
               <strong className={clsx("block whitespace-nowrap text-[15px] font-bold leading-none", danger ? "text-danger" : "text-brand")}>
                 {deadlineText}
               </strong>
