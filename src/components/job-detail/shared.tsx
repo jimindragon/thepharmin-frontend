@@ -665,12 +665,14 @@ export function JobDetailActionRow({
             showLogo && "max-[560px]:flex-col max-[560px]:items-start max-[560px]:gap-0",
           )}
         >
+          {/* ≤760px 기업명은 본문과 같은 15px에 굵기(500)로만 위계를 준다 — 히어로 하단 세 줄(기업명·메타·
+              한줄 소개)이 모두 본문 크기로 수렴하고, 크기 대신 색·굵기가 순서를 말한다. */}
           {companyId ? (
             <Link href={`/companies/${companyId}`} className="min-w-0">
-              <p className="text-[15px] font-normal text-[#667181] hover:text-brand">{orgName}</p>
+              <p className="text-[15px] font-normal text-[#667181] hover:text-brand max-[760px]:font-medium">{orgName}</p>
             </Link>
           ) : (
-            <p className="text-[15px] font-normal text-[#667181]">{orgName}</p>
+            <p className="text-[15px] font-normal text-[#667181] max-[760px]:font-medium">{orgName}</p>
           )}
 
           <button
@@ -728,9 +730,14 @@ export function JobDetailHeroHeader({
       <h1 className="mt-4 text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-[#1f2733] max-[720px]:text-[24px] min-[761px]:order-3 min-[761px]:mt-2">
         {title}
       </h1>
-      <p className="mt-2 text-[15px] font-normal text-[#667181] min-[761px]:order-2 min-[761px]:mt-3">{meta}</p>
+      {/* ≤760px 타이포는 본문(FormattedContentView 15px/1.75/#3f4855)으로 수렴시킨다. 좁은 폭에서
+          16px 소개와 15px 메타는 크기 차가 읽히지 않으면서 제목 아래 덩치만 키웠다. 위계는 색과 굵기가
+          맡는다 — 메타는 한 단계 옅은 #8a94a3, 소개는 본문색. 공고 제목(h1)은 그대로 둔다. */}
+      <p className="mt-2 text-[15px] font-normal text-[#667181] max-[760px]:text-[#8a94a3] min-[761px]:order-2 min-[761px]:mt-3">
+        {meta}
+      </p>
       <div className="mt-3 border-t border-[#edf1f4] min-[761px]:hidden" />
-      <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181] min-[761px]:order-4 min-[761px]:mt-4">
+      <p className="mt-3 max-w-[760px] text-[16px] font-normal leading-[1.65] text-[#667181] max-[760px]:text-[15px] max-[760px]:leading-[1.75] max-[760px]:text-[#3f4855] min-[761px]:order-4 min-[761px]:mt-4">
         {intro}
       </p>
     </div>
