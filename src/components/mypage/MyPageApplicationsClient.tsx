@@ -223,8 +223,15 @@ export function MyPageApplicationsClient() {
       <PageBreadcrumb keepOnMobile items={[{ label: "마이페이지" }, { label: "지원 현황" }]} />
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">지원 현황</h1>
+      {/* 설명 문구는 폭에 따라 아예 다른 문장을 쓴다 — 좁은 화면에서 두 문장짜리 설명은 네 줄을 먹고,
+          그만큼 첫 화면에서 정작 봐야 할 카드가 밀린다. 데스크톱 문장을 자르는 대신 짧은 문장으로
+          갈아끼우는 것은, 뒷문장(간편지원/외부 지원 구분)이 앞부분만 남으면 뜻이 반쪽이 되기 때문이다.
+          두 겹은 서로 배타라 어느 폭에서도 한쪽만 보인다. */}
       <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
-        지원완료부터 최종 결과까지 진행 상황을 확인합니다. 간편지원은 전형 단계를 실시간으로, 외부 지원은 기업이 관리하는 일정 기준으로 보여드립니다.
+        <span className="max-[640px]:hidden">
+          지원완료부터 최종 결과까지 진행 상황을 확인합니다. 간편지원은 전형 단계를 실시간으로, 외부 지원은 기업이 관리하는 일정 기준으로 보여드립니다.
+        </span>
+        <span className="min-[641px]:hidden">지원한 공고의 진행 상황을 한눈에 확인하세요.</span>
       </p>
 
       <div className="mt-7 flex items-center gap-6 border-b border-border">
@@ -267,34 +274,27 @@ export function MyPageApplicationsClient() {
         )}
       </div>
 
-      {/* ≤640px에서는 안내 행이 [질문 + 설명 + 버튼]으로 세 줄까지 늘어난다. 설명 문장을 접고
-          문의하기를 같은 문장 안의 인라인 링크로 끌어와 한 줄로 줄인다 —
-          "지원한 공고가 보이지 않나요? 문의하기".
-          겹을 block으로, 문단을 inline으로 접으면 문단과 링크가 한 텍스트 흐름이 된다. 링크를
-          모바일용으로 하나 더 두지 않는 이유가 이것이다 — href가 두 군데로 갈리면 나중에 어긋난다.
-          한 줄에 안 들어가면 "문의하기"만 다음 줄로 내려간다(nowrap을 걸지 않는다).
-          display 유틸리티가 둘씩이지만 승부가 출력 순서에 달리지 않는다 —
-          변형 없는 flex < 변형 붙은 max-[640px]:block/inline으로 확정된다.
-          >640px는 한 클래스도 적용되지 않아 종전 그대로다(설명 문장·버튼 마크업은 그대로 남는다). */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-border bg-white px-5 py-4 max-[640px]:block">
-        <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e] max-[640px]:inline">
-          {/* ≤640px에서 문단이 inline이 되면 gap-2가 사라지므로 아이콘이 직접 여백을 갖는다. */}
-          <span aria-hidden="true" className="text-[13px] text-[#9aa3af] max-[640px]:mr-2">
+      {/* ≤640px에서는 안내 행이 [질문 + 설명 + 링크]로 세 줄까지 늘어난다. 설명 문장만 접으면
+          남는 [질문 ←→ 문의하기]가 겹의 양끝 정렬을 그대로 타고 한 줄에 선다 — 겹·문단의
+          display를 건드릴 일이 없다. 링크 인스턴스가 하나라 href가 두 군데로 갈리지 않는 것도
+          여기서 자연히 따라온다.
+          ml-auto: flex-wrap이라 문구가 길어져 링크가 다음 줄로 내려가는 경우 justify-between은
+          한 항목짜리 줄을 왼쪽에 붙인다 — 그 폭에서도 오른쪽 끝을 지키게 못 박는다.
+          두 항목이 한 줄에 서는 통상 경우에는 justify-between과 결과가 같아 데스크톱 렌더에 영향이 없다.
+          >640px는 설명 문장이 그대로 보여 종전과 같다. */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-border bg-white px-5 py-4">
+        <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e]">
+          <span aria-hidden="true" className="text-[13px] text-[#9aa3af]">
             ⓘ
           </span>
-          {/* 문장 전체가 한 겹 안에 있어야 >640px에서 문단의 flex 항목이 [아이콘 · 문장] 둘로
-              유지된다 — 문장을 쪼개 문단의 직계로 두면 gap-2가 문장 한가운데에 8px을 넣는다. */}
+          {/* 문장 전체가 한 겹 안에 있어야 문단의 flex 항목이 [아이콘 · 문장] 둘로 유지된다 —
+              문장을 쪼개 문단의 직계로 두면 gap-2가 문장 한가운데에 8px을 넣는다. */}
           <span>
             지원한 공고가 보이지 않나요?{" "}
             <span className="max-[640px]:hidden">다른 계정으로 지원했거나, 삭제된 공고일 수 있습니다.</span>
           </span>
         </p>
-        {/* ≤640px 밑줄: 문장 안에 섞여 흐르므로 굵기·색만으로는 링크인지 문장 일부인지 갈리지 않는다.
-            브랜드 그린을 쓰지 않는 것은 이 화면 전체가 모노크롬이기 때문이다. */}
-        <Link
-          href={sharedRoutes.support}
-          className="shrink-0 text-[13px] font-medium text-[#111111] hover:underline max-[640px]:ml-1 max-[640px]:underline"
-        >
+        <Link href={sharedRoutes.support} className="ml-auto shrink-0 text-[13px] font-medium text-[#111111] hover:underline">
           문의하기
         </Link>
       </div>
