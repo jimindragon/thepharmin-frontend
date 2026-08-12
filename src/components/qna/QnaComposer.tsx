@@ -157,13 +157,19 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
           sheetBreakpoint={760}
         >
           <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-            {/* 아래 두 입력의 max-[760px]:text-[16px]: 16px 미만이면 iOS Safari가 포커스 시 뷰포트를 확대한다 */}
+            {/* 아래 두 입력의 max-[760px]:text-[16px]: 16px 미만이면 iOS Safari가 포커스 시 뷰포트를 확대한다.
+                placeholder는 입력 글자보다 한 단계 작다(스케일 …17/16/15/14/13/12 기준 14→13, 16→15) —
+                아직 아무것도 안 쓴 칸의 안내문이 실제 입력과 같은 무게로 서면 칸이 이미 채워진 것처럼 읽힌다.
+                두 필드가 같은 스케일이라 내려간 값도 같고, 폭에 따른 상대 관계(입력보다 한 단계 아래)도 유지된다.
+                iOS 확대 판정은 입력 요소 자신의 font-size로만 갈리므로 ::placeholder를 15px로 낮춰도 위 가드는 그대로다.
+                두 폭 값을 겹치지 않는 미디어 쿼리로 나눠 쓴 것은, 여기서는 양쪽 다 변형 붙은 유틸리티라
+                "변형 없는 것 < 변형 붙은 것"이 성립하지 않아 승부가 Tailwind 출력 순서에 달리기 때문이다. */}
             <input
               type="text"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               placeholder="제목을 입력해 주세요"
-              className="w-full border border-[#e5e9ef] bg-[#fbfcfd] px-3 py-2.5 text-[14px] font-medium text-[#202734] outline-none placeholder:font-normal placeholder:text-[#a0a9b7] max-[760px]:text-[16px]"
+              className="w-full border border-[#e5e9ef] bg-[#fbfcfd] px-3 py-2.5 text-[14px] font-medium text-[#202734] outline-none placeholder:font-normal placeholder:text-[#a0a9b7] min-[761px]:placeholder:text-[13px] max-[760px]:text-[16px] max-[760px]:placeholder:text-[15px]"
             />
 
             <textarea
@@ -171,7 +177,7 @@ export function QnaComposer({ activeType, isLoggedIn, isVerifiedPharmacist, onNo
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="어떤 경험이든 편하게 적어주세요. 면접 후기, 연봉 협상, 직무 전환 등 무엇이든 좋아요."
-              className="mt-2 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] max-[760px]:text-[16px]"
+              className="mt-2 w-full resize-none border border-[#e5e9ef] bg-[#fbfcfd] p-3 text-[14px] leading-[1.6] text-[#202734] outline-none placeholder:text-[#a0a9b7] min-[761px]:placeholder:text-[13px] max-[760px]:text-[16px] max-[760px]:placeholder:text-[15px]"
             />
 
             <div className="mt-4">
