@@ -281,15 +281,27 @@ function SheetCategoryPanel({
           {/* 한 줄에 다 들어가면 렌더하지 않는다 — 병원·약국 트랙은 카테고리가 2개뿐이라 늘 이 경우다.
               -my-[3px]는 40px 버튼을 34px 탭 줄 안에 눕힌다(위아래 3px씩) — 줄 높이는 그대로 34px. */}
           {tabsOverflow ? (
-            <button
-              type="button"
-              onClick={toggleTabs}
-              aria-expanded={tabsExpanded}
-              aria-label={tabsExpanded ? "카테고리 접기" : "카테고리 모두 보기"}
-              className="-my-[3px] grid h-10 w-10 shrink-0 place-items-center text-[#596373] transition-colors hover:text-[#111111]"
-            >
-              <ChevronDown size={18} className={clsx("transition-transform", tabsExpanded && "rotate-180")} aria-hidden="true" />
-            </button>
+            <>
+              {/* 접힘 상태에서 탭 줄은 가로 스크롤이라 오른쪽 끝에서 칩이 그냥 잘린다 — 흰 배경에
+                  셰브론만 떠 있으면 그 잘림이 경계가 아니라 사고로 읽힌다. 세로선 하나로
+                  "여기까지가 스크롤 칸"이라고 못 박는다.
+                  펼침 상태에도 같이 남긴다. 셰브론과 탭 묶음 사이의 칸막이라는 뜻은 두 상태가
+                  같고, 상태별로 켜고 끄면 접기/펼치기마다 선이 깜빡여 오히려 눈에 걸린다.
+                  h-4 + mt-[9px]: 34px 탭 줄 안에서 16px만 그어 위아래 9px씩 비운다 — 줄 높이를
+                  다 채우면 테두리처럼 굵게 읽히고, 위아래 여백이 있어야 연한 칸막이로 보인다.
+                  items-start(부모)라 self-center는 펼침 상태에서 여러 줄 전체의 중앙으로 가버린다 —
+                  첫 줄 기준으로 잡으려면 셰브론의 -my-[3px]와 같은 문법인 고정 오프셋이어야 한다. */}
+              <span aria-hidden="true" className="mt-[9px] h-4 w-px shrink-0 bg-border" />
+              <button
+                type="button"
+                onClick={toggleTabs}
+                aria-expanded={tabsExpanded}
+                aria-label={tabsExpanded ? "카테고리 접기" : "카테고리 모두 보기"}
+                className="-my-[3px] grid h-10 w-10 shrink-0 place-items-center text-[#596373] transition-colors hover:text-[#111111]"
+              >
+                <ChevronDown size={18} className={clsx("transition-transform", tabsExpanded && "rotate-180")} aria-hidden="true" />
+              </button>
+            </>
           ) : null}
         </div>
       </div>
