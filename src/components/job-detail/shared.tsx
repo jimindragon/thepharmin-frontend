@@ -694,11 +694,14 @@ export function JobDetailActionRow({
             className={clsx(
               "inline-flex h-8 shrink-0 items-center gap-1.5 border bg-white px-3 text-[12px] font-medium transition",
               "max-[760px]:h-10 max-[760px]:border-0 max-[760px]:bg-transparent max-[760px]:px-0 max-[760px]:text-[13px]",
-              // 세로로 접히는 트랙에서만 8px 끌어올린다. gap은 이미 0인데도 기업명과 16.75px 벌어져 보이는데,
+              // 세로로 접히는 트랙에서만 4px 끌어올린다. gap은 이미 0인데도 기업명과 16.75px 벌어져 보이는데,
               // 그 공백은 버튼 h-10(터치 타깃)의 내부 여백 13px + 기업명 line-box 반쪽 3.75px이라 gap으로는
               // 못 줄인다. 높이를 깎는 대신 음수 마진으로 시각 위치만 당겨 히트 영역 40px는 남긴다.
+              // 4px는 잉크 보존 상한이다 — 기업명은 기업 상세로 가는 링크라 글리프 위에 버튼 히트 영역을
+              // 얹을 수 없는데, 히트 경계는 박스가 아니라 픽셀 스냅된 위치에서 끊긴다. 4px는 글리프 잉크
+              // 하단과 2px 여유가 남고, -5px는 잉크 경계에 밀착해 기각했다(2026.08.12).
               // 561px 이상 한 행 배치는 max-[560px] 밖이라 그대로다.
-              showLogo && "max-[560px]:-mt-2",
+              showLogo && "max-[560px]:-mt-1",
               interested ? "border-brand text-brand" : "border-[#dfe5ec] text-[#596373] hover:border-brand hover:text-brand",
             )}
           >
