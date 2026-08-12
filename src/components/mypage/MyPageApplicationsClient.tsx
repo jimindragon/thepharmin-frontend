@@ -132,9 +132,17 @@ function ApplicationCard({ application }: { application: JobApplication }) {
       </div>
 
       {/* 하단 층: 진행 상태 + 액션 */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#eef1f4] px-6 pt-4 pb-5">
+      {/* ≤640px는 flex-col로 두 행을 명시적으로 가른다 — 종전 flex-wrap은 진행 바/문구와 버튼의
+          폭 합이 넘칠 때만 갈라져서, 깨지는 지점이 카드마다 달랐고(480px에서 카드 2만 2행)
+          갈라진 뒤에는 버튼 겹이 콘텐츠 폭이라 justify-end가 무력화돼 좌측에 몰렸다.
+          >640px는 wrap 없는 한 줄이다 — 넘칠 때 조용히 같은 상태로 되돌아가지 않게 flex-wrap을 뺀다. */}
+      <div className="flex items-center justify-between gap-4 border-t border-[#eef1f4] px-6 pt-4 pb-5 max-[640px]:flex-col max-[640px]:items-stretch max-[640px]:gap-3">
         {isQuick ? (
-          <div className="max-w-[520px] min-w-[280px] flex-1">
+          /* ≤640px: 행이 세로로 서므로 flex-1(basis 0%)은 높이를 0으로 접는다 — flex-none으로 되돌린다.
+             min-w-[280px]도 함께 푼다. 진행 바의 좁은 폭 대응은 ApplicationStepper(캘린더와 공유)를
+             건드리지 않고 호출부의 폭 제약만으로 처리한다는 뜻이다. 360px 풀블리드 기준
+             실가용폭은 360-48=312px이라 4칸 그리드가 그대로 들어간다. */
+          <div className="max-w-[520px] min-w-[280px] flex-1 max-[640px]:max-w-none max-[640px]:min-w-0 max-[640px]:flex-none">
             <ApplicationStepper currentStage={application.currentStage} />
           </div>
         ) : (
@@ -145,8 +153,13 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             </span>
           </div>
         )}
-        <div className="flex justify-end gap-2">
-          {!isQuick ? (
+        {/* ≤640px에서는 items-stretch가 이 겹을 줄 전체 폭으로 늘려 주므로 justify-end가 그대로
+            우측 앵커가 된다. 버튼이 하나(간편지원의 "공고 보기")뿐인 카드도 같은 선에 선다 —
+            justify-between이었다면 그 카드만 좌측으로 갈렸다. */}
+        <div className="flex shrink-0 justify-end gap-2">
+          {/* 종료된 지원 건에는 입력할 결과가 이미 확정돼 있다. 종전 분기가 !isQuick 하나뿐이라
+              종료 카드에도 버튼이 남아 있었다. */}
+          {!isQuick && !application.isClosed ? (
             <Button type="button" variant="secondary" size="sm">
               결과 직접 입력
             </Button>
