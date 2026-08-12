@@ -36,86 +36,90 @@ function ApplicationCard({ application }: { application: JobApplication }) {
   const statusDetail = getStatusDetail(application);
   const statusText = application.isClosed && application.resultLabel ? application.resultLabel : application.statusLabel;
 
-  // 회사명은 이 체인에서 빠져 제목 아래 독립 줄이 됐다 — 남은 것은 부가 정보뿐이다.
-  const metaItems: { label?: string; value: string }[] = [
+  // 회사명은 이 체인에서 빠져 제목 위 독립 줄이고, 지원방법은 배지로 이 줄의 머리에 선다.
+  // "외부 지원"은 그 배지("홈페이지 지원")와 같은 말이라 텍스트로 한 번 더 쓰지 않는다
+  // — applyChannel 자체는 아래 분기들이 그대로 쓴다(데이터·타입 무변경).
+  const metaItems: { label: string; value: string }[] = [
     application.resumeUsed ? { label: "사용 이력서", value: application.resumeUsed } : null,
     { label: "지원", value: application.appliedDate },
-    !isQuick ? { value: "외부 지원" } : null,
-  ].filter((item): item is { label?: string; value: string } => item !== null);
+  ].filter((item): item is { label: string; value: string } => item !== null);
+
+  // ≤640px 버튼 풀폭 전환은 개수에 따라 문법이 갈린다(하나면 w-full, 둘이면 2열 그리드).
+  const showResultInput = !isQuick && !application.isClosed;
+  const actionCount = (showResultInput ? 1 : 0) + (application.jobHref ? 1 : 0);
 
   return (
     // ≤760px 풀블리드 목록의 낱장 — 카드 사이 선은 목록 컨테이너의 divide-y가 그린다.
     // 화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽히므로 그 폭에서는 테두리를 두지 않는다.
     <article className="bg-white min-[761px]:border min-[761px]:border-border">
-      {/* 상단 층: 공고 정보 + 상태 */}
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 px-6 pt-6 pb-4">
-        {/* 좌측: 로고 + 공고 정보.
-            flex-1(basis 0%)이라 상태 칸이 들어갈 자리를 항상 내준다 — 종전 basis-[260px]은
-            데이터가 짧아도 260px을 요구해서, 상태 칸 폭(58~118px)이 카드마다 다른 만큼
-            줄이 깨지는 지점도 카드마다 달랐다. */}
-        <div className="flex min-w-0 flex-1 items-start gap-4">
-          {/* ≤640px에서 로고 칸을 숨긴다. 640px은 디자인 브레이크포인트가 아니라 로고가 빠지는
-              콘텐츠 브레이크포인트다. JobCard(≤480px)와 숫자가 다른 것은 규칙 복제가 아니라,
-              이 카드의 정보 밀도가 높아 동일한 모바일 위계를 더 일찍 적용한 것이다.
-              회사명이 제목 아래 텍스트로 서 있어 로고가 빠져도 식별이 끊기지 않는다.
-              items-start(부모): 종전 items-center는 로고를 텍스트 스택 높이의 중앙에 띄워
-              스택 줄 수에 따라 카드마다 로고 top이 달라졌다(390px 실측 46~72px). */}
-          <EntityLogo
-            name={application.company}
-            logoUrl={companyLogos[application.company]}
-            size={48}
-            className="max-[640px]:hidden"
-          />
-          <div className="min-w-0 flex-1">
-            {/* 배지가 제목 앞에 선다 — 뒤에 두면 flex-wrap 안에서 제목 길이에 따라 같은 줄/다음 줄이
-                갈렸다(390px에서 카드 0만 같은 줄). 앞에 두면 위치가 데이터 길이와 무관하다.
-                truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
-                겹치지 않게 브레이크포인트로 완전히 분리한다. */}
-            <div className="flex min-w-0 items-center gap-2 max-[640px]:items-start">
-              <span className="shrink-0 border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
+      {/* 상단 층: 공고 정보. 상태는 구분선 아래로 내려가 여기는 회사명·제목·메타 3층만 남는다. */}
+      <div className="flex items-start gap-4 px-6 pt-6 pb-4">
+        {/* ≤640px에서 로고 칸을 숨긴다. 640px은 디자인 브레이크포인트가 아니라 로고가 빠지는
+            콘텐츠 브레이크포인트다. JobCard(≤480px)와 숫자가 다른 것은 규칙 복제가 아니라,
+            이 카드의 정보 밀도가 높아 동일한 모바일 위계를 더 일찍 적용한 것이다.
+            회사명이 제목 위에 텍스트로 서 있어 로고가 빠져도 식별이 끊기지 않는다.
+            items-start(부모): 종전 items-center는 로고를 텍스트 스택 높이의 중앙에 띄워
+            스택 줄 수에 따라 카드마다 로고 top이 달라졌다(390px 실측 46~72px). */}
+        <EntityLogo
+          name={application.company}
+          logoUrl={companyLogos[application.company]}
+          size={48}
+          className="max-[640px]:hidden"
+        />
+        <div className="min-w-0 flex-1">
+          {/* 회사명이 제목 위에 선다 — JobCard와 같은 위계다. 로고가 빠지는 ≤640px에서 카드 첫 줄이
+              곧 주체 식별이 되고, 그 아래로 제목·부가 정보가 한 방향으로 내려간다. */}
+          <p className="truncate text-[13px] font-medium text-[#5b6472]">{application.company}</p>
+
+          {/* 제목이 줄을 통째로 쓴다 — 배지가 메타로 내려가면서 같은 줄에서 폭을 다툴 상대가 없다.
+              truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
+              겹치지 않게 브레이크포인트로 완전히 분리한다.
+              Link 쪽 block: 인라인 요소에는 truncate가 걸리지 않는다(종전에는 flex 항목이라
+              자동으로 블록화됐지만 이제는 일반 흐름이다). */}
+          {application.jobHref ? (
+            <Link
+              href={application.jobHref}
+              className="mt-1.5 block text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline min-[641px]:truncate max-[640px]:line-clamp-2"
+            >
+              {application.jobTitle}
+            </Link>
+          ) : (
+            <p className="mt-1.5 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] min-[641px]:truncate max-[640px]:line-clamp-2">
+              {application.jobTitle}
+            </p>
+          )}
+
+          {/* 메타. 구분자는 앞 항목과 같은 nowrap 덩어리 안에 꼬리로 붙는다 — 머리에 두면 항목이
+              다음 줄로 내려갈 때 구분자가 줄 머리에 앉는다(종전 1px 막대 span의 실패). 꼬리로
+              붙이면 구조적으로 줄 끝에만 설 수 있다.
+              텍스트 흐름이 아니라 flex인 것은 첫 항목이 칩이기 때문이다 — 흐름에 그냥 흘리면
+              베이스라인 정렬이라 칩이 텍스트보다 아래로 처진다. items-center로 세로 중앙을 잡는다.
+              항목 자체가 nowrap 덩어리라 flex여도 줄바꿈 단위는 텍스트 흐름일 때와 같다. */}
+          <div className="mt-1.5 flex flex-wrap items-center gap-y-1 text-[13px] font-normal text-[#4b5563]">
+            <span className="flex items-center whitespace-nowrap">
+              <span className="border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
                 {application.applyChannelLabel}
               </span>
-              {application.jobHref ? (
-                <Link
-                  href={application.jobHref}
-                  className="min-w-0 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline min-[641px]:truncate max-[640px]:line-clamp-2"
-                >
-                  {application.jobTitle}
-                </Link>
-              ) : (
-                <p className="min-w-0 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] min-[641px]:truncate max-[640px]:line-clamp-2">
-                  {application.jobTitle}
-                </p>
-              )}
-            </div>
-
-            {/* 회사명은 메타 체인에서 빠져 제목 바로 아래 독립 줄이 된다 — 로고가 없는 ≤640px에서
-                주체를 식별하는 것이 이 줄이므로, 부가 정보와 같은 줄에서 경쟁시키지 않는다. */}
-            <p className="mt-1.5 truncate text-[13px] font-medium text-[#5b6472]">{application.company}</p>
-
-            {/* 메타는 flex 항목 나열이 아니라 하나의 텍스트 흐름이다. 구분자는 앞 항목과 같은
-                nowrap 덩어리 안에 꼬리로 붙는다 — 종전 1px 막대 span은 항목 래퍼(display:flex) 안
-                머리에 있어서 항목이 다음 줄로 내려갈 때 구분자가 줄 머리에 앉았다(390px 실측).
-                꼬리로 붙이면 구조적으로 줄 끝에만 설 수 있다. */}
-            <p className="mt-1.5 text-[13px] font-normal text-[#4b5563]">
-              {metaItems.map((item, index) => (
-                <span key={index} className="whitespace-nowrap">
-                  {item.label ? <span className="text-[#9ca3af]">{item.label} </span> : null}
-                  {item.value}
-                  {index < metaItems.length - 1 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
-                </span>
-              ))}
-            </p>
+              {metaItems.length > 0 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
+            </span>
+            {metaItems.map((item, index) => (
+              <span key={index} className="whitespace-nowrap">
+                <span className="text-[#9ca3af]">{item.label} </span>
+                {item.value}
+                {index < metaItems.length - 1 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
+              </span>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* 우측: 상태.
-            ≤640px basis-full이 이 겹에 자기 줄을 확정해 주고, 그 줄 안에서 양끝 정렬이
-            [상태 텍스트 ↔ 보조 날짜]를 잡는다. 종전에는 자연 줄바꿈으로 내려간 뒤 겹 폭이
-            콘텐츠 폭이라 items-end가 무력화돼 카드 왼쪽에 좌측 정렬로 붙었다.
-            줄이 갈리는 시점을 데이터(상태 문자열 폭)가 아니라 폭 하나가 정하게 만드는 것이 요점이다.
+      {/* 하단 층: 상태 → 진행 상태(진행 바·문구) → 액션 */}
+      <div className="border-t border-[#eef1f4] px-6 pt-4 pb-5">
+        {/* 상태 줄. 상단 우측 열에서 여기로 내려왔다 — 폭에 따라 오른쪽 열/독립 행으로 갈리던 것이
+            전 폭 같은 한 줄이 되고, "지금 어느 단계인가"를 말하는 것들(상태·진행 바·문구)이
+            구분선 아래 한 층에 모인다.
             렌더 조건 분기(getStatusDetail·점 유무·색)는 손대지 않는다 — 배치만 바뀐다. */}
-        <div className="flex shrink-0 flex-col items-end gap-2 max-[640px]:basis-full max-[640px]:flex-row max-[640px]:items-center max-[640px]:justify-between">
+        <div className="flex items-center justify-between gap-2">
           <p
             className={clsx(
               "inline-flex items-center gap-[8px] text-[15px] font-semibold tracking-[-0.01em]",
@@ -129,46 +133,61 @@ function ApplicationCard({ application }: { application: JobApplication }) {
           </p>
           {statusDetail ? <p className="text-[13px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
         </div>
-      </div>
 
-      {/* 하단 층: 진행 상태 + 액션 */}
-      {/* ≤640px는 flex-col로 두 행을 명시적으로 가른다 — 종전 flex-wrap은 진행 바/문구와 버튼의
-          폭 합이 넘칠 때만 갈라져서, 깨지는 지점이 카드마다 달랐고(480px에서 카드 2만 2행)
-          갈라진 뒤에는 버튼 겹이 콘텐츠 폭이라 justify-end가 무력화돼 좌측에 몰렸다.
-          >640px는 wrap 없는 한 줄이다 — 넘칠 때 조용히 같은 상태로 되돌아가지 않게 flex-wrap을 뺀다. */}
-      <div className="flex items-center justify-between gap-4 border-t border-[#eef1f4] px-6 pt-4 pb-5 max-[640px]:flex-col max-[640px]:items-stretch max-[640px]:gap-3">
-        {isQuick ? (
-          /* ≤640px: 행이 세로로 서므로 flex-1(basis 0%)은 높이를 0으로 접는다 — flex-none으로 되돌린다.
-             min-w-[280px]도 함께 푼다. 진행 바의 좁은 폭 대응은 ApplicationStepper(캘린더와 공유)를
-             건드리지 않고 호출부의 폭 제약만으로 처리한다는 뜻이다. 360px 풀블리드 기준
-             실가용폭은 360-48=312px이라 4칸 그리드가 그대로 들어간다. */
-          <div className="max-w-[520px] min-w-[280px] flex-1 max-[640px]:max-w-none max-[640px]:min-w-0 max-[640px]:flex-none">
-            <ApplicationStepper currentStage={application.currentStage} />
+        {/* ≤640px는 flex-col로 두 행을 명시적으로 가른다 — 종전 flex-wrap은 진행 바/문구와 버튼의
+            폭 합이 넘칠 때만 갈라져서, 깨지는 지점이 카드마다 달랐고(480px에서 카드 2만 2행)
+            갈라진 뒤에는 버튼 겹이 콘텐츠 폭이라 justify-end가 무력화돼 좌측에 몰렸다.
+            >640px는 wrap 없는 한 줄이다 — 넘칠 때 조용히 같은 상태로 되돌아가지 않게 flex-wrap을 뺀다.
+            상태 줄과의 간격은 진행 바 쪽에는 주지 않는다 — ApplicationStepper가 mt-5를 갖고 있어
+            이미 자기 몫을 벌어 둔다. 문구 쪽에만 mt-3으로 같은 리듬을 맞춘다. */}
+        <div
+          className={clsx(
+            "flex items-center justify-between gap-4 max-[640px]:flex-col max-[640px]:items-stretch max-[640px]:gap-3",
+            !isQuick && "mt-3",
+          )}
+        >
+          {isQuick ? (
+            /* ≤640px: 행이 세로로 서므로 flex-1(basis 0%)은 높이를 0으로 접는다 — flex-none으로 되돌린다.
+               min-w-[280px]도 함께 푼다. 진행 바의 좁은 폭 대응은 ApplicationStepper(캘린더와 공유)를
+               건드리지 않고 호출부의 폭 제약만으로 처리한다는 뜻이다. 360px 풀블리드 기준
+               실가용폭은 360-48=312px이라 4칸 그리드가 그대로 들어간다. */
+            <div className="max-w-[520px] min-w-[280px] flex-1 max-[640px]:max-w-none max-[640px]:min-w-0 max-[640px]:flex-none">
+              <ApplicationStepper currentStage={application.currentStage} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-neutral-dot" />
+              <span className="text-[13px] text-[#6b7280]">
+                {application.isClosed ? "전형이 종료되었습니다" : "전형 상태는 기업에서 관리됩니다"}
+              </span>
+            </div>
+          )}
+          {/* ≤640px 버튼은 줄 전체를 쓴다 — 손가락으로 누르는 폭에서 오른쪽 끝에 붙은 소형 버튼은
+              한 손 조작에서 가장 먼 자리다. 개수에 따라 문법이 갈린다.
+                하나  — 겹은 items-stretch가 이미 줄 폭으로 늘려 두므로 버튼에 w-full만 걸면 된다.
+                둘    — 2열 그리드로 폭을 반씩 나눈다. flex + w-full로는 둘 다 100%를 요구해 어긋난다.
+              w-full은 두 경우에 같은 클래스로 둔다 — 그리드 칸에서는 stretch가 이미 같은 결과라
+              개수 분기를 겹 쪽 한 곳(grid-cols-2)으로만 몰 수 있다.
+              >640px는 종전대로 오른쪽 끝에 선 소형 버튼이다. */}
+          <div
+            className={clsx(
+              "flex shrink-0 justify-end gap-2",
+              actionCount === 2 && "max-[640px]:grid max-[640px]:grid-cols-2",
+            )}
+          >
+            {/* 종료된 지원 건에는 입력할 결과가 이미 확정돼 있다. 종전 분기가 !isQuick 하나뿐이라
+                종료 카드에도 버튼이 남아 있었다. */}
+            {showResultInput ? (
+              <Button type="button" variant="secondary" size="sm" className="max-[640px]:w-full">
+                결과 직접 입력
+              </Button>
+            ) : null}
+            {application.jobHref ? (
+              <LinkButton href={application.jobHref} variant="secondary" size="sm" className="max-[640px]:w-full">
+                공고 보기
+              </LinkButton>
+            ) : null}
           </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-neutral-dot" />
-            <span className="text-[13px] text-[#6b7280]">
-              {application.isClosed ? "전형이 종료되었습니다" : "전형 상태는 기업에서 관리됩니다"}
-            </span>
-          </div>
-        )}
-        {/* ≤640px에서는 items-stretch가 이 겹을 줄 전체 폭으로 늘려 주므로 justify-end가 그대로
-            우측 앵커가 된다. 버튼이 하나(간편지원의 "공고 보기")뿐인 카드도 같은 선에 선다 —
-            justify-between이었다면 그 카드만 좌측으로 갈렸다. */}
-        <div className="flex shrink-0 justify-end gap-2">
-          {/* 종료된 지원 건에는 입력할 결과가 이미 확정돼 있다. 종전 분기가 !isQuick 하나뿐이라
-              종료 카드에도 버튼이 남아 있었다. */}
-          {!isQuick && !application.isClosed ? (
-            <Button type="button" variant="secondary" size="sm">
-              결과 직접 입력
-            </Button>
-          ) : null}
-          {application.jobHref ? (
-            <LinkButton href={application.jobHref} variant="secondary" size="sm">
-              공고 보기
-            </LinkButton>
-          ) : null}
         </div>
       </div>
     </article>
