@@ -6,6 +6,7 @@ import { companies } from "@/data/companies";
 import { getCompanyTrack, regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile } from "@/data/companyProfiles";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 /** 병원·약국 트랙 hero 뱃지: 기관 유형 콤보 라벨 + 지역, 최대 2개(STEP 3a-2 — 직원 수는 본문 B 카드와 중복돼 제거).
  * 값이 없는 뱃지는 만들지 않는다. "-"는 이 코드베이스에서 미입력을 뜻하는 기존 관례라 빈 값과 동일하게 취급한다 */
@@ -68,9 +69,16 @@ function CompanyHeroCompactBar({ profile }: { profile: CompanyProfile }) {
     /* 풀 히어로와 같은 풀블리드 계산(-shell-gutter/2 되밀기 + px-6) — 좌우로 회색이 새면 바가 아니라
        카드처럼 읽힌다. 이 바는 ≤760px 전용이라 --shell-gutter는 항상 48px이고 변형이 필요 없다. */
     <div className="-mx-[calc(var(--shell-gutter)/2)] flex h-16 items-center gap-3 bg-[#081015] px-6 text-white min-[761px]:hidden">
-      <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden bg-white px-1 text-center text-[12px] font-medium leading-none text-[#17212c]">
+      <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden bg-white text-[13px] font-semibold leading-none text-[#596373]">
         {/* 옆에 기관명이 글자로 서 있으므로 로고는 장식이다 — alt를 비워 같은 이름이 두 번 읽히지 않게 한다 */}
-        {profile.logoImage ? <img src={profile.logoImage} alt="" className="h-full w-full object-contain p-1" /> : profile.logoText}
+        {profile.logoImage ? (
+          <img src={profile.logoImage} alt="" className="h-full w-full object-contain p-1" />
+        ) : (
+          /* 40px 칸에는 logoText를 그대로 못 담는다 — 풀 히어로의 118px 카드에 맞춰 고른 값이라
+             "PHARMA"·"CELLTRION"처럼 잘리는 것이 나온다. 작은 로고 칸의 관례대로 이니셜 2글자를 쓴다
+             (JobCard·공고 상세·기업 목록이 같은 13px/semibold/#596373 조합). */
+          getCompanyInitial(profile.name)
+        )}
       </div>
       <p className="min-w-0 truncate text-[17px] font-bold tracking-[-0.02em]">{profile.name}</p>
     </div>
