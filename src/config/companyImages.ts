@@ -26,8 +26,13 @@ export const personExampleImages = {
   secondary: "/images/person-example-1.jpg",
 } as const;
 
+/** 고객센터·기업 인사이트 허브가 공유하는 인물 히어로 사진. 두 화면 모두 같은 톤을 쓰기로 확정됐지만,
+ *  나중에 한쪽만 갈아 끼울 수 있도록 소비처는 각자의 키를 참조한다. */
+const WORKING_PEOPLE_HERO = "/images/working-people-1.jpg";
+
 export const heroImages = {
-  support: "/images/working-people-1.jpg",
+  support: WORKING_PEOPLE_HERO,
+  companies: WORKING_PEOPLE_HERO,
 } as const;
 
 export const companyLogos: Record<string, string> = {

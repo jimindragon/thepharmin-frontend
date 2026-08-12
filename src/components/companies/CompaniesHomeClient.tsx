@@ -4,10 +4,13 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { BusinessImageBand } from "@/components/business/BusinessMarketingSections";
 import { Pagination } from "@/components/Pagination";
 import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { Button } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
+import { Eyebrow, typeScale } from "@/components/ui/Typography";
+import { heroImages } from "@/config/companyImages";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
 import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
@@ -109,6 +112,13 @@ function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
   });
 }
 
+/**
+ * 히어로 사진 위에 얹히는 검색창. 고객센터(/support) 히어로 검색창과 같은 문법이다 —
+ * mx-auto·max-w-[560px]·h-14·흰 배경에, 사진 위에서 카드가 떠 보이도록 그림자를 둔다.
+ * 그림자는 "no-shadow" 원칙의 히어로 오버레이 예외로, /support가 쓰는 값을 그대로 공유한다.
+ * 테두리를 회색(#d8dce2)이 아니라 white/15로 두는 것도 같은 이유다 — 어두운 사진 위에서는
+ * 회색 실선이 때가 탄 것처럼 읽힌다.
+ */
 function CompanySearchBar({
   keyword,
   onKeywordChange,
@@ -121,22 +131,56 @@ function CompanySearchBar({
   return (
     <form
       onSubmit={onSubmit}
-      className="mt-8 flex h-14 items-stretch border border-[#d8dce2] bg-white transition-colors focus-within:border-[#111111]"
+      className="mx-auto mt-8 flex h-14 max-w-[560px] items-stretch border border-white/15 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-colors focus-within:border-[#111111]"
     >
-      <div className="flex flex-1 items-center gap-3 pl-5">
+      <div className="flex min-w-0 flex-1 items-center gap-3 pl-5">
         <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
         <input
           value={keyword}
           onChange={(event) => onKeywordChange(event.target.value)}
           placeholder="기업 또는 기관명을 검색하세요"
           aria-label="기업 또는 기관명 검색"
-          className="h-full w-full bg-transparent text-[15px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
+          className="h-full w-full min-w-0 bg-transparent text-left text-[15px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
         />
       </div>
-      <button type="submit" className="shrink-0 bg-[#111111] px-8 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a]">
+      <button
+        type="submit"
+        className="shrink-0 bg-[#111111] px-8 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a] max-[560px]:px-5"
+      >
         검색
       </button>
     </form>
+  );
+}
+
+/**
+ * 허브 첫 화면의 사진 히어로. 고객센터(/support)와 같은 공용 밴드(BusinessImageBand)를
+ * 같은 조합(vertical 그라데이션 + 가운데 정렬 + variant="hero")으로 부른다 —
+ * 사진을 분위기로만 쓰고 그 위에 텍스트와 검색창을 세우는 화면이라 두 페이지의 조건이 같다.
+ *
+ * 검색 상태(keyword)는 아래 목록 필터와 한 몸이라 이 컴포넌트로 내려보내지 않고
+ * CompaniesHomeClient가 계속 들고 있는다 — 히어로는 값과 핸들러만 받아 넘긴다.
+ */
+function CompaniesHubHero({
+  keyword,
+  onKeywordChange,
+  onSubmit,
+}: {
+  keyword: string;
+  onKeywordChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <BusinessImageBand image={heroImages.companies} gradient="vertical" align="center" variant="hero">
+      <Eyebrow tone="dark" align="center">
+        THE PHARMA COMPANIES
+      </Eyebrow>
+      <h1 className={`mt-4 text-white ${typeScale.heroTitle}`}>기업 인사이트</h1>
+      <p className="mx-auto mt-4 max-w-[480px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/70">
+        기업 정보부터 기업 리뷰와 면접 후기까지
+      </p>
+      <CompanySearchBar keyword={keyword} onKeywordChange={onKeywordChange} onSubmit={onSubmit} />
+    </BusinessImageBand>
   );
 }
 
@@ -195,7 +239,7 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
   if (!entries.length) return null;
 
   return (
-    <div className="relative mt-8 border border-border bg-white py-[30px]">
+    <div className="relative mt-10 border border-border bg-white py-[30px]">
       <div
         ref={scrollRef}
         onPointerDown={handlePointerDown}
@@ -626,58 +670,63 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
 
   return (
     <>
-      <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
-      <CompanyLogoStrip entries={logoStripEntries} />
+      {/* 히어로는 .app-shell 밖에 세운다 — 밴드가 화면 폭을 꽉 채우고, 안쪽 텍스트는 밴드가 가진
+          자체 셸(app-shell--default)이 잡는다. 셸 안의 본문은 그 아래에서 다시 시작한다. */}
+      <CompaniesHubHero keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
 
-      <div className="mt-10 grid grid-cols-[minmax(0,1fr)_280px] gap-10 max-[1024px]:grid-cols-1 max-[1024px]:gap-8">
-        <RecentStoriesFeed companyItems={companyFeedItems} interviewItems={interviewFeedItems} />
-        <aside className="space-y-8">
-          <IndustryExplorePanel onExplore={handleExploreTrack} />
-          <TopReviewedCompaniesPanel entries={topReviewedCompanies} />
-          <WriteReviewCtaPanel onCtaClick={handleRequestWriteCompanyReview} />
-        </aside>
-      </div>
+      <div className="app-shell">
+        <CompanyLogoStrip entries={logoStripEntries} />
 
-      <section id="company-directory" className="mt-14 border border-border bg-white p-6 max-[560px]:p-4">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
-          <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
-            {sortOptions.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setSortOption(option)}
-                className={clsx(
-                  "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-                  sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
-                )}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+        <div className="mt-10 grid grid-cols-[minmax(0,1fr)_280px] gap-10 max-[1024px]:grid-cols-1 max-[1024px]:gap-8">
+          <RecentStoriesFeed companyItems={companyFeedItems} interviewItems={interviewFeedItems} />
+          <aside className="space-y-8">
+            <IndustryExplorePanel onExplore={handleExploreTrack} />
+            <TopReviewedCompaniesPanel entries={topReviewedCompanies} />
+            <WriteReviewCtaPanel onCtaClick={handleRequestWriteCompanyReview} />
+          </aside>
         </div>
 
-        <TrackTabs active={trackFilter} onChange={setTrackFilter} />
-
-        {visibleDirectory.length ? (
-          <div className="divide-y divide-[#e5e9ef]">
-            {visibleDirectory.map((entry) => (
-              <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} />
-            ))}
+        <section id="company-directory" className="mt-14 border border-border bg-white p-6 max-[560px]:p-4">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
+            <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+              {sortOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setSortOption(option)}
+                  className={clsx(
+                    "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
+                    sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+                  )}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          <DirectoryEmptyState />
-        )}
-      </section>
 
-      <Pagination
-        currentPage={safePage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        ariaLabel="기업·기관 목록 페이지"
-      />
-      <PlaceholderNotice message={companyReviewNotice.message} />
+          <TrackTabs active={trackFilter} onChange={setTrackFilter} />
+
+          {visibleDirectory.length ? (
+            <div className="divide-y divide-[#e5e9ef]">
+              {visibleDirectory.map((entry) => (
+                <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} />
+              ))}
+            </div>
+          ) : (
+            <DirectoryEmptyState />
+          )}
+        </section>
+
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          ariaLabel="기업·기관 목록 페이지"
+        />
+        <PlaceholderNotice message={companyReviewNotice.message} />
+      </div>
     </>
   );
 }
