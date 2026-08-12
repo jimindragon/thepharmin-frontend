@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { PageTitle } from "@/components/ui/Typography";
+import { Pagination } from "@/components/Pagination";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { FitScoreBar } from "@/components/business/FitScoreBar";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
@@ -94,7 +95,9 @@ export function BusinessApplicantsClient() {
     });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // 필터로 목록이 짧아졌는데 page가 아직 뒤 페이지에 남아 있는 경우를 막는다 — 슬라이스와 Pagination이 같은 값을 쓴다.
+  const safePage = Math.min(page, totalPages);
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   // Checkbox
   const allChecked = paged.length > 0 && paged.every((a) => selectedIds.has(a.id));
@@ -506,35 +509,14 @@ export function BusinessApplicantsClient() {
                 : "조건을 변경해 다시 확인해 보세요.",
             }}
             pagination={
-              totalPages > 1 ? (
-                <nav className="mt-8 flex justify-center pb-6" aria-label="지원자 목록 페이지">
-                  <div className="flex h-[38px] items-center">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => setPage(p)}
-                        className={clsx(
-                          "h-[38px] w-[46px] border border-r-0 border-[#dce2ea] text-[13px] font-medium",
-                          page === p
-                            ? "bg-[#111111] text-white"
-                            : "bg-white text-[#5c6675] hover:bg-[#f5f5f5]",
-                        )}
-                      >
-                        {p}
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => setPage(Math.min(page + 1, totalPages))}
-                      className="flex h-[38px] items-center gap-2 border border-[#dce2ea] bg-white px-4 text-[13px] font-medium text-[#5c6675] hover:bg-[#f5f5f5]"
-                    >
-                      다음
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </nav>
-              ) : undefined
+              <div className="pb-6">
+                <Pagination
+                  currentPage={safePage}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  ariaLabel="지원자 목록 페이지"
+                />
+              </div>
             }
           />
         </div>
