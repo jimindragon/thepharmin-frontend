@@ -41,10 +41,11 @@ export default async function CompanyLayout({ children, params }: CompanyLayoutP
           {/* 개요는 풀 히어로, 하위 탭은 컴팩트 바(≤760px 한정) — 경로 판정이 필요해 클라이언트 래퍼를 거친다 */}
           <CompanyDetailHero profile={profile} companyId={companyId} />
           <CompanyDetailTabs companyId={companyId} />
-          {/* ≤760px mt-0 — 이 폭에서 히어로 바로 아래 오는 것은 어느 탭에서든 흰 탭 행 하나다(하위 탭은
-              CompanyDetailTabs, 개요는 그 자리를 넘겨받은 SectionAnchorNav). 둘 다 sticky 바라 히어로에
-              붙어 있어야 스크롤 중 헤더 밑으로 이어지고, 사이에 24px 회색 띠가 끼면 바가 아니라 카드처럼 뜬다.
-              개요에서 이 mt가 곧 히어로~앵커 간격이고 하위 탭에서는 탭 행~본문 간격이라, 한 줄로 두 자리가 같이 0이 된다. */}
+          {/* ≤760px mt-0 — 개요 기준값이다. 이 폭에서 히어로 바로 아래 오는 것은 SectionAnchorNav(전폭 흰
+              sticky 바)이고, 히어로에 붙어 있어야 스크롤 중 헤더 밑으로 이어진다. 사이에 24px 회색 띠가
+              끼면 바가 아니라 카드처럼 뜬다. 개요에서 이 mt가 곧 앵커~본문 간격이기도 하다(앵커의 -mb-9와 한 쌍).
+              하위 탭은 그 자리에 액자형 탭 행(CompanyDetailTabs)이 서고 sticky가 아니라 본문과 떨어져야 하는데,
+              여기서는 경로를 알 수 없으므로(서버 컴포넌트) 그 간격은 탭 행 자신이 max-[760px]:mb-6으로 든다. */}
           <div className="mt-6 max-[760px]:mt-0">{children}</div>
         </div>
       </main>
