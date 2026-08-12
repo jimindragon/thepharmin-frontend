@@ -96,11 +96,11 @@ function ApplicationCard({ application }: { application: JobApplication }) {
               베이스라인 정렬이라 칩이 텍스트보다 아래로 처진다. items-center로 세로 중앙을 잡는다.
               항목 자체가 nowrap 덩어리라 flex여도 줄바꿈 단위는 텍스트 흐름일 때와 같다. */}
           <div className="mt-1.5 flex flex-wrap items-center gap-y-1 text-[13px] font-normal text-[#4b5563]">
-            <span className="flex items-center whitespace-nowrap">
-              <span className="border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
-                {application.applyChannelLabel}
-              </span>
-              {metaItems.length > 0 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
+            {/* 배지 뒤에는 구분자를 두지 않는다 — 테두리가 이미 자기 경계를 그어서, 점을 하나 더
+                찍으면 경계가 두 겹이 된다. 대신 mr-2로 간격만 준다(글자끼리인 · 자리 12px보다
+                좁은 8px — 칩은 테두리 바깥 여백이 더 있어 보이므로 같은 값을 쓰면 벌어져 보인다). */}
+            <span className="mr-2 border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
+              {application.applyChannelLabel}
             </span>
             {metaItems.map((item, index) => (
               <span key={index} className="whitespace-nowrap">
@@ -267,14 +267,34 @@ export function MyPageApplicationsClient() {
         )}
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-border bg-white px-5 py-4">
-        <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e]">
-          <span aria-hidden="true" className="text-[13px] text-[#9aa3af]">
+      {/* ≤640px에서는 안내 행이 [질문 + 설명 + 버튼]으로 세 줄까지 늘어난다. 설명 문장을 접고
+          문의하기를 같은 문장 안의 인라인 링크로 끌어와 한 줄로 줄인다 —
+          "지원한 공고가 보이지 않나요? 문의하기".
+          겹을 block으로, 문단을 inline으로 접으면 문단과 링크가 한 텍스트 흐름이 된다. 링크를
+          모바일용으로 하나 더 두지 않는 이유가 이것이다 — href가 두 군데로 갈리면 나중에 어긋난다.
+          한 줄에 안 들어가면 "문의하기"만 다음 줄로 내려간다(nowrap을 걸지 않는다).
+          display 유틸리티가 둘씩이지만 승부가 출력 순서에 달리지 않는다 —
+          변형 없는 flex < 변형 붙은 max-[640px]:block/inline으로 확정된다.
+          >640px는 한 클래스도 적용되지 않아 종전 그대로다(설명 문장·버튼 마크업은 그대로 남는다). */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border border-border bg-white px-5 py-4 max-[640px]:block">
+        <p className="flex items-center gap-2 text-[13px] font-normal text-[#68717e] max-[640px]:inline">
+          {/* ≤640px에서 문단이 inline이 되면 gap-2가 사라지므로 아이콘이 직접 여백을 갖는다. */}
+          <span aria-hidden="true" className="text-[13px] text-[#9aa3af] max-[640px]:mr-2">
             ⓘ
           </span>
-          지원한 공고가 보이지 않나요? 다른 계정으로 지원했거나, 삭제된 공고일 수 있습니다.
+          {/* 문장 전체가 한 겹 안에 있어야 >640px에서 문단의 flex 항목이 [아이콘 · 문장] 둘로
+              유지된다 — 문장을 쪼개 문단의 직계로 두면 gap-2가 문장 한가운데에 8px을 넣는다. */}
+          <span>
+            지원한 공고가 보이지 않나요?{" "}
+            <span className="max-[640px]:hidden">다른 계정으로 지원했거나, 삭제된 공고일 수 있습니다.</span>
+          </span>
         </p>
-        <Link href={sharedRoutes.support} className="shrink-0 text-[13px] font-medium text-[#111111] hover:underline">
+        {/* ≤640px 밑줄: 문장 안에 섞여 흐르므로 굵기·색만으로는 링크인지 문장 일부인지 갈리지 않는다.
+            브랜드 그린을 쓰지 않는 것은 이 화면 전체가 모노크롬이기 때문이다. */}
+        <Link
+          href={sharedRoutes.support}
+          className="shrink-0 text-[13px] font-medium text-[#111111] hover:underline max-[640px]:ml-1 max-[640px]:underline"
+        >
           문의하기
         </Link>
       </div>
