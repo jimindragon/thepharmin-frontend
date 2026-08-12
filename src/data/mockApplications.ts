@@ -90,7 +90,10 @@ export const mockApplications: JobApplication[] = [
     deadlineDate: toMonthDay(YUHAN_DEADLINE_DATE),
     isClosed: false,
     currentStage: "applied",
-    statusLabel: formatDday(getDaysUntil(YUHAN_DEADLINE_DATE, MYPAGE_MOCK_TODAY)),
+    // 간편지원 쪽 "서류발표 D-4"·"면접 D-1"과 같은 꼴로 맞춘다 — D-day만 덩그러니 있으면
+    // 무엇까지 남은 날인지가 카드 안 다른 줄을 봐야 풀린다. 보조 날짜의 "마감 08.09"와
+    // 말이 겹치지만, 카드마다 라벨 형식이 갈리는 쪽이 더 읽기 나쁘다.
+    statusLabel: `마감 ${formatDday(getDaysUntil(YUHAN_DEADLINE_DATE, MYPAGE_MOCK_TODAY))}`,
     nextEventDate: YUHAN_DEADLINE_DATE,
   },
   {
