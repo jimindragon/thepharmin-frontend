@@ -48,102 +48,124 @@ function ApplicationCard({ application }: { application: JobApplication }) {
   const showResultInput = !isQuick && !application.isClosed;
   const actionCount = (showResultInput ? 1 : 0) + (application.jobHref ? 1 : 0);
 
+  /**
+   * 상태 두 줄(상태 텍스트 + 보조 날짜)의 알맹이. 서는 자리가 폭에 따라 갈려 두 군데에 놓이지만
+   * — >640px는 상단 층 우측 열, ≤640px는 하단 층 첫 줄 — 조건 분기(점 유무·색·보조 날짜 유무)는
+   * 여기 한 벌뿐이다. 두 자리에 각각 써 넣으면 분기가 두 벌로 갈라져 나중에 한쪽만 바뀐다.
+   * 노드 하나를 CSS로 옮기는 길은 없다(두 자리 사이에 층 구분선이 있다) — 겹만 폭으로 갈라 낸다.
+   */
+  const statusLines = (
+    <>
+      <p
+        className={clsx(
+          "inline-flex items-center gap-[8px] text-[15px] font-semibold tracking-[-0.01em]",
+          application.isClosed && application.resultLabel ? "text-status-error" : "text-[#111111]",
+        )}
+      >
+        {application.isClosed && application.resultLabel ? (
+          <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-error-dot" />
+        ) : null}
+        {statusText}
+      </p>
+      {statusDetail ? <p className="text-[13px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
+    </>
+  );
+
   return (
     // ≤760px 풀블리드 목록의 낱장 — 카드 사이 선은 목록 컨테이너의 divide-y가 그린다.
     // 화면 끝에 닿은 세로선은 테두리가 아니라 잘린 자국으로 읽히므로 그 폭에서는 테두리를 두지 않는다.
     <article className="bg-white min-[761px]:border min-[761px]:border-border">
-      {/* 상단 층: 공고 정보. 상태는 구분선 아래로 내려가 여기는 회사명·제목·메타 3층만 남는다. */}
-      <div className="flex items-start gap-4 px-6 pt-6 pb-4">
-        {/* ≤640px에서 로고 칸을 숨긴다. 640px은 디자인 브레이크포인트가 아니라 로고가 빠지는
-            콘텐츠 브레이크포인트다. JobCard(≤480px)와 숫자가 다른 것은 규칙 복제가 아니라,
-            이 카드의 정보 밀도가 높아 동일한 모바일 위계를 더 일찍 적용한 것이다.
-            회사명이 제목 위에 텍스트로 서 있어 로고가 빠져도 식별이 끊기지 않는다.
-            items-start(부모): 종전 items-center는 로고를 텍스트 스택 높이의 중앙에 띄워
-            스택 줄 수에 따라 카드마다 로고 top이 달라졌다(390px 실측 46~72px). */}
-        <EntityLogo
-          name={application.company}
-          logoUrl={companyLogos[application.company]}
-          size={48}
-          className="max-[640px]:hidden"
-        />
-        <div className="min-w-0 flex-1">
-          {/* 회사명이 제목 위에 선다 — JobCard와 같은 위계다. 로고가 빠지는 ≤640px에서 카드 첫 줄이
-              곧 주체 식별이 되고, 그 아래로 제목·부가 정보가 한 방향으로 내려간다. */}
-          <p className="truncate text-[13px] font-medium text-[#5b6472]">{application.company}</p>
+      {/* 상단 층: 공고 정보 + (>640px) 상태.
+          바깥 gap-6은 [로고·정보] 묶음과 상태 열 사이, 안쪽 gap-4는 로고와 정보 사이다 — 로고는
+          정보에 딸린 것이고 상태는 반대편이라, 두 간격이 같으면 세 칸이 나란히 놓인 것처럼 읽힌다.
+          flex-wrap을 두지 않는다: 좌측이 flex-1(basis 0%)·min-w-0이라 상태 칸 자리를 늘 내주므로
+          줄이 깨질 일이 없고, wrap이 있으면 넘칠 때 조용히 items-end가 무력화된 옛 상태로 돌아간다. */}
+      <div className="flex items-start gap-6 px-6 pt-6 pb-4">
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          {/* ≤640px에서 로고 칸을 숨긴다. 640px은 디자인 브레이크포인트가 아니라 로고가 빠지는
+              콘텐츠 브레이크포인트다. JobCard(≤480px)와 숫자가 다른 것은 규칙 복제가 아니라,
+              이 카드의 정보 밀도가 높아 동일한 모바일 위계를 더 일찍 적용한 것이다.
+              회사명이 제목 위에 텍스트로 서 있어 로고가 빠져도 식별이 끊기지 않는다.
+              items-start(부모): 종전 items-center는 로고를 텍스트 스택 높이의 중앙에 띄워
+              스택 줄 수에 따라 카드마다 로고 top이 달라졌다(390px 실측 46~72px). */}
+          <EntityLogo
+            name={application.company}
+            logoUrl={companyLogos[application.company]}
+            size={48}
+            className="max-[640px]:hidden"
+          />
+          <div className="min-w-0 flex-1">
+            {/* 회사명이 제목 위에 선다 — JobCard와 같은 위계다. 로고가 빠지는 ≤640px에서 카드 첫 줄이
+                곧 주체 식별이 되고, 그 아래로 제목·부가 정보가 한 방향으로 내려간다. */}
+            <p className="truncate text-[13px] font-medium text-[#5b6472]">{application.company}</p>
 
-          {/* 제목이 줄을 통째로 쓴다 — 배지가 메타로 내려가면서 같은 줄에서 폭을 다툴 상대가 없다.
-              truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
-              겹치지 않게 브레이크포인트로 완전히 분리한다.
-              Link 쪽 block: 인라인 요소에는 truncate가 걸리지 않는다(종전에는 flex 항목이라
-              자동으로 블록화됐지만 이제는 일반 흐름이다). */}
-          {application.jobHref ? (
-            <Link
-              href={application.jobHref}
-              className="mt-1.5 block text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline min-[641px]:truncate max-[640px]:line-clamp-2"
-            >
-              {application.jobTitle}
-            </Link>
-          ) : (
-            <p className="mt-1.5 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] min-[641px]:truncate max-[640px]:line-clamp-2">
-              {application.jobTitle}
-            </p>
-          )}
+            {/* 제목이 줄을 통째로 쓴다 — 배지가 메타로 내려가면서 같은 줄에서 폭을 다툴 상대가 없다.
+                truncate(white-space:nowrap)와 line-clamp(display:-webkit-box)는 서로 충돌하므로
+                겹치지 않게 브레이크포인트로 완전히 분리한다.
+                Link 쪽 block: 인라인 요소에는 truncate가 걸리지 않는다(종전에는 flex 항목이라
+                자동으로 블록화됐지만 이제는 일반 흐름이다). */}
+            {application.jobHref ? (
+              <Link
+                href={application.jobHref}
+                className="mt-1.5 block text-[17px] font-bold tracking-[-0.01em] text-[#17202c] hover:underline min-[641px]:truncate max-[640px]:line-clamp-2"
+              >
+                {application.jobTitle}
+              </Link>
+            ) : (
+              <p className="mt-1.5 text-[17px] font-bold tracking-[-0.01em] text-[#17202c] min-[641px]:truncate max-[640px]:line-clamp-2">
+                {application.jobTitle}
+              </p>
+            )}
 
-          {/* 메타. 구분자는 앞 항목과 같은 nowrap 덩어리 안에 꼬리로 붙는다 — 머리에 두면 항목이
-              다음 줄로 내려갈 때 구분자가 줄 머리에 앉는다(종전 1px 막대 span의 실패). 꼬리로
-              붙이면 구조적으로 줄 끝에만 설 수 있다.
-              텍스트 흐름이 아니라 flex인 것은 첫 항목이 칩이기 때문이다 — 흐름에 그냥 흘리면
-              베이스라인 정렬이라 칩이 텍스트보다 아래로 처진다. items-center로 세로 중앙을 잡는다.
-              항목 자체가 nowrap 덩어리라 flex여도 줄바꿈 단위는 텍스트 흐름일 때와 같다. */}
-          <div className="mt-1.5 flex flex-wrap items-center gap-y-1 text-[13px] font-normal text-[#4b5563]">
-            {/* 배지 뒤에는 구분자를 두지 않는다 — 테두리가 이미 자기 경계를 그어서, 점을 하나 더
-                찍으면 경계가 두 겹이 된다. 대신 mr-2로 간격만 준다(글자끼리인 · 자리 12px보다
-                좁은 8px — 칩은 테두리 바깥 여백이 더 있어 보이므로 같은 값을 쓰면 벌어져 보인다). */}
-            <span className="mr-2 border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
-              {application.applyChannelLabel}
-            </span>
-            {metaItems.map((item, index) => (
-              <span key={index} className="whitespace-nowrap">
-                <span className="text-[#9ca3af]">{item.label} </span>
-                {item.value}
-                {index < metaItems.length - 1 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
+            {/* 메타. 구분자는 앞 항목과 같은 nowrap 덩어리 안에 꼬리로 붙는다 — 머리에 두면 항목이
+                다음 줄로 내려갈 때 구분자가 줄 머리에 앉는다(종전 1px 막대 span의 실패). 꼬리로
+                붙이면 구조적으로 줄 끝에만 설 수 있다.
+                텍스트 흐름이 아니라 flex인 것은 첫 항목이 칩이기 때문이다 — 흐름에 그냥 흘리면
+                베이스라인 정렬이라 칩이 텍스트보다 아래로 처진다. items-center로 세로 중앙을 잡는다.
+                항목 자체가 nowrap 덩어리라 flex여도 줄바꿈 단위는 텍스트 흐름일 때와 같다. */}
+            <div className="mt-1.5 flex flex-wrap items-center gap-y-1 text-[13px] font-normal text-[#4b5563]">
+              {/* 배지 뒤에는 구분자를 두지 않는다 — 테두리가 이미 자기 경계를 그어서, 점을 하나 더
+                  찍으면 경계가 두 겹이 된다. 대신 mr-2로 간격만 준다(글자끼리인 · 자리 12px보다
+                  좁은 8px — 칩은 테두리 바깥 여백이 더 있어 보이므로 같은 값을 쓰면 벌어져 보인다). */}
+              <span className="mr-2 border border-border bg-white px-2 py-0.5 text-[13px] font-medium text-[#596373]">
+                {application.applyChannelLabel}
               </span>
-            ))}
+              {metaItems.map((item, index) => (
+                <span key={index} className="whitespace-nowrap">
+                  <span className="text-[#9ca3af]">{item.label} </span>
+                  {item.value}
+                  {index < metaItems.length - 1 ? <span className="px-1.5 text-[#c2c8d1]">·</span> : null}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* >640px 상태 열. 넓은 폭에서는 카드 우상단이 상태의 자리다 — 제목과 같은 높이에서 읽히고,
+            목록을 세로로 훑을 때 상태만 오른쪽 한 줄로 이어져 카드끼리 비교가 된다.
+            items-end 세로 스택: 보조 날짜가 상태 텍스트 밑에 오른쪽 끝을 맞춰 붙는다. */}
+        <div className="flex shrink-0 flex-col items-end gap-2 max-[640px]:hidden">{statusLines}</div>
       </div>
 
-      {/* 하단 층: 상태 → 진행 상태(진행 바·문구) → 액션 */}
+      {/* 하단 층: (≤640px) 상태 → 진행 상태(진행 바·문구) → 액션 */}
       <div className="border-t border-[#eef1f4] px-6 pt-4 pb-5">
-        {/* 상태 줄. 상단 우측 열에서 여기로 내려왔다 — 폭에 따라 오른쪽 열/독립 행으로 갈리던 것이
-            전 폭 같은 한 줄이 되고, "지금 어느 단계인가"를 말하는 것들(상태·진행 바·문구)이
-            구분선 아래 한 층에 모인다.
-            렌더 조건 분기(getStatusDetail·점 유무·색)는 손대지 않는다 — 배치만 바뀐다. */}
-        <div className="flex items-center justify-between gap-2">
-          <p
-            className={clsx(
-              "inline-flex items-center gap-[8px] text-[15px] font-semibold tracking-[-0.01em]",
-              application.isClosed && application.resultLabel ? "text-status-error" : "text-[#111111]",
-            )}
-          >
-            {application.isClosed && application.resultLabel ? (
-              <span className="h-[8px] w-[8px] rounded-full shrink-0 bg-status-error-dot" />
-            ) : null}
-            {statusText}
-          </p>
-          {statusDetail ? <p className="text-[13px] font-normal text-[#8a94a3]">{statusDetail}</p> : null}
-        </div>
+        {/* ≤640px 상태 줄. 좁은 폭에서는 위층에 상태가 설 가로 자리가 없다 — 로고가 빠지고 제목이
+            줄을 통째로 쓴다. 아래로 내려 [상태 ↔ 보조 날짜] 양끝 한 줄로 세우면 폭이 아니라
+            줄 자체가 자리를 확정해, 상태 문자열 길이가 카드마다 달라도 앵커가 흔들리지 않는다. */}
+        <div className="flex items-center justify-between gap-2 min-[641px]:hidden">{statusLines}</div>
 
         {/* ≤640px는 flex-col로 두 행을 명시적으로 가른다 — 종전 flex-wrap은 진행 바/문구와 버튼의
             폭 합이 넘칠 때만 갈라져서, 깨지는 지점이 카드마다 달랐고(480px에서 카드 2만 2행)
             갈라진 뒤에는 버튼 겹이 콘텐츠 폭이라 justify-end가 무력화돼 좌측에 몰렸다.
             >640px는 wrap 없는 한 줄이다 — 넘칠 때 조용히 같은 상태로 되돌아가지 않게 flex-wrap을 뺀다.
-            상태 줄과의 간격은 진행 바 쪽에는 주지 않는다 — ApplicationStepper가 mt-5를 갖고 있어
-            이미 자기 몫을 벌어 둔다. 문구 쪽에만 mt-3으로 같은 리듬을 맞춘다. */}
+            위 상태 줄과의 간격은 진행 바 쪽에는 주지 않는다 — ApplicationStepper가 mt-5를 갖고 있어
+            이미 자기 몫을 벌어 둔다. 문구 쪽에만 mt-3으로 같은 리듬을 맞춘다.
+            그 mt-3에 max-[640px]가 붙는 이유: >640px에는 위에 상태 줄이 없어(우상단으로 올라갔다)
+            띄울 대상이 없고, 그대로 두면 층의 pt-4 위에 12px이 덧붙는다. */}
         <div
           className={clsx(
             "flex items-center justify-between gap-4 max-[640px]:flex-col max-[640px]:items-stretch max-[640px]:gap-3",
-            !isQuick && "mt-3",
+            !isQuick && "max-[640px]:mt-3",
           )}
         >
           {isQuick ? (
