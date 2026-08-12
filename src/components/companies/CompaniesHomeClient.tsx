@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
 import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { BusinessImageBand } from "@/components/business/BusinessMarketingSections";
+import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { Pagination } from "@/components/Pagination";
 import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { Button } from "@/components/ui/Button";
@@ -239,7 +240,9 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
   if (!entries.length) return null;
 
   return (
-    <div className="relative mt-10 border border-border bg-white py-[30px]">
+    <div className={clsx("relative mt-10 border border-border bg-white py-[30px]", FLUSH_SECTION_CLASS)}>
+      {/* ≤760px에서 좌우 24px는 셸 쪽(FLUSH_SECTION_CLASS의 px-6)이 잡는다 — 여기 px-6을 그대로 두면
+          두 값이 더해져 48px가 된다. 스크롤러의 패딩만 접고 가로 스크롤 동작은 그대로 둔다. */}
       <div
         ref={scrollRef}
         onPointerDown={handlePointerDown}
@@ -247,7 +250,7 @@ function CompanyLogoStrip({ entries }: { entries: CompanyDirectoryEntry[] }) {
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onPointerLeave={endDrag}
-        className="premium-scrollbar flex cursor-grab select-none overflow-x-auto px-6 active:cursor-grabbing"
+        className="premium-scrollbar flex cursor-grab select-none overflow-x-auto px-6 active:cursor-grabbing max-[760px]:px-0"
       >
         {entries.map((entry, index) => (
           <div key={entry.id} className="flex shrink-0 items-stretch">
@@ -400,20 +403,22 @@ function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: Rec
   };
 
   return (
-    <section className="border border-border bg-white p-6 max-[560px]:p-4">
+    <section className={clsx("border border-border bg-white px-6 py-6", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">최근 올라온 이야기</h2>
       <div className="mt-4">
         <FeedFilterTabs active={feedFilter} onChange={setFeedFilter} />
       </div>
 
+      {/* px-5는 데스크톱에서 행을 카드 제목보다 한 단 들여 세우던 값이다. ≤760px에서는 카드 패딩이
+          그대로 화면 여백(24px)이 되므로, 여기서 더 들어가면 h1·탭이 선 자리에서 20px 밀린다. */}
       {displayedItems.length ? (
-        <div className="mt-4 divide-y divide-[#e5e9ef] px-5">
+        <div className="mt-4 divide-y divide-[#e5e9ef] px-5 max-[760px]:px-0">
           {displayedItems.map((item) => (
             <FeedRow key={item.id} item={item} onRequestWriteInterviewReview={handleRequestWriteInterviewReview} />
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 px-5 text-center">
+        <div className="mt-4 flex h-[120px] flex-col items-center justify-center gap-1 px-5 text-center max-[760px]:px-0">
           <p className="text-[15px] font-medium text-[#303946]">해당 조건의 이야기가 아직 없습니다.</p>
         </div>
       )}
@@ -436,7 +441,7 @@ function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry
   if (!entries.length) return null;
 
   return (
-    <section className="border border-border bg-white p-5">
+    <section className={clsx("border border-border bg-white px-5 py-5", FLUSH_SECTION_CLASS)}>
       <SidebarBlockTitle>리뷰 많은 기업 TOP 5</SidebarBlockTitle>
       <ol className="mt-4 space-y-3.5">
         {entries.map((entry, index) => (
@@ -459,7 +464,7 @@ function TopReviewedCompaniesPanel({ entries }: { entries: CompanyDirectoryEntry
 
 function WriteReviewCtaPanel({ onCtaClick }: { onCtaClick: () => void }) {
   return (
-    <section className="border border-border bg-[#050505] p-5 text-white">
+    <section className={clsx("border border-border bg-[#050505] px-5 py-5 text-white", FLUSH_SECTION_CLASS)}>
       <h2 className="text-[17px] font-bold leading-[1.4] tracking-[-0.01em] text-white">다녀온 회사의 이야기를 남겨주세요</h2>
       <p className="mt-2 text-[13px] font-normal leading-[1.65] text-white/70">후기를 작성하면 모든 면접 후기 원문을 열람할 수 있습니다.</p>
       <Button type="button" variant="gradient" onClick={onCtaClick} className="mt-4 w-full">
@@ -479,7 +484,7 @@ function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => v
   }, []);
 
   return (
-    <section className="border border-border bg-white p-5">
+    <section className={clsx("border border-border bg-white px-5 py-5", FLUSH_SECTION_CLASS)}>
       <SidebarBlockTitle>업종별 탐색</SidebarBlockTitle>
       <div className="mt-4 divide-y divide-[#edf1f5]">
         {jobTracks.map((track) => (
@@ -686,7 +691,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
           </aside>
         </div>
 
-        <section id="company-directory" className="mt-14 border border-border bg-white p-6 max-[560px]:p-4">
+        <section id="company-directory" className={clsx("mt-14 border border-border bg-white px-6 py-6", FLUSH_SECTION_CLASS)}>
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
             <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
