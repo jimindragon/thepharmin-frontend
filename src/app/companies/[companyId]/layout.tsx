@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { CompanyHero } from "@/components/company/CompanyHero";
+import { CompanyDetailHero } from "@/components/company/CompanyDetailHero";
 import { CompanyDetailTabs } from "@/components/company/CompanyDetailTabs";
 import { getCompanyProfile } from "@/data/companyProfiles";
 
@@ -38,7 +38,8 @@ export default async function CompanyLayout({ children, params }: CompanyLayoutP
       <main className="bg-[#f5f6f7] pb-24 pt-6 max-[760px]:pt-0">
         <div className="app-shell">
           <PageBreadcrumb className="mb-5" items={[{ label: "기업 인사이트" }, { label: profile.name }]} />
-          <CompanyHero profile={profile} />
+          {/* 개요는 풀 히어로, 하위 탭은 컴팩트 바(≤760px 한정) — 경로 판정이 필요해 클라이언트 래퍼를 거친다 */}
+          <CompanyDetailHero profile={profile} companyId={companyId} />
           <CompanyDetailTabs companyId={companyId} />
           {/* ≤760px mt-0 — 이 폭에서 히어로 바로 아래 오는 것은 어느 탭에서든 흰 탭 행 하나다(하위 탭은
               CompanyDetailTabs, 개요는 그 자리를 넘겨받은 SectionAnchorNav). 둘 다 sticky 바라 히어로에

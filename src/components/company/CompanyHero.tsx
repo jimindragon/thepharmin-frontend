@@ -51,8 +51,45 @@ function HeroBadges({ badges, className }: { badges: string[]; className: string
   );
 }
 
-/** 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심 기업 저장 버튼). [companyId]/layout.tsx가 모든 탭 페이지에서 공유한다 */
-export function CompanyHero({ profile }: { profile: CompanyProfile }) {
+/**
+ * 하위 탭(공고·면접 후기·기업 리뷰·뉴스·후기 작성)의 ≤760px 히어로. 커버 이미지·한줄소개·배지·
+ * 관심 기업/공유 버튼을 전부 걷고 [로고][기관명]만 남긴 얇은 바다.
+ *
+ * 이 자리에서 풀 히어로(≤760px 실측 299px)가 하던 일은 "이 기업이 무엇인가"를 처음 소개하는 것인데,
+ * 하위 탭에 온 사람은 이미 그 소개를 지나온 뒤다 — 목록을 보러 왔는데 화면 한 판을 다시 소개가 먹는다.
+ * 개요=요약 / 하위 탭=전체 목록이라는 역할 분리를 상단에서 먼저 알리는 자리이기도 하다.
+ *
+ * 배경은 헤더(#050505)가 아니라 풀 히어로와 같은 #081015다 — 접힌 것은 히어로지 헤더가 아니므로
+ * 히어로 계열 색을 유지한다. 헤더의 border-b(#151515)가 둘 사이를 이미 갈라 준다.
+ * 높이 64px도 헤더와 같은 값이라, 스크롤을 올렸을 때 검정 띠 둘이 같은 리듬으로 겹쳐 선다.
+ */
+function CompanyHeroCompactBar({ profile }: { profile: CompanyProfile }) {
+  return (
+    /* 풀 히어로와 같은 풀블리드 계산(-shell-gutter/2 되밀기 + px-6) — 좌우로 회색이 새면 바가 아니라
+       카드처럼 읽힌다. 이 바는 ≤760px 전용이라 --shell-gutter는 항상 48px이고 변형이 필요 없다. */
+    <div className="-mx-[calc(var(--shell-gutter)/2)] flex h-16 items-center gap-3 bg-[#081015] px-6 text-white min-[761px]:hidden">
+      <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden bg-white px-1 text-center text-[12px] font-medium leading-none text-[#17212c]">
+        {/* 옆에 기관명이 글자로 서 있으므로 로고는 장식이다 — alt를 비워 같은 이름이 두 번 읽히지 않게 한다 */}
+        {profile.logoImage ? <img src={profile.logoImage} alt="" className="h-full w-full object-contain p-1" /> : profile.logoText}
+      </div>
+      <p className="min-w-0 truncate text-[17px] font-bold tracking-[-0.02em]">{profile.name}</p>
+    </div>
+  );
+}
+
+/**
+ * 기업 상세 hero(기업 이미지·로고·기업명·뱃지·관심 기업 저장 버튼). [companyId]/layout.tsx가 모든 탭
+ * 페이지에서 공유한다.
+ *
+ * variant="full"(기본값)은 종전 렌더 그대로다 — 개요 탭과 기업센터 브랜드 페이지 미리보기
+ * (BusinessCompanyPreviewClient)가 인자 없이 부르므로 그쪽 파급은 없다.
+ *
+ * variant="compact"는 **≤760px에서만** 얇은 바로 갈아입는다. 761px 이상은 두 variant가 같은 화면이다 —
+ * PC는 히어로 아래 사이드바·라우트 탭이 이미 위계를 잡고 있어 이 혼선이 없던 영역이라 건드리지 않는다.
+ * 폭 분기를 CSS로 두는 이유는 호출부(CompanyDetailHero)가 경로만 알고 뷰포트는 모르기 때문이다 —
+ * 배지 줄(HeroBadges)이 두 자리에 렌더되는 것과 같은 방식으로, 둘 중 하나는 항상 display:none이다.
+ */
+export function CompanyHero({ profile, variant = "full" }: { profile: CompanyProfile; variant?: "full" | "compact" }) {
   const [interested, setInterested] = useState(false);
   const [shared, setShared] = useState(false);
   const badges = institutionHeroBadges(profile) ?? profile.tags;
@@ -68,7 +105,7 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
     window.setTimeout(() => setShared(false), 1800);
   };
 
-  return (
+  const fullHero = (
     /* ≤760px 풀블리드 — 본문 섹션 카드와 같은 음수 마진(-shell-gutter/2)으로 셸이 물러난 만큼 되민다.
        FLUSH_SECTION_CLASS를 그대로 쓰지 않는 이유는 좌우 패딩의 위치다: 이 히어로는 배경 이미지·그라디언트가
        절대 배치된 껍데기(section)와 그 위에 뜬 콘텐츠 층(아래 relative z-10 div)이 나뉘어 있어, px는
@@ -130,4 +167,18 @@ export function CompanyHero({ profile }: { profile: CompanyProfile }) {
       </div>
     </section>
   );
+
+  if (variant === "compact") {
+    return (
+      <>
+        <CompanyHeroCompactBar profile={profile} />
+        {/* 761px 이상에서는 compact도 풀 히어로를 그대로 그린다 — PC 렌더는 종전과 완전히 같다.
+            래퍼 div 하나가 더 생기지만 히어로의 -mx/px는 ≤760px 전용(그 폭에서는 이쪽이 숨는다)이라
+            어느 폭에서도 계산에 끼어들지 않는다. */}
+        <div className="max-[760px]:hidden">{fullHero}</div>
+      </>
+    );
+  }
+
+  return fullHero;
 }
