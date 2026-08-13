@@ -620,6 +620,9 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     [directory],
   );
 
+  /** 접힘 판정과 목록 필터가 같은 값을 봐야 "검색 중인데 아직 전체 목록"인 순간이 생기지 않는다 */
+  const isSearching = keyword.trim().length > 0;
+
   const filteredDirectory = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
     return directory.filter((entry) => {
@@ -664,15 +667,22 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
       <CompaniesHubHero />
 
       <div className="app-shell">
-        <CompanyLogoStrip entries={logoStripEntries} />
+        {/* 검색 중에는 둘러보기용 블록(로고 띠·최근 이야기·사이드바)을 접어 결과 목록을 첫 화면으로 끌어올린다.
+            언마운트가 아니라 hidden인 이유는 RecentStoriesFeed가 자체 상태(feedFilter)를 들고 있어서다 —
+            지웠다 다시 켜면 사용자가 골라 둔 피드 탭이 "전체"로 되돌아간다.
+            둘을 한 래퍼로 묶은 것은 grid에 hidden을 얹으면 같은 display 축이라 두 유틸리티의
+            출력 순서에 기대게 되기 때문이다. 래퍼는 스타일이 없어 접지 않은 상태의 레이아웃은 종전 그대로다. */}
+        <div className={clsx(isSearching && "hidden")}>
+          <CompanyLogoStrip entries={logoStripEntries} />
 
-        <div className="mt-10 grid grid-cols-[minmax(0,1fr)_280px] gap-10 max-[1024px]:grid-cols-1 max-[1024px]:gap-8">
-          <RecentStoriesFeed companyItems={companyFeedItems} interviewItems={interviewFeedItems} />
-          <aside className="space-y-8">
-            <IndustryExplorePanel onExplore={handleExploreTrack} />
-            <TopReviewedCompaniesPanel entries={topReviewedCompanies} />
-            <WriteReviewCtaPanel onCtaClick={handleRequestWriteCompanyReview} />
-          </aside>
+          <div className="mt-10 grid grid-cols-[minmax(0,1fr)_280px] gap-10 max-[1024px]:grid-cols-1 max-[1024px]:gap-8">
+            <RecentStoriesFeed companyItems={companyFeedItems} interviewItems={interviewFeedItems} />
+            <aside className="space-y-8">
+              <IndustryExplorePanel onExplore={handleExploreTrack} />
+              <TopReviewedCompaniesPanel entries={topReviewedCompanies} />
+              <WriteReviewCtaPanel onCtaClick={handleRequestWriteCompanyReview} />
+            </aside>
+          </div>
         </div>
 
         <section id="company-directory" className={clsx("mt-14 border border-border bg-white px-6 py-6", FLUSH_SECTION_CLASS)}>
