@@ -138,10 +138,12 @@ function CompanySearchBar({
       {/* pr-4 — 입력칸과 검색 버튼 사이 간격. 없으면 긴 placeholder가 검은 버튼에 그대로 닿는다. */}
       <div className="flex min-w-0 flex-1 items-center gap-3 pl-5 pr-4">
         <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
+        {/* placeholder는 390px 기준으로 잘리지 않는 길이까지 줄인 문구다 — 늘리면 끝 글자가 먼저 잘린다.
+            aria-label은 줄이지 않는다: 화면 폭 제약을 받지 않고, 읽어 주는 쪽에는 온전한 문장이 낫다. */}
         <input
           value={keyword}
           onChange={(event) => onKeywordChange(event.target.value)}
-          placeholder="기업 또는 기관명을 검색하세요"
+          placeholder="기업·기관명 검색"
           aria-label="기업 또는 기관명 검색"
           className="h-full w-full min-w-0 bg-transparent text-left text-[15px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
         />
