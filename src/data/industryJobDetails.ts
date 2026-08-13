@@ -892,7 +892,7 @@ export const industryJobDetails: Record<string, IndustryJobDetail> = {
       headcount: "○명",
       education: "학사 이상",
       location: {
-        address: "서울 강남구 역삼로 226, 오츠카제약빌딩",
+        address: "서울 강남구 역삼로 226, 오츠카비전빌딩",
         workMode: "사무실 근무",
       },
       coreKeywords: ["Medical Information", "Pharmacovigilance", "약물감시", "안전성", "의학정보", "약사 면허"],

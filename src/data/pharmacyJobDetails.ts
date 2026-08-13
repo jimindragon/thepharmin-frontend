@@ -757,7 +757,7 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
     requirements: ["약사 면허 소지자", "경력 무관", "대졸(4년제, 졸업예정자 가능)"],
     preferred: ["매약 경험을 쌓고 싶은 분", "약국 경영·개국에 관심 있는 분"],
     workConditionDetail:
-      "격주 토·일(매주 가능) 12:00~22:00 근무이며 시급 4.5만원(세후)입니다. 마산역 앞에 위치해 출퇴근이 편리하며, 최근 리모델링 환경에서 약사 2명·직원 3명이 근무합니다. 식사 시간 보장·간식·주차 지원이 됩니다. 매약 중심 약국으로 경력이 없어도 지원 가능하며, 매약 기술과 케이스 스터디, 약국 경영까지 배울 수 있습니다.",
+      "격주 토·일(매주 가능) 12:00~22:00 근무이며 시급 4.5만원(세후)입니다. 마산역 앞에 위치해 출퇴근이 편리하며, 최근 리모델링 환경에서 약사 3명·직원 3명이 근무합니다. 식사 시간 보장·간식·주차 지원이 됩니다. 매약 중심 약국으로 경력이 없어도 지원 가능하며, 매약 기술과 케이스 스터디, 약국 경영까지 배울 수 있습니다.",
 
     workSchedule: [{ days: ["토", "일"], time: "12:00–22:00 (격주, 매주도 가능)" }],
 
@@ -766,7 +766,8 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
 
     coreKeywords: ["매약 상담", "케이스 스터디", "주말 파트타임", "유팜", "마산역 앞"],
 
-    staffPharmacistCount: 2,
+    // 공고 상세는 job 값을 org보다 우선해 읽는다(PharmacyJobDetailV2) — org 정정값(3)과 같은 값으로 맞춘다
+    staffPharmacistCount: 3,
     staffSupportCount: 3,
     mainPrescribingHospital: "",
 
@@ -804,7 +805,8 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
     fullIntro:
       "마산 대표 매약 중심 약국으로, 다양한 학회약을 취급하며 전문 상담과 케이스 스터디를 배울 수 있습니다.",
     features: [
-      "약사 2명·직원 3명이 젊고 밝은 분위기로 근무합니다.",
+      // 인원은 실자료(약사 3·직원 3) 기준. "젊고 밝은 분위기"는 평가성 서술이라 걷었다
+      "약사 3명과 직원 3명이 함께 근무합니다.",
       "최근 리모델링을 마쳤고 식사 시간 보장·간식 제공·주차 지원이 있습니다.",
     ],
     keywords: ["매약 중심", "마산역 앞", "주말 파트타임"],

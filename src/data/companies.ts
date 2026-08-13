@@ -252,7 +252,7 @@ export const companies: Company[] = [
     employeeCount: "-",
     foundedYear: "1983년",
     website: "",
-    address: "서울 강남구 역삼로 226, 오츠카제약빌딩",
+    address: "서울 강남구 역삼로 226, 오츠카비전빌딩",
   },
   {
     id: "bukwang",

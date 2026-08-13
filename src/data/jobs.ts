@@ -218,7 +218,7 @@ export const jobs: Job[] = [
       education: "학사 이상",
       employmentType: "정규직",
       location: "서울 강남구",
-      address: "서울 강남구 역삼로 226, 오츠카제약빌딩",
+      address: "서울 강남구 역삼로 226, 오츠카비전빌딩",
       salary: "회사 내규에 따름",
       deadline: "2026-08-21",
       deadlineDate: "2026년 8월 21일 마감",
@@ -265,7 +265,7 @@ export const jobs: Job[] = [
       ],
       benefits: ["4대 보험", "연차", "교육비 지원", "성과급"],
       workConditionDetail: "다국적 제약사 표준 복리후생 제도를 운영합니다.",
-      locationDetail: { address: "서울 강남구 역삼로 226, 오츠카제약빌딩", nearestStation: "2호선 역삼역", workMode: "사무실 근무" },
+      locationDetail: { address: "서울 강남구 역삼로 226, 오츠카비전빌딩", nearestStation: "2호선 역삼역", workMode: "사무실 근무" },
       dateOrder: 46,
     },
     {
