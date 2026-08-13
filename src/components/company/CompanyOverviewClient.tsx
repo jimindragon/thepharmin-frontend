@@ -38,7 +38,7 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
             당겨져 그 한 자리만 0이 된다. 섹션 사이 36px 리듬은 그대로다. */}
         <div className="grid grid-cols-1 gap-9 [&>nav]:-mb-9">
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
-          <SectionAnchorNav sections={getCompanyDetailAnchors(profile.id, "hospital", counts)} ariaLabel="기업 정보 섹션 바로가기" />
+          <SectionAnchorNav sections={getCompanyDetailAnchors("hospital", counts)} ariaLabel="기업 정보 섹션 바로가기" />
           <HospitalSummarySection profile={profile} company={company} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -57,7 +57,7 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
             당겨져 그 한 자리만 0이 된다. 섹션 사이 36px 리듬은 그대로다. */}
         <div className="grid grid-cols-1 gap-9 [&>nav]:-mb-9">
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
-          <SectionAnchorNav sections={getCompanyDetailAnchors(profile.id, "pharmacy", counts)} ariaLabel="기업 정보 섹션 바로가기" />
+          <SectionAnchorNav sections={getCompanyDetailAnchors("pharmacy", counts)} ariaLabel="기업 정보 섹션 바로가기" />
           <PharmacySummarySection profile={profile} company={company} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -76,7 +76,7 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
             당겨져 그 한 자리만 0이 된다. 섹션 사이 36px 리듬은 그대로다. */}
         <div className="grid grid-cols-1 gap-9 [&>nav]:-mb-9">
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
-          <SectionAnchorNav sections={getCompanyDetailAnchors(profile.id, "research", counts)} ariaLabel="기업 정보 섹션 바로가기" />
+          <SectionAnchorNav sections={getCompanyDetailAnchors("research", counts)} ariaLabel="기업 정보 섹션 바로가기" />
           <ResearchSummarySection profile={profile} />
           <CompanyActiveJobsPreviewSection profile={profile} />
           <CompanyReviewsPreviewSection profile={profile} type="interview" />
@@ -92,7 +92,7 @@ export function CompanyOverviewClient({ profile }: CompanyOverviewClientProps) {
       {/* [&>nav]:-mb-9 — 앵커 바로 아래 36px(gap-9)만 지운다(위 트랙 분기와 같은 이유) */}
       <div className="grid grid-cols-1 gap-9 [&>nav]:-mb-9">
         {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
-        <SectionAnchorNav sections={getCompanyDetailAnchors(profile.id, "industry", counts)} ariaLabel="기업 정보 섹션 바로가기" />
+        <SectionAnchorNav sections={getCompanyDetailAnchors("industry", counts)} ariaLabel="기업 정보 섹션 바로가기" />
         <CompanyOverview profile={profile} />
         <CompanyDetailOverview profile={profile} />
         <CompanyActiveJobsPreviewSection profile={profile} />

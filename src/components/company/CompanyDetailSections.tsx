@@ -365,20 +365,7 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
 
 /** 개요 페이지의 면접 후기/기업 리뷰 미리보기 — [companyId]/reviews·interviews 전용 페이지와 같은 카드
  * (`CompanyReviewCard`)를 `variant="compact"`로 재사용한다(STEP 9-4: 로컬 중복 카드 구현 제거).
- * 최신 2건 + 전체 보기 링크만 보여주고, 게이팅은 전용 페이지의 몫이라 여기서는 고려하지 않는다.
- *
- * **≤760px에서는 렌더하지 않는다.** 그 폭에서 이 두 섹션은 "2건만 보여주고 전체는 다른 화면"이라
- * 누를 때마다 개요를 떠났다가 돌아와야 했다 — 상단 바(SectionAnchorNav)의 라우트 항목으로 진입을
- * 일원화하고 본문에서는 뺀다. 761px 이상은 그대로다: 그쪽은 라우트 탭 행이 화면 위에 계속 떠 있어
- * 미리보기와 "전체 보기"가 같은 자리에 있어도 오갈 비용이 낮다.
- *
- * 숨김은 래퍼 div의 CSS로만 한다. 호출부(CompanyOverviewClient) 조건 분기는 불가능하고
- * (서버 컴포넌트라 폭을 모른다), SectionShell에 className 통로를 뚫으면 이 한 자리 때문에
- * 섹션 셸을 쓰는 11곳이 함께 열린다. 대신 이 폭에서는 숨긴 카드의 HTML이 payload에 남는다 —
- * 면접 후기 원문은 toReviewCardItem이 이미 null로 걸러 실리지 않고, 기업 리뷰 원문은
- * 게이팅 대상이 아니라 그대로 실린다.
- *
- * 이 안쪽 한 곳으로 4트랙 8개 호출부가 모두 덮인다(트랙별 분기가 호출부에 없다). */
+ * 최신 2건 + 전체 보기 링크만 보여주고, 게이팅은 전용 페이지의 몫이라 여기서는 고려하지 않는다. */
 export function CompanyReviewsPreviewSection({ profile, type }: { profile: CompanyProfile; type: CompanyReviewType }) {
   const isInterview = type === "interview";
   const title = isInterview ? "면접 후기" : "기업 리뷰";
@@ -391,53 +378,51 @@ export function CompanyReviewsPreviewSection({ profile, type }: { profile: Compa
   const topKeywords = all.length >= 3 ? topTagsByFrequency(all.map((review) => review.tags)) : [];
 
   return (
-    <div className="max-[760px]:hidden">
-      <SectionShell
-        id={isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews}
-        title={title}
-        description={
-          isInterview
-            ? "실제 지원자들이 경험한 면접 과정과 분위기를 확인해 보세요."
-            : "재직자들이 말하는 실제 근무 환경과 조직 문화를 확인해 보세요."
-        }
-        action={
-          <Link href={href} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
-            전체 보기
-            <ChevronRight size={15} />
-          </Link>
-        }
-      >
-        {all.length ? (
-          <>
-            <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
-              {preview.map((review) => (
-                <CompanyReviewCard key={review.id} review={review} variant="compact" />
+    <SectionShell
+      id={isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews}
+      title={title}
+      description={
+        isInterview
+          ? "실제 지원자들이 경험한 면접 과정과 분위기를 확인해 보세요."
+          : "재직자들이 말하는 실제 근무 환경과 조직 문화를 확인해 보세요."
+      }
+      action={
+        <Link href={href} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
+          전체 보기
+          <ChevronRight size={15} />
+        </Link>
+      }
+    >
+      {all.length ? (
+        <>
+          <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
+            {preview.map((review) => (
+              <CompanyReviewCard key={review.id} review={review} variant="compact" />
+            ))}
+          </div>
+          {topKeywords.length ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
+              <span className="text-[12px] font-medium text-[#8a95a5]">자주 언급된 키워드</span>
+              {topKeywords.map((keyword) => (
+                <Chip key={keyword}>{keyword}</Chip>
               ))}
             </div>
-            {topKeywords.length ? (
-              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
-                <span className="text-[12px] font-medium text-[#8a95a5]">자주 언급된 키워드</span>
-                {topKeywords.map((keyword) => (
-                  <Chip key={keyword}>{keyword}</Chip>
-                ))}
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <EmptyState
-            message={`아직 등록된 ${title}가 없습니다.`}
-            cta={
-              <Link
-                href={href}
-                className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
-              >
-                첫 후기 작성하기
-              </Link>
-            }
-          />
-        )}
-      </SectionShell>
-    </div>
+          ) : null}
+        </>
+      ) : (
+        <EmptyState
+          message={`아직 등록된 ${title}가 없습니다.`}
+          cta={
+            <Link
+              href={href}
+              className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
+            >
+              첫 후기 작성하기
+            </Link>
+          }
+        />
+      )}
+    </SectionShell>
   );
 }
 
