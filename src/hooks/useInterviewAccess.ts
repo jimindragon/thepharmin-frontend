@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import type { CompanyReviewCardItem, CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
 import type { InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
 import { reviewAccessMock } from "@/data/companies";
@@ -9,17 +9,125 @@ import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 /**
  * 면접 후기 열람권(credit) 데모의 상태기계. 실제 저장/인증은 없는 클라이언트 전용 목업이다.
  *
- * 종전에는 면접 후기 목록(CompanyInterviewsListClient)이 이 상태를 직접 들고 있었다. 훅으로 뺀 것은
- * 열람권을 쓰는 화면이 목록 하나가 아니게 되기 때문이다 — 기업 개요가 면접 후기를 인라인으로 펼치면
- * 같은 상태기계가 두 곳에서 돌아야 하고, 나중에 실제 저장 파이프라인을 붙일 때 갈아끼울 자리도
- * 이 파일 하나여야 한다.
+ * 보유 상태를 컴포넌트가 아니라 **모듈 스코프**에 둔다. 열람권은 화면이 아니라 계정에 딸린 값이라,
+ * 개요에서 1장을 쓰고 목록으로 넘어갔더니 2장으로 돌아와 있으면 그 화면들이 서로 다른 지갑을 든
+ * 셈이 된다. 목록 라우트(/interviews)는 외부 진입·딥링크·데스크톱 경로로 존치되므로 개요와
+ * 목록을 오가는 길이 실제로 남아 있다.
+ *
+ * 실제 저장 파이프라인이 붙을 자리도 이 store 하나다 — 호출부와 계약(useInterviewAccess의 반환값)은
+ * 그대로 두고 아래 읽기/쓰기만 서버로 옮기면 된다. 컴포넌트 로컬 useState로 두면 시그니처는 같아도
+ * "화면에 들어올 때마다 초기화"라는 동작이 훅 안에 남아, 서버를 붙일 때 그 동작까지 함께 걷어내야 한다.
  *
  * DEV 프리셋(useReviewAccessDemo)은 이 훅이 안에서 직접 부른다 — 호출부는 isLoggedIn만 넘긴다.
- * 프리셋 파생("어느 상태를 보고 싶은가")을 호출부마다 적어 두면 화면끼리 초기 상태가 갈린다.
  * userState는 그 프리셋(패널이 고른 값이 없으면 로그인 여부)이고, credits는 열람에 따라 실시간으로
  * 줄어든다. 카드별 잠금 판정은 userState가 loggedOut이 아닌 한 credits(0 여부)로 계산해
  * "열람 중 0장 도달" 전환을 자연스럽게 반영한다.
  */
+
+interface InterviewAccessStore {
+  /**
+   * 이 탭에서 마지막으로 관측한 DEV 프리셋. useReviewAccessDemo는 localStorage를 서버에서 읽을 수 없어
+   * **마운트할 때마다 첫 프레임에 null을 돌려준다**(그쪽 useState 기본값). 그 한 프레임을 그대로 믿으면
+   * 화면을 옮길 때마다 userState가 "프리셋 → 로그인 기본값 → 프리셋"으로 튀고, 아래 리셋이 매번 돌아
+   * 공유가 무의미해진다. 관측한 값을 여기 남겨 그 구멍을 메운다 — 저장소를 두 번 읽지 않는다.
+   */
+  preset: InterviewAccessUserState | null;
+  /** 아래 보유 상태가 어느 userState 기준으로 깔린 것인지. null이면 아직 한 번도 깔리지 않았다. */
+  syncedUserState: InterviewAccessUserState | null;
+  credits: number;
+  unlockedIds: string[];
+  pendingUnlockId: string | null;
+}
+
+/** 서버 스냅샷이자 새 탭의 출발점. 얼려 두는 것은 아래 갱신이 전부 새 객체를 만들기 때문이다. */
+const INITIAL: InterviewAccessStore = Object.freeze({
+  preset: null,
+  syncedUserState: null,
+  credits: 0,
+  unlockedIds: [],
+  pendingUnlockId: null,
+});
+
+/** 리셋마다 새 배열을 만들면 useSyncExternalStore가 매번 바뀐 것으로 읽는다 */
+const EMPTY_IDS: string[] = [];
+
+let store: InterviewAccessStore = INITIAL;
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function getSnapshot() {
+  return store;
+}
+
+/**
+ * 서버에서는 언제나 출발점을 돌려준다. 모듈 스코프는 서버 프로세스 안에서 요청끼리 공유되므로
+ * `store`를 그대로 내보내면 다른 방문자의 진행 상태가 새어 나갈 수 있다 — 지금은 서버에서
+ * 이 값을 바꾸는 경로가 없어 실제로 같은 객체지만, 그 사실에 기대지 않는다.
+ * useReviewAccessDemo가 저장소를 "초기 null → 마운트 후 교정"으로 다루는 것과 같은 자리다.
+ */
+function getServerSnapshot() {
+  return INITIAL;
+}
+
+function emit(next: InterviewAccessStore) {
+  store = next;
+  for (const listener of listeners) listener();
+}
+
+function creditsFor(userState: InterviewAccessUserState) {
+  return userState === "hasCredits" ? reviewAccessMock.remainingPasses : 0;
+}
+
+/**
+ * 지금 기준(userState)에 맞는 보유 상태. 기준이 다르면 그 기준으로 새로 깐 것을 돌려준다 —
+ * 예전 "프리셋이 바뀌면 초기화"를 effect가 아니라 이 한 곳이 진다.
+ *
+ * 마운트가 아니라 **기준이 실제로 달라졌을 때만** 새로 깔리는 것이 핵심이다. store가 기준까지
+ * 함께 기억하므로 화면을 옮겨도 기준이 같으면 진행 상태가 살아남는다.
+ */
+function baseFor(userState: InterviewAccessUserState): InterviewAccessStore {
+  if (store.syncedUserState === userState) return store;
+  return { ...store, syncedUserState: userState, credits: creditsFor(userState), unlockedIds: EMPTY_IDS, pendingUnlockId: null };
+}
+
+function syncTo(userState: InterviewAccessUserState) {
+  const base = baseFor(userState);
+  if (base !== store) emit(base);
+}
+
+function rememberPreset(preset: InterviewAccessUserState) {
+  if (store.preset === preset) return;
+  emit({ ...store, preset });
+}
+
+function requestUnlock(userState: InterviewAccessUserState, id: string) {
+  const base = baseFor(userState);
+  if (base === store && base.pendingUnlockId === id) return;
+  emit({ ...base, pendingUnlockId: id });
+}
+
+function confirmUnlockIn(userState: InterviewAccessUserState) {
+  const base = baseFor(userState);
+  if (!base.pendingUnlockId) return;
+  emit({
+    ...base,
+    credits: Math.max(base.credits - 1, 0),
+    unlockedIds: [...base.unlockedIds, base.pendingUnlockId],
+    pendingUnlockId: null,
+  });
+}
+
+function cancelUnlockIn(userState: InterviewAccessUserState) {
+  const base = baseFor(userState);
+  if (base === store && base.pendingUnlockId === null) return;
+  emit({ ...base, pendingUnlockId: null });
+}
 
 export interface InterviewCardAccess {
   /** 잠기지 않은 본문 위에 그리는 보조 라벨. 잠긴 카드에는 없다. */
@@ -47,35 +155,36 @@ export interface InterviewAccess {
 }
 
 export function useInterviewAccess({ isLoggedIn, writeHref }: InterviewAccessOptions): InterviewAccess {
-  /** 패널이 고른 값이 없으면(null) 기존 규칙 그대로 로그인 여부가 프리셋을 정한다. */
   const { demoState } = useReviewAccessDemo();
-  const userState: InterviewAccessUserState = demoState ?? (isLoggedIn ? "hasCredits" : "loggedOut");
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  const [credits, setCredits] = useState(isLoggedIn ? reviewAccessMock.remainingPasses : 0);
-  const [unlockedIds, setUnlockedIds] = useState<string[]>([]);
-  const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
+  /** 패널이 고른 값이 없으면(null) 기존 규칙 그대로 로그인 여부가 프리셋을 정한다. */
+  const preset = demoState ?? snapshot.preset;
+  const userState: InterviewAccessUserState = preset ?? (isLoggedIn ? "hasCredits" : "loggedOut");
+
+  /**
+   * store가 아직 이 기준으로 깔리지 않았으면(첫 마운트·프리셋 전환 직후) 아래 effect가 깔기 전에
+   * 이미 "깔린 뒤의 값"을 그린다. effect를 기다리면 그 한 프레임 동안 0장·잠금 없음이 스쳐 간다 —
+   * 서버 HTML과도 어긋난다. 계산은 baseFor와 같은 규칙이라 effect가 돌아도 화면이 달라지지 않는다.
+   */
+  const synced = snapshot.syncedUserState === userState;
+  const credits = synced ? snapshot.credits : creditsFor(userState);
+  const unlockedIds = synced ? snapshot.unlockedIds : EMPTY_IDS;
+  const pendingUnlockId = synced ? snapshot.pendingUnlockId : null;
 
   const displayState: InterviewAccessUserState = userState === "loggedOut" ? "loggedOut" : credits > 0 ? "hasCredits" : "noCredits";
 
-  /**
-   * 프리셋이 바뀌면 진행 상태를 되돌린다 — 예전 handleDemoChange가 하던 초기화 그대로다.
-   * 전환이 이 훅 밖(DEV 패널)에서 일어나므로 클릭 핸들러가 아니라 값의 변화를 보고 실행한다.
-   * 마운트 시에도 한 번 도는데, 그때는 useState 초기값과 같은 값을 다시 넣어 화면이 달라지지 않는다.
-   */
+  /** null은 "아직 모름"이라 덮어쓰지 않는다 — 덮어쓰면 위 preset 구멍 메우기가 무너진다. */
   useEffect(() => {
-    setCredits(userState === "hasCredits" ? reviewAccessMock.remainingPasses : 0);
-    setUnlockedIds([]);
-    setPendingUnlockId(null);
+    if (demoState !== null) rememberPreset(demoState);
+  }, [demoState]);
+
+  useEffect(() => {
+    syncTo(userState);
   }, [userState]);
 
-  const confirmUnlock = useCallback(() => {
-    if (!pendingUnlockId) return;
-    setCredits((prev) => Math.max(prev - 1, 0));
-    setUnlockedIds((prev) => [...prev, pendingUnlockId]);
-    setPendingUnlockId(null);
-  }, [pendingUnlockId]);
-
-  const cancelUnlock = useCallback(() => setPendingUnlockId(null), []);
+  const confirmUnlock = useCallback(() => confirmUnlockIn(userState), [userState]);
+  const cancelUnlock = useCallback(() => cancelUnlockIn(userState), [userState]);
 
   const getAccess = useCallback(
     (item: CompanyReviewCardItem): InterviewCardAccess => {
@@ -88,13 +197,13 @@ export function useInterviewAccess({ isLoggedIn, writeHref }: InterviewAccessOpt
           status: displayState === "loggedOut" ? "loggedOut" : displayState === "noCredits" ? "noCredits" : "canUnlock",
           credits,
           writeHref,
-          onUnlockRequest: () => setPendingUnlockId(item.id),
+          onUnlockRequest: () => requestUnlock(userState, item.id),
         };
       }
 
       return { accessLabel, interviewAccess };
     },
-    [credits, displayState, unlockedIds, writeHref],
+    [credits, displayState, unlockedIds, userState, writeHref],
   );
 
   return { displayState, credits, pendingUnlockId, getAccess, confirmUnlock, cancelUnlock };
