@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
-import { type FormEvent, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { BusinessImageBand } from "@/components/business/BusinessMarketingSections";
 import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { Pagination } from "@/components/Pagination";
@@ -114,47 +114,30 @@ function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
 }
 
 /**
- * 히어로 사진 위에 얹히는 검색창. 고객센터(/support) 히어로 검색창과 같은 문법이다 —
- * max-w-[560px]·h-14·흰 배경에, 사진 위에서 카드가 떠 보이도록 그림자를 둔다.
- * 그림자는 "no-shadow" 원칙의 히어로 오버레이 예외로, /support가 쓰는 값을 그대로 공유한다.
- * 테두리를 회색(#d8dce2)이 아니라 white/15로 두는 것도 같은 이유다 — 어두운 사진 위에서는
- * 회색 실선이 때가 탄 것처럼 읽힌다. /support와 달리 가운데로 몰지 않는 것(mx-auto 없음)은
- * 이 히어로가 좌측 정렬이라 라벨·헤드라인과 같은 선에 서야 하기 때문이다.
+ * 기업·기관 리스트 섹션 헤더의 검색창. 목록을 걸러내는 컨트롤이라 정렬 칩과 같은 줄에 서고,
+ * 기업센터 목록 툴바(BusinessApplicantsClient·BusinessHeadhuntingManageClient)와 같은 문법을 쓴다 —
+ * h-10 입력칸 좌측에 돋보기를 얹고, 별도 제출 버튼을 두지 않는다.
+ *
+ * 종전에는 히어로 사진 위에 얹혀 그림자(no-shadow 원칙의 오버레이 예외)와 흰 테두리(white/15)를
+ * 달고 있었다. 흰 카드 위로 내려오면서 두 예외의 근거가 모두 사라져 일반 회색 테두리로 돌아왔다.
+ *
+ * 제출 버튼이 없으므로 form이 아니라 div다 — 입력칸 하나짜리 form은 Enter가 암묵적 제출로
+ * 이어져 페이지가 새로고침된다. 값이 바뀔 때마다 바로 거르는 방식은 /support 검색창과 같다.
  */
-function CompanySearchBar({
-  keyword,
-  onKeywordChange,
-  onSubmit,
-}: {
-  keyword: string;
-  onKeywordChange: (value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}) {
+function CompanySearchBar({ keyword, onKeywordChange }: { keyword: string; onKeywordChange: (value: string) => void }) {
   return (
-    <form
-      onSubmit={onSubmit}
-      className="mt-8 flex h-14 max-w-[560px] items-stretch border border-white/15 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-colors focus-within:border-[#111111]"
-    >
-      {/* pr-4 — 입력칸과 검색 버튼 사이 간격. 없으면 긴 placeholder가 검은 버튼에 그대로 닿는다. */}
-      <div className="flex min-w-0 flex-1 items-center gap-3 pl-5 pr-4">
-        <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
-        {/* placeholder는 390px 기준으로 잘리지 않는 길이까지 줄인 문구다 — 늘리면 끝 글자가 먼저 잘린다.
-            aria-label은 줄이지 않는다: 화면 폭 제약을 받지 않고, 읽어 주는 쪽에는 온전한 문장이 낫다. */}
-        <input
-          value={keyword}
-          onChange={(event) => onKeywordChange(event.target.value)}
-          placeholder="기업·기관명 검색"
-          aria-label="기업 또는 기관명 검색"
-          className="h-full w-full min-w-0 bg-transparent text-left text-[15px] text-[#202734] outline-none placeholder:text-[#a0a9b7]"
-        />
-      </div>
-      <button
-        type="submit"
-        className="shrink-0 bg-[#111111] px-8 text-[14px] font-medium text-white transition hover:bg-[#2a2a2a] max-[560px]:px-5"
-      >
-        검색
-      </button>
-    </form>
+    <div className="relative max-[640px]:w-full">
+      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a4adba]" aria-hidden="true" />
+      {/* aria-label은 placeholder처럼 줄이지 않는다: 화면 폭 제약을 받지 않고, 읽어 주는 쪽에는 온전한 문장이 낫다. */}
+      <input
+        type="text"
+        value={keyword}
+        onChange={(event) => onKeywordChange(event.target.value)}
+        placeholder="기업·기관명 검색"
+        aria-label="기업 또는 기관명 검색"
+        className="h-10 w-[220px] border border-[#d8e0e8] bg-white pl-8 pr-3 text-[13px] font-normal text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08] max-[640px]:w-full"
+      />
+    </div>
   );
 }
 
@@ -167,18 +150,9 @@ function CompanySearchBar({
  * 문서에 h1은 하나만 남는다. 라벨은 영문 Eyebrow(대문자·넓은 자간)를 쓰지 않는다 —
  * 한글에는 그 문법이 맞지 않아 본문 자간 그대로의 평범한 라벨로 둔다.
  *
- * 검색 상태(keyword)는 아래 목록 필터와 한 몸이라 이 컴포넌트로 내려보내지 않고
- * CompaniesHomeClient가 계속 들고 있는다 — 히어로는 값과 핸들러만 받아 넘긴다.
+ * 검색창은 여기 있지 않다 — 목록을 거르는 컨트롤이라 기업·기관 리스트 섹션 헤더로 내려갔다.
  */
-function CompaniesHubHero({
-  keyword,
-  onKeywordChange,
-  onSubmit,
-}: {
-  keyword: string;
-  onKeywordChange: (value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}) {
+function CompaniesHubHero() {
   return (
     <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
       <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
@@ -187,7 +161,6 @@ function CompaniesHubHero({
         <br />
         먼저 알아보세요
       </h1>
-      <CompanySearchBar keyword={keyword} onKeywordChange={onKeywordChange} onSubmit={onSubmit} />
     </BusinessImageBand>
   );
 }
@@ -608,8 +581,9 @@ function DirectoryEmptyState() {
 }
 
 export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeedItems }: CompaniesHomeClientProps) {
+  /** 입력값이 곧 필터다 — 제출 버튼이 없어 커밋 단계를 따로 두지 않는다. 목록이 정적 배열 50건이라
+   *  디바운스 없이 매 입력마다 걸러도 무리가 없다(/support 검색창과 같은 방식). */
   const [keyword, setKeyword] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState("");
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("리뷰순");
   const [currentPage, setCurrentPage] = useState(1);
@@ -639,19 +613,19 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
   );
 
   const filteredDirectory = useMemo(() => {
-    const normalizedKeyword = searchKeyword.trim().toLowerCase();
+    const normalizedKeyword = keyword.trim().toLowerCase();
     return directory.filter((entry) => {
       const matchesTrack = matchesTrackFilter(entry.track, entry.industryGroup, trackFilter);
       const matchesKeyword = !normalizedKeyword || entry.name.toLowerCase().includes(normalizedKeyword);
       return matchesTrack && matchesKeyword;
     });
-  }, [directory, trackFilter, searchKeyword]);
+  }, [directory, trackFilter, keyword]);
 
   const sortedDirectory = useMemo(() => sortDirectory(filteredDirectory, sortOption), [filteredDirectory, sortOption]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [trackFilter, sortOption, searchKeyword]);
+  }, [trackFilter, sortOption, keyword]);
 
   const totalPages = Math.max(1, Math.ceil(sortedDirectory.length / PAGE_SIZE));
   // 필터로 목록이 짧아졌는데 currentPage가 아직 뒤 페이지에 남아 있는 경우를 막는다 — 슬라이스와 Pagination이 같은 값을 쓴다.
@@ -661,11 +635,6 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     () => sortedDirectory.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
     [sortedDirectory, safePage],
   );
-
-  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSearchKeyword(keyword);
-  };
 
   const handleRequestWriteCompanyReview = () => {
     companyReviewNotice.show("기업 리뷰 작성 화면은 준비 중입니다.");
@@ -684,7 +653,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     <>
       {/* 히어로는 .app-shell 밖에 세운다 — 밴드가 화면 폭을 꽉 채우고, 안쪽 텍스트는 밴드가 가진
           자체 셸(app-shell--default)이 잡는다. 셸 안의 본문은 그 아래에서 다시 시작한다. */}
-      <CompaniesHubHero keyword={keyword} onKeywordChange={setKeyword} onSubmit={handleSearchSubmit} />
+      <CompaniesHubHero />
 
       <div className="app-shell">
         <CompanyLogoStrip entries={logoStripEntries} />
@@ -699,22 +668,30 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
         </div>
 
         <section id="company-directory" className={clsx("mt-14 border border-border bg-white px-6 py-6", FLUSH_SECTION_CLASS)}>
+          {/* 검색창과 정렬 칩은 둘 다 이 목록을 좁히는 컨트롤이라 제목 맞은편 한 묶음으로 세운다.
+              ≤640px에서는 이 묶음이 통째로 다음 줄 전폭을 쓰고, 그 안에서 검색창이 한 줄을
+              혼자 차지한 뒤 정렬 칩이 아래로 내려간다 — 220px 입력칸과 278px 칩을 342px 폭에
+              나란히 세울 수 없기 때문이다. 높이는 서로 다르게 둔다(검색 h-10 · 칩 h-9):
+              입력칸은 기업센터 툴바가 쓰는 값, 칩은 이 화면이 쓰던 값 그대로다. */}
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
-            <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
-              {sortOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setSortOption(option)}
-                  className={clsx(
-                    "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
-                    sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
-                  )}
-                >
-                  {option}
-                </button>
-              ))}
+            <div className="flex items-center gap-2.5 max-[640px]:w-full max-[640px]:flex-wrap">
+              <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} />
+              <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setSortOption(option)}
+                    className={clsx(
+                      "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
+                      sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
+                    )}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
