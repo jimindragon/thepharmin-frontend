@@ -48,15 +48,12 @@ export function HomeQnaPreview() {
         선 색은 각 행이 직접 들고 있다(아래 Link) — 컨테이너 선택자에 색까지 얹으면 규칙이 두 배로 길어진다.
       */}
       <div className="grid grid-cols-2 gap-x-10 [&>*:nth-child(n+3)]:border-t max-[760px]:grid-cols-1 max-[760px]:[&>*:nth-child(n+2)]:border-t">
-        {popularQnaEntries.map((entry) => {
-          // 태그가 빈 글이 섞여도 "#undefined"가 찍히지 않도록 조각을 모아서 잇는다.
-          const meta = [
-            entry.tags[0] ? `#${entry.tags[0]}` : null,
-            `댓글 ${getEntryCommentCount(entry)}`,
-            `공감 ${getEntryLikeCount(entry)}`,
-          ]
-            .filter(Boolean)
-            .join(" · ");
+        {popularQnaEntries.map((entry, index) => {
+          /* 첫 태그를 카테고리 라벨로 쓴다 — 데이터에 별도 category 필드가 없다(qnaCategoryFilters가
+             태그 풀 자체를 참조한다). 태그가 빈 글이 섞이면 라벨 없이 제목만 세운다. */
+          const categoryLabel = entry.tags[0] ?? null;
+          // 태그는 제목 앞 라벨로 올라갔다 — 메타 줄에 다시 적으면 같은 값이 한 행에 두 번 선다.
+          const meta = `댓글 ${getEntryCommentCount(entry)} · 공감 ${getEntryLikeCount(entry)}`;
 
           return (
             /* 반응은 배경이 아니라 제목 글자색으로 준다. 이 목록은 카드가 아니라 글줄이라
@@ -70,12 +67,32 @@ export function HomeQnaPreview() {
             <Link
               key={entry.id}
               href={`/qna/${entry.id}`}
-              className="group block border-border py-4 [-webkit-tap-highlight-color:transparent]"
+              className="group flex items-start gap-3 border-border py-4 [-webkit-tap-highlight-color:transparent]"
             >
-              <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111] transition-colors group-hover:text-[#333333] group-active:text-[#333333]">
-                {entry.title}
-              </p>
-              <p className="mt-1.5 text-[13px] font-normal text-[#8b95a1]">{meta}</p>
+              {/* 순위는 숫자만 세운다 — 배지나 원을 씌우면 방금 걷어낸 박스가 행마다 하나씩 되돌아온다.
+                  leading을 제목과 같은 1.45로 맞춰 15px 두 글자가 제목 첫 줄과 같은 줄에 앉는다.
+                  tabular-nums는 두 자리로 넘어가도 숫자 폭이 흔들리지 않게 한다. */}
+              <span className="shrink-0 text-[15px] font-medium leading-[1.45] tabular-nums text-[#6c7684]">
+                {index + 1}
+              </span>
+              <div className="min-w-0 flex-1">
+                {/* 라벨은 제목 p 바깥이 아니라 안쪽 선행 span이다 — 바깥에 두면 제목이 두 줄로 접힐 때
+                    라벨이 제 줄을 하나 더 먹어 행 높이가 글마다 달라진다. 안에 두면 line-clamp-2가
+                    라벨까지 한 흐름으로 세어 첫 줄 맨 앞에 라벨, 그 뒤로 제목이 이어진다. */}
+                <p className="line-clamp-2 text-[15px] font-medium leading-[1.45] text-[#111111] transition-colors group-hover:text-[#333333] group-active:text-[#333333]">
+                  {categoryLabel ? (
+                    <span className="mr-2 text-[13px] font-medium text-[#6c7684]">{categoryLabel}</span>
+                  ) : null}
+                  {entry.title}
+                </p>
+                <p className="mt-1.5 text-[13px] font-normal text-[#8b95a1]">{meta}</p>
+              </div>
+              {/* createdAtLabel을 그대로 찍는다 — 데이터가 이미 "3시간 전" 형태의 완성 문자열이고,
+                  정렬용 minutesAgo로 다시 계산하면 두 값이 어긋나는 순간이 생긴다.
+                  self-start로 제목 첫 줄에 맞춰 세우고, 좁은 폭에서도 줄바꿈 없이 한 덩어리로 둔다. */}
+              <span className="ml-auto shrink-0 self-start whitespace-nowrap text-[13px] font-normal leading-[1.45] text-[#8b95a1]">
+                {entry.createdAtLabel}
+              </span>
             </Link>
           );
         })}
