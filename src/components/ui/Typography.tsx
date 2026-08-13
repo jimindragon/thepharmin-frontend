@@ -11,7 +11,9 @@ export const typeScale = {
   /**
    * 히어로 크기는 통일하지 않기로 확정됨 — 화면마다 역할이 달라 값이 다른 것이 의도다.
    * 34: 홈 배너(HomeHeroBanner) — 배너 높이가 고정이라 크기가 곧 레이아웃 여유다.
-   * 46: 고객센터(SupportHomeClient) — 이 토큰의 유일한 소비처.
+   * 46: 고객센터(SupportHomeClient) — 이 토큰의 실제 유일한 소비처.
+   *     기업 인사이트 허브(CompaniesHomeClient)도 쓰고 있었으나, 히어로를 ≤760px에서 절반 이하로
+   *     접으면서 46px가 밴드를 혼자 다 먹게 되어 pageTitle(34/24)로 내려갔다.
    * 58: 기업 마케팅(BusinessPricingClient·BusinessHeadhuntingIntroClient) — clamp 유동.
    * 확정 타이포 스케일(최대 34)의 예외이므로 "스케일 위반"으로 보고 낮추지 말 것.
    */

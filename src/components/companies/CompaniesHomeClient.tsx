@@ -151,16 +151,24 @@ function CompanySearchBar({ keyword, onKeywordChange }: { keyword: string; onKey
  * 한글에는 그 문법이 맞지 않아 본문 자간 그대로의 평범한 라벨로 둔다.
  *
  * 검색창은 여기 있지 않다 — 목록을 거르는 컨트롤이라 기업·기관 리스트 섹션 헤더로 내려갔다.
+ * 검색창이 빠진 만큼 ≤760px에서는 사진 밴드를 절반 이하로 접는다(328 → 159). 데스크톱은
+ * 종전 그대로다 — min-h 600·py-24는 밴드를 /support·헤드헌팅 소개와 공유하는 값이라 건드리지 않고,
+ * 남는 세로 여백은 밴드의 items-center가 흡수한다.
+ *
+ * 제목은 heroTitle(46/30)이 아니라 pageTitle(34/24)을 쓴다 — 밴드가 얇아진 만큼 46px는 밴드를
+ * 혼자 다 먹고, 확정 타이포 스케일(최대 34) 안으로 들어오는 편이 이 위계에 맞는다. <br>도 뺀다:
+ * 34px 한 줄이 데스크톱 폭에 여유 있게 들어가고, ≤760px에서는 자연 줄바꿈으로 2줄이 된다.
  */
 function CompaniesHubHero() {
   return (
     <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
-      <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
-      <h1 className={`mt-4 text-white ${typeScale.heroTitle}`}>
-        지원할 회사,
-        <br />
-        먼저 알아보세요
-      </h1>
+      {/* ≤760px 밴드 상하 패딩(py-16 = 64)을 32로 줄이는 유일한 방법 — 패딩은 공용 밴드가 갖고 있고,
+          그 값은 다른 두 화면과 공유라 손댈 수 없다. flow-root는 자식(p·h1)의 마진이 이 래퍼를
+          뚫고 나가 음수 마진과 상쇄되는 것을 막는다. 761px 이상에는 한 클래스도 적용되지 않는다. */}
+      <div className="max-[760px]:-my-8 max-[760px]:flow-root">
+        <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
+        <h1 className={`mt-4 text-white ${typeScale.pageTitle}`}>지원할 회사, 먼저 알아보세요</h1>
+      </div>
     </BusinessImageBand>
   );
 }
