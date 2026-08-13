@@ -792,7 +792,7 @@ export const hanbitGeneralHospitalJobDetail: HospitalJobDetail = {
 
     shiftTypeIds: ["day_shift"],
     // workDays: 없음 — jobs.ts 406의 근무일정이 "주간 (09:00~18:00)"까지라 요일이 특정되지 않았다
-    address: "서울 마포구 월드컵로 123 한빛종합병원",
+    address: "서울 마포구 월드컵로 400 한빛종합병원",
     salary: "직군별 상이 (면접 후 협의)",
     // 4대보험·퇴직금은 hospitalBenefitLabelMap 12종에 없어 workConditionDetail 문장으로 옮겼다
     benefitIds: ["연차·휴가", "의료비 지원", "구내식당", "교육 지원", "경조사 지원", "직원 주차"],
@@ -833,7 +833,7 @@ export const hanbitGeneralHospitalJobDetail: HospitalJobDetail = {
       "약제부는 이번 인력 확충을 통해 입원 환자 조제 서비스 질 향상과 임상약사 역할 확대를 동시에 추진합니다. 주간 근무 중심이며, ASP팀은 중증 환자 약물 상담·처방 검토·다직종 협업에 집중하는 역할입니다.",
 
     location: {
-      address: "서울 마포구 월드컵로 123 한빛종합병원",
+      address: "서울 마포구 월드컵로 400 한빛종합병원",
       detailAddress: "",
     },
   },
@@ -879,7 +879,7 @@ export const nationalSpecialMedicalCenterJobDetail: HospitalJobDetail = {
 
     shiftTypeIds: ["day_shift"],
     workDays: ["월", "화", "수", "목", "금"],
-    address: "서울 중구 을지로 245 국립특수의료원",
+    address: "서울 중구 을지로 300 국립특수의료원",
     salary: "연봉 6,000만원 이상 (성과급 별도)",
     benefitIds: [
       "연차·휴가",
@@ -924,7 +924,7 @@ export const nationalSpecialMedicalCenterJobDetail: HospitalJobDetail = {
       "약제팀은 종양, 감염, 중환자 분야의 임상약사 훈련 지정기관으로서, 전문약사 취득을 지원하는 교육 체계를 갖추고 있습니다.",
 
     location: {
-      address: "서울 중구 을지로 245 국립특수의료원",
+      address: "서울 중구 을지로 300 국립특수의료원",
       detailAddress: "",
     },
   },

@@ -796,7 +796,8 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
     },
     businessHours: "",
 
-    pharmacyTypeId: "clinic-front",
+    // 실자료 기준 매약 중심 일반 약국이라 로컬 약국(local)이 맞다 — companies.ts 쪽 값이 정본이었다
+    pharmacyTypeId: "local",
     pharmacyFeatureId: "otc_focused",
 
     shortIntro: "마산역 앞 매약 중심 약국입니다.",
@@ -814,7 +815,8 @@ export const masanYugilPharmacyJobDetail: PharmacyJobDetail = {
     dispensingEquipment: [],
     mainHospitals: [],
 
-    staffPharmacistCount: 2,
+    // 실자료 기준 약사 3명·직원 3명
+    staffPharmacistCount: 3,
     staffSupportCount: 3,
   },
 };

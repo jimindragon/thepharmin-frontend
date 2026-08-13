@@ -103,7 +103,8 @@ export const companies: Company[] = [
     repName: "윤*현",
     description: "충북 청주시 상당구 방서동에 위치한 의원층 약국으로, 소아과·내과·부인과 처방을 다룹니다.",
     industry: "의원층약국",
-    pharmacyType: "local",
+    // 의원층에서 처방 조제를 중심으로 운영하는 약국이라 문전 약국(clinic-front)이 맞다 — 정본은 pharmacyJobDetails.ts org.pharmacyTypeId
+    pharmacyType: "clinic-front",
     employeeCount: "-",
     foundedYear: "2019.08.05",
     website: "",
@@ -543,7 +544,8 @@ export const companies: Company[] = [
     employeeCount: "501명 이상",
     foundedYear: "1994년",
     website: "",
-    address: "서울 마포구 월드컵로 123 한빛종합병원",
+    // 가상 기관이라 번지도 가상값을 쓴다 — 종전 "월드컵로 123"은 실존 상업시설 주소였다(구 단위만 유지)
+    address: "서울 마포구 월드컵로 400 한빛종합병원",
   },
   {
     id: "mirae-care-hospital",
@@ -580,7 +582,8 @@ export const companies: Company[] = [
     employeeCount: "-",
     foundedYear: "-",
     website: "",
-    address: "서울 중구 을지로 245 국립특수의료원",
+    // 가상 기관이라 번지도 가상값을 쓴다 — 종전 "을지로 245"는 실존 국립중앙의료원 주소였다(구 단위만 유지)
+    address: "서울 중구 을지로 300 국립특수의료원",
   },
   {
     id: "hmcseoul-hospital",
@@ -645,7 +648,7 @@ export const companies: Company[] = [
     hospitalType: "long-term",
     hospitalOperator: "public",
     employeeCount: "50명 이하",
-    foundedYear: "2013년",
+    foundedYear: "2025년",
     website: "",
     address: "전북 무주군 무주읍 당산강변로 284 무주군립요양병원",
   },
