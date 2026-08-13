@@ -4,8 +4,8 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getEntryCommentCount, getEntryLikeCount, getPopularQnaEntries } from "@/data/qna";
 
-/** 2열 × 2행. 홀수로 두면 마지막 행 오른쪽 칸이 빈다 — 열 수를 바꾸면 이 값도 배수로 맞출 것. */
-const HOME_QNA_LIMIT = 4;
+/** 2열 × 3행. 6의 약수가 아닌 값을 넣으면 오른쪽 열이 짧아진다 — 행 수를 바꾸면 이 값도 함께 맞출 것. */
+const HOME_QNA_LIMIT = 6;
 
 /**
  * 채용 QNA는 "industry"만 가져온다. 하드코딩이지 기본값이 아니다.
@@ -19,7 +19,7 @@ const HOME_QNA_LIMIT = 4;
 const popularQnaEntries = getPopularQnaEntries("industry", HOME_QNA_LIMIT);
 
 /**
- * 홈 흰색 영역 마지막에 서는 "채용 QNA 인기글" 세 줄.
+ * 홈 흰색 영역 마지막에 서는 "채용 QNA 인기글" 목록(데스크톱 2열 × 3행).
  *
  * 회색 박스 없이 구분선과 타이포만으로 짠다 — 바로 위 "주목할 만한 공고"까지가 전부 카드라,
  * 여기에 또 박스를 얹으면 카드가 한 겹 더 쌓인 것으로 읽힌다. 글 목록은 카드가 아니다.
@@ -34,20 +34,22 @@ export function HomeQnaPreview() {
     <section className="mt-16" aria-label="채용 QNA 인기글">
       <SectionHeader title="채용 QNA 인기글" viewAll={{ href: "/qna" }} />
       {/*
-        데스크톱 2열. 1열 전폭에서는 1240~1320px 행에 15px 제목 한 줄만 서서 오른쪽 절반이 비었고,
-        바로 위 두 섹션(마감 임박·주목할 만한 공고)이 모두 2열이라 홈에서 이 목록만 리듬이 달랐다.
+        데스크톱 2열 × 3행, 세로 우선(grid-flow-col)이다. 순위가 붙은 목록이라 채우는 방향이 곧 읽는
+        순서다 — 행 우선으로 두면 1·2가 좌우로 서서 눈이 좌→우→좌로 지그재그를 그리고, 1~3위가 한
+        덩어리로 보이지 않는다. 세로 우선이면 왼쪽 열이 1·2·3, 오른쪽 열이 4·5·6이라 열 하나가 그대로
+        순위 묶음이 된다. ≤760px에서는 열이 하나뿐이라 rows/flow를 풀어 DOM 순서(1~6)대로 세운다.
 
         행 구분선을 divide-y로 그리지 않는다 — divide-y는 "2번째 자식부터 상단선"이라 2열 그리드에서는
-        첫 행 오른쪽 칸에도 선이 생긴다(mobile-guidelines 3절). 대신 "둘째 행 첫 칸부터"를
-        nth-child로 명시한다: 2열이면 n+3, ≤760px 1열로 접히면 n+2다.
-        두 규칙은 같은 값(border-top-width:1px)을 걸어 겹치는 구간에서도 다툼이 없다 —
-        ≤760px에서는 둘이 합쳐져 2·3·4번이 선을 받고, 761px 이상에서는 앞의 것만 남아 3·4번이 받는다.
-        어느 쪽이든 첫 줄 위·마지막 줄 아래에는 선이 없다. 섹션 사이는 mt-16이 이미 가른다.
+        오른쪽 열 첫 칸(4번)에도 선이 생긴다(mobile-guidelines 3절). 각 열의 머리는 1번과 4번 둘이므로
+        "1번과 4번만 빼고 전부"를 nth-child로 명시한다. ≤760px 1열에서는 머리가 1번 하나뿐이라 n+2다.
+        두 규칙은 같은 값(border-top-width:1px)만 걸고 border-t-0으로 되돌리는 규칙을 쓰지 않는다 —
+        ≤760px에서 4번이 뒤 규칙으로 선을 받아야 하는데, 앞에서 0을 박아두면 그 위에 특이도 다툼이 생긴다.
+        어느 쪽이든 각 열 첫 줄 위·마지막 줄 아래에는 선이 없다. 섹션 사이는 mt-16이 이미 가른다.
 
         세로 gap은 주지 않는다. 칸이 맞닿아야 border-t가 두 행을 가르는 그 선이 된다(종전 divide-y와 같은 자리).
         선 색은 각 행이 직접 들고 있다(아래 Link) — 컨테이너 선택자에 색까지 얹으면 규칙이 두 배로 길어진다.
       */}
-      <div className="grid grid-cols-2 gap-x-10 [&>*:nth-child(n+3)]:border-t max-[760px]:grid-cols-1 max-[760px]:[&>*:nth-child(n+2)]:border-t">
+      <div className="grid grid-flow-col grid-cols-2 grid-rows-3 gap-x-10 [&>*:not(:nth-child(1)):not(:nth-child(4))]:border-t max-[760px]:grid-flow-row max-[760px]:grid-cols-1 max-[760px]:grid-rows-none max-[760px]:[&>*:nth-child(n+2)]:border-t">
         {popularQnaEntries.map((entry, index) => {
           /* 첫 태그를 카테고리 라벨로 쓴다 — 데이터에 별도 category 필드가 없다(qnaCategoryFilters가
              태그 풀 자체를 참조한다). 태그가 빈 글이 섞이면 라벨 없이 제목만 세운다. */
