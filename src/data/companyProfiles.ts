@@ -1342,6 +1342,133 @@ export const companyProfiles: CompanyProfile[] = [
       address: "서울 종로구 대학로 101",
     },
   },
+  // ---- 무주군립요양병원 (신설) — hospitalJobDetails.ts mujuCountyCareHospitalJobDetail.org 이관 + 확정 조사값 ----
+  {
+    id: "muju-county-care-hospital",
+    name: "무주군립요양병원",
+    logoText: "무주",
+    logoImage: companyLogos["무주군립요양병원"],
+    tagline: "전북 무주군 무주읍에 위치한 요양병원입니다.",
+    tags: ["병원", "설립 2025년", "사원수 50명 이하"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "무주군립요양병원은 전북 무주군 무주읍에 위치한 요양병원으로, 사단법인 소산이 운영하고 있습니다.",
+    metrics: [{ label: "병상 수", value: "125병상" }],
+    businessSummary: [],
+    recruitSummary: "전북 무주군 무주읍에 위치한 요양병원입니다.",
+    details: [
+      // companies.ts foundedYear 정정값(2025년)과 같은 값이다
+      { label: "설립 연도", value: "2025년" },
+      { label: "본사 위치", value: "전북 무주군 무주읍 당산강변로 284 무주군립요양병원" },
+      // 홈페이지: 없음 — 원장·companies.ts website 모두 비어 있다
+    ],
+    keywords: ["요양병원", "군립", "지방근무"],
+    // 한의과는 medicalDepartmentOptions(26종)에 없어 제외한다 — 허용 목록 밖의 id를 임의로 만들지 않는다
+    medicalDepartments: ["neurosurgery", "family_medicine"],
+    // dutySystem/specialistPharmacists: 없음 — 원장에 근거가 없다
+    pharmacyEnvironmentDescription: "약무보조 1명과 자동약 포장기를 갖추고 입원환자 조제 업무를 담당합니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "전북 무주군 무주읍 당산강변로 284 무주군립요양병원",
+    },
+  },
+  // ---- 한빛종합병원 (신설, 픽션) — hospitalJobDetails.ts hanbitGeneralHospitalJobDetail.org 이관 ----
+  {
+    id: "hanbit-general-hospital",
+    name: "한빛종합병원",
+    logoText: "한빛",
+    logoImage: companyLogos["한빛종합병원"],
+    tagline: "서울 마포구에 위치한 지역 거점 종합병원입니다.",
+    tags: ["병원", "설립 1994년", "사원수 501명 이상"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "한빛종합병원은 서울 마포구에 위치한 종합병원으로, 내과·외과·심장·항암 등 주요 진료과를 운영하며 지역 거점 의료기관 역할을 하고 있습니다.",
+    metrics: [],
+    businessSummary: [],
+    recruitSummary: "서울 마포구에 위치한 지역 거점 종합병원입니다.",
+    details: [
+      { label: "설립 연도", value: "1994년" },
+      { label: "본사 위치", value: "서울 마포구 월드컵로 400 한빛종합병원" },
+      // 홈페이지: 없음 — companies.ts website가 빈 값이다
+    ],
+    // keywords/dutySystem/medicalDepartments/specialistPharmacists: 없음 — 원장이 "근거 없음"으로 명시한 필드다
+    keywords: [],
+    pharmacyEnvironmentDescription:
+      "약제부는 이번 인력 확충을 통해 입원 환자 조제 서비스 질 향상과 임상약사 역할 확대를 동시에 추진합니다. 주간 근무 중심이며, ASP팀은 중증 환자 약물 상담·처방 검토·다직종 협업에 집중하는 역할입니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 마포구 월드컵로 400 한빛종합병원",
+    },
+  },
+  // ---- 국립특수의료원 (신설, 픽션) — hospitalJobDetails.ts nationalSpecialMedicalCenterJobDetail.org 이관 ----
+  {
+    id: "national-special-medical-center",
+    name: "국립특수의료원",
+    // logoImage: companyLogos에 키가 없어 생략 — Hero가 logoText("NSMC")로 폴백한다
+    logoText: "NSMC",
+    tagline: "서울 중구 소재 상급종합병원이자 임상약사 훈련 지정기관입니다.",
+    // 설립 연도·직원 수는 companies.ts에서도 "-"(미상)라 배지를 만들지 않는다
+    tags: ["병원"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "국립특수의료원은 서울 중구 소재 상급종합병원으로, 감염병·종양·중환자 분야 전문 의료를 제공하며 임상약사 훈련 지정기관으로 운영되고 있습니다.",
+    metrics: [],
+    businessSummary: [],
+    recruitSummary: "서울 중구 소재 상급종합병원이자 임상약사 훈련 지정기관입니다.",
+    details: [
+      // 설립 연도/홈페이지: 없음 — 원장에 근거 없음
+      { label: "본사 위치", value: "서울 중구 을지로 300 국립특수의료원" },
+    ],
+    // keywords/dutySystem/medicalDepartments/specialistPharmacists: 없음 — 원장이 "근거 없음"으로 명시한 필드다
+    keywords: [],
+    pharmacyEnvironmentDescription:
+      "약제팀은 종양, 감염, 중환자 분야의 임상약사 훈련 지정기관으로서, 전문약사 취득을 지원하는 교육 체계를 갖추고 있습니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 중구 을지로 300 국립특수의료원",
+    },
+  },
+  // ---- 한강상급종합병원 (신설, 픽션) — hospitalJobDetails.ts hmcseoulHospitalJobDetail.org 이관 ----
+  {
+    id: "hmcseoul-hospital",
+    name: "한강상급종합병원",
+    // logoImage: companyLogos에 키가 없어 생략 — Hero가 logoText("HMC")로 폴백한다
+    logoText: "HMC",
+    tagline: "서울 용산구에 위치한 24시간 운영 상급종합병원입니다.",
+    // 설립 연도·직원 수는 companies.ts에서도 "-"(미상)라 배지를 만들지 않는다
+    tags: ["병원"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "한강상급종합병원은 서울 용산구에 위치한 상급종합병원으로, 응급·중환자·외상 분야에 특화된 24시간 운영 체계를 갖추고 있습니다.",
+    metrics: [],
+    businessSummary: [],
+    recruitSummary: "서울 용산구에 위치한 24시간 운영 상급종합병원입니다.",
+    details: [
+      // 설립 연도/홈페이지: 없음 — 원장에 근거 없음
+      { label: "본사 위치", value: "서울 용산구 이촌로 340 한강상급종합병원" },
+    ],
+    // keywords/medicalDepartments/specialistPharmacists: 없음 — 원장이 "근거 없음"으로 명시한 필드다
+    keywords: [],
+    dutySystem: "야간·비직 전담 약사를 두고 격주 교대 또는 3인 순환으로 운영합니다.",
+    pharmacyEnvironmentDescription:
+      "약제부는 17:00부터 다음날 08:00까지 야간 교대 근무로 응급·입원 환자의 조제와 투약 관리를 담당합니다.",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 용산구 이촌로 340 한강상급종합병원",
+    },
+  },
   {
     id: "eunhaeng-pharmacy",
     name: "은행약국",
@@ -1621,6 +1748,68 @@ export const companyProfiles: CompanyProfile[] = [
       address: "서울 동작구 흑석로 103",
     },
   },
+  // ---- 빛이나약국 (신설) — pharmacyJobDetails.ts bichinaPharmacyJobDetail.org 이관 ----
+  {
+    id: "bichina-pharmacy",
+    name: "빛이나약국",
+    logoText: "빛이나",
+    tagline: "상당구 방서동 의원층 약국으로 소아과·내과·부인과 처방을 다룹니다.",
+    tags: ["약국", "설립 2019.08.05"],
+    coverImage: companyExampleImages.hero,
+    // 원장 fullIntro의 "적응이 수월합니다"는 평가성 서술이라 사실 서술로 정리했다
+    fullIntro:
+      "상당구 방서동 빛이나약국입니다. 소아과·내과·부인과 처방을 다루는 의원층 약국으로, 직원과 동료 약사가 함께 근무합니다.",
+    metrics: [{ label: "주요 처방과", value: "소아과·내과·부인과" }],
+    // 근무 약사·직원 수: 원장 staffPharmacistCount/staffSupportCount가 null이라 비운다
+    businessSummary: [],
+    recruitSummary: "상당구 방서동 의원층 약국으로 소아과·내과·부인과 처방을 다룹니다.",
+    details: [{ label: "본사 위치", value: "충북 청주시 상당구 2순환로2031번길 6-20 104호" }],
+    keywords: ["의원층 약국", "방서동", "근무시간 조정"],
+    // pharmacySoftware: 없음 — 원장 software가 빈 값이다
+    businessHours: "평일 08:00–23:00",
+    dispensingEquipment: ["자동조제기(JVM ATC)"],
+    pharmacyFeatures: "mixed",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "충북 청주시 상당구 2순환로2031번길 6-20 104호",
+    },
+  },
+  // ---- 마산육일약국 (신설) — pharmacyJobDetails.ts masanYugilPharmacyJobDetail.org 이관 + 확정 실자료 ----
+  {
+    id: "masan-yugil-pharmacy",
+    name: "마산육일약국",
+    logoText: "육일",
+    tagline: "마산역 앞 매약 중심 약국입니다.",
+    tags: ["약국", "설립 2021.11.01"],
+    coverImage: companyExampleImages.hero,
+    // 원장 fullIntro의 "마산 대표"·features의 "젊고 밝은 분위기"는 평가성 서술이라 걷고 사실만 남겼다
+    fullIntro:
+      "마산역 앞에 위치한 매약 중심 약국으로, 약사 3명과 직원 3명이 근무합니다. 다양한 학회약을 취급합니다.",
+    businessSummary: [
+      // 원장 staffPharmacistCount/staffSupportCount 정정값(3·3)과 같은 값이다
+      { label: "근무 약사", value: "3명" },
+      { label: "직원", value: "3명" },
+      { label: "주차·교통", value: "마산역 앞에 위치하며 주차를 지원합니다." },
+    ],
+    recruitSummary: "마산역 앞 매약 중심 약국입니다.",
+    details: [{ label: "본사 위치", value: "경남 창원시 마산회원구 마산역광장로 2 1층" }],
+    keywords: ["매약 중심", "마산역 앞", "주말 파트타임"],
+    pharmacySoftware: "유팜",
+    // 영업시간은 실자료 확정값 — 원장 businessHours는 빈 값이다
+    businessHours: "매일 08:00~22:00",
+    // dispensingEquipment: 없음 — 원장 목록이 비어 있다
+    pharmacyFeatures: "otc_focused",
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "경남 창원시 마산회원구 마산역광장로 2 1층",
+    },
+  },
   {
     id: "dentium",
     name: "(주)덴티움",
@@ -1659,6 +1848,309 @@ export const companyProfiles: CompanyProfile[] = [
         { name: "의료장비", description: "국가별 인증과 품질 기준에 맞춰 의료장비를 개발하고 인허가를 진행합니다." },
       ],
       address: "경기 용인시 처인구 양지읍 양지로138번길 14",
+    },
+  },
+  // ---- 아래 10건은 산업 트랙 신설 프로필 — 값은 industryJobDetails.ts의 org/businessContext 이관 + 확정 조사값이다.
+  // 재무 슬롯(revenue/operatingProfit/rndRatio)은 열 곳 모두 비운다: 확보된 공시값이 없어 임의 수치를 넣지 않는다. ----
+  {
+    id: "otsuka-korea",
+    name: "한국오츠카제약",
+    logoText: "OTSUKA",
+    logoImage: companyLogos["한국오츠카제약"],
+    tagline: "중추신경계·순환기 등 전문의약품을 공급하는 일본 오츠카제약의 한국법인입니다.",
+    tags: ["제약사", "다국적 제약사", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "중추신경계·순환기 등 전문의약품을 공급하는 일본 오츠카제약의 한국법인입니다.",
+    fullIntro: "일본 오츠카제약의 한국법인으로 중추신경계·순환기 등 전문의약품을 공급합니다.",
+    details: [
+      { label: "본사 위치", value: "서울 강남구 역삼로 226, 오츠카비전빌딩" },
+      { label: "홈페이지", value: "otsuka.co.kr" },
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1982년" },
+      { label: "사업 분야", value: "중추신경계 전문의약품 · 순환기 전문의약품" },
+      { label: "직원 수", value: "101~500명" },
+    ],
+    keywords: ["다국적 제약사", "중추신경계", "순환기", "메디컬"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      // 원장 businessContext에 products가 없다 — businessFields를 제품으로 승격하지 않는다
+      products: [],
+      address: "서울 강남구 역삼로 226, 오츠카비전빌딩",
+    },
+  },
+  {
+    id: "bukwang",
+    name: "부광약품",
+    logoText: "BUKWANG",
+    logoImage: companyLogos["부광약품"],
+    // 원장 shortIntro의 "강점을 가진"은 평가성 서술이라 확정 소개문으로 대체했다(tagline·fullIntro 공통)
+    tagline: "전문의약품을 제조·판매하고 신약 연구개발을 진행하는 국내 제약사입니다.",
+    tags: ["제약사", "국내 제약사", "사원수 501명 이상"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "전문의약품을 제조·판매하고 신약 연구개발을 진행하는 국내 제약사입니다.",
+    fullIntro: "전문의약품을 제조·판매하고 신약 연구개발을 진행하는 국내 제약사입니다.",
+    details: [
+      { label: "본사 위치", value: "서울 동작구 상도로 7" },
+      { label: "홈페이지", value: "bukwang.co.kr" },
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1960년" },
+      { label: "사업 분야", value: "중추신경계 전문의약품 · 항암 전문의약품 · 신약개발·오픈이노베이션" },
+      { label: "직원 수", value: "501명 이상" },
+    ],
+    keywords: ["국내 제약사", "중추신경계", "항암", "오픈이노베이션"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 동작구 상도로 7",
+    },
+  },
+  {
+    id: "lgchem-life-science",
+    // name은 현행 유지 — 표기 정규화는 jobs.ts·companyLogos 키 배선까지 함께 봐야 해서 이번 범위 밖이다
+    name: "LG화학 생명과학본부",
+    logoText: "LG화학",
+    logoImage: companyLogos["LG화학 생명과학본부"],
+    tagline: "당뇨·성장호르몬·백신 등 바이오의약품을 개발·생산하는 LG화학 생명과학사업본부입니다.",
+    // 직원 수 구간을 알 수 없어 "사원수" 배지를 만들지 않는다
+    tags: ["제약사", "대기업"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "당뇨·성장호르몬·백신 등 바이오의약품을 개발·생산하는 LG화학 생명과학사업본부입니다.",
+    fullIntro: "LG화학 생명과학사업본부로 당뇨·성장호르몬·백신 등 바이오의약품을 개발·생산합니다.",
+    details: [
+      { label: "본사 위치", value: "서울 영등포구 여의대로 128, LG트윈타워" },
+      { label: "홈페이지", value: "lgchem.com" },
+      { label: "기관 유형", value: "제약사" },
+      // 설립 연도/직원 수: 사업본부 단위 값을 전사 값과 분리할 수 없어 비운다(재무 슬롯을 비우는 이유와 같다)
+      { label: "설립 연도", value: null },
+      { label: "사업 분야", value: "당뇨 치료제 · 성장호르몬 · 백신" },
+      { label: "직원 수", value: null },
+    ],
+    keywords: ["대기업", "바이오의약품", "GMP", "생산 현장"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [
+        { name: "당뇨 치료제", description: "당뇨 영역의 바이오의약품을 개발·생산합니다." },
+        { name: "성장호르몬", description: "성장호르몬 바이오의약품을 개발·생산합니다." },
+        { name: "백신", description: "백신 바이오의약품을 개발·생산합니다." },
+      ],
+      address: "서울 영등포구 여의대로 128, LG트윈타워",
+    },
+  },
+  {
+    id: "yuyu-pharm",
+    name: "유유제약",
+    logoText: "YUYU",
+    logoImage: companyLogos["유유제약"],
+    // 원장 shortIntro의 "강점을 가진"은 평가성 서술이라 businessFields 기준 사실 서술로 정리했다
+    tagline: "순환기·비뇨기 영역의 전문의약품을 제조하는 국내 중견 제약사입니다.",
+    tags: ["제약사", "국내 제약사", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "순환기·비뇨기 영역의 전문의약품을 제조하는 국내 중견 제약사입니다.",
+    fullIntro: "순환기·비뇨기 영역의 전문의약품을 제조하는 국내 중견 제약사입니다.",
+    details: [
+      { label: "본사 위치", value: "충북 제천시 바이오밸리1로 94" },
+      { label: "홈페이지", value: "yuyu.co.kr" },
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1941년" },
+      { label: "사업 분야", value: "순환기 전문의약품 · 비뇨기 전문의약품" },
+      { label: "직원 수", value: "101~500명" },
+    ],
+    keywords: ["국내 제약사", "순환기", "비뇨기", "제제연구"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "충북 제천시 바이오밸리1로 94",
+    },
+  },
+  {
+    id: "cellbion",
+    name: "셀비온",
+    logoText: "CELLBION",
+    logoImage: companyLogos["셀비온"],
+    tagline: "방사성의약품을 포함한 신약 연구개발과 전문의약품 개발·제조를 수행하는 바이오기업입니다.",
+    // 원장 keywords의 "혁신 바이오벤처"는 평가어를 걷어 "방사성의약품"을 특성어로 쓴다
+    tags: ["바이오텍", "방사성의약품", "사원수 51~100명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "방사성의약품을 포함한 신약 연구개발과 전문의약품 개발·제조를 수행하는 바이오기업입니다.",
+    fullIntro: "방사성의약품을 포함한 신약 연구개발과 전문의약품 개발·제조를 수행하는 바이오기업입니다.",
+    details: [
+      { label: "본사 위치", value: "서울 종로구 대학로 103, 서울대학교 암연구소 6층" },
+      { label: "홈페이지", value: "cellbion.co.kr" },
+      { label: "기관 유형", value: "바이오텍" },
+      { label: "설립 연도", value: "2010년" },
+      { label: "사업 분야", value: "방사성의약품(RPT) 신약개발" },
+      { label: "직원 수", value: "51~100명" },
+    ],
+    keywords: ["바이오벤처", "방사성의약품", "RPT", "GMP"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      // 개발 중인 파이프라인을 "대표 제품"으로 승격하지 않는다
+      products: [],
+      address: "서울 종로구 대학로 103, 서울대학교 암연구소 6층",
+    },
+  },
+  {
+    id: "samsung-pharm",
+    name: "삼성제약",
+    logoText: "삼성제약",
+    logoImage: companyLogos["삼성제약"],
+    tagline: "의약품·건강기능식품을 제조하는 국내 제약사입니다.",
+    tags: ["제약사", "국내 제약사", "사원수 51~100명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "의약품·건강기능식품을 제조하는 국내 제약사입니다.",
+    fullIntro: "의약품·건강기능식품을 제조하는 국내 제약사입니다.",
+    details: [
+      { label: "본사 위치", value: "경기 화성시 향남읍 제약공단2길 35" },
+      { label: "홈페이지", value: "sspharm.co.kr" },
+      { label: "기관 유형", value: "제약사" },
+      { label: "설립 연도", value: "1954년" },
+      { label: "사업 분야", value: "전문의약품 제조 · 건강기능식품" },
+      { label: "직원 수", value: "51~100명" },
+    ],
+    keywords: ["국내 제약사", "품질관리", "GMP", "건강기능식품"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "경기 화성시 향남읍 제약공단2길 35",
+    },
+  },
+  {
+    id: "oreon",
+    name: "(주)오래온",
+    logoText: "OREON",
+    logoImage: companyLogos["오래온"],
+    tagline: "보톡스·필러·미용 봉합사 등 메디컬 에스테틱 제품을 70여 개국에 수출하는 전문 기업입니다.",
+    // 기관 유형이 이미 "의료기기"라 특성어는 원장 keywords의 다음 값("메디컬 에스테틱")을 쓴다
+    tags: ["의료기기", "메디컬 에스테틱", "사원수 50명 이하"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "보톡스·필러·미용 봉합사 등 메디컬 에스테틱 제품을 70여 개국에 수출하는 전문 기업입니다.",
+    fullIntro: "보톡스·필러·미용 봉합사 등 메디컬 에스테틱 제품을 70여 개국에 수출하는 전문 기업입니다.",
+    details: [
+      { label: "본사 위치", value: "서울 송파구 법원로9길 26" },
+      { label: "홈페이지", value: "oreon.co.kr" },
+      { label: "기관 유형", value: "의료기기" },
+      { label: "설립 연도", value: "2008년" },
+      { label: "사업 분야", value: "보톡스 · 필러 · 미용 봉합사" },
+      { label: "직원 수", value: "50명 이하" },
+    ],
+    keywords: ["의료기기", "메디컬 에스테틱", "글로벌 수출", "RA"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [
+        { name: "보톡스", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+        { name: "필러", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+        { name: "미용 봉합사", description: "메디컬 에스테틱 제품으로 70여 개국에 수출합니다." },
+      ],
+      address: "서울 송파구 법원로9길 26",
+    },
+  },
+  {
+    id: "aju-pharm",
+    name: "아주약품",
+    logoText: "AJU",
+    logoImage: companyLogos["아주약품"],
+    // 영역 서술은 원장 기준("순환기·소화기")이다 — companies.ts description의 "위장관·항암"은 쓰지 않는다
+    tagline: "순환기·소화기 등 전문의약품과 건강기능식품을 보유한 국내 제약사입니다.",
+    tags: ["제약사", "국내 제약사", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "순환기·소화기 등 전문의약품과 건강기능식품을 보유한 국내 제약사입니다.",
+    fullIntro: "순환기·소화기 등 전문의약품과 건강기능식품을 보유한 국내 제약사입니다.",
+    details: [
+      { label: "본사 위치", value: "경기 평택시 산단로121번길 23" },
+      { label: "홈페이지", value: "ajupharm.co.kr" },
+      { label: "기관 유형", value: "제약사" },
+      // 설립 연도: 1953년 창업과 2025년 법인 신설이 충돌해 단일 라벨로 표현할 수 없어 비운다
+      { label: "설립 연도", value: null },
+      { label: "사업 분야", value: "순환기 전문의약품 · 소화기 전문의약품 · 건강기능식품" },
+      { label: "직원 수", value: "101~500명" },
+    ],
+    keywords: ["국내 제약사", "순환기", "소화기", "건강기능식품"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "경기 평택시 산단로121번길 23",
+    },
+  },
+  {
+    id: "samo-pharm",
+    name: "(주)삼오제약",
+    logoText: "삼오제약",
+    logoImage: companyLogos["(주)삼오제약"],
+    tagline: "원료의약품·희귀의약품의 수입·수출과 국내 공급을 전문으로 하는 중견 의약품 유통기업입니다.",
+    tags: ["유통·도매", "국내 제약사", "사원수 101~500명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "원료의약품·희귀의약품의 수입·수출과 국내 공급을 전문으로 하는 중견 의약품 유통기업입니다.",
+    fullIntro: "원료의약품·희귀의약품의 수입·수출과 국내 공급을 전문으로 하는 중견 의약품 유통기업입니다.",
+    details: [
+      { label: "본사 위치", value: "서울 강남구 역삼로 151" },
+      { label: "홈페이지", value: "samohpharm.co.kr" },
+      { label: "기관 유형", value: "유통·도매" },
+      { label: "설립 연도", value: "1983년" },
+      // 사업 분야: 원장 businessFields는 "전문의약품 제조"인데 확정 기관 유형(유통·도매)·소개문(수입·수출·공급)과
+      // 정면으로 어긋난다. 어느 쪽이 맞는지 판단할 근거가 없어 행 자체를 비웠다(보고 대상)
+      { label: "사업 분야", value: null },
+      { label: "직원 수", value: "101~500명" },
+    ],
+    keywords: ["국내 제약사", "전문의약품", "사업개발"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "서울 강남구 역삼로 151",
+    },
+  },
+  {
+    id: "kolon-biotech",
+    name: "코오롱바이오텍",
+    logoText: "KOLON",
+    logoImage: companyLogos["코오롱바이오텍"],
+    tagline: "코오롱 계열의 바이오·제약 의약품 제조 기업입니다.",
+    tags: ["CRO·CDMO", "바이오 생산", "사원수 51~100명"],
+    coverImage: companyExampleImages.hero,
+    businessSummary: [],
+    recruitSummary: "코오롱 계열의 바이오·제약 의약품 제조 기업입니다.",
+    fullIntro: "코오롱 계열의 바이오·제약 의약품 제조 기업입니다.",
+    details: [
+      { label: "본사 위치", value: "충북 충주시 대소원면 기업도시1로 54-1" },
+      { label: "홈페이지", value: "kolonbiotech.co.kr" },
+      { label: "기관 유형", value: "CRO·CDMO" },
+      { label: "설립 연도", value: "2020년" },
+      { label: "사업 분야", value: "바이오의약품 제조 · 제약 의약품 제조" },
+      { label: "직원 수", value: "51~100명" },
+    ],
+    keywords: ["바이오 생산", "GMP", "품질부문", "무균제제"],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: "충북 충주시 대소원면 기업도시1로 54-1",
     },
   },
   // 아래 2건은 연구 트랙 Company 승격(STEP 4) — 값은 researchJobDetails.ts의 org를 전량 재사용한다.
