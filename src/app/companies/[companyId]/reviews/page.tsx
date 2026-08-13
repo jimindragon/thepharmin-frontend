@@ -5,6 +5,7 @@ import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell"
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { companyReviews } from "@/data/companies";
+import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
 import { getCompanyProfile } from "@/data/companyProfiles";
 import { readPersonalSession } from "@/lib/session.server";
 
@@ -24,20 +25,11 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
   const isLoggedIn = await readPersonalSession();
   const profile = getCompanyProfile(companyId);
 
+  /* 매핑은 개요의 인라인 펼침과 공유한다(companyReviewItems) — 같은 후기가 두 화면에서 다르게 보이지 않도록 */
   const items = companyReviews
     .filter((review) => review.companyId === companyId && review.type === "company")
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
-    .map((review) => ({
-      id: review.id,
-      tags: review.tags,
-      content: review.content,
-      jobRole: review.jobRole,
-      authorStatus: review.authorStatus,
-      writtenAt: review.writtenAt,
-      helpfulCount: review.helpfulCount,
-      applyYear: review.applyYear,
-      applyHalf: review.applyHalf,
-    }));
+    .map(toCompanyReviewCardItem);
 
   /* ≤760px에서 이 목록이 화면 본문의 전부다 — 회색 배경 위 카드 격자가 아니라 전폭 낱장 목록으로 접는다.
      탭 행·본문 카드가 이미 전폭이라 목록만 액자로 남으면 한 화면 안에서 두 문법이 부딪힌다.

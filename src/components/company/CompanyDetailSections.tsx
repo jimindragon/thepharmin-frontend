@@ -24,8 +24,11 @@ import { FLUSH_GRID_CLASS, FLUSH_SECTION_CLASS } from "@/components/flushListSty
 import { SECTION_ANCHOR_SCROLL_MT_CLASS } from "@/components/shared/sectionAnchorStyles";
 import { STAT_ROW_CELL, STAT_ROW_ICON, STAT_ROW_LABEL, STAT_ROW_LIST, STAT_ROW_VALUE } from "@/components/shared/statRowStyles";
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
+import { SectionExpandGroup } from "@/components/company/SectionExpandGroup";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
+import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
+import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
 import { getPharmacyTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -365,8 +368,35 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
 
 /** 개요 페이지의 면접 후기/기업 리뷰 미리보기 — [companyId]/reviews·interviews 전용 페이지와 같은 카드
  * (`CompanyReviewCard`)를 `variant="compact"`로 재사용한다(STEP 9-4: 로컬 중복 카드 구현 제거).
- * 최신 2건 + 전체 보기 링크만 보여주고, 게이팅은 전용 페이지의 몫이라 여기서는 고려하지 않는다. */
-export function CompanyReviewsPreviewSection({ profile, type }: { profile: CompanyProfile; type: CompanyReviewType }) {
+ * 최신 2건 + 전체 보기 링크를 기본으로 하고, ≤760px에서는 그 아래 "모두 보기"로 전량을 인라인으로 펼친다.
+ *
+ * **≤760px 펼침은 목록 페이지와 같은 문법이다.** 전폭 낱장 목록(FLUSH_GRID_CLASS)에 첫 슬롯은 작성 유도 카드
+ * (CompanyReviewWriteCard) — /companies/{id}/reviews가 그대로 쓰는 것과 같은 조합이라, 펼쳐 놓고 보면
+ * 목록 페이지에 온 것과 다르지 않다. border-y만 뺀다: 흰 블록의 시작·끝은 여기서 섹션 셸이 이미 확정한다
+ * (관련 뉴스 탭이 섹션 안에서 같은 목록을 쓸 때와 같은 이유).
+ *
+ * 761px 이상은 손대지 않는다 — 미리보기 2건 + "전체 보기" 링크 그대로다. 그쪽은 라우트 탭 행이 화면 위에
+ * 계속 떠 있어 오갈 비용이 낮고, 좁은 화면에서만 있던 문제(누를 때마다 개요를 떠났다 돌아오기)가 없다.
+ *
+ * 펼침은 아직 기업 리뷰(type="company")에만 있다. 면접 후기는 열람권 게이팅이 걸려 있어 펼친 목록이
+ * 상태 카드·잠금 카드·확인 모달을 함께 들어야 하므로 다음 단계에서 따로 붙인다 — 그때까지 그쪽은
+ * 미리보기 2건 + "전체 보기"(모든 폭) 그대로다. */
+export function CompanyReviewsPreviewSection({
+  profile,
+  type,
+  isLoggedIn = false,
+}: {
+  profile: CompanyProfile;
+  type: CompanyReviewType;
+  /**
+   * 펼침 첫 슬롯의 작성 유도 카드가 로그인/비로그인 문구를 가른다.
+   *
+   * 기본값이 있는 것은 기업센터 브랜드 페이지 미리보기(BusinessCompanyPreviewClient)가 이 섹션을 그대로
+   * 재사용하기 때문이다 — 그쪽은 클라이언트 컴포넌트라 세션 쿠키를 읽을 수 없고, 본문 전체가 inert라
+   * 어느 쪽 문구가 서든 눌리지 않는다. 개인 회원용 개요는 CompanyOverviewClient가 실제 값을 넘긴다.
+   */
+  isLoggedIn?: boolean;
+}) {
   const isInterview = type === "interview";
   const title = isInterview ? "면접 후기" : "기업 리뷰";
   const href = `/companies/${profile.id}/${isInterview ? "interviews" : "reviews"}`;
@@ -376,6 +406,24 @@ export function CompanyReviewsPreviewSection({ profile, type }: { profile: Compa
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt));
   const preview = all.slice(0, 2).map(toReviewCardItem);
   const topKeywords = all.length >= 3 ? topTagsByFrequency(all.map((review) => review.tags)) : [];
+
+  /** 접힘·펼침 어느 쪽에서도 섹션 바닥에 남는 요약 띠라 두 슬롯이 같은 노드를 공유한다 */
+  const keywordStrip = topKeywords.length ? (
+    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
+      <span className="text-[12px] font-medium text-[#8a95a5]">자주 언급된 키워드</span>
+      {topKeywords.map((keyword) => (
+        <Chip key={keyword}>{keyword}</Chip>
+      ))}
+    </div>
+  ) : null;
+
+  const previewGrid = (
+    <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
+      {preview.map((review) => (
+        <CompanyReviewCard key={review.id} review={review} variant="compact" />
+      ))}
+    </div>
+  );
 
   return (
     <SectionShell
@@ -387,29 +435,22 @@ export function CompanyReviewsPreviewSection({ profile, type }: { profile: Compa
           : "재직자들이 말하는 실제 근무 환경과 조직 문화를 확인해 보세요."
       }
       action={
-        <Link href={href} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
+        /* 펼침이 있는 폭에서는 이 링크를 숨긴다 — 같은 목록을 "이 자리에서 펼치기"와 "다른 화면으로 가기"
+           두 문법으로 나란히 권하면 어느 쪽이 무슨 일을 하는지 눌러 봐야 안다. 펼침이 아직 없는
+           면접 후기는 그대로 둔다(그 폭에서 전량에 닿는 유일한 길이다). */
+        <Link
+          href={href}
+          className={clsx(
+            "inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]",
+            !isInterview && "max-[760px]:hidden",
+          )}
+        >
           전체 보기
           <ChevronRight size={15} />
         </Link>
       }
     >
-      {all.length ? (
-        <>
-          <div className="grid grid-cols-2 gap-3 max-[640px]:grid-cols-1">
-            {preview.map((review) => (
-              <CompanyReviewCard key={review.id} review={review} variant="compact" />
-            ))}
-          </div>
-          {topKeywords.length ? (
-            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#edf1f5] pt-4">
-              <span className="text-[12px] font-medium text-[#8a95a5]">자주 언급된 키워드</span>
-              {topKeywords.map((keyword) => (
-                <Chip key={keyword}>{keyword}</Chip>
-              ))}
-            </div>
-          ) : null}
-        </>
-      ) : (
+      {!all.length ? (
         <EmptyState
           message={`아직 등록된 ${title}가 없습니다.`}
           cta={
@@ -419,6 +460,33 @@ export function CompanyReviewsPreviewSection({ profile, type }: { profile: Compa
             >
               첫 후기 작성하기
             </Link>
+          }
+        />
+      ) : isInterview ? (
+        <>
+          {previewGrid}
+          {keywordStrip}
+        </>
+      ) : (
+        <SectionExpandGroup
+          count={all.length}
+          label={title}
+          collapsed={
+            <>
+              {previewGrid}
+              {keywordStrip}
+            </>
+          }
+          expanded={
+            <>
+              <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS)}>
+                <CompanyReviewWriteCard companyId={profile.id} reviewType="company" isLoggedIn={isLoggedIn} hasItems />
+                {all.map((review) => (
+                  <CompanyReviewCard key={review.id} review={toCompanyReviewCardItem(review)} />
+                ))}
+              </div>
+              {keywordStrip}
+            </>
           }
         />
       )}
@@ -458,26 +526,40 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
  * (`CompanyReviewsPreviewSection`)와 동일한 섹션 문법(제목+"전체 보기" 액션 링크)을 따르되, 공고는 리뷰처럼
  * 사용자에게 작성을 유도할 대상이 아니라서 0건이면 빈 상태 카드 없이 섹션 전체를 숨긴다. 조회는 getActiveJobs를
  * 그대로 재사용한다(새 조회 로직 없음) — `/jobs` 탭 전용의 `CompanyJobsPreview`(전체 목록, 다른 문구/링크)와는
- * 별개 컴포넌트다. */
+ * 별개 컴포넌트다.
+ *
+ * ≤760px에서는 미리보기 아래 "모두 보기"로 전량을 이 자리에서 펼친다(SectionExpandGroup). 3건 이상일 때만
+ * 버튼이 선다 — 2건뿐이면 펼쳐도 같은 목록이라, 누를 것이 없는 버튼은 "더 있다"는 거짓 신호가 된다. */
 export function CompanyActiveJobsPreviewSection({ profile }: { profile: CompanyProfile }) {
-  const activeJobs = getActiveJobs(profile.id).slice(0, 2);
+  const activeJobs = getActiveJobs(profile.id);
   if (!activeJobs.length) return null;
+  const preview = activeJobs.slice(0, 2);
 
   return (
     <SectionShell
       id={companyAnchorIds.jobs}
       title="채용중인 공고"
       action={
+        /* ≤760px는 아래 "모두 보기"가 같은 목록을 이 자리에서 펼친다(기업 리뷰 섹션과 같은 이유로 숨긴다) */
         <Link
           href={`/companies/${profile.id}/jobs`}
-          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111] max-[760px]:hidden"
         >
           전체 보기
           <ChevronRight size={15} />
         </Link>
       }
     >
-      <CompanyJobsGrid jobs={activeJobs} />
+      {activeJobs.length > preview.length ? (
+        <SectionExpandGroup
+          count={activeJobs.length}
+          label="채용중인 공고"
+          collapsed={<CompanyJobsGrid jobs={preview} />}
+          expanded={<CompanyJobsGrid jobs={activeJobs} flush />}
+        />
+      ) : (
+        <CompanyJobsGrid jobs={preview} />
+      )}
     </SectionShell>
   );
 }
@@ -531,46 +613,60 @@ export function CompanyNewsSection({ profile }: { profile: CompanyProfile }) {
 }
 
 /** 개요 본문 최하단 "관련 뉴스" 미리보기(산업 트랙 전용, STEP 8-A) — 뉴스 탭(`CompanyNewsSection`)의 카드 마크업을
- * 이미지+날짜+제목만 남긴 축소 변형으로 재사용한다(요약문 생략). 최신 3건 + "전체 보기" 링크만 보여주고,
- * 뉴스가 0건이면 섹션 자체를 숨긴다(면접 후기·기업 리뷰 미리보기와 달리 작성 유도 대상이 아니라 빈 상태 카드도 없다). */
+ * 이미지+날짜+제목만 남긴 축소 변형으로 재사용한다(요약문 생략). 최신 3건 + "전체 보기" 링크를 기본으로 하고,
+ * 뉴스가 0건이면 섹션 자체를 숨긴다(면접 후기·기업 리뷰 미리보기와 달리 작성 유도 대상이 아니라 빈 상태 카드도 없다).
+ *
+ * ≤760px 펼침은 **같은 축소 카드로 전량**이다 — 뉴스 탭의 풀 카드(요약문 포함)로 갈아끼우지 않는다. 이 자리에서
+ * 하는 일은 "어떤 소식이 더 있는지 훑기"이고, 어차피 누르면 외부(더파마뉴스)로 나가므로 개요 안에서 요약문까지
+ * 읽을 이유가 없다. 카드 문법이 펼치는 순간 달라지면 같은 섹션이 두 겹으로 보인다. */
 export function CompanyNewsPreviewSection({ profile }: { profile: CompanyProfile }) {
-  const items = profile.news.slice(0, 3);
-  if (!items.length) return null;
+  const all = profile.news;
+  if (!all.length) return null;
+  const preview = all.slice(0, 3);
+
+  const newsGrid = (items: CompanyProfile["news"]) => (
+    <div className="grid grid-cols-3 gap-3 max-[720px]:grid-cols-1">
+      {items.map((news) => (
+        <a
+          key={news.id}
+          href={news.href}
+          target="_blank"
+          rel="noreferrer"
+          className="group overflow-hidden border border-[#e0e6ee] bg-white transition hover:border-[#111111]"
+        >
+          <div className="h-[100px] bg-[#eef1f4]">
+            <img src={news.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
+          </div>
+          <div className="p-3">
+            <p className="text-[12px] font-normal text-[#8a95a5]">{news.date}</p>
+            {/* min-h는 "2줄분 높이" — 15px × leading-1.4 = 21px × 2줄 = 42px(13px 시절엔 36px) */}
+            <h3 className="mt-1.5 line-clamp-2 min-h-[42px] text-[15px] font-semibold leading-[1.4] text-[#202733]">{news.title}</h3>
+          </div>
+        </a>
+      ))}
+    </div>
+  );
 
   return (
     <SectionShell
       id={companyAnchorIds.news}
       title="관련 뉴스"
       action={
+        /* ≤760px는 아래 "모두 보기"가 같은 목록을 이 자리에서 펼친다(기업 리뷰 섹션과 같은 이유로 숨긴다) */
         <Link
           href={`/companies/${profile.id}/news`}
-          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111] max-[760px]:hidden"
         >
           전체 보기
           <ChevronRight size={15} />
         </Link>
       }
     >
-      <div className="grid grid-cols-3 gap-3 max-[720px]:grid-cols-1">
-        {items.map((news) => (
-          <a
-            key={news.id}
-            href={news.href}
-            target="_blank"
-            rel="noreferrer"
-            className="group overflow-hidden border border-[#e0e6ee] bg-white transition hover:border-[#111111]"
-          >
-            <div className="h-[100px] bg-[#eef1f4]">
-              <img src={news.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
-            </div>
-            <div className="p-3">
-              <p className="text-[12px] font-normal text-[#8a95a5]">{news.date}</p>
-              {/* min-h는 "2줄분 높이" — 15px × leading-1.4 = 21px × 2줄 = 42px(13px 시절엔 36px) */}
-              <h3 className="mt-1.5 line-clamp-2 min-h-[42px] text-[15px] font-semibold leading-[1.4] text-[#202733]">{news.title}</h3>
-            </div>
-          </a>
-        ))}
-      </div>
+      {all.length > preview.length ? (
+        <SectionExpandGroup count={all.length} label="관련 뉴스" collapsed={newsGrid(preview)} expanded={newsGrid(all)} />
+      ) : (
+        newsGrid(preview)
+      )}
     </SectionShell>
   );
 }
