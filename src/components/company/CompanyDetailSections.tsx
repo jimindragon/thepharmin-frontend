@@ -28,7 +28,8 @@ import { SectionExpandGroup } from "@/components/company/SectionExpandGroup";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
-import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
+import { CompanyInterviewsListClient } from "@/components/company/CompanyInterviewsListClient";
+import { toCompanyReviewCardItem, toInterviewCardItem } from "@/data/companyReviewItems";
 import { getPharmacyTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -348,10 +349,17 @@ function topTagsByFrequency(tagLists: string[][], limit = 5) {
     .map(([tag]) => tag);
 }
 
-/** 개요 미리보기 카드가 받는 값은 companyReviews의 부분집합이다. content는 기업 리뷰(company)에만 담고, 면접 후기
- * (interview)는 열람권 게이팅 대상이라 이 매핑이 애초에 그 필드를 채우지 않는다 — 원문이 전달될 수 없다는 원칙은
- * CompanyReviewCard(variant="compact")에서도 그대로 지켜진다(면접 후기는 content가 null이면 본문 영역 자체를
- * 렌더하지 않는다). 새 필드가 필요해지면 여기서 명시적으로 추가할 것 — review 원본을 그대로 넘기지 말 것. */
+/**
+ * 접힘 상태 미리보기 카드(variant="compact")가 받는 값. companyReviews의 부분집합이고, content는 기업 리뷰
+ * (company)에만 담는다 — 면접 후기는 compact에서 본문 영역 자체를 렌더하지 않으므로 실릴 이유가 없다.
+ * 새 필드가 필요해지면 여기서 명시적으로 추가할 것 — review 원본을 그대로 넘기지 말 것.
+ *
+ * **"면접 후기 원문은 개요 응답에 실리지 않는다"는 종전 원칙은 더 이상 성립하지 않는다.** ≤760px 인라인 펼침이
+ * 면접 후기 목록(CompanyInterviewsListClient)을 통째로 재사용하고, 그 목록의 잠금은 서버가 content를 비워서가
+ * 아니라 클라이언트 열람권 상태기계가 걸기 때문이다(면접 후기 탭이 처음부터 그렇게 동작했다). 그래서 펼침
+ * 슬롯이 접혀 있어도 원문이 개요의 RSC 페이로드에 실린다 — 목업 단계에서 받아들인 비용이고, 실서비스에서는
+ * 펼칠 때 가져오는 지연 로딩으로 바꿀 자리다. 이 매핑은 그 경로와 무관하게 종전대로 원문을 담지 않는다.
+ */
 function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
   return {
     id: review.id,
@@ -378,9 +386,14 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
  * 761px 이상은 손대지 않는다 — 미리보기 2건 + "전체 보기" 링크 그대로다. 그쪽은 라우트 탭 행이 화면 위에
  * 계속 떠 있어 오갈 비용이 낮고, 좁은 화면에서만 있던 문제(누를 때마다 개요를 떠났다 돌아오기)가 없다.
  *
- * 펼침은 아직 기업 리뷰(type="company")에만 있다. 면접 후기는 열람권 게이팅이 걸려 있어 펼친 목록이
- * 상태 카드·잠금 카드·확인 모달을 함께 들어야 하므로 다음 단계에서 따로 붙인다 — 그때까지 그쪽은
- * 미리보기 2건 + "전체 보기"(모든 폭) 그대로다. */
+ * 공고·뉴스와 달리 건수가 미리보기 이하(1~2건)여도 버튼을 세운다. 그쪽은 접힘·펼침이 같은 카드라 펼쳐도
+ * 보이는 것이 늘지 않지만, 여기는 접힘이 compact(본문 없음)이고 펼침이 풀 카드라 1건뿐이어도 드러나는 것이
+ * 있다 — 기업 리뷰는 원문·도움돼요·스크랩이, 면접 후기는 열람권 상태 카드와 잠금 CTA가 그때 처음 나온다.
+ *
+ * 면접 후기의 펼침 슬롯은 열람권 게이팅까지 함께 온다 — 목록(CompanyInterviewsListClient)을 통째로 재사용해
+ * 열람권 상태 카드·카드별 잠금·확인 모달이 한 덩어리로 따라온다. 그 셋을 여기서 다시 조립하면 두 화면의
+ * 게이팅 규칙이 갈리고, 보유 장수는 useInterviewAccess가 화면 밖에 두므로 개요에서 쓴 1장이 목록에서도
+ * 그대로 빠져 있다. 첫 슬롯이 작성 유도 카드가 아니라 열람권 상태 카드인 것도 목록과 같다. */
 export function CompanyReviewsPreviewSection({
   profile,
   type,
@@ -435,16 +448,10 @@ export function CompanyReviewsPreviewSection({
           : "재직자들이 말하는 실제 근무 환경과 조직 문화를 확인해 보세요."
       }
       action={
-        /* 펼침이 있는 폭에서는 이 링크를 숨긴다 — 같은 목록을 "이 자리에서 펼치기"와 "다른 화면으로 가기"
-           두 문법으로 나란히 권하면 어느 쪽이 무슨 일을 하는지 눌러 봐야 안다. 펼침이 아직 없는
-           면접 후기는 그대로 둔다(그 폭에서 전량에 닿는 유일한 길이다). */
-        <Link
-          href={href}
-          className={clsx(
-            "inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]",
-            !isInterview && "max-[760px]:hidden",
-          )}
-        >
+        /* ≤760px에서는 아래 "모두 보기"가 같은 목록을 이 자리에서 펼치므로 이 링크를 숨긴다 — 같은 것을
+           "이 자리에서 펼치기"와 "다른 화면으로 가기" 두 문법으로 나란히 권하면 어느 쪽이 무슨 일을
+           하는지 눌러 봐야 안다. */
+        <Link href={href} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111] max-[760px]:hidden">
           전체 보기
           <ChevronRight size={15} />
         </Link>
@@ -462,11 +469,6 @@ export function CompanyReviewsPreviewSection({
             </Link>
           }
         />
-      ) : isInterview ? (
-        <>
-          {previewGrid}
-          {keywordStrip}
-        </>
       ) : (
         <SectionExpandGroup
           count={all.length}
@@ -479,12 +481,21 @@ export function CompanyReviewsPreviewSection({
           }
           expanded={
             <>
-              <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS)}>
-                <CompanyReviewWriteCard companyId={profile.id} reviewType="company" isLoggedIn={isLoggedIn} hasItems />
-                {all.map((review) => (
-                  <CompanyReviewCard key={review.id} review={toCompanyReviewCardItem(review)} />
-                ))}
-              </div>
+              {isInterview ? (
+                <CompanyInterviewsListClient
+                  companyId={profile.id}
+                  items={all.map(toInterviewCardItem)}
+                  isLoggedIn={isLoggedIn}
+                  framed={false}
+                />
+              ) : (
+                <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS)}>
+                  <CompanyReviewWriteCard companyId={profile.id} reviewType="company" isLoggedIn={isLoggedIn} hasItems />
+                  {all.map((review) => (
+                    <CompanyReviewCard key={review.id} review={toCompanyReviewCardItem(review)} />
+                  ))}
+                </div>
+              )}
               {keywordStrip}
             </>
           }

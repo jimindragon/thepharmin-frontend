@@ -25,3 +25,31 @@ export function toCompanyReviewCardItem(review: CompanyReview): CompanyReviewCar
     applyHalf: review.applyHalf,
   };
 }
+
+/**
+ * 면접 후기(type: "interview"). **원문을 담는다.**
+ *
+ * 잠금은 서버가 content를 비워서가 아니라 클라이언트의 열람권 상태기계(useInterviewAccess)가 건다 —
+ * 면접 후기 목록(/companies/{id}/interviews)이 처음부터 그렇게 동작했고, 기업 개요의 인라인 펼침이
+ * 그 목록을 통째로 재사용하면서 개요 응답에도 같은 원문이 실리게 됐다. 목업 단계에서 받아들인
+ * 비용이다(실서비스에서는 펼칠 때 가져오는 지연 로딩으로 바꿀 자리).
+ *
+ * isMine은 그대로 옮긴다 — 내가 쓴 후기는 게이팅과 무관하게 원문이 보여야 한다.
+ */
+export function toInterviewCardItem(review: CompanyReview): CompanyReviewCardItem {
+  return {
+    id: review.id,
+    tags: review.tags,
+    content: review.content,
+    jobRole: review.jobRole,
+    authorStatus: review.authorStatus,
+    writtenAt: review.writtenAt,
+    helpfulCount: review.helpfulCount,
+    interviewDifficulty: review.interviewDifficulty,
+    interviewFormat: review.interviewFormat,
+    applyYear: review.applyYear,
+    applyHalf: review.applyHalf,
+    isInterview: true,
+    isMine: review.isMine,
+  };
+}

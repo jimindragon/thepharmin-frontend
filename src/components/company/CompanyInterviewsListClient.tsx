@@ -11,11 +11,24 @@ interface CompanyInterviewsListClientProps {
   companyId: string;
   items: CompanyReviewCardItem[];
   isLoggedIn: boolean;
+  /**
+   * ≤760px 목록 위아래에 1px 경계를 그을지. 기본값(true)은 면접 후기 탭처럼 이 목록이 화면 본문의
+   * 전부인 자리다 — 감싸는 셸이 없어 이 선이 없으면 흰 블록이 회색 배경으로 번진다.
+   * 기업 개요의 인라인 펼침처럼 섹션 카드(SectionShell) 안에 들어갈 때는 false로 끈다:
+   * 흰 블록의 시작·끝은 섹션이 이미 확정하고, 선이 겹치면 목록이 섹션 안의 또 다른 액자로 읽힌다.
+   * 관련 뉴스 탭이 섹션 안에서 같은 목록(FLUSH_GRID_CLASS)을 쓰며 border-y만 빼는 것과 같은 자리다.
+   */
+  framed?: boolean;
 }
 
 /** 열람권(credit) 데모 상태는 useInterviewAccess가 관리한다 — 이 컴포넌트는 그 값을 목록에 배선하기만 한다.
- * 확인 모달을 띄울 후기 자체를 찾는 일(pendingItem)만 여기 남는다: 목록을 쥐고 있는 것이 이쪽이다. */
-export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: CompanyInterviewsListClientProps) {
+ * 확인 모달을 띄울 후기 자체를 찾는 일(pendingItem)만 여기 남는다: 목록을 쥐고 있는 것이 이쪽이다.
+ *
+ * 면접 후기 탭(/companies/{id}/interviews)과 기업 개요 ≤760px 인라인 펼침이 이 컴포넌트를 함께 쓴다 —
+ * 열람권 상태 카드·카드별 게이팅·확인 모달이 한 덩어리라, 개요 쪽에서 그 셋을 따로 조립하면 두 화면의
+ * 게이팅 규칙이 갈린다. 보유 장수는 useInterviewAccess가 화면 밖(모듈 store)에 두므로 두 곳을 오가도
+ * 이어진다. 두 화면의 차이는 아래 framed 한 줄뿐이다. */
+export function CompanyInterviewsListClient({ companyId, items, isLoggedIn, framed = true }: CompanyInterviewsListClientProps) {
   const writeHref = `/companies/${companyId}/interviews/new`;
 
   const { displayState, credits, pendingUnlockId, getAccess, confirmUnlock, cancelUnlock } = useInterviewAccess({
@@ -34,7 +47,7 @@ export function CompanyInterviewsListClient({ companyId, items, isLoggedIn }: Co
         className={clsx(
           "grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1",
           FLUSH_GRID_CLASS,
-          "max-[760px]:border-y max-[760px]:border-border",
+          framed && "max-[760px]:border-y max-[760px]:border-border",
         )}
       >
         <InterviewAccessStatusCard userState={displayState} credits={credits} writeHref={writeHref} />
