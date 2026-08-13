@@ -505,6 +505,14 @@ function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => v
   );
 }
 
+/**
+ * 스탯 줄 인라인 강등 실험 중 — 후퇴 시 복원 대상, 삭제 금지.
+ *
+ * 목록 행 우측에 서던 3열(리뷰|면접 후기|채용중)의 원본이다. 지금은 CompanyListItem이 같은 값을
+ * 메타줄 아래 한 줄 텍스트로 강등해 쓰고 있어 호출부가 없다. 실기기 확인 뒤 되돌릴 수 있어 남긴다.
+ * 아래 void 한 줄은 그 사이 tsconfig의 noUnusedLocals를 억제하기 위한 것으로, 호출부가 살아나면
+ * 함께 지우면 된다(전체 삭제로 후퇴할 경우에는 이 함수와 void 줄을 통째로 지운다).
+ */
 function CompanyStatColumn({ label, count, href }: { label: string; count: number; href: string }) {
   const isZero = count === 0;
   const numberClassName = clsx(
@@ -534,6 +542,7 @@ function CompanyStatColumn({ label, count, href }: { label: string; count: numbe
     </Link>
   );
 }
+void CompanyStatColumn;
 
 /** JobCard.tsx의 [로고|구분선|정보] 문법을 따른다: 이미지 로고는 흰 배경 위에 직접, logoText 폴백만 기존 회색 이니셜 칩 스타일을 유지한다. */
 function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
@@ -560,9 +569,24 @@ function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
 function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
   const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
 
+  /* 스탯 줄 인라인 강등 실험 — 후퇴(전체 삭제) 시 이 상수와 아래 <p> 두 조각만 지우면 된다.
+     라벨은 짧은 형이어야 한다: 390px에서 정보 칸이 173px뿐이라 "리뷰 5 · 면접 5 · 채용 1"은
+     115.7px로 들어가지만 긴 형("면접 후기"·"채용중")은 152.2px로 여유가 15px밖에 남지 않는다.
+     0은 생략한다 — 목록 50건 중 27건이 리뷰·면접 모두 0이라 전부 적으면 줄의 대부분이 0으로 찬다. */
+  const statParts = (
+    [
+      ["리뷰", entry.companyReviewCount],
+      ["면접", entry.interviewReviewCount],
+      ["채용", entry.activeJobCount],
+    ] as const
+  )
+    .filter(([, count]) => count > 0)
+    .map(([label, count]) => `${label} ${count}`);
+
   return (
     <article className="relative grid grid-cols-[120px_1px_1fr_auto] items-center gap-x-4 gap-y-3 py-5 pr-9 transition hover:bg-[#f7f8fa] max-[640px]:grid-cols-[100px_1px_1fr]">
-      {/* 카드 전체 클릭 영역. 스탯 컬럼은 이 Link에 중첩되지 않는 형제 엘리먼트(z-20)로 분리해 둔다 */}
+      {/* 카드 전체 클릭 영역. 스탯 컬럼이 이 Link 위에 형제(z-20)로 서 있었으나 인라인 줄로 강등되면서
+          카드 안에 중첩되지 않는 링크는 하나도 남지 않았다 — 후퇴 시 그 구조가 그대로 돌아온다 */}
       <Link
         href={entry.detailHref}
         aria-label={`${entry.name} 상세 보기`}
@@ -576,13 +600,9 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
           {entry.verified ? <ShieldCheck size={14} className="shrink-0 text-[#596373]" aria-label="인증된 기업·기관" /> : null}
         </div>
         <p className="mt-1 truncate text-[13px] font-normal text-[#777777]">{metaParts.join(" · ")}</p>
-      </div>
-      <div className="flex items-stretch max-[640px]:col-span-full max-[640px]:row-start-2">
-        <CompanyStatColumn label="리뷰" count={entry.companyReviewCount} href={`/companies/${entry.id}/reviews`} />
-        <span aria-hidden="true" className="w-px shrink-0 self-center bg-[#e5e9ef]" style={{ height: 36 }} />
-        <CompanyStatColumn label="면접 후기" count={entry.interviewReviewCount} href={`/companies/${entry.id}/interviews`} />
-        <span aria-hidden="true" className="w-px shrink-0 self-center bg-[#e5e9ef]" style={{ height: 36 }} />
-        <CompanyStatColumn label="채용중" count={entry.activeJobCount} href={`/companies/${entry.id}/jobs`} />
+        {statParts.length ? (
+          <p className="mt-0.5 truncate text-[13px] font-normal text-[#8a94a3]">{statParts.join(" · ")}</p>
+        ) : null}
       </div>
       <ChevronRight
         size={18}
