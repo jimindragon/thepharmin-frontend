@@ -46,10 +46,15 @@ export function HomeQnaPreview() {
         ≤760px에서 4번이 뒤 규칙으로 선을 받아야 하는데, 앞에서 0을 박아두면 그 위에 특이도 다툼이 생긴다.
         어느 쪽이든 각 열 첫 줄 위·마지막 줄 아래에는 선이 없다. 섹션 사이는 mt-16이 이미 가른다.
 
+        ≤760px에서는 4~6위를 숨겨 Top 3만 남긴다. 1열로 접히면 여섯 줄이 화면 한 판을 통째로 먹는데,
+        그 아래가 홈의 마지막 섹션이라 스크롤만 길어진다. 나머지는 헤더의 "전체 보기"가 받는다.
+        데이터는 6개 그대로 두고 CSS로만 가린다 — 폭에 따라 slice를 달리하면 서버와 클라이언트가
+        서로 다른 개수를 그려 하이드레이션이 어긋난다.
+
         세로 gap은 주지 않는다. 칸이 맞닿아야 border-t가 두 행을 가르는 그 선이 된다(종전 divide-y와 같은 자리).
         선 색은 각 행이 직접 들고 있다(아래 Link) — 컨테이너 선택자에 색까지 얹으면 규칙이 두 배로 길어진다.
       */}
-      <div className="grid grid-flow-col grid-cols-2 grid-rows-3 gap-x-10 [&>*:not(:nth-child(1)):not(:nth-child(4))]:border-t max-[760px]:grid-flow-row max-[760px]:grid-cols-1 max-[760px]:grid-rows-none max-[760px]:[&>*:nth-child(n+2)]:border-t">
+      <div className="grid grid-flow-col grid-cols-2 grid-rows-3 gap-x-10 [&>*:not(:nth-child(1)):not(:nth-child(4))]:border-t max-[760px]:grid-flow-row max-[760px]:grid-cols-1 max-[760px]:grid-rows-none max-[760px]:[&>*:nth-child(n+2)]:border-t max-[760px]:[&>*:nth-child(n+4)]:hidden">
         {popularQnaEntries.map((entry, index) => {
           /* 첫 태그를 카테고리 라벨로 쓴다 — 데이터에 별도 category 필드가 없다(qnaCategoryFilters가
              태그 풀 자체를 참조한다). 태그가 빈 글이 섞이면 라벨 없이 제목만 세운다. */
