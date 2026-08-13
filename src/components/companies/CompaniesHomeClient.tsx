@@ -151,25 +151,39 @@ function CompanySearchBar({ keyword, onKeywordChange }: { keyword: string; onKey
  * 한글에는 그 문법이 맞지 않아 본문 자간 그대로의 평범한 라벨로 둔다.
  *
  * 검색창은 여기 있지 않다 — 목록을 거르는 컨트롤이라 기업·기관 리스트 섹션 헤더로 내려갔다.
- * 검색창이 빠진 만큼 ≤760px에서는 사진 밴드를 절반 이하로 접는다(328 → 159). 데스크톱은
- * 종전 그대로다 — min-h 600·py-24는 밴드를 /support·헤드헌팅 소개와 공유하는 값이라 건드리지 않고,
- * 남는 세로 여백은 밴드의 items-center가 흡수한다.
+ * 검색창이 빠진 만큼 밴드도 함께 줄인다: ≤760px는 130, ≥761px는 600 → 400.
  *
  * 제목은 heroTitle(46/30)이 아니라 pageTitle(34/24)을 쓴다 — 밴드가 얇아진 만큼 46px는 밴드를
  * 혼자 다 먹고, 확정 타이포 스케일(최대 34) 안으로 들어오는 편이 이 위계에 맞는다. <br>도 뺀다:
  * 34px 한 줄이 데스크톱 폭에 여유 있게 들어가고, ≤760px에서는 자연 줄바꿈으로 2줄이 된다.
+ *
+ * 라벨과 제목 사이는 mt-2(8). 광학 간격은 여기에 두 줄상자의 반행송(라벨 4.2 + 제목 3.4)이 더해져
+ * 약 15.6px인데, 라벨 자신의 줄상자(21.45)보다 좁아야 둘이 한 덩어리로 읽힌다. mt-3(12)은 광학
+ * 19.6로 한 줄에 거의 닿아 라벨이 제목의 윗줄이 아니라 별개의 줄로 떨어져 나온다.
  */
 function CompaniesHubHero() {
   return (
-    <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
-      {/* ≤760px 밴드 상하 패딩(py-16 = 64)을 32로 줄이는 유일한 방법 — 패딩은 공용 밴드가 갖고 있고,
-          그 값은 다른 두 화면과 공유라 손댈 수 없다. flow-root는 자식(p·h1)의 마진이 이 래퍼를
-          뚫고 나가 음수 마진과 상쇄되는 것을 막는다. 761px 이상에는 한 클래스도 적용되지 않는다. */}
-      <div className="max-[760px]:-my-8 max-[760px]:flow-root">
-        <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
-        <h1 className={`mt-4 text-white ${typeScale.pageTitle}`}>지원할 회사, 먼저 알아보세요</h1>
-      </div>
-    </BusinessImageBand>
+    /*
+     * ≥761px 밴드 높이를 600 → 400으로 줄이는 국소 오버라이드. BusinessImageBand는 className을
+     * 받지 않고(image·gradient·align·variant·children이 전부), min-h는 --hero-height를 통해
+     * /support·헤드헌팅 소개와 공유하는 값이라 양쪽 다 손댈 수 없다. 그래서 호출부에서 자식
+     * 선택자로 덮는다 — 이 파일 밖에는 한 글자도 영향이 없다.
+     *
+     * 출력 순서에 기대지 않는다: 생성되는 규칙이 `.min-\[761px\]\:… > section`(클래스 1 + 타입 1
+     * = 0,1,1)이라 밴드의 `.min-h-\[var\(--hero-height\)\]`(클래스 1 = 0,1,0)를 명시도로 이긴다.
+     * 밴드의 max-[760px]:min-h-0과는 미디어 쿼리가 서로 배타(≤760 / ≥761)라 아예 만나지 않는다.
+     */
+    <div className="min-[761px]:[&>section]:min-h-[400px]">
+      <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
+        {/* ≤760px 밴드 상하 패딩(py-16 = 64)을 32로 줄이는 유일한 방법 — 패딩은 공용 밴드가 갖고 있고,
+            그 값은 다른 두 화면과 공유라 손댈 수 없다. flow-root는 자식(p·h1)의 마진이 이 래퍼를
+            뚫고 나가 음수 마진과 상쇄되는 것을 막는다. 761px 이상에는 한 클래스도 적용되지 않는다. */}
+        <div className="max-[760px]:-my-8 max-[760px]:flow-root">
+          <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
+          <h1 className={`mt-2 text-white ${typeScale.pageTitle}`}>지원할 회사, 먼저 알아보세요</h1>
+        </div>
+      </BusinessImageBand>
+    </div>
   );
 }
 
