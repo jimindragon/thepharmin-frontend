@@ -56,6 +56,18 @@ const trackById: Record<string, JobTrack> = {
   chongkundang: "industry",
   greencross: "industry",
   "medicoa-cro": "industry",
+  // 아래 10곳은 종전까지 매핑 없이 기본값("industry")으로 떨어지고 있었다 — 이 파일이 트랙의 단일 출처라
+  // 기본값에 기대지 않고 명시한다(위 주석의 "새 기업이 추가되면 이 매핑도 함께 추가" 규칙과 같은 이유).
+  "otsuka-korea": "industry",
+  bukwang: "industry",
+  "lgchem-life-science": "industry",
+  "yuyu-pharm": "industry",
+  cellbion: "industry",
+  "samsung-pharm": "industry",
+  oreon: "industry",
+  "aju-pharm": "industry",
+  "samo-pharm": "industry",
+  "kolon-biotech": "industry",
   snubh: "hospital",
   "hanbit-general-hospital": "hospital",
   "mirae-care-hospital": "hospital",
