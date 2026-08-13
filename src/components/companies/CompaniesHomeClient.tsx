@@ -4,13 +4,12 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
 import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
-import { BusinessImageBand } from "@/components/business/BusinessMarketingSections";
 import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
+import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { Button } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
-import { typeScale } from "@/components/ui/Typography";
 import { heroImages } from "@/config/companyImages";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
 import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
@@ -142,48 +141,42 @@ function CompanySearchBar({ keyword, onKeywordChange }: { keyword: string; onKey
 }
 
 /**
- * 허브 첫 화면의 사진 히어로. 공용 밴드(BusinessImageBand)를 헤드헌팅 소개 페이지와 같은
- * 조합(horizontal 그라데이션 + 좌측 정렬 + variant="hero")으로 부른다 — 왼쪽이 짙고
- * 오른쪽으로 갈수록 사진이 드러나는 그라데이션이라, 글이 왼쪽에 모여 있어야 읽힌다.
+ * 허브 첫 화면의 사진 히어로. 다른 허브(캘린더·QNA·자료실)와 같은 PageHeader 문법으로 세우고,
+ * 배경만 어두운 사진을 유지한다 — 브레드크럼 → 아이브로우 → h1 → 설명의 순서·간격이 그대로 온다.
+ * 위계는 뒤집혔다: 화면 이름("기업 인사이트")이 h1을 가져가고, 종전 헤드라인은 그 아래 설명 줄이 된다.
+ * ≤760px에서 브레드크럼·아이브로우가 숨는 것도 PageHeader의 기본 동작 그대로다.
  *
- * 화면 이름("기업 인사이트")은 h1이 아니라 그 위 라벨로 둔다. h1 자리는 헤드라인이 가져가고,
- * 문서에 h1은 하나만 남는다. 라벨은 영문 Eyebrow(대문자·넓은 자간)를 쓰지 않는다 —
- * 한글에는 그 문법이 맞지 않아 본문 자간 그대로의 평범한 라벨로 둔다.
+ * 공용 밴드(BusinessImageBand)는 더 쓰지 않는다. 밴드는 안쪽을 app-shell--default(1160)로 감싸고
+ * 자신이 px-6을 갖고 있어, 밴드 안 텍스트가 본문 셸보다 안쪽에서 시작한다(실측: @1440 left 140 vs
+ * 본문 100, @390 48 vs 24). 다른 허브와 같은 정렬선에 서려면 본문과 같은 .app-shell을 히어로가
+ * 직접 세워야 하고, 밴드는 className을 받지 않아 그 셸을 바꿔 끼울 수 없다. 그래서 사진과 스크림만
+ * 이 섹션이 소유한다 — 밴드 자체는 /support·헤드헌팅 소개가 계속 쓰므로 손대지 않는다.
  *
- * 검색창은 여기 있지 않다 — 목록을 거르는 컨트롤이라 기업·기관 리스트 섹션 헤더로 내려갔다.
- * 검색창이 빠진 만큼 밴드도 함께 줄인다: ≤760px는 130, ≥761px는 600 → 400.
- *
- * 제목은 heroTitle(46/30)이 아니라 pageTitle(34/24)을 쓴다 — 밴드가 얇아진 만큼 46px는 밴드를
- * 혼자 다 먹고, 확정 타이포 스케일(최대 34) 안으로 들어오는 편이 이 위계에 맞는다. <br>도 뺀다:
- * 34px 한 줄이 데스크톱 폭에 여유 있게 들어가고, ≤760px에서는 자연 줄바꿈으로 2줄이 된다.
- *
- * 라벨과 제목 사이는 mt-2(8). 광학 간격은 여기에 두 줄상자의 반행송(라벨 4.2 + 제목 3.4)이 더해져
- * 약 15.6px인데, 라벨 자신의 줄상자(21.45)보다 좁아야 둘이 한 덩어리로 읽힌다. mt-3(12)은 광학
- * 19.6로 한 줄에 거의 닿아 라벨이 제목의 윗줄이 아니라 별개의 줄로 떨어져 나온다.
+ * 높이는 콘텐츠와 패딩만으로 정해진다(py-8 / ≥761px py-24 → 실측 데스크톱 350.8, 모바일 129.6).
+ * 종전의 밴드 높이 오버라이드(min-[761px]:[&>section]:min-h-[400px])와 ≤760px 패딩을 음수 마진으로
+ * 되돌리던 우회(-my-8 flow-root)는 함께 사라진다 — 둘 다 공용 밴드가 쥔 값을 밖에서 이기려던 장치였다.
  */
 function CompaniesHubHero() {
   return (
-    /*
-     * ≥761px 밴드 높이를 600 → 400으로 줄이는 국소 오버라이드. BusinessImageBand는 className을
-     * 받지 않고(image·gradient·align·variant·children이 전부), min-h는 --hero-height를 통해
-     * /support·헤드헌팅 소개와 공유하는 값이라 양쪽 다 손댈 수 없다. 그래서 호출부에서 자식
-     * 선택자로 덮는다 — 이 파일 밖에는 한 글자도 영향이 없다.
-     *
-     * 출력 순서에 기대지 않는다: 생성되는 규칙이 `.min-\[761px\]\:… > section`(클래스 1 + 타입 1
-     * = 0,1,1)이라 밴드의 `.min-h-\[var\(--hero-height\)\]`(클래스 1 = 0,1,0)를 명시도로 이긴다.
-     * 밴드의 max-[760px]:min-h-0과는 미디어 쿼리가 서로 배타(≤760 / ≥761)라 아예 만나지 않는다.
-     */
-    <div className="min-[761px]:[&>section]:min-h-[400px]">
-      <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
-        {/* ≤760px 밴드 상하 패딩(py-16 = 64)을 32로 줄이는 유일한 방법 — 패딩은 공용 밴드가 갖고 있고,
-            그 값은 다른 두 화면과 공유라 손댈 수 없다. flow-root는 자식(p·h1)의 마진이 이 래퍼를
-            뚫고 나가 음수 마진과 상쇄되는 것을 막는다. 761px 이상에는 한 클래스도 적용되지 않는다. */}
-        <div className="max-[760px]:-my-8 max-[760px]:flow-root">
-          <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
-          <h1 className={`mt-2 text-white ${typeScale.pageTitle}`}>지원할 회사, 먼저 알아보세요</h1>
-        </div>
-      </BusinessImageBand>
-    </div>
+    <section
+      className="bg-[#050505] py-8 min-[761px]:py-24"
+      style={{
+        // 왼쪽이 짙고 오른쪽으로 갈수록 사진이 드러나는 스크림. 글이 왼쪽에 모여 있어야 읽힌다.
+        backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.4) 62%, rgba(0,0,0,0.15) 100%), url('${heroImages.companies}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="app-shell">
+        <PageHeader
+          tone="dark"
+          breadcrumbLabel="기업 인사이트"
+          eyebrow="THE PHARMA COMPANIES"
+          title="기업 인사이트"
+          description="지원할 회사, 먼저 알아보세요"
+        />
+      </div>
+    </section>
   );
 }
 
@@ -696,8 +689,8 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
 
   return (
     <>
-      {/* 히어로는 .app-shell 밖에 세운다 — 밴드가 화면 폭을 꽉 채우고, 안쪽 텍스트는 밴드가 가진
-          자체 셸(app-shell--default)이 잡는다. 셸 안의 본문은 그 아래에서 다시 시작한다. */}
+      {/* 히어로는 .app-shell 밖에 세운다 — 사진이 화면 폭을 꽉 채우고, 안쪽 텍스트는 히어로가 직접
+          세운 같은 .app-shell이 잡는다. 셸 안의 본문은 그 아래에서 다시 시작한다. */}
       <CompaniesHubHero />
 
       <div className="app-shell">

@@ -22,6 +22,11 @@ interface PageHeaderProps {
    * 탭바로 오가는 페이지에서만 켠다 — 첫 화면에서 h1 아래 컨트롤 위치를 서로 맞추기 위한 것이다.
    */
   mobileDescription?: "hidden" | "caption";
+  /**
+   * dark: 어두운 사진 배경 위에 세울 때. 브레드크럼·아이브로우·제목·설명의 색만 흰색 계열로 바꾼다 —
+   * 배치·간격은 light와 완전히 같다. 배경은 이 컴포넌트가 갖지 않으므로 호출부가 깐다.
+   */
+  tone?: "light" | "dark";
   className?: string;
 }
 
@@ -45,24 +50,27 @@ export function PageHeader({
   rightSlot,
   rightSlotClassName,
   mobileDescription,
+  tone = "light",
   className,
 }: PageHeaderProps) {
   return (
     <div className={className}>
-      <PageBreadcrumb className="mb-5" items={[{ label: breadcrumbLabel }]} />
+      <PageBreadcrumb className="mb-5" items={[{ label: breadcrumbLabel }]} tone={tone} />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           {/* Eyebrow는 className을 받지 않으므로(한글 아이브로우 보호 위해 공용 컴포넌트 미변경) 래퍼로 숨긴다 */}
           <div className="max-[760px]:hidden">
-            <Eyebrow>{eyebrow}</Eyebrow>
+            <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
           </div>
-          <PageTitle className="max-[760px]:mt-0">{title}</PageTitle>
+          <PageTitle className="max-[760px]:mt-0" tone={tone}>
+            {title}
+          </PageTitle>
           {description ? (
             <p
               className={clsx(
                 "mt-3 max-w-[640px]",
                 typeScale.body,
-                "text-[#596373]",
+                tone === "dark" ? "text-white/75" : "text-[#596373]",
                 mobileDescription && MOBILE_DESCRIPTION_CLASS[mobileDescription],
               )}
             >

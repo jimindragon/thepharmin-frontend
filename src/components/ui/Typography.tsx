@@ -29,8 +29,19 @@ export const typeScale = {
  * Shared top-level page heading (breadcrumb 아래 첫 h1) — 채용공고/채용 캘린더처럼
  * 같은 위계의 페이지 제목은 크기·자간·상하 여백을 맞추기 위해 이 컴포넌트를 사용.
  */
-export function PageTitle({ children, className }: { children: ReactNode; className?: string }) {
-  return <h1 className={clsx("mt-5", typeScale.pageTitle, "text-[#242b36]", className)}>{children}</h1>;
+export function PageTitle({
+  children,
+  className,
+  tone = "light",
+}: {
+  children: ReactNode;
+  className?: string;
+  /** dark: 어두운 사진 위에 얹는 제목(기업 인사이트 허브 히어로) */
+  tone?: "light" | "dark";
+}) {
+  return (
+    <h1 className={clsx("mt-5", typeScale.pageTitle, tone === "dark" ? "text-white" : "text-[#242b36]", className)}>{children}</h1>
+  );
 }
 
 export function Eyebrow({ children, tone = "light", align = "left" }: { children: ReactNode; tone?: "light" | "dark"; align?: "left" | "center" }) {
