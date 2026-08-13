@@ -104,6 +104,8 @@ const industryGroupById: Record<string, IndustryGroup> = {
   greencross: "pharma_bio",
   // 원고에서 카테고리를 "CRO·CDMO"로 명시한 임상시험 수탁기관이라 CRO·CDMO 탭으로 분류한다
   "medicoa-cro": "cro_cdmo",
+  // 프로필의 기관 유형·태그가 "CRO·CDMO"로 명시된 바이오의약품 위탁생산 기업이라 CRO·CDMO 탭으로 분류한다
+  "kolon-biotech": "cro_cdmo",
 };
 
 /** 기업정보 허브 랜딩 로고 스트립에서 맨 앞에 고정 노출할 기업 id(이후 프로필 보유 기업 → 나머지 로고 보유 기업 순으로 이어붙인다). companyProfiles.ts에 프로필이 있는 기업 중 수동 선정 */
