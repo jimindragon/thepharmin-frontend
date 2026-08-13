@@ -10,7 +10,7 @@ import { Pagination } from "@/components/Pagination";
 import { PlaceholderNotice, usePlaceholderNotice } from "@/components/shared/PlaceholderNotice";
 import { Button } from "@/components/ui/Button";
 import { EntityLogo } from "@/components/ui/EntityLogo";
-import { Eyebrow, typeScale } from "@/components/ui/Typography";
+import { typeScale } from "@/components/ui/Typography";
 import { heroImages } from "@/config/companyImages";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
 import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
@@ -115,10 +115,11 @@ function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
 
 /**
  * 히어로 사진 위에 얹히는 검색창. 고객센터(/support) 히어로 검색창과 같은 문법이다 —
- * mx-auto·max-w-[560px]·h-14·흰 배경에, 사진 위에서 카드가 떠 보이도록 그림자를 둔다.
+ * max-w-[560px]·h-14·흰 배경에, 사진 위에서 카드가 떠 보이도록 그림자를 둔다.
  * 그림자는 "no-shadow" 원칙의 히어로 오버레이 예외로, /support가 쓰는 값을 그대로 공유한다.
  * 테두리를 회색(#d8dce2)이 아니라 white/15로 두는 것도 같은 이유다 — 어두운 사진 위에서는
- * 회색 실선이 때가 탄 것처럼 읽힌다.
+ * 회색 실선이 때가 탄 것처럼 읽힌다. /support와 달리 가운데로 몰지 않는 것(mx-auto 없음)은
+ * 이 히어로가 좌측 정렬이라 라벨·헤드라인과 같은 선에 서야 하기 때문이다.
  */
 function CompanySearchBar({
   keyword,
@@ -132,9 +133,10 @@ function CompanySearchBar({
   return (
     <form
       onSubmit={onSubmit}
-      className="mx-auto mt-8 flex h-14 max-w-[560px] items-stretch border border-white/15 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-colors focus-within:border-[#111111]"
+      className="mt-8 flex h-14 max-w-[560px] items-stretch border border-white/15 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.22)] transition-colors focus-within:border-[#111111]"
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3 pl-5">
+      {/* pr-4 — 입력칸과 검색 버튼 사이 간격. 없으면 긴 placeholder가 검은 버튼에 그대로 닿는다. */}
+      <div className="flex min-w-0 flex-1 items-center gap-3 pl-5 pr-4">
         <Search size={18} className="shrink-0 text-[#8a95a5]" aria-hidden="true" />
         <input
           value={keyword}
@@ -155,9 +157,13 @@ function CompanySearchBar({
 }
 
 /**
- * 허브 첫 화면의 사진 히어로. 고객센터(/support)와 같은 공용 밴드(BusinessImageBand)를
- * 같은 조합(vertical 그라데이션 + 가운데 정렬 + variant="hero")으로 부른다 —
- * 사진을 분위기로만 쓰고 그 위에 텍스트와 검색창을 세우는 화면이라 두 페이지의 조건이 같다.
+ * 허브 첫 화면의 사진 히어로. 공용 밴드(BusinessImageBand)를 헤드헌팅 소개 페이지와 같은
+ * 조합(horizontal 그라데이션 + 좌측 정렬 + variant="hero")으로 부른다 — 왼쪽이 짙고
+ * 오른쪽으로 갈수록 사진이 드러나는 그라데이션이라, 글이 왼쪽에 모여 있어야 읽힌다.
+ *
+ * 화면 이름("기업 인사이트")은 h1이 아니라 그 위 라벨로 둔다. h1 자리는 헤드라인이 가져가고,
+ * 문서에 h1은 하나만 남는다. 라벨은 영문 Eyebrow(대문자·넓은 자간)를 쓰지 않는다 —
+ * 한글에는 그 문법이 맞지 않아 본문 자간 그대로의 평범한 라벨로 둔다.
  *
  * 검색 상태(keyword)는 아래 목록 필터와 한 몸이라 이 컴포넌트로 내려보내지 않고
  * CompaniesHomeClient가 계속 들고 있는다 — 히어로는 값과 핸들러만 받아 넘긴다.
@@ -172,14 +178,13 @@ function CompaniesHubHero({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <BusinessImageBand image={heroImages.companies} gradient="vertical" align="center" variant="hero">
-      <Eyebrow tone="dark" align="center">
-        THE PHARMA COMPANIES
-      </Eyebrow>
-      <h1 className={`mt-4 text-white ${typeScale.heroTitle}`}>기업 인사이트</h1>
-      <p className="mx-auto mt-4 max-w-[480px] text-[15px] font-normal leading-[1.75] tracking-[-0.01em] text-white/70">
-        기업 정보부터 기업 리뷰와 면접 후기까지
-      </p>
+    <BusinessImageBand image={heroImages.companies} gradient="horizontal" variant="hero">
+      <p className="text-[13px] font-medium leading-[1.65] tracking-[-0.01em] text-white/70">기업 인사이트</p>
+      <h1 className={`mt-4 text-white ${typeScale.heroTitle}`}>
+        지원할 회사,
+        <br />
+        먼저 알아보세요
+      </h1>
       <CompanySearchBar keyword={keyword} onKeywordChange={onKeywordChange} onSubmit={onSubmit} />
     </BusinessImageBand>
   );
