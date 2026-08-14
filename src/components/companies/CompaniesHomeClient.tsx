@@ -498,45 +498,6 @@ function IndustryExplorePanel({ onExplore }: { onExplore: (track: JobTrack) => v
   );
 }
 
-/**
- * 스탯 줄 인라인 강등 실험 중 — 후퇴 시 복원 대상, 삭제 금지.
- *
- * 목록 행 우측에 서던 3열(리뷰|면접 후기|채용중)의 원본이다. 지금은 CompanyListItem이 같은 값을
- * 메타줄 아래 한 줄 텍스트로 강등해 쓰고 있어 호출부가 없다. 실기기 확인 뒤 되돌릴 수 있어 남긴다.
- * 아래 void 한 줄은 그 사이 tsconfig의 noUnusedLocals를 억제하기 위한 것으로, 호출부가 살아나면
- * 함께 지우면 된다(전체 삭제로 후퇴할 경우에는 이 함수와 void 줄을 통째로 지운다).
- */
-function CompanyStatColumn({ label, count, href }: { label: string; count: number; href: string }) {
-  const isZero = count === 0;
-  const numberClassName = clsx(
-    "text-[19px] font-bold leading-none",
-    isZero
-      ? "font-medium text-[#c9c9c9]"
-      : "text-[#171d26] group-hover/stat:underline group-hover/stat:underline-offset-[3px]",
-  );
-
-  if (isZero) {
-    return (
-      <div className="flex w-[84px] shrink-0 cursor-default flex-col items-center gap-1.5 py-1 max-[640px]:w-[68px]">
-        <span className={numberClassName}>{count}</span>
-        <span className="text-[11px] font-normal text-[#8a94a3]">{label}</span>
-      </div>
-    );
-  }
-
-  return (
-    <Link
-      href={href}
-      onClick={(event) => event.stopPropagation()}
-      className="group/stat relative z-20 flex w-[84px] shrink-0 flex-col items-center gap-1.5 py-1 max-[640px]:w-[68px]"
-    >
-      <span className={numberClassName}>{count}</span>
-      <span className="text-[11px] font-normal text-[#8a94a3]">{label}</span>
-    </Link>
-  );
-}
-void CompanyStatColumn;
-
 /** JobCard.tsx의 [로고|구분선|정보] 문법을 따른다: 이미지 로고는 흰 배경 위에 직접, logoText 폴백만 기존 회색 이니셜 칩 스타일을 유지한다. */
 function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
   return (
