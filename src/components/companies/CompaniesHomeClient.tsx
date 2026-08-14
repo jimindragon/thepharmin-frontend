@@ -524,10 +524,10 @@ function CompanyLogoCell({ entry }: { entry: CompanyDirectoryEntry }) {
 function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
   const metaParts = [jobTrackLabels[entry.track], entry.type, entry.region].filter(Boolean);
 
-  /* 스탯 줄 인라인 강등 실험 — 후퇴(전체 삭제) 시 이 상수와 아래 <p> 두 조각만 지우면 된다.
+  /* 리스트 스탯은 메타줄 아래 인라인 텍스트 한 줄이다. 0건 항목은 생략하고, 전부 0이면 줄을 렌더하지 않는다 —
+     목록 50건 중 27건이 리뷰·면접 모두 0이라 전부 적으면 줄의 대부분이 0으로 찬다.
      라벨은 짧은 형이어야 한다: 390px에서 정보 칸이 173px뿐이라 "리뷰 5 · 면접 5 · 채용 1"은
-     115.7px로 들어가지만 긴 형("면접 후기"·"채용중")은 152.2px로 여유가 15px밖에 남지 않는다.
-     0은 생략한다 — 목록 50건 중 27건이 리뷰·면접 모두 0이라 전부 적으면 줄의 대부분이 0으로 찬다. */
+     115.7px로 들어가지만 긴 형("면접 후기"·"채용중")은 152.2px로 여유가 15px밖에 남지 않는다. */
   const statParts = (
     [
       ["리뷰", entry.companyReviewCount],
@@ -540,8 +540,8 @@ function CompanyListItem({ entry }: { entry: CompanyDirectoryEntry }) {
 
   return (
     <article className="relative grid grid-cols-[120px_1px_1fr_auto] items-center gap-x-4 gap-y-3 py-5 pr-9 transition hover:bg-[#f7f8fa] max-[640px]:grid-cols-[100px_1px_1fr]">
-      {/* 카드 전체 클릭 영역. 스탯 컬럼이 이 Link 위에 형제(z-20)로 서 있었으나 인라인 줄로 강등되면서
-          카드 안에 중첩되지 않는 링크는 하나도 남지 않았다 — 후퇴 시 그 구조가 그대로 돌아온다 */}
+      {/* 카드 전체 클릭 영역. 스탯이 인라인 텍스트라 카드 안에 중첩되지 않는 링크는 하나도 없다 —
+          z-10은 이 Link가 형제 위를 덮기 위한 것으로, 위에 얹히는 링크가 없으니 더 올릴 상대도 없다 */}
       <Link
         href={entry.detailHref}
         aria-label={`${entry.name} 상세 보기`}
