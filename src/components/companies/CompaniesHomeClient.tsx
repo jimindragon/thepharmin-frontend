@@ -152,14 +152,15 @@ function CompanySearchBar({ keyword, onKeywordChange }: { keyword: string; onKey
  * 직접 세워야 하고, 밴드는 className을 받지 않아 그 셸을 바꿔 끼울 수 없다. 그래서 사진과 스크림만
  * 이 섹션이 소유한다 — 밴드 자체는 /support·헤드헌팅 소개가 계속 쓰므로 손대지 않는다.
  *
- * 높이는 콘텐츠와 패딩만으로 정해진다(py-8 / ≥761px py-24 → 실측 데스크톱 350.8, 모바일 129.6).
+ * 높이는 콘텐츠와 패딩만으로 정해진다(py-14 / ≥761px py-24 → 실측 데스크톱 350.8, 모바일 177.5).
+ * 모바일 py-14는 실기기에서 사진이 얼마나 보이는지 확인하려는 실험값이다(종전 py-8 = 129.6).
  * 종전의 밴드 높이 오버라이드(min-[761px]:[&>section]:min-h-[400px])와 ≤760px 패딩을 음수 마진으로
  * 되돌리던 우회(-my-8 flow-root)는 함께 사라진다 — 둘 다 공용 밴드가 쥔 값을 밖에서 이기려던 장치였다.
  */
 function CompaniesHubHero() {
   return (
     <section
-      className="bg-[#050505] py-8 min-[761px]:py-24"
+      className="bg-[#050505] py-14 min-[761px]:py-24"
       style={{
         // 왼쪽이 짙고 오른쪽으로 갈수록 사진이 드러나는 스크림. 글이 왼쪽에 모여 있어야 읽힌다.
         backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.4) 62%, rgba(0,0,0,0.15) 100%), url('${heroImages.companies}')`,
