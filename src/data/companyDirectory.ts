@@ -188,9 +188,18 @@ export function getCompanyDetailCounts(companyId: string) {
   };
 }
 
+/**
+ * 사이드바 표기용 문자열("1,245"·"25,000+"·"-")을 정렬용 숫자로 읽는다.
+ * 후행 "+"는 "그 이상"이라는 어림수 표기라 하한값으로 받는다 — "25,000+" → 25000.
+ * 종전에는 콤마만 벗겨 "25000+"를 Number()에 넘겼고, 그 NaN이 null로 떨어지면서
+ * "+"가 붙은 9곳이 전부 관심순 정렬에서 0으로 취급됐다(유효값이 "1,245" 한 곳뿐이었다).
+ * 표기 자체는 상세 사이드바(CompanyCoreInfoCard)가 원본 문자열을 그대로 쓰므로 여기서 벗겨도 화면은 그대로다.
+ */
 function parseCount(value?: string) {
   if (!value) return null;
-  const parsed = Number(value.replace(/,/g, ""));
+  const normalized = value.replace(/,/g, "").replace(/\+$/, "");
+  if (!normalized) return null;
+  const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
