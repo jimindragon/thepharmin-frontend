@@ -21,7 +21,7 @@ export interface CompanyDirectoryEntry {
   logoColor: string;
   logoAccent?: string;
   verified: boolean;
-  /** 기업 리뷰 + 면접 후기 총합. 정렬(리뷰순)에 쓴다 */
+  /** 기업 리뷰 + 면접 후기 총합. 정렬(후기순)의 1차 기준이자 나머지 정렬의 2차 기준으로 쓴다 */
   reviewCount: number;
   companyReviewCount: number;
   interviewReviewCount: number;

@@ -19,7 +19,8 @@ import type { JobTrack } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
 
 type TrackFilter = "all" | "pharma_bio" | "cro_cdmo" | "research" | "hospital" | "pharmacy";
-type SortOption = "리뷰순" | "관심순" | "채용중순";
+/** 라벨이 곧 상태값이다(trackFilterTabs·feedFilterTabs와 달리 id/label 분리가 없다) — 문구를 바꾸면 비교자·초기값도 함께 바뀐다 */
+type SortOption = "후기순" | "관심순" | "채용순";
 type FeedFilter = "all" | "interview" | "company";
 
 interface RecentFeedCompanyItem {
@@ -86,7 +87,7 @@ const feedFilterTabs: { id: FeedFilter; label: string }[] = [
   { id: "company", label: "기업 리뷰" },
 ];
 
-const sortOptions: SortOption[] = ["리뷰순", "관심순", "채용중순"];
+const sortOptions: SortOption[] = ["후기순", "관심순", "채용순"];
 
 /** 사이드바 "업종별 탐색"의 산업(JobTrack) 클릭을 하단 리스트의 큐레이션 탭(TrackFilter)으로 잇는 매핑.
  * 산업은 큐레이션 탭이 세분화(제약·바이오/CRO·CDMO)되어 있어 대응하는 단일 탭이 없으므로 "전체"로 스크롤만 한다. */
@@ -104,11 +105,23 @@ function matchesTrackFilter(track: JobTrack, industryGroup: IndustryGroup | unde
   return track === filter;
 }
 
+/**
+ * 세 정렬 모두 1차 기준의 동점 구간이 넓다 — 채용중 공고는 50곳 중 40곳이 1건으로 같고,
+ * 관심 등록 수는 40곳이 값 자체가 없다(null → 0). 2차 기준이 없던 종전에는 그 구간이
+ * Array.sort의 안정성 때문에 companies.ts 선언 순서로 그대로 노출됐다.
+ * 그래서 동점이면 후기 합산(reviewCount) 내림차순으로 한 번 더 가른다 —
+ * 목록 카드가 "리뷰 N · 면접 N"으로 실제 보여 주는 값이라 사용자가 근거를 확인할 수 있다.
+ * 후기순 자신은 그 값이 이미 1차 기준이므로 2차로 채용중 공고 수를 본다.
+ */
 function sortDirectory(entries: CompanyDirectoryEntry[], sort: SortOption) {
   return [...entries].sort((a, b) => {
-    if (sort === "관심순") return (b.interestedCount ?? 0) - (a.interestedCount ?? 0);
-    if (sort === "채용중순") return b.activeJobCount - a.activeJobCount;
-    return b.reviewCount - a.reviewCount;
+    if (sort === "관심순") {
+      return (b.interestedCount ?? 0) - (a.interestedCount ?? 0) || b.reviewCount - a.reviewCount;
+    }
+    if (sort === "채용순") {
+      return b.activeJobCount - a.activeJobCount || b.reviewCount - a.reviewCount;
+    }
+    return b.reviewCount - a.reviewCount || b.activeJobCount - a.activeJobCount;
   });
 }
 
@@ -582,7 +595,7 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
    *  디바운스 없이 매 입력마다 걸러도 무리가 없다(/support 검색창과 같은 방식). */
   const [keyword, setKeyword] = useState("");
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
-  const [sortOption, setSortOption] = useState<SortOption>("리뷰순");
+  const [sortOption, setSortOption] = useState<SortOption>("후기순");
   const [currentPage, setCurrentPage] = useState(1);
   const companyReviewNotice = usePlaceholderNotice();
 
@@ -684,14 +697,21 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
             <h2 className="text-[24px] font-bold tracking-[-0.02em] text-[#111111]">기업·기관 리스트</h2>
             <div className="flex items-center gap-2.5 max-[640px]:w-full max-[640px]:flex-wrap">
               <CompanySearchBar keyword={keyword} onKeywordChange={setKeyword} />
-              <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white">
+              {/* ≤640px에서 w-full을 주는 이유: 이 그룹은 flex 아이템인데 flex-grow가 0이라
+                  자리가 남아도 늘어나지 않고 내용 폭(92×3 + 보더 2 = 278px)에 머문다.
+                  검색창은 이미 전폭(342@390)이라 그 아래에서 우측에 64px이 비어 보였다. */}
+              <div className="grid h-9 grid-cols-3 overflow-hidden border border-[#dce2ea] bg-white max-[640px]:w-full">
                 {sortOptions.map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => setSortOption(option)}
                     className={clsx(
-                      "min-w-[92px] border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0",
+                      // 전폭에서 균등 3분할이 되려면 min-w를 풀어야 한다 — 320px급에서는 트랙(90px)보다
+                      // min-w(92px)가 이겨 마지막 칩이 overflow-hidden에 잘리고 있었다.
+                      // whitespace-nowrap이 함께 있어야 한다: min-w를 풀면 칸이 좁아져 "채용순"이 두 줄로
+                      // 접히고 h-9 + overflow-hidden에 둘째 줄이 잘린다(JobListToolbar의 SortButtons와 같은 함정).
+                      "min-w-[92px] whitespace-nowrap border-r border-[#dce2ea] px-3 text-[12px] font-medium last:border-r-0 max-[640px]:min-w-0",
                       sortOption === option ? "bg-[#111111] text-white" : "text-[#3d4653] hover:bg-[#f4f4f4]",
                     )}
                   >
