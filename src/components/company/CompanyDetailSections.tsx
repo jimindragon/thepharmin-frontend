@@ -122,14 +122,15 @@ export function EmptyState({ message, cta }: { message: string; cta?: ReactNode 
 /** 산업 트랙 "기업 개요" 첫 섹션 — 본문 소개(fullIntro) + 기관 키워드 + 기관 특징만 다룬다(STEP 3a-2).
  * 로고·기관명·한줄소개는 Hero가 이미 보여줘 본문에서 반복하지 않는다. 셋 다 없으면 섹션 자체를 숨긴다. */
 export function CompanyOverview({ profile }: { profile: CompanyProfile }) {
-  const hasIntro = Boolean(profile.fullIntro);
+  /* tagline과 같은 문장인 fullIntro가 다수 있어(예: cellbion) 그대로 두면 히어로와 개요에 같은 줄이 두 번 노출된다 */
+  const hasIntro = Boolean(profile.fullIntro) && profile.fullIntro?.trim() !== profile.tagline?.trim();
   const hasKeywords = profile.keywords.length > 0;
   const hasFeatures = Boolean(profile.features?.length);
   if (!hasIntro && !hasKeywords && !hasFeatures) return null;
 
   return (
     <SectionShell id={companyAnchorIds.intro} title="기업 소개">
-      {profile.fullIntro ? (
+      {hasIntro ? (
         <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
@@ -733,14 +734,15 @@ function InstitutionFeatures({ features }: { features?: CompanyProfileFeature[] 
 /** [companyId] 개요 탭 — 병원 트랙 "병원 소개" 첫 섹션(본문 소개+키워드+기관 특징만, STEP 3a-2).
  * 로고·병원명·한줄소개는 Hero가 이미 보여줘 반복하지 않는다. 셋 다 없으면 섹션 자체를 숨긴다. */
 function HospitalOverviewCard({ profile }: { profile: CompanyProfile }) {
-  const hasIntro = Boolean(profile.fullIntro);
+  /* tagline과 같은 문장인 fullIntro가 다수 있어(예: cellbion) 그대로 두면 히어로와 개요에 같은 줄이 두 번 노출된다 */
+  const hasIntro = Boolean(profile.fullIntro) && profile.fullIntro?.trim() !== profile.tagline?.trim();
   const hasKeywords = profile.keywords.length > 0;
   const hasFeatures = Boolean(profile.features?.length);
   if (!hasIntro && !hasKeywords && !hasFeatures) return null;
 
   return (
     <SectionShell id={companyAnchorIds.intro} title="병원 소개">
-      {profile.fullIntro ? (
+      {hasIntro ? (
         <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
@@ -854,14 +856,15 @@ export function HospitalSummarySection({ profile, company }: { profile: CompanyP
 /** [companyId] 개요 탭 — 약국 트랙 "약국 소개" 첫 섹션(본문 소개+키워드+기관 특징만, STEP 3a-2).
  * 약국명·한줄소개는 Hero가 이미 보여줘 반복하지 않는다. 셋 다 없으면 섹션 자체를 숨긴다. */
 function PharmacyOverviewCard({ profile }: { profile: CompanyProfile }) {
-  const hasIntro = Boolean(profile.fullIntro);
+  /* tagline과 같은 문장인 fullIntro가 다수 있어(예: cellbion) 그대로 두면 히어로와 개요에 같은 줄이 두 번 노출된다 */
+  const hasIntro = Boolean(profile.fullIntro) && profile.fullIntro?.trim() !== profile.tagline?.trim();
   const hasKeywords = profile.keywords.length > 0;
   const hasFeatures = Boolean(profile.features?.length);
   if (!hasIntro && !hasKeywords && !hasFeatures) return null;
 
   return (
     <SectionShell id={companyAnchorIds.intro} title="약국 소개">
-      {profile.fullIntro ? (
+      {hasIntro ? (
         <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
@@ -1037,14 +1040,15 @@ export function PharmacyAsidePanel({ profile }: { profile: CompanyProfile }) {
  * 없어 값이 없을 뿐, InstitutionFeatures 호출 자체는 다른 트랙과 동일하게 유지해 features가 채워지면 그대로 렌더된다.
  * 로고·기관명·한줄소개는 Hero가 이미 보여줘 반복하지 않는다. 소개·키워드가 모두 없으면 섹션 자체를 숨긴다. */
 function ResearchOverviewCard({ profile }: { profile: CompanyProfile }) {
-  const hasIntro = Boolean(profile.fullIntro);
+  /* tagline과 같은 문장인 fullIntro가 다수 있어(예: cellbion) 그대로 두면 히어로와 개요에 같은 줄이 두 번 노출된다 */
+  const hasIntro = Boolean(profile.fullIntro) && profile.fullIntro?.trim() !== profile.tagline?.trim();
   const hasKeywords = profile.keywords.length > 0;
   const hasFeatures = Boolean(profile.features?.length);
   if (!hasIntro && !hasKeywords && !hasFeatures) return null;
 
   return (
     <SectionShell id={companyAnchorIds.intro} title="기관 소개">
-      {profile.fullIntro ? (
+      {hasIntro ? (
         <p className="text-[15px] font-normal leading-relaxed text-[#3f4855]">{profile.fullIntro}</p>
       ) : null}
       {hasKeywords ? (
