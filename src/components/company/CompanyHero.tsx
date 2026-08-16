@@ -44,7 +44,7 @@ function HeroBadges({ badges, className }: { badges: string[]; className: string
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {badges.map((badge) => (
-        <span key={badge} className="inline-flex h-8 items-center border border-white/30 px-3 text-[12px] font-medium text-white">
+        <span key={badge} className="inline-flex h-7 items-center border border-white/30 px-3 text-[12px] font-medium text-white">
           {badge}
         </span>
       ))}
@@ -138,9 +138,13 @@ export function CompanyHero({ profile, variant = "full" }: { profile: CompanyPro
               {profile.logoImage ? <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" /> : profile.logoText}
             </div>
             <div className="min-w-0">
-              <h1 className="text-[34px] font-bold tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
-              <p className="mt-3 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
-              <HeroBadges badges={badges} className="mt-4 max-[760px]:hidden" />
+              {/* leading-[1.33]·font-semibold·아래 mt-2/mt-3·배지 h-7은 한 세트다 — 이 텍스트 열의 높이를
+                  로고 카드와 같은 118px로 맞춘다(45.2 + 8 + 24.75 + 12 + 28 ≈ 118). 부모가 items-center라
+                  열 높이가 로고와 같아지는 순간 중앙 정렬이 곧 하단 정렬이 되어, 로고 하단·배지 하단·
+                  오른쪽 액션 버튼 하단(부모 행의 items-end)이 한 줄에 선다. 한 값만 되돌리면 이 선이 깨진다. */}
+              <h1 className="text-[34px] font-semibold leading-[1.33] tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
+              <p className="mt-2 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
+              <HeroBadges badges={badges} className="mt-3 max-[760px]:hidden" />
             </div>
           </div>
           {/* ≤760px 자리 — 로고·제목 행 다음, 액션 버튼 앞. 부모가 세로 flex(max-[820px]:flex-col)라 전폭을 받는다.
