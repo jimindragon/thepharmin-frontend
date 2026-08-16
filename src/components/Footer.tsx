@@ -19,28 +19,36 @@ const footerMenuItems: { label: string; href?: string }[] = [
 
 type MetaToken = { label?: string; value: string };
 
-const metaLines: MetaToken[][] = [
-  [
-    { value: "서울시 관악구 봉천로 408-1, 3층-174A호(봉천동)" },
-    { label: "대표전화", value: "010-6633-4711" },
-    { label: "법인명", value: "주식회사 더파마뉴스" },
-  ],
-  [
-    { label: "제호", value: "더파마뉴스" },
-    { label: "사업자 등록번호", value: "570-86-03548" },
-    { label: "인터넷신문 등록번호", value: "경기 아 54653" },
-  ],
-  [
-    { label: "등록일", value: "2025.12.23" },
-    { label: "문의", value: "recruit@thepharma.net" },
-  ],
+const ADDRESS: MetaToken = { value: "서울시 관악구 봉천로 408-1, 3층-174A호(봉천동)" };
+const PHONE: MetaToken = { label: "대표전화", value: "010-6633-4711" };
+const CORP: MetaToken = { label: "법인명", value: "주식회사 더파마뉴스" };
+const TITLE: MetaToken = { label: "제호", value: "더파마뉴스" };
+const BIZ_NO: MetaToken = { label: "사업자 등록번호", value: "570-86-03548" };
+const PRESS_NO: MetaToken = { label: "인터넷신문 등록번호", value: "경기 아 54653" };
+const REG_DATE: MetaToken = { label: "등록일", value: "2025.12.23" };
+const CONTACT: MetaToken = { label: "문의", value: "recruit@thepharma.net" };
+
+// 데스크톱: 기존 3줄 구성 그대로
+const metaLinesDesktop: MetaToken[][] = [
+  [ADDRESS, PHONE, CORP],
+  [TITLE, BIZ_NO, PRESS_NO],
+  [REG_DATE, CONTACT],
+];
+
+// 모바일: 5줄 구성
+const metaLinesMobile: MetaToken[][] = [
+  [ADDRESS],
+  [PHONE, CORP],
+  [TITLE, BIZ_NO],
+  [PRESS_NO, REG_DATE],
+  [CONTACT],
 ];
 
 function FooterMetaLine({ tokens }: { tokens: MetaToken[] }) {
   return (
     <p>
       {tokens.map((token, index) => (
-        <span key={`${token.value}-${index}`}>
+        <span key={`${token.value}-${index}`} className="whitespace-nowrap">
           {index > 0 ? <span className="px-2.5 text-[#4a4a4a]">|</span> : null}
           {token.label ? <span className="text-[#8a8a8a]">{token.label}: </span> : null}
           <span className="text-[#b2b2b2]">{token.value}</span>
@@ -78,9 +86,16 @@ export function Footer() {
           </div>
 
           <div className="min-w-0 flex-1 text-[13px] leading-[2]">
-            {metaLines.map((tokens, index) => (
-              <FooterMetaLine key={index} tokens={tokens} />
-            ))}
+            <div className="max-[760px]:hidden">
+              {metaLinesDesktop.map((tokens, index) => (
+                <FooterMetaLine key={index} tokens={tokens} />
+              ))}
+            </div>
+            <div className="hidden max-[760px]:block">
+              {metaLinesMobile.map((tokens, index) => (
+                <FooterMetaLine key={index} tokens={tokens} />
+              ))}
+            </div>
           </div>
         </div>
 
