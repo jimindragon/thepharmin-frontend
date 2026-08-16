@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import type { CompanyReviewCardItem, CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
 import type { InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
-import { reviewAccessMock } from "@/data/companies";
+import { myUnlockedInterviewReviewsMock, reviewAccessMock } from "@/data/companies";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 
 /**
@@ -51,6 +51,16 @@ const INITIAL: InterviewAccessStore = Object.freeze({
 /** 리셋마다 새 배열을 만들면 useSyncExternalStore가 매번 바뀐 것으로 읽는다 */
 const EMPTY_IDS: string[] = [];
 
+/**
+ * 이미 열람한 후기의 출발점. 마이페이지 "내가 열람한 후기"(myUnlockedInterviewReviewsMock)가 그 목록이라,
+ * 두 화면이 같은 목업 하나를 읽는다 — 종전엔 여기가 빈 배열이라 마이페이지가 "열람 완료"라고 말한 후기가
+ * 상세에서는 잠긴 채로 나왔고, "다시 보기"를 눌러 놓고 열람권을 한 장 더 써야 했다.
+ *
+ * **저장 파이프라인이 붙는 자리다** — 실서비스에서는 이 상수가 서버 조회(계정별 열람 이력)로 교체된다.
+ * 아래 store의 읽기/쓰기 계약은 그대로 두고 이 한 줄만 갈아 끼우면 된다.
+ */
+const SEEDED_UNLOCKED_IDS: string[] = myUnlockedInterviewReviewsMock.map((entry) => entry.reviewId);
+
 let store: InterviewAccessStore = INITIAL;
 const listeners = new Set<() => void>();
 
@@ -85,6 +95,15 @@ function creditsFor(userState: InterviewAccessUserState) {
 }
 
 /**
+ * 열람 이력은 계정에 딸린 값이라 비로그인에는 주지 않는다 — 그쪽에 시드를 그대로 주면 로그인도 하지 않은
+ * 화면이 남의 열람 이력으로 잠금을 풀어 준다. noCredits(로그인했으나 0장)는 반대다: 장수가 바닥난 것과
+ * 예전에 읽은 것은 별개라 시드를 그대로 든다. creditsFor가 둘을 함께 0으로 묶는 것과 갈리는 지점이다.
+ */
+function unlockedFor(userState: InterviewAccessUserState) {
+  return userState === "loggedOut" ? EMPTY_IDS : SEEDED_UNLOCKED_IDS;
+}
+
+/**
  * 지금 기준(userState)에 맞는 보유 상태. 기준이 다르면 그 기준으로 새로 깐 것을 돌려준다 —
  * 예전 "프리셋이 바뀌면 초기화"를 effect가 아니라 이 한 곳이 진다.
  *
@@ -93,7 +112,7 @@ function creditsFor(userState: InterviewAccessUserState) {
  */
 function baseFor(userState: InterviewAccessUserState): InterviewAccessStore {
   if (store.syncedUserState === userState) return store;
-  return { ...store, syncedUserState: userState, credits: creditsFor(userState), unlockedIds: EMPTY_IDS, pendingUnlockId: null };
+  return { ...store, syncedUserState: userState, credits: creditsFor(userState), unlockedIds: unlockedFor(userState), pendingUnlockId: null };
 }
 
 function syncTo(userState: InterviewAccessUserState) {
@@ -169,7 +188,7 @@ export function useInterviewAccess({ isLoggedIn, writeHref }: InterviewAccessOpt
    */
   const synced = snapshot.syncedUserState === userState;
   const credits = synced ? snapshot.credits : creditsFor(userState);
-  const unlockedIds = synced ? snapshot.unlockedIds : EMPTY_IDS;
+  const unlockedIds = synced ? snapshot.unlockedIds : unlockedFor(userState);
   const pendingUnlockId = synced ? snapshot.pendingUnlockId : null;
 
   const displayState: InterviewAccessUserState = userState === "loggedOut" ? "loggedOut" : credits > 0 ? "hasCredits" : "noCredits";

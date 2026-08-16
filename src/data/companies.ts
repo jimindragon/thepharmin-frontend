@@ -1850,8 +1850,13 @@ export const reviewAccessMock: ReviewAccessState = {
   statusText: "후기 열람권 2장 남음",
 };
 
-/** /mypage/review-credits 전용 mock. STEP 1의 reviewAccessMock(기업 인사이트 데모 상태)과는 독립적이다 —
- * 이 페이지가 보여주는 보유 열람권 수는 아래 내역의 delta 합계(3장)에서 그대로 파생한다. */
+/** /mypage/review-credits 전용 mock. 이 페이지가 보여주는 보유 열람권 수는 아래 내역의 delta 합계에서
+ * 그대로 파생한다(-1 +2 -1 +2 = 2장).
+ *
+ * reviewAccessMock(기업 인사이트 데모 상태)과 **더는 독립적이지 않다** — 그쪽 remainingPasses도 2장이고,
+ * 아래 열람 2건(RA·QA)은 myUnlockedInterviewReviewsMock의 두 후기와 같은 것을 가리킨다. 그 목록이
+ * useInterviewAccess의 열람 이력 시드라, 마이페이지가 "열람 완료"라고 말한 후기는 상세에서도 열려 있다.
+ * 셋 중 하나를 고치면 나머지도 함께 봐야 한다. */
 export const reviewAccessHistoryMock: ReviewAccessHistoryEntry[] = [
   { id: "review-access-history-1", date: "2026.07.13", label: "RA 면접 후기 열람", delta: -1 },
   { id: "review-access-history-2", date: "2026.07.10", label: "면접 후기 승인", delta: 2 },
@@ -1859,7 +1864,9 @@ export const reviewAccessHistoryMock: ReviewAccessHistoryEntry[] = [
   { id: "review-access-history-4", date: "2025.12.20", label: "가입 축하 지급", delta: 2 },
 ];
 
-/** companyReviews 원본을 참조만 한다 — 기업명·직무 등 표시용 텍스트는 companyProfiles/companyReviews에서 그대로 가져온다. */
+/** companyReviews 원본을 참조만 한다 — 기업명·직무 등 표시용 텍스트는 companyProfiles/companyReviews에서 그대로 가져온다.
+ * 마이페이지 표시용이자 useInterviewAccess의 열람 이력 시드다(SEEDED_UNLOCKED_IDS) — 여기 후기를 더하거나 빼면
+ * 위 reviewAccessHistoryMock의 "… 열람"(-1) 줄도 함께 맞춰야 보유 장수가 어긋나지 않는다. */
 export const myUnlockedInterviewReviewsMock: MyUnlockedInterviewReview[] = [
   { reviewId: "review-interview-2", companyId: "thepharmin-pharma" },
   { reviewId: "review-interview-samsung-1", companyId: "samsung-biologics" },
