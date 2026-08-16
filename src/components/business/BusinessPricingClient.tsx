@@ -107,13 +107,15 @@ function PeriodSelect({ value, onChange, points }: { value: number; onChange: (i
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between border border-[#e5e5e5] bg-white px-3 py-[9px] text-[13px] font-medium text-[#404040] transition-colors hover:border-[#a3a3a3]"
+        className="flex w-full items-center justify-between border border-[#e5e5e5] bg-white px-3 py-[9px] text-[13px] font-medium text-[#404040] transition-colors hover:border-[#a3a3a3] max-[760px]:min-h-[44px]"
       >
         <span>이용기간: <span className="font-semibold">{label}</span></span>
         <ChevronDown size={13} className={clsx("ml-1 shrink-0 text-[#737373] transition-transform", open && "rotate-180")} />
       </button>
+      {/* 패널: ≤760px에서는 w-full로 컨테이너를 따라간다 — 320px에서 210px 고정폭이 카드 밖으로 삐져나갔다.
+          데스크톱 우측 열은 190px이라 w-full로 바꾸면 패널이 좁아지므로 고정폭을 그대로 둔다. */}
       {open && (
-        <div className="absolute right-0 top-[calc(100%+4px)] z-20 w-[210px] border border-[#e5e5e5] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.12)]">
+        <div className="absolute right-0 top-[calc(100%+4px)] z-20 w-[210px] max-w-[210px] border border-[#e5e5e5] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.12)] max-[760px]:w-full">
           {points.map((p, idx) => (
             <button
               key={p.weeks}
@@ -327,14 +329,20 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ 지표 밴드 ══════════════════════════════════════════ */}
-        <div className="border-b border-[#e5e5e5] bg-[#f5f5f5]">
-          <div className="app-shell--default grid grid-cols-3 max-[640px]:grid-cols-1">
+        {/* 이 밴드만 px-6이 없어 다른 섹션보다 좌우 24px씩 넓게 나갔다.
+            app-shell--default는 ≤1180px에서 100vw가 아닌 100% 기준이라, 부모 패딩이 폭에 그대로 반영된다.
+            그래서 무조건 px-6을 주면 1041~1180px 구간의 폭까지 함께 바뀐다 — 데스크톱 무변화를 위해
+            표준 브레이크포인트 1040 이하로만 건다(그 위는 원래 정렬을 그대로 유지). */}
+        <div className="border-b border-[#e5e5e5] bg-[#f5f5f5] max-[1040px]:px-6">
+          {/* 2열에서는 열 간격이 필요하다 — 3열 데스크톱은 셀이 넓어 gap 없이도 떨어져 보이지만,
+              2열(147px)에서는 "평균 3~4만 회"가 셀을 꽉 채워 옆 셀 값과 맞닿는다. */}
+          <div className="app-shell--default grid grid-cols-3 max-[640px]:grid-cols-2 max-[640px]:gap-x-5">
             {([
               { value: "평균 3~4만 회", sub: "SNS 단독 공고 1건당 조회수" },
               { value: "4,000명",        sub: "카카오톡 단독 공고 대상" },
               { value: "약 10배",        sub: "미디어 연계 노출 (일반 대비)" },
             ] as const).map((s, i) => (
-              <div key={i} className="relative py-[34px] text-center max-[640px]:border-t max-[640px]:border-[#e5e5e5]">
+              <div key={i} className="relative py-[34px] text-center max-[640px]:border-t max-[640px]:border-[#e5e5e5] max-[640px]:text-left">
                 {i > 0 && <span className="absolute inset-y-7 left-0 w-px bg-[#e5e5e5] max-[640px]:hidden" />}
                 <b
                   className="block font-bold text-[#0a0a0a]"
@@ -422,7 +430,7 @@ export function BusinessPricingClient() {
         {/* ══ HEADHUNTING ══════════════════════════════════════ */}
         <section className="bg-white px-6 py-[88px] max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
-            <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[56px] max-[980px]:grid-cols-1 max-[980px]:gap-9">
+            <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-9">
               <div>
                 <p className="text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">HEADHUNTING</p>
                 <h2
@@ -458,7 +466,7 @@ export function BusinessPricingClient() {
                 ] as const).map((c) => (
                   <div
                     key={c.role}
-                    className="flex items-center gap-[18px] border border-[#e5e5e5] bg-white px-6 py-5 transition-[transform,box-shadow,border-color] duration-[220ms] hover:-translate-y-0.5 hover:border-[#d4d4d4] hover:shadow-[0_10px_26px_-16px_rgba(0,0,0,0.18)]"
+                    className="flex items-center gap-[18px] border border-[#e5e5e5] bg-white px-6 py-5 transition-[transform,box-shadow,border-color] duration-[220ms] hover:-translate-y-0.5 hover:border-[#d4d4d4] hover:shadow-[0_10px_26px_-16px_rgba(0,0,0,0.18)] max-[760px]:flex-wrap"
                   >
                     <span className={clsx("grid h-[52px] w-[52px] shrink-0 place-items-center text-[18px] font-bold text-white", c.dark ? "bg-[#2c6f63]" : "bg-[#232726]")}>
                       {c.init}
@@ -470,7 +478,10 @@ export function BusinessPricingClient() {
                         {c.tags.map((t) => <span key={t} className="bg-[#f5f5f5] px-[9px] py-1 text-[11.5px] text-[#525252]">{t}</span>)}
                       </div>
                     </div>
-                    <button type="button" className="shrink-0 border border-[#e5e5e5] px-4 py-[9px] text-[13px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#fafafa]">
+                    {/* ≤760px: basis-full로 둘째 줄에 내려 전폭 버튼이 된다. 한 행에 남겨 두면
+                        아바타·버튼이 shrink-0이라 가운데 텍스트 열이 64px까지 눌려 전 요소가 2줄로 쪼개진다.
+                        (390px 실측 64px / 360px 34px / 320px 0px) */}
+                    <button type="button" className="shrink-0 border border-[#e5e5e5] px-4 py-[9px] text-[13px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#fafafa] max-[760px]:min-h-[44px] max-[760px]:basis-full">
                       프로필 보기
                     </button>
                   </div>
@@ -483,7 +494,7 @@ export function BusinessPricingClient() {
         {/* ══ BOOST ════════════════════════════════════════════ */}
         <section className="bg-[#fafafa] px-6 py-[88px] max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
-            <div className="grid grid-cols-[1fr_0.9fr] items-center gap-[56px] max-[980px]:grid-cols-1 max-[980px]:gap-8">
+            <div className="grid grid-cols-[1fr_0.9fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-8">
               <div>
                 <p className="text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">START FREE</p>
                 <h2
@@ -496,7 +507,8 @@ export function BusinessPricingClient() {
                   모든 채용 트랙에서 공고 등록과 게시는 무료입니다. 채용을 빠르게 진행하고 싶을 때만 아래 부스트로 추천 노출을 더하세요.
                 </p>
               </div>
-              <div className="border-l border-[#e5e5e5] pl-[40px]">
+              {/* 1040px에서 1단으로 적층된다 — 세로 구분선·들여쓰기는 2열일 때만 의미가 있어 함께 끈다. */}
+              <div className="border-l border-[#e5e5e5] pl-[40px] max-[1040px]:border-l-0 max-[1040px]:pl-0">
                 <div className="flex items-center justify-between py-[18px]">
                   <span className="text-[15px] text-[#0a0a0a]">공고 등록·게시</span>
                   <span className="text-[15px] font-bold text-[#0F6E56]">무료</span>
@@ -532,7 +544,9 @@ export function BusinessPricingClient() {
 
             {/* 분류 탭 — 중앙 정렬 */}
             <div className="mt-9 flex justify-center">
-              <div className="flex gap-2">
+              {/* flex-wrap — 좁은 폭에서 세 탭이 한 줄에 못 들어가면 잘리는 대신 접힌다.
+                  데스크톱은 한 줄로 들어가므로 wrap이 걸리지 않는다. */}
+              <div className="flex flex-wrap justify-center gap-2">
                 {CATS.map((cat) => {
                   const label = CAT_LABEL[cat];
                   return (
@@ -541,7 +555,7 @@ export function BusinessPricingClient() {
                       type="button"
                       onClick={() => setActiveCat(cat)}
                       className={clsx(
-                        "border px-[26px] py-[11px] text-[14px] font-semibold transition-all",
+                        "border px-[26px] py-[11px] text-[14px] font-semibold transition-all max-[760px]:px-4",
                         activeCat === cat
                           ? "border-transparent bg-[linear-gradient(160deg,#0D7369,#17A68C)] text-white"
                           : "border-[#e5e5e5] bg-white text-[#737373] hover:border-[#a3a3a3]",
@@ -555,9 +569,9 @@ export function BusinessPricingClient() {
             </div>
 
             {/* 미리보기 + 카드 */}
-            <div className="mt-[44px] grid grid-cols-[0.95fr_1.05fr] items-start gap-8 max-[980px]:grid-cols-1">
+            <div className="mt-[44px] grid grid-cols-[0.95fr_1.05fr] items-start gap-8 max-[1040px]:grid-cols-1">
               {/* 브라우저 목업 */}
-              <div className="sticky top-[88px] border border-[#e5e5e5] bg-white max-[980px]:hidden">
+              <div className="sticky top-[88px] border border-[#e5e5e5] bg-white max-[1040px]:hidden">
                 <div className="flex items-center gap-2 border-b border-[#e5e5e5] px-4 py-[7px]">
                   {[0,1,2].map((i) => <span key={i} className="h-[11px] w-[11px] rounded-full bg-[#d4d4d4]" />)}
                 </div>
