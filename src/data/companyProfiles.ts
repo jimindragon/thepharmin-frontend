@@ -116,6 +116,7 @@ export const companyProfiles: CompanyProfile[] = [
   {
     id: "thepharmin-pharma",
     name: "더파마제약(주)",
+    logoImage: companyLogos["더파마제약(주)"],
     logoText: "PHARMA",
     tagline: "인류의 건강한 삶을 위해 혁신을 연구합니다.",
     tags: ["제약/바이오", "코스닥 123456", "설립 2012년", "사원수 1,250명"],
