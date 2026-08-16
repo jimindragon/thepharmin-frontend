@@ -98,7 +98,9 @@ export function IndustryJobDetailClient({ data, jobRecord }: { data: IndustryJob
   const hasRequiredDocuments = Boolean(job.requiredDocuments && job.requiredDocuments.length > 0);
   const hasHiringProcessSection = hasHiringProcess || hasRequiredDocuments;
 
-  const hasOrgDescription = Boolean(org.description);
+  /* description이 shortIntro와 같은 문장인 org가 다수 있어(예: cellbion-qaqc) 그대로 두면 같은 줄이 두 번 찍힌다 */
+  const hasOrgDescription =
+    Boolean(org.description) && org.description?.trim() !== org.shortIntro?.trim();
   const hasKeywords = Boolean(org.keywords && org.keywords.length > 0);
   const hasCompanyCards = Boolean(org.orgType) || Boolean(org.employeeCount) || Boolean(businessFieldsLabel);
 
