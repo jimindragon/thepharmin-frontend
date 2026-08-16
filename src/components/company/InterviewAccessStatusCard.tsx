@@ -102,44 +102,41 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
   return (
     /* items-stretch — 상태 덩어리도 버튼 기둥도 카드 안쪽 폭을 그대로 쓴다. 세로는 가운데 정렬이되
        내용이 min-h-[160px]를 넘기면 자연히 늘어난다.
-       gap-4 — 상태 덩어리와 버튼 기둥 사이. 상태가 두 줄 블록이 되면서 12px로는 문구와 버튼이 눌어붙어,
-       한 스텝 되돌린다. */
-    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white p-4 text-left">
+       gap-4 — 상태 덩어리와 버튼 기둥 사이.
+       text-center — 두 글줄과 버튼 두 개가 카드 중심선 하나에 함께 선다. 버튼은 이미 라벨을 가운데
+       두고 있었고(LinkButton의 justify-center) 글줄만 왼쪽에 붙어 있어 축이 둘로 보였다.
+       pt-3 — 위쪽만 16px에서 12px로 줄인다. 이 카드 위에는 섹션 설명이 바로 붙는데, 그 사이는
+       SectionShell의 mb-6(24px)이 이미 벌려 놓아 카드가 같은 크기를 한 번 더 얹을 자리가 아니다.
+       아래·좌우는 그대로다(좌우는 ≤760px에서 부모 FLUSH_GRID_CLASS가 24px로 덮어쓴다). */
+    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white px-4 pb-4 pt-3 text-center">
       <div>
         {copy.label ? (
-          /* 상태 전체가 한 줄이다: "보유 열람권 ⓘ 0장 | 후기 승인 시 2장 지급".
-             라벨·숫자·조건이 서로 다른 덩어리로 흩어져 있을 이유가 없다 — 셋이 합쳐 한 문장이고,
-             그렇게 두면 카드 맨 위 한 줄만 읽어도 상태가 끝난다.
+          /* 1줄 "보유 열람권 ⓘ 0장" / 2줄 "후기 승인 시 2장 지급".
+             한 줄에 모아 두었을 때는 구분자(세로선)로 값과 조건을 갈라야 했고, 좁은 폭에서는 그 선이
+             줄 머리에 남지 않도록 브레이크포인트 두 곳을 걸어야 했다. 줄을 나누면 그 둘이 함께 사라진다 —
+             줄바꿈 자체가 구분자 노릇을 하고, 폭에 따라 달라질 것도 없다.
 
-             items-baseline이 필수다 — 17px 숫자와 13px 라벨·문구가 섞여 있어 items-center로 맞추면
-             글자 밑선이 어긋난다(실측 확인). 간격은 라벨→ⓘ 4px(안쪽 gap-1), 나머지는 8px(gap-x-2). */
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+             items-baseline은 남는다 — 17px 숫자와 13px 라벨이 같은 줄에 섞여 있어 items-center면
+             밑선이 어긋난다(실측 확인). 간격은 라벨→ⓘ 4px(안쪽 gap-1), ⓘ→숫자 8px(gap-2). */
+          <div className="flex items-baseline justify-center gap-2">
             <span className="flex items-center gap-1">
               <p className="text-[13px] font-medium text-[#596373]">{copy.label}</p>
               <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
             </span>
-            {/* 17px/semibold — 상태값이지 제목이 아니다. 한 줄 안에서 라벨·문구(13px)보다 한 단계만
-                크면 어느 쪽이 값인지 충분히 갈린다. 확정 스케일의 17. */}
+            {/* 17px/semibold — 상태값이지 제목이 아니다. 라벨(13px)보다 한 단계만 크면 어느 쪽이 값인지
+                충분히 갈린다. 확정 스케일의 17. */}
             <span className="text-[17px] font-semibold leading-none tracking-[-0.02em] text-[#111111]">{copy.value}</span>
-            {/* 구분자 — 1px 세로선. " · " 문자 대신 선을 쓰는 이유는 같은 줄에 이미 문장 부호처럼 읽히는
-                토막(ⓘ)이 있어서다. 문자 안으로 바꾸려면 이 span을 {" · "} 하나로 갈아 끼우면 된다.
-                줄바꿈이 일어나는 폭에서는 숨는다(아래 보조 문구의 w-full과 한 쌍) — 둘 다 같은
-                브레이크포인트를 쓰므로, 문구가 둘째 줄로 내려간 줄 머리에 선만 남는 일이 없다. */}
-            <span aria-hidden="true" className="h-3 w-px self-center bg-[#dce2ea] max-[359px]:hidden" />
-            {/* 수량만 굵게(emphasizeAmount) — 조건문 안에서 실제 값은 그 한 토막이다 */}
-            <span className="text-[13px] font-normal text-[#9aa3af] max-[359px]:w-full">{emphasizeAmount(copy.subtext)}</span>
           </div>
         ) : (
-          /* loggedOut은 셀 숫자가 없다 — 한 줄로 이을 값이 없어 제목 + ⓘ 한 줄과 그 밑 단서라는
-             종전 배치를 그대로 둔다. 수량 강조만 위와 같이 쓴다. */
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
-              <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
-            </div>
-            <p className="mt-1.5 text-[13px] font-normal text-[#9aa3af]">{emphasizeAmount(copy.subtext)}</p>
+          /* loggedOut은 셀 숫자가 없어 첫 줄이 제목 한 줄이다. 정렬·간격 문법은 위와 같다. */
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
+            <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
           </div>
         )}
+        {/* 2줄 — 세 상태가 같은 자리에 둔다. 첫 줄에 딸린 조건이라 mt-1.5(6px)로 바짝 붙인다.
+            수량만 굵게(emphasizeAmount) — 조건문 안에서 실제 값은 그 한 토막이다. */}
+        <p className="mt-1.5 text-[13px] font-normal text-[#9aa3af]">{emphasizeAmount(copy.subtext)}</p>
       </div>
       {/* 두 버튼은 같은 기둥이다 — items-stretch + w-full로 카드 안쪽 폭을 함께 채운다 */}
       <div className="flex w-full flex-col items-stretch gap-2">
