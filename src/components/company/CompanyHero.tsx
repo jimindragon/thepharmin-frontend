@@ -148,9 +148,9 @@ export function CompanyHero({ profile, variant = "full" }: { profile: CompanyPro
             </div>
           </div>
           {/* ≤760px 자리 — 로고·제목 행 다음, 액션 버튼 앞. 부모가 세로 flex(max-[820px]:flex-col)라 전폭을 받는다.
-              -mt-2는 부모 gap-6(24px)을 한줄소개와의 간격 16px(=데스크톱 mt-4)로 되돌린다 — 배지는 소개 문구에
+              -mt-3은 부모 gap-6(24px)을 한줄소개와의 간격 12px(=데스크톱 mt-3)로 되돌린다 — 배지는 소개 문구에
               딸린 줄이지, 버튼과 등거리로 떠 있는 별개 블록이 아니다. */}
-          <HeroBadges badges={badges} className="-mt-2 w-full min-[761px]:hidden" />
+          <HeroBadges badges={badges} className="-mt-3 w-full min-[761px]:hidden" />
           <div className="flex shrink-0 gap-2 max-[640px]:w-full">
             <button
               type="button"
