@@ -594,7 +594,8 @@ function ApplicationSummaryCard({ job }: { job: CalendarJob }) {
   return (
     <Link
       href="/mypage/applications"
-      className="block h-full border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]"
+      // h-full 금지 — ≤760px flex 스트립에서 height:100%가 stretch를 무력화해 형제 카드와 높이가 갈림. grid(≥761px)에서는 기본 align-self:stretch가 이미 정렬함
+      className="block border border-[#e5e8ec] bg-white p-3.5 transition hover:border-[#111111] hover:bg-[#fbfbfb]"
     >
       {job.statusLabel ? (
         <span
@@ -616,7 +617,8 @@ function ApplicationMoreCard() {
   return (
     <Link
       href="/mypage/applications"
-      className="flex h-full min-h-[140px] flex-col items-center justify-center gap-2 border border-dashed border-[#d8dce2] bg-white p-3.5 text-[#5f6875] transition hover:border-[#111111] hover:text-[#111111]"
+      // h-full 금지(ApplicationSummaryCard와 같은 이유). min-h는 형제 카드가 없거나 짧을 때의 바닥값이라 유지한다.
+      className="flex min-h-[140px] flex-col items-center justify-center gap-2 border border-dashed border-[#d8dce2] bg-white p-3.5 text-[#5f6875] transition hover:border-[#111111] hover:text-[#111111]"
     >
       <Plus size={18} />
       <span className="text-[13px] font-medium">지원 현황 더보기</span>
