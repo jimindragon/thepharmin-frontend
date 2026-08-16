@@ -22,20 +22,22 @@ const ACCESS_INFO_LINES = [
 const MANAGE_HREF = "/mypage/review-credits";
 
 /** interviews 목록 그리드 첫 슬롯에서 CompanyReviewWriteCard를 대체하는 열람권 상태 카드.
- * 카드 외형(흰 배경/보더/radius 0/세로 중앙 정렬)은 CompanyReviewWriteCard와 동일한 문법을 따르고,
- * userState 3종에 따라 문구·CTA만 바뀌고 레이아웃은 고정이다.
+ * 카드 외형(흰 배경/보더/radius 0)은 CompanyReviewWriteCard와 동일한 문법을 따르고, userState 3종에 따라
+ * 문구·CTA만 바뀌고 레이아웃은 고정이다.
  *
- * **버튼 두 개는 폭에 상관없이 같은 기둥이다.** 주 버튼(검정 솔리드)과 보조 버튼(아웃라인)이 같은 폭·
- * 같은 높이로 세로로 선다. 종전에는 둘 다 내용 폭이라 "면접 후기 작성하기"(127px)와 "열람권 관리"(92px)의
- * 길이가 달랐고, ≤760px에서는 보조 쪽만 테두리를 벗겨 텍스트 링크로 내렸다 — 폭마다 다른 문법이었다.
- * 이제 한 벌로 통일한다: 무게 차이는 칠(검정 솔리드 vs 흰 배경 + 옅은 테두리)이 지고, 폭은 그 차이를
- * 말하는 자리가 아니다.
+ * **폭 분기가 없다.** 한 벌의 레이아웃이 390px 낱장에서도 405px 격자 칸에서도 그대로 선다.
+ *   - 상태는 한 행이다: 왼쪽에 라벨 + ⓘ + 그 밑 단서, 오른쪽 끝에 숫자.
+ *   - 버튼 둘은 같은 기둥이다: 주 버튼(검정 솔리드)과 보조 버튼(아웃라인)이 같은 폭·같은 높이로 선다.
+ *   - 본문은 좌측 정렬이다.
  *
- * **≤760px만 다르게 접는다.** 그 폭에서 이 카드는 3열 격자의 한 칸이 아니라 화면 전폭 낱장이 된다
- * (부모 FLUSH_GRID_CLASS가 테두리를 지우고 좌우 24px을 준다). 405px 칸에 맞춘 가운데 정렬 한 덩어리를
- * 390px 전폭에 그대로 늘리면 라벨·숫자·문구가 화면 한가운데 기둥처럼 서고, 좌우로 남는 여백만 넓어진다 —
- * 같은 화면의 후기 카드들이 전부 좌측 정렬 낱장인 것과도 어긋난다. 그래서 그 폭에서만 상태를
- * 라벨(좌)↔숫자(우) 한 줄로 펴고 본문을 좌측 정렬로 내린다. 분기 기준(760px)은 부모가 쓰는 값과 같다. */
+ * 여기까지 오는 데 두 단계를 거쳤다. 처음엔 405px 칸에 맞춘 가운데 정렬 한 덩어리였고(라벨 위 숫자 아래,
+ * 버튼은 내용 폭), ≤760px에서만 그것을 펴는 max-[760px]: 분기를 얹었다. 그러자 같은 카드가 폭에 따라
+ * 다른 문법으로 읽혔다 — 한쪽은 가운데 기둥, 한쪽은 좌우로 갈린 행. 두 벌을 유지할 이유가 없어 넓은 쪽을
+ * 좁은 쪽에 맞춘다: 좌우로 갈린 행은 405px에서도 읽히지만, 가운데 기둥은 390px 전폭에서 좌우 여백만
+ * 넓어졌다(같은 화면의 후기 카드가 전부 좌측 정렬 낱장인 것과도 어긋났다).
+ *
+ * 그래서 이 파일에는 max-[760px]:이 한 줄도 없다. 폭에 따라 달라지는 것은 부모 몫이다 —
+ * FLUSH_GRID_CLASS가 그 폭에서 테두리를 지우고 좌우 24px을 준다. */
 export function InterviewAccessStatusCard({ userState, credits, writeHref }: InterviewAccessStatusCardProps) {
   const copy =
     userState === "loggedOut"
@@ -79,34 +81,33 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           };
 
   return (
-    /* max-[760px]: items-stretch(자식을 전폭으로) + text-left. 세로 중앙 정렬(justify-center)은 두 폭이 같다 —
-       내용이 min-h-[160px]를 넘기면 어차피 늘어나고, 넘지 않으면 그 폭에서도 가운데가 자연스럽다. */
-    <article className="flex h-full min-h-[160px] flex-col items-center justify-center gap-4 border border-border bg-white p-4 text-center max-[760px]:items-stretch max-[760px]:text-left">
+    /* items-stretch — 상태 행도 버튼 기둥도 카드 안쪽 폭을 그대로 쓴다. 세로는 가운데 정렬이되
+       내용이 min-h-[160px]를 넘기면 자연히 늘어난다. */
+    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white p-4 text-left">
       <div>
         {copy.label ? (
-          /* 이 래퍼는 데스크톱에서 아무 일도 하지 않는 평범한 블록이다(라벨 덩어리 위, 숫자 아래).
-             ≤760px에서만 flex가 되어 라벨 덩어리↔숫자를 한 줄 양 끝으로 편다. */
-          <div className="max-[760px]:flex max-[760px]:items-center max-[760px]:justify-between max-[760px]:gap-3">
+          /* 상태 한 행: 왼쪽 라벨 덩어리 ↔ 오른쪽 끝 숫자. items-center라 왼쪽이 두 줄이어도
+             숫자는 그 두 줄의 세로 가운데에 선다. */
+          <div className="flex items-center justify-between gap-3">
             {/* 보조 문구는 라벨에 딸린 단서라 라벨 바로 밑에 붙인다 — 숫자를 사이에 두면 무엇에 대한
-                단서인지 한 칸 건너뛰어 읽어야 하고, ≤760px에서는 라벨과 숫자가 좌우로 갈라져 아예 멀어진다.
-                한 덩어리로 묶어 두면 그 폭에서 왼쪽 열이 통째로 "라벨 + 단서"가 된다. */}
+                단서인지 한 칸 건너뛰어 읽어야 하고, 라벨과 숫자가 좌우로 갈라진 이 행에서는 아예 멀어진다.
+                한 덩어리로 묶어 두면 왼쪽 열이 통째로 "라벨 + 단서"가 된다. */}
             <div>
-              <div className="flex items-center justify-center gap-1 max-[760px]:justify-start">
+              <div className="flex items-center gap-1">
                 <p className="text-[13px] font-medium text-[#596373]">{copy.label}</p>
                 <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
               </div>
               <p className="mt-1.5 text-[12px] font-normal text-[#9aa3af]">{copy.subtext}</p>
             </div>
-            {/* 한 줄로 펴지면 위아래 간격이 필요 없다 */}
-            <div className="mt-1.5 max-[760px]:mt-0">
-              {/* 24px/semibold — 이 숫자는 카드의 제목이 아니라 상태값이다. 28px/bold는 같은 화면에서
-                  가장 큰 활자라 후기 카드들보다 먼저 눈에 들어왔다. 확정 타이포 스케일 안에서 한 단계씩 내린다. */}
-              <span className="text-[24px] font-semibold leading-none tracking-[-0.02em] text-[#111111]">{copy.value}</span>
-            </div>
+            {/* 24px/semibold — 이 숫자는 카드의 제목이 아니라 상태값이다. 28px/bold는 같은 화면에서
+                가장 큰 활자라 후기 카드들보다 먼저 눈에 들어왔다. 확정 타이포 스케일 안에서 한 단계씩 내린다. */}
+            <span className="text-[24px] font-semibold leading-none tracking-[-0.02em] text-[#111111]">{copy.value}</span>
           </div>
         ) : (
+          /* loggedOut은 셀 숫자가 없어 한 행이 아니라 제목 + 단서 두 줄이다. 정렬·간격 문법은 위와 같다 —
+             세 상태가 레이아웃을 공유한다는 전제는 여기서도 지킨다. */
           <div>
-            <div className="flex items-center justify-center gap-1.5 max-[760px]:justify-start">
+            <div className="flex items-center gap-1.5">
               <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
               <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
             </div>
@@ -114,7 +115,7 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           </div>
         )}
       </div>
-      {/* 두 버튼은 폭에 상관없이 같은 기둥이다 — items-stretch + w-full로 카드 안쪽 폭을 함께 채운다 */}
+      {/* 두 버튼은 같은 기둥이다 — items-stretch + w-full로 카드 안쪽 폭을 함께 채운다 */}
       <div className="flex w-full flex-col items-stretch gap-2">
         <div className="flex flex-col items-stretch gap-1">
           <LinkButton href={copy.primaryHref} variant={userState === "hasCredits" ? "gradient" : "primary"} size="sm" className="w-full">
