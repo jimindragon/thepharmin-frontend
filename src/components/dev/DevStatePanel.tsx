@@ -197,7 +197,7 @@ export function DevStatePanel() {
         onClick={() => setOpen(true)}
         aria-label="개발용 상태 전환 패널 열기"
         className={clsx(
-          "fixed bottom-4 right-4 h-8 bg-white px-3 text-[11px] font-bold tracking-[0.06em] text-[#8a95a5] shadow-[0_2px_8px_rgba(20,32,46,0.12)] transition hover:border-[#111111] hover:text-[#111111]",
+          "fixed bottom-4 left-4 h-8 bg-white px-3 text-[11px] font-bold tracking-[0.06em] text-[#8a95a5] shadow-[0_2px_8px_rgba(20,32,46,0.12)] transition hover:border-[#111111] hover:text-[#111111]",
           DASHED,
           PANEL_Z,
           PANEL_TABBAR_OFFSET,
@@ -211,7 +211,7 @@ export function DevStatePanel() {
   return (
     <div
       className={clsx(
-        "fixed bottom-4 right-4 w-[268px] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.16)]",
+        "fixed bottom-4 left-4 w-[268px] bg-white shadow-[0_8px_22px_rgba(20,32,46,0.16)]",
         DASHED,
         PANEL_Z,
         PANEL_TABBAR_OFFSET,
