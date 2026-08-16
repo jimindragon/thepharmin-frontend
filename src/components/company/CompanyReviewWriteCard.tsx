@@ -40,7 +40,9 @@ export function CompanyReviewWriteCard({ companyId, reviewType, isLoggedIn, hasI
   return (
     /* 열람권 카드(justify-start)와 달리 이 카드는 콘텐츠가 행 높이를 채우지 못해 start 정렬 시
        하단 여백이 쏠린다 — 정렬만 center 예외 */
-    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white px-4 pb-4 pt-3 text-center">
+    /* 모바일 개요 펼침은 풀블리드 1열이라 min-h 잉여(상하 28px)가 섹션 간격과 합산돼 과한 공백으로
+       보임 — 모바일만 자연 높이(104px). 데스크톱은 0건 목록에서 min-h가 카드 눌림을 막으므로 유지 */
+    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white px-4 pb-4 pt-3 text-center max-[760px]:min-h-0">
       <p className="text-[15px] font-medium leading-[1.6] text-[#596373]">{message}</p>
       {/* gradient는 화면당 1개 규칙(Button.tsx) — 이 카드는 면접 후기 열람권 카드(hasCredits 시 gradient)와
           한 화면에 공존하므로 primary를 쓴다. w-full은 그 카드의 버튼 기둥과 같은 폭 문법이다. */}
