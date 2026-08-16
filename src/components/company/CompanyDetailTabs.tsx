@@ -44,7 +44,7 @@ export function CompanyDetailTabs({ companyId }: { companyId: string }) {
   const rootHref = `/companies/${companyId}`;
 
   /**
-   * ≤760px 개요 탭에서만 이 행을 숨긴다 — 그 자리는 SectionAnchorNav가 대신한다. 좁은 화면에서
+   * ≤760px 개요 탭에서 이 행을 숨긴다 — 그 자리는 SectionAnchorNav가 대신한다. 좁은 화면에서
    * 히어로 바로 밑에 가로 스크롤 탭 행이 둘(라우트 탭·섹션 앵커) 쌓이는 것이 실기기에서 걸린 문제고,
    * 개요 본문은 네 목적지(공고·면접 후기·기업 리뷰·뉴스)를 미리보기 섹션으로 모두 갖고 있어
    * 앵커 + 각 섹션의 "전체 보기" 링크만으로 같은 페이지에 전부 닿는다. 앵커가 흡수한 건수는
@@ -57,12 +57,19 @@ export function CompanyDetailTabs({ companyId }: { companyId: string }) {
    * 것은 리다이렉트가 마운트 후에 도는 클라이언트 동작이기 때문이다 — 서버가 내려보낸 목록이 옮겨 가기
    * 전까지는 이 행도 함께 있어야 그 순간의 화면이 반쪽이 되지 않는다.
    *
+   * **후기 작성 경로(/reviews/new·/interviews/new)는 리다이렉트가 흡수하지 못하는 예외라 여기서 직접
+   * 숨긴다.** 그 둘은 목록이 아니라 폼이어서 개요로 돌려보낼 수 없고(돌려보내면 작성 자체가 불가),
+   * 결과적으로 ≤760px에서 이 행이 실제로 서는 유일한 화면으로 남아 있었다 — 통합 이전의 옛 탭 행이
+   * 작성 화면에서만 되살아나는 셈이었다. 되돌아갈 수단은 히어로의 컴팩트 바(CompanyHero
+   * variant="compact")가 이미 들고 있으므로 이 행이 없어도 갇히지 않는다. 761px 이상은 그대로다.
+   *
    * 개요에서 앵커가 렌더되지 않는 경우는 없다: "정보" 카드는 조건 없이 렌더되고 면접 후기·기업 리뷰
    * 미리보기는 0건이어도 빈 상태(EmptyState)로 남아, 최악의 경우(소개·공고·뉴스가 모두 빠진 기관)에도
    * 3섹션으로 MIN_SECTIONS(3)를 채운다. "소개"는 본문·키워드·특징이 모두 없으면 섹션째 빠지므로
    * 항상 있는 쪽으로 세지 않는다.
    */
-  const isOverview = pathname === rootHref;
+  const isWritePath = pathname === `${rootHref}/reviews/new` || pathname === `${rootHref}/interviews/new`;
+  const hideTabsOnMobile = pathname === rootHref || isWritePath;
 
   // nav는 w-fit으로 탭 총폭(최대 5개, ~473px)만큼만 차지하되 max-w-full로 부모(app-shell) 폭에 갇힌다 —
   // max-w-full 없이 w-fit만 두면 좁은 화면(390px 등)에서 nav가 부모를 넘어 문서 전체에 가로 스크롤이 생겼다.
@@ -87,10 +94,10 @@ export function CompanyDetailTabs({ companyId }: { companyId: string }) {
       className={clsx(
         // max-[760px]:mb-6 — layout.tsx의 children 래퍼는 그 폭에서 mt-0이다(히어로에 붙어 있어야 하는
         // 개요의 sticky 앵커 행 기준). 이 행은 더 이상 sticky 바가 아니라 액자형 박스라 본문과 붙으면
-        // 목록에 눌어붙는다. 개요에서는 아래 hidden으로 행 자체가 사라지며 이 마진도 함께 빠지므로
-        // 그쪽 계산(히어로~앵커 0px)은 그대로다.
+        // 목록에 눌어붙는다. 개요·작성 경로에서는 아래 hidden으로 행 자체가 사라지며 이 마진도 함께
+        // 빠지므로 그쪽 계산(히어로~앵커 0px)은 그대로다.
         "mt-6 flex h-11 w-fit max-w-full overflow-x-auto overflow-y-hidden border border-border bg-white max-[760px]:mb-6",
-        isOverview && "max-[760px]:hidden",
+        hideTabsOnMobile && "max-[760px]:hidden",
       )}
       role="tablist"
       aria-label="기업 정보 메뉴"

@@ -467,8 +467,12 @@ export function CompanyReviewsPreviewSection({
         <EmptyState
           message={`아직 등록된 ${title}가 없습니다.`}
           cta={
+            /* 목록(href)이 아니라 작성 폼으로 직행한다 — ≤760px에서 목록 라우트는
+               CompanyMobileOverviewRedirect가 개요로 되돌려보내므로, 목록을 가리키면 방금 떠난 그 자리로
+               돌아오는 죽은 CTA가 된다. 비로그인 갈래는 펼침 슬롯의 작성 유도 카드와 같은 규칙이다
+               (CompanyReviewWriteCard: 로그인 전에는 /companies). */
             <Link
-              href={href}
+              href={isLoggedIn ? `${href}/new` : "/companies"}
               className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
             >
               첫 후기 작성하기
