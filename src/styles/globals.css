@@ -89,6 +89,12 @@
   box-sizing: border-box;
 }
 
+/* iOS 러버밴드로 sticky 헤더가 튕기는 것 억제. iOS 사파리 16.4+ 지원, pull-to-refresh도 함께 비활성(의도) */
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--color-bg);
