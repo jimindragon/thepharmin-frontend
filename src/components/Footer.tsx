@@ -127,6 +127,8 @@ export function Footer() {
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="페이지 상단으로 이동"
+        // opacity-0은 화면에서만 지운다 — Tab 순서에는 남아 보이지 않는 버튼에 포커스가 선다.
+        tabIndex={showScrollTop ? 0 : -1}
         className={clsx(
           // fixed라 <footer>의 relative와 무관하게 뷰포트에 붙는다. z-50은 헤더와 같은 층 —
           // 모달(z-[70])보다는 아래라 모달이 뜬 동안 위로 튀어나오지 않는다.
