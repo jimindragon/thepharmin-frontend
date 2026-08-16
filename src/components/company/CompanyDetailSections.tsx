@@ -413,6 +413,8 @@ export function CompanyReviewsPreviewSection({
   const isInterview = type === "interview";
   const title = isInterview ? "면접 후기" : "기업 리뷰";
   const href = `/companies/${profile.id}/${isInterview ? "interviews" : "reviews"}`;
+  /** 섹션 DOM id이자 해시 진입 시 펼침 판정의 기준. 두 자리(SectionShell·SectionExpandGroup)가 같은 값을 봐야 한다 */
+  const anchorId = isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews;
 
   const all = companyReviews
     .filter((review) => review.companyId === profile.id && review.type === type)
@@ -440,7 +442,7 @@ export function CompanyReviewsPreviewSection({
 
   return (
     <SectionShell
-      id={isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews}
+      id={anchorId}
       title={title}
       description={
         isInterview
@@ -471,6 +473,7 @@ export function CompanyReviewsPreviewSection({
         />
       ) : (
         <SectionExpandGroup
+          anchorId={anchorId}
           count={all.length}
           label={title}
           collapsed={
@@ -563,6 +566,7 @@ export function CompanyActiveJobsPreviewSection({ profile }: { profile: CompanyP
     >
       {activeJobs.length > preview.length ? (
         <SectionExpandGroup
+          anchorId={companyAnchorIds.jobs}
           count={activeJobs.length}
           label="채용중인 공고"
           collapsed={<CompanyJobsGrid jobs={preview} />}
@@ -674,7 +678,7 @@ export function CompanyNewsPreviewSection({ profile }: { profile: CompanyProfile
       }
     >
       {all.length > preview.length ? (
-        <SectionExpandGroup count={all.length} label="관련 뉴스" collapsed={newsGrid(preview)} expanded={newsGrid(all)} />
+        <SectionExpandGroup anchorId={companyAnchorIds.news} count={all.length} label="관련 뉴스" collapsed={newsGrid(preview)} expanded={newsGrid(all)} />
       ) : (
         newsGrid(preview)
       )}

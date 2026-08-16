@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -29,6 +29,7 @@ export function SectionExpandGroup({
   expanded,
   count,
   label,
+  anchorId,
 }: {
   /** 접힘 슬롯 — 미리보기 2~3건. 데스크톱에서는 항상 이쪽만 보인다. */
   collapsed: ReactNode;
@@ -38,8 +39,28 @@ export function SectionExpandGroup({
   count: number;
   /** 버튼 문구 앞머리. 섹션 제목을 그대로 쓴다("채용중인 공고 5건 모두 보기") */
   label: string;
+  /**
+   * 이 그룹이 담긴 섹션의 앵커 id(companyDetailAnchors). 넘기면 `#{anchorId}`로 진입했을 때 펼친 채로
+   * 시작한다 — 섹션을 지목해 들어왔는데 접혀 있으면 도착지가 미리보기 2건(compact 카드·본문 없음)이라,
+   * 지목한 것이 그 자리에 없다. 특히 면접 후기는 열람권 상태 카드·잠금 CTA가 펼침 슬롯에만 있어
+   * "다시 보기"류 딥링크가 원문에 닿지 못했다.
+   */
+  anchorId?: string;
 }) {
   const [open, setOpen] = useState(false);
+
+  /**
+   * 해시는 서버에서 읽을 수 없어(location이 없다) 초기값이 아니라 마운트 후 판별이다 — 초기 렌더는
+   * 접힘이고 그 다음 프레임에 열린다. 접힘→펼침 전환이 한 번 보이는 것을 받아들인 것은, 초기값으로
+   * 넣으려면 서버 HTML과 첫 클라이언트 렌더가 갈려 하이드레이션이 어긋나기 때문이다.
+   *
+   * 한 번만 연다: 사용자가 도착한 뒤 접었는데 다른 이유로 이 이펙트가 다시 돌아 도로 열리면,
+   * 접기 버튼이 듣지 않는 것처럼 보인다. 의존성이 anchorId 하나뿐이라 그 값이 바뀔 때만 다시 본다.
+   */
+  useEffect(() => {
+    if (!anchorId) return;
+    if (window.location.hash === `#${anchorId}`) setOpen(true);
+  }, [anchorId]);
 
   return (
     <>
