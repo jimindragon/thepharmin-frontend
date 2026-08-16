@@ -296,6 +296,34 @@ function PreviewStandardCard() {
   );
 }
 
+/**
+ * ≤1040px 축약 미리보기의 존 한 줄.
+ *
+ * 데스크톱 PreviewZone과 같은 것을 말하되(존 순서·라벨·강조 문법 동일), 브라우저 목업을 통째로
+ * 세로로 눌러 담는다 — 목업을 그대로 줄이면 존당 카드가 5장까지 들어가 스켈레톤이 뭉개진다.
+ * 대신 "존 이름 + 그 존의 구좌 수"만 남긴다. 카드 장수는 데스크톱 존의 grid-cols와 같은 값을 쓴다.
+ */
+function MiniPreviewZone({ label, active, slots, muted }: { label: string; active: boolean; slots: number; muted?: boolean }) {
+  return (
+    // 테두리는 평시에도 2px 투명으로 잡아 둔다 — 데스크톱 존과 같은 이유(강조 시 밀림 방지).
+    <div
+      className={clsx(
+        "flex items-center gap-[10px] border-2 px-[8px] py-[5px] transition-colors duration-150",
+        active ? "border-[#2c6f63] bg-[#eef6f2]" : "border-transparent",
+      )}
+    >
+      <span className={clsx("w-[64px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.08em]", muted ? "text-[#dcdcdc]" : "text-[#c2c2c2]")}>
+        {label}
+      </span>
+      <span className="flex flex-1 gap-[4px]">
+        {Array.from({ length: slots }).map((_, i) => (
+          <span key={i} className={clsx("h-[16px] flex-1", muted ? "border border-[#efefef] bg-[#fafafa]" : "border border-[#e5e5e5] bg-[#f0f0f0]")} />
+        ))}
+      </span>
+    </div>
+  );
+}
+
 // ── 메인 ────────────────────────────────────────────────────
 export function BusinessPricingClient() {
   const isMember = useBusinessMember();
@@ -315,9 +343,22 @@ export function BusinessPricingClient() {
   const [pinnedTier, setPinnedTier] = useState<PreviewTier | null>(null);
   const activeTier = hoveredTier ?? pinnedTier;
 
+  // 터치 기기에서는 탭이 mouseenter까지 발생시키고 mouseleave가 오지 않는다. 그러면 같은 카드를
+  // 다시 눌러 고정을 풀어도 hoveredTier가 남아 하이라이트가 안 꺼진다(고스트 하이라이트).
+  // hover가 실제로 되는 포인터에서만 hover 강조를 붙인다 — 데스크톱 동작은 그대로다.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setCanHover(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const tierHighlight = (tier: PreviewTier) => ({
-    onMouseEnter: () => setHoveredTier(tier),
-    onMouseLeave: () => setHoveredTier(null),
+    ...(canHover
+      ? { onMouseEnter: () => setHoveredTier(tier), onMouseLeave: () => setHoveredTier(null) }
+      : null),
     onClick: () => setPinnedTier((current) => (current === tier ? null : tier)),
   });
 
@@ -658,6 +699,23 @@ export function BusinessPricingClient() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* ≤1040px 축약 미리보기 — 오른쪽 목업이 빠지는 폭에서 그 자리를 대신한다.
+                데스크톱 목업의 max-[1040px]:hidden과 정확히 상보적으로 켜지고, 같은 activeTier를 읽는다.
+                sticky top은 헤더(h-[64px] sticky top-0 z-50) 바로 아래. z는 헤더보다 낮게 두되
+                가격 카드의 기간 드롭다운(z-20)보다도 낮아야 드롭다운이 이 위에 뜬다. */}
+            <div className="sticky top-[64px] z-10 mt-7 hidden border border-[#e5e5e5] bg-white max-[1040px]:block">
+              <div className="flex flex-col gap-[2px] p-[8px]">
+                <MiniPreviewZone label="PREMIUM"  active={activeTier === "premium"}  slots={3} />
+                <MiniPreviewZone label="FEATURED" active={activeTier === "featured"} slots={4} />
+                <MiniPreviewZone label="STANDARD" active={activeTier === "standard"} slots={5} />
+                {/* BASIC 대응 — 데스크톱 목업과 같이 유료 구좌 밖의 전체 목록이라 한 단계 죽인다 */}
+                <MiniPreviewZone label="전체 공고" active={activeTier === "basic"}    slots={3} muted />
+              </div>
+              <p className="border-t border-[#e5e5e5] py-[7px] text-center text-[11px] text-[#a3a3a3]">
+                상품을 선택하면 노출 위치가 미리보기에 표시돼요.
+              </p>
             </div>
 
             {/* 미리보기 + 카드 */}
