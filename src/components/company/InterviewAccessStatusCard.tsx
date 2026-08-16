@@ -100,15 +100,21 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           };
 
   return (
-    /* items-stretch — 상태 덩어리도 버튼 기둥도 카드 안쪽 폭을 그대로 쓴다. 세로는 가운데 정렬이되
-       내용이 min-h-[160px]를 넘기면 자연히 늘어난다.
+    /* items-stretch — 상태 덩어리도 버튼 기둥도 카드 안쪽 폭을 그대로 쓴다.
+       justify-start — 남는 높이는 전부 아래로 보낸다. 이 카드는 격자의 첫 칸이라 h-full로 같은 행의
+       가장 큰 카드(후기 카드)만큼 늘어나는데, justify-center이던 종전에는 그 여유가 위아래로 반씩
+       갈렸다. 위로 간 몫은 섹션 설명과 첫 글줄 사이에 그대로 얹혀, 카드가 자기 패딩보다 훨씬
+       아래에서 시작하는 것처럼 보였다(@1440 실측 위쪽 여유 5~86px, 상태에 따라). 위 시작점은
+       패딩이 정하고 남는 높이는 아래가 받는 편이 이웃 카드들과 첫 줄 높이를 맞춘다.
+       h-full·min-h-[160px]는 그대로다 — 행 높이를 함께 쓰는 것 자체는 바뀌지 않는다.
+       ≤760px는 1열이라 늘어날 여유 자체가 없어(실측 위아래 여유 0) 이 줄이 하는 일이 없다.
        gap-4 — 상태 덩어리와 버튼 기둥 사이.
        text-center — 두 글줄과 버튼 두 개가 카드 중심선 하나에 함께 선다. 버튼은 이미 라벨을 가운데
        두고 있었고(LinkButton의 justify-center) 글줄만 왼쪽에 붙어 있어 축이 둘로 보였다.
        pt-3 — 위쪽만 16px에서 12px로 줄인다. 이 카드 위에는 섹션 설명이 바로 붙는데, 그 사이는
        SectionShell의 mb-6(24px)이 이미 벌려 놓아 카드가 같은 크기를 한 번 더 얹을 자리가 아니다.
        아래·좌우는 그대로다(좌우는 ≤760px에서 부모 FLUSH_GRID_CLASS가 24px로 덮어쓴다). */
-    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white px-4 pb-4 pt-3 text-center">
+    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-start gap-4 border border-border bg-white px-4 pb-4 pt-3 text-center">
       <div>
         {copy.label ? (
           /* 1줄 "보유 열람권 ⓘ 0장" / 2줄 "후기 승인 시 2장 지급".
