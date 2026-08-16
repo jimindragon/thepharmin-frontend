@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { FLUSH_GRID_CLASS } from "@/components/flushListStyles";
 import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell";
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
+import { CompanyMobileOverviewRedirect } from "@/components/company/CompanyMobileOverviewRedirect";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
+import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { companyReviews } from "@/data/companies";
 import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
 import { getCompanyProfile } from "@/data/companyProfiles";
@@ -44,9 +46,15 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
     </div>
   );
 
+  /* 프로필이 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다.
+     companyDirectory.detailHref가 그런 기업을 이 페이지로 폴백시키므로 실제로 자주 밟는 갈래다. */
   if (!profile) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 
-  return body;
+  return (
+    <CompanyMobileOverviewRedirect companyId={companyId} anchorId={companyAnchorIds.reviews}>
+      {body}
+    </CompanyMobileOverviewRedirect>
+  );
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { CompanyFallbackShell } from "@/components/company/CompanyFallbackShell";
 import { CompanyInterviewsListClient } from "@/components/company/CompanyInterviewsListClient";
+import { CompanyMobileOverviewRedirect } from "@/components/company/CompanyMobileOverviewRedirect";
+import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { companyReviews } from "@/data/companies";
 import { toInterviewCardItem } from "@/data/companyReviewItems";
 import { getCompanyProfile } from "@/data/companyProfiles";
@@ -31,9 +33,14 @@ export default async function CompanyInterviewsPage({ params }: CompanyInterview
 
   const body = <CompanyInterviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />;
 
+  /* 프로필이 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다 */
   if (!profile) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 
-  return body;
+  return (
+    <CompanyMobileOverviewRedirect companyId={companyId} anchorId={companyAnchorIds.interviews}>
+      {body}
+    </CompanyMobileOverviewRedirect>
+  );
 }
