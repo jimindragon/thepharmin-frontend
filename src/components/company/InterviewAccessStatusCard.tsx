@@ -82,38 +82,38 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
 
   return (
     /* items-stretch — 상태 행도 버튼 기둥도 카드 안쪽 폭을 그대로 쓴다. 세로는 가운데 정렬이되
-       내용이 min-h-[160px]를 넘기면 자연히 늘어난다. */
-    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-4 border border-border bg-white p-4 text-left">
+       내용이 min-h-[160px]를 넘기면 자연히 늘어난다.
+       gap-3 — 상태 덩어리와 버튼 기둥 사이. gap-4(16px)이던 자리를 한 스텝 줄여, 읽은 상태(보유 N장)와
+       그에 대해 할 일(작성하기·관리)이 한 흐름으로 이어지게 한다. */
+    <article className="flex h-full min-h-[160px] flex-col items-stretch justify-center gap-3 border border-border bg-white p-4 text-left">
       <div>
         {copy.label ? (
-          /* 상태 한 행: 왼쪽 라벨 덩어리 ↔ 오른쪽 끝 숫자. items-center라 왼쪽이 두 줄이어도
-             숫자는 그 두 줄의 세로 가운데에 선다. */
-          <div className="flex items-center justify-between gap-3">
-            {/* 보조 문구는 라벨에 딸린 단서라 라벨 바로 밑에 붙인다 — 숫자를 사이에 두면 무엇에 대한
-                단서인지 한 칸 건너뛰어 읽어야 하고, 라벨과 숫자가 좌우로 갈라진 이 행에서는 아예 멀어진다.
-                한 덩어리로 묶어 두면 왼쪽 열이 통째로 "라벨 + 단서"가 된다. */}
-            <div>
-              <div className="flex items-center gap-1">
-                <p className="text-[13px] font-medium text-[#596373]">{copy.label}</p>
-                <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
-              </div>
-              <p className="mt-1.5 text-[12px] font-normal text-[#9aa3af]">{copy.subtext}</p>
-            </div>
+          /* 상태는 한 줄로 읽힌다: "보유 열람권 ⓘ 2장". 종전에는 라벨 덩어리를 왼쪽, 숫자를 오른쪽 끝으로
+             밀어(justify-between) 405px 칸에서 둘 사이가 300px 가까이 벌어졌다 — 한 문장인데 두 덩어리로
+             갈려 읽혔다. 붙여 두면 라벨이 숫자의 단위 노릇을 하고, 보조 문구는 그 아래 한 줄로 딸린다.
+             items-baseline이 필수다 — 13px 라벨과 24px 숫자는 크기가 달라 items-center로 맞추면 글자
+             밑선이 어긋난다(가운데를 맞추면 큰 글자가 더 아래로 내려앉는다).
+             gap-2(8px)는 라벨 덩어리↔숫자 사이만이고, 라벨↔ⓘ는 안쪽 gap-1(4px) 그대로다. */
+          <div className="flex items-baseline gap-2">
+            <span className="flex items-center gap-1">
+              <p className="text-[13px] font-medium text-[#596373]">{copy.label}</p>
+              <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
+            </span>
             {/* 24px/semibold — 이 숫자는 카드의 제목이 아니라 상태값이다. 28px/bold는 같은 화면에서
                 가장 큰 활자라 후기 카드들보다 먼저 눈에 들어왔다. 확정 타이포 스케일 안에서 한 단계씩 내린다. */}
             <span className="text-[24px] font-semibold leading-none tracking-[-0.02em] text-[#111111]">{copy.value}</span>
           </div>
         ) : (
-          /* loggedOut은 셀 숫자가 없어 한 행이 아니라 제목 + 단서 두 줄이다. 정렬·간격 문법은 위와 같다 —
-             세 상태가 레이아웃을 공유한다는 전제는 여기서도 지킨다. */
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
-              <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
-            </div>
-            <p className="mt-1.5 text-[12px] font-normal text-[#9aa3af]">{copy.subtext}</p>
+          /* loggedOut은 셀 숫자가 없다 — 그 자리를 제목 한 줄이 대신하므로 baseline을 맞출 상대도 없고,
+             인라인으로 끌어올 값도 없다. 종전 배치(제목 + ⓘ, items-center)를 그대로 둔다. */
+          <div className="flex items-center gap-1.5">
+            <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
+            <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
           </div>
         )}
+        {/* 보조 문구는 세 상태가 같은 자리에 둔다 — 위 헤더 행(숫자든 제목이든)에 딸린 단서라
+            mt-1.5(6px)로 바짝 붙여 한 정보 묶음으로 읽히게 한다. */}
+        <p className="mt-1.5 text-[12px] font-normal text-[#9aa3af]">{copy.subtext}</p>
       </div>
       {/* 두 버튼은 같은 기둥이다 — items-stretch + w-full로 카드 안쪽 폭을 함께 채운다 */}
       <div className="flex w-full flex-col items-stretch gap-2">

@@ -76,10 +76,13 @@ export function SectionShell({
           섹션(면접 후기·기업 리뷰)이 실제로 그랬다 — 링크가 2줄(42.9px)로 렌더됐다. 줄여야 할 쪽은 긴 제목·설명이지
           두 단어짜리 액션이 아니다. 홈의 SectionHeader와 같은 처방이되 컴포넌트를 공유하지는 않는다: 이쪽은
           타이포(20px/#202733)도 설명 슬롯도 액션 종류(외부 링크·"더보기")도 달라 합치면 한쪽이 끌려간다. */}
-      <div className="mb-5 flex items-start justify-between gap-4">
+      {/* mb-6 / mt-1.5 — 제목·설명은 한 덩어리(소개)이고 그 아래가 기능이다. 종전 mt-2(8px)·mb-5(20px)는
+          안쪽 간격과 바깥 간격의 차이가 12px뿐이라 세 줄(제목·설명·본문 첫 줄)이 고른 간격으로 흘러
+          어디까지가 소개인지 흐렸다. 안쪽을 한 스텝 좁히고(6px) 바깥을 한 스텝 넓혀(24px) 4배로 벌린다. */}
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h2 className="text-[20px] font-bold tracking-[-0.02em] text-[#202733]">{title}</h2>
-          {description ? <p className="mt-2 text-[13px] font-normal leading-[1.65] text-[#7b8594]">{description}</p> : null}
+          {description ? <p className="mt-1.5 text-[13px] font-normal leading-[1.65] text-[#7b8594]">{description}</p> : null}
         </div>
         {action ? <div className="shrink-0 whitespace-nowrap">{action}</div> : null}
       </div>
