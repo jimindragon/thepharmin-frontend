@@ -64,6 +64,76 @@ const CAT_LABEL: Record<Cat, string> = {
   pharmacy: "약국",
 };
 
+/**
+ * VS 대조표 행. 데스크톱 표(>760px)와 모바일 카드 리스트(≤760px)가 같은 배열을 렌더한다 —
+ * 두 렌더가 갈라지는 것은 마크업뿐이고 문구는 여기 한 곳에만 둔다.
+ */
+const VS_ROWS = [
+  { label: "업계 전문성",           tp: "약사·업계 출신 전문 컨설턴트가 직접 운영",                             gen: "분야 비전문 일반 채용 운영" },
+  { label: "SNS·미디어 홍보",        tp: "LinkedIn·Instagram 등 미디어 연계 노출 (타 플랫폼 대비 약 10배)", gen: "자사 공고 게시판 노출에 한정" },
+  { label: "공고 1건당 평균 조회수",  tp: "평균 3~4만 회 노출",                                               gen: "수백~수천 회 수준" },
+  { label: "타깃 인재",              tp: "제약·바이오·약국·병원 전문 인재 (통합 구독자 6,000명)",            gen: "분야 무관 불특정 다수" },
+  { label: "채용 방식",              tp: "채용공고 + 헤드헌팅 + 기업 정보 관리 통합",                        gen: "공고 등록 위주" },
+  { label: "후보 검증·추천",          tp: "업계 이해 기반의 검증·추천",                                      gen: "키워드 자동 매칭" },
+] as const;
+
+/** 표 헤더의 두 열 이름. 모바일 카드에서는 행 라벨로 다시 쓴다(로고 이미지를 쓸 자리가 없다). */
+const VS_TP_LABEL = "더파마 리크루트";
+const VS_GEN_LABEL = "다른 채용 플랫폼";
+
+// ── 상품별 제공 항목 비교 ───────────────────────────────────
+/** 등급 열. 데스크톱 표의 <th>와 모바일 등급 탭이 같은 순서·이름을 쓴다. */
+const FEATURE_TIERS = [
+  { tier: "BASIC",    sub: "무료 공고",  prem: false },
+  { tier: "STANDARD", sub: "기본 노출",  prem: false },
+  { tier: "FEATURED", sub: "확장 노출",  prem: false },
+  { tier: "PREMIUM",  sub: "집중 노출",  prem: true  },
+] as const;
+
+interface FeatureRow {
+  label: string;
+  sub?: string;
+  /** BASIC / STANDARD / FEATURED / PREMIUM 순. true=제공, false=미제공, 문자열=횟수·기간 */
+  cells: [boolean | string, boolean | string, boolean | string, boolean | string];
+  /** 데스크톱 표에서 항목 묶음을 가르는 두꺼운 행 간격 */
+  gap: boolean;
+  pharmacyExcluded?: boolean;
+}
+
+/* pharmacyExcluded: 약국 상품은 웹사이트 노출만 묶은 구성이라 채널·팝업이 빠진다.
+   가격 카드 문구(premCopy·featCopy의 약국 분기)가 이미 SNS·카카오톡을 빼고 말하는데
+   이 표만 제공한다고 적혀 있던 것을 맞춘 것 — 셀마다 분기하지 말고 이 플래그로만 다룰 것. */
+const FEATURE_ROWS: FeatureRow[] = [
+  { label: "더파마 리크루트 공고 등록",                                       cells: [true,  true,  true,  true],  gap: false },
+  // 웹사이트 노출 3행은 기간이 상품마다 다른 게 아니라 "구매한 이용 기간만큼"이라 제공/미제공만 남긴다(각주로 보충).
+  { label: "웹사이트 추천 공고 노출",                                          cells: [false, true,  true,  true],  gap: false },
+  { label: "웹사이트 상단 추천 노출",                                          cells: [false, false, true,  true],  gap: false },
+  { label: "웹사이트 최상단 추천 노출",                                        cells: [false, false, false, true],  gap: false },
+  { label: "SNS 주간 추천 공고",     sub: "업계 타깃 채널 묶음 노출",           cells: [false, false, "1회", "1회"], gap: true,  pharmacyExcluded: true },
+  { label: "카카오톡 주간 추천 공고", sub: "4,000명 대상 노출",                 cells: [false, false, "1회", "1회"], gap: false, pharmacyExcluded: true },
+  { label: "이주의 추천 공고 팝업",                                            cells: [false, false, false, "7일"], gap: true,  pharmacyExcluded: true },
+  { label: "SNS 단독 공고 노출",      sub: "평균 조회수 3~4만 회",              cells: [false, false, false, "1회"], gap: false, pharmacyExcluded: true },
+  { label: "카카오톡 단독 공고 노출", sub: "4,000명 대상 노출",                 cells: [false, false, false, "1회"], gap: false, pharmacyExcluded: true },
+  { label: "더파마뉴스 사이드 배너",                                           cells: [false, false, false, "7일"], gap: false, pharmacyExcluded: true },
+];
+
+/**
+ * 한 칸의 최종 값. 약국 분기가 표(데스크톱)와 리스트(모바일) 두 곳에 있으므로 여기서만 계산한다 —
+ * 렌더마다 따로 구현하면 두 화면이 서로 다른 표를 보여주게 된다.
+ * 제외되는 것은 유료 상단 두 등급(FEATURED·PREMIUM)뿐 — BASIC·STANDARD는 원래 미제공이라 그대로 둔다.
+ */
+function featureCell(row: FeatureRow, tierIndex: number, cat: Cat): boolean | string {
+  const excluded = cat === "pharmacy" && !!row.pharmacyExcluded;
+  return excluded && tierIndex >= 2 ? false : row.cells[tierIndex];
+}
+
+/** 제공/미제공 마크 — 데스크톱 표 셀과 모바일 리스트가 같은 기호를 쓴다. */
+function FeatureMark({ value }: { value: boolean | string }) {
+  if (value === true) return <span className="inline-flex justify-center"><Check size={18} strokeWidth={2} className="text-[#17A68C]" /></span>;
+  if (value === false) return <span className="text-[#d4d4d4]">—</span>;
+  return <>{value}</>;
+}
+
 // ── 공용 서브 컴포넌트 ──────────────────────────────────────
 function BlackIc() {
   return (
@@ -231,6 +301,9 @@ export function BusinessPricingClient() {
   const isMember = useBusinessMember();
   const [activeCat, setActiveCat] = useState<Cat>("industry");
 
+  // ≤760px 제공 항목 비교 리스트에서 보고 있는 등급 열. 기본은 페이지가 밀고 있는 PREMIUM(마지막 열).
+  const [featureTier, setFeatureTier] = useState(FEATURE_TIERS.length - 1);
+
   // 카드별 독립 기간 상태 (default: 2주 = index 1)
   const [premPeriod, setPremPeriod] = useState(1);
   const [featPeriod, setFeatPeriod] = useState(1);
@@ -382,7 +455,9 @@ export function BusinessPricingClient() {
               ))}
             </div>
             {/* group: .vs:hover → 더파마 헤더 float-up */}
-            <div className="group mt-[54px] overflow-x-auto">
+            {/* 표는 min-w-[760px]이라 모바일에서는 가로 스크롤 없이는 타사 열이 아예 안 보인다.
+                ≤760px에서는 아래 카드 리스트로 교체한다(데이터는 VS_ROWS 하나를 공유). */}
+            <div className="group mt-[54px] overflow-x-auto max-[760px]:hidden">
               <table className="w-full min-w-[760px] border-collapse">
                 <thead>
                   <tr>
@@ -400,14 +475,7 @@ export function BusinessPricingClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {([
-                    { label: "업계 전문성",           tp: "약사·업계 출신 전문 컨설턴트가 직접 운영",                             gen: "분야 비전문 일반 채용 운영" },
-                    { label: "SNS·미디어 홍보",        tp: "LinkedIn·Instagram 등 미디어 연계 노출 (타 플랫폼 대비 약 10배)", gen: "자사 공고 게시판 노출에 한정" },
-                    { label: "공고 1건당 평균 조회수",  tp: "평균 3~4만 회 노출",                                               gen: "수백~수천 회 수준" },
-                    { label: "타깃 인재",              tp: "제약·바이오·약국·병원 전문 인재 (통합 구독자 6,000명)",            gen: "분야 무관 불특정 다수" },
-                    { label: "채용 방식",              tp: "채용공고 + 헤드헌팅 + 기업 정보 관리 통합",                        gen: "공고 등록 위주" },
-                    { label: "후보 검증·추천",          tp: "업계 이해 기반의 검증·추천",                                      gen: "키워드 자동 매칭" },
-                  ] as const).map((row) => (
+                  {VS_ROWS.map((row) => (
                     <tr key={row.label}>
                       <td className="border-b border-[#e5e5e5] py-[22px] text-[15px] font-semibold text-[#0a0a0a]">{row.label}</td>
                       <td className="whitespace-nowrap border-b border-[#e5e5e5] bg-[#eef6f2] px-[26px] py-[22px] text-left text-[15px] font-medium">
@@ -420,6 +488,30 @@ export function BusinessPricingClient() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* ≤760px 대체 — 한 행을 한 장의 카드로 세운다. 표 헤더(로고 / "다른 채용 플랫폼")가 사라지므로
+                두 값이 각각 누구 것인지 카드 안에서 라벨로 밝힌다. nowrap은 쓰지 않는다(자연 줄바꿈). */}
+            <div className="mt-8 hidden flex-col gap-3 max-[760px]:flex">
+              {VS_ROWS.map((row) => (
+                <div key={row.label} className="border border-[#e5e5e5] bg-white p-5">
+                  <p className="text-[15px] font-semibold text-[#0a0a0a]">{row.label}</p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {/* flex — 기호(체크·대시)는 그대로 두고 둘째 줄이 기호 아래로 파고들지 않게 매단다.
+                        데스크톱 셀은 nowrap이라 줄바꿈이 없어 이 문제가 없었다. */}
+                    <div className="bg-[#eef6f2] px-4 py-3">
+                      <p className="text-[12px] text-[#737373]">{VS_TP_LABEL}</p>
+                      <p className="mt-[5px] flex text-[15px] font-medium text-[#0a0a0a]"><TpCheck />{row.tp}</p>
+                    </div>
+                    <div className="px-4 py-3">
+                      <p className="text-[12px] text-[#737373]">{VS_GEN_LABEL}</p>
+                      <p className="mt-[5px] flex text-[15px] text-[#a3a3a3]">
+                        <span className="mr-[10px] text-[#d4d4d4]">—</span>{row.gen}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
             <p className="mt-6 text-center text-[12.5px] text-[#a3a3a3]">
               * 더파마 리크루트 자체 채널 운영 기준. 노출·조회수는 직무·시기에 따라 달라질 수 있습니다.
@@ -760,17 +852,14 @@ export function BusinessPricingClient() {
             <p className="mt-[10px] text-center text-[13px] font-semibold text-[#0D7369]">
               {CAT_LABEL[activeCat]} 기준
             </p>
-            <div className="mt-[18px] overflow-x-auto">
+            {/* 5열 × 10행 표라 모바일에서는 등급 열이 전부 화면 밖으로 나간다.
+                ≤760px에서는 아래 등급 탭 + 1열 리스트로 교체한다(FEATURE_ROWS·featureCell 공유). */}
+            <div className="mt-[18px] overflow-x-auto max-[760px]:hidden">
               <table className="w-full min-w-[760px] border-collapse">
                 <thead>
                   <tr>
                     <th className="w-[30%] py-[22px] pl-6 text-left text-[14px] font-semibold text-[#0a0a0a]">제공 항목</th>
-                    {([
-                      { tier: "BASIC",    sub: "무료 공고",  prem: false },
-                      { tier: "STANDARD", sub: "기본 노출",  prem: false },
-                      { tier: "FEATURED", sub: "확장 노출",  prem: false },
-                      { tier: "PREMIUM",  sub: "집중 노출",  prem: true  },
-                    ] as const).map((h) => (
+                    {FEATURE_TIERS.map((h) => (
                       <th
                         key={h.tier}
                         className={clsx("w-[17.5%] py-[22px] text-center", h.prem && "bg-[linear-gradient(160deg,#0D7369,#17A68C)] text-white")}
@@ -782,45 +871,59 @@ export function BusinessPricingClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* pharmacyExcluded: 약국 상품은 웹사이트 노출만 묶은 구성이라 채널·팝업이 빠진다.
-                      가격 카드 문구(premCopy·featCopy의 약국 분기)가 이미 SNS·카카오톡을 빼고 말하는데
-                      이 표만 제공한다고 적혀 있던 것을 맞춘 것 — 셀마다 분기하지 말고 이 플래그로만 다룰 것. */}
-                  {([
-                    { label: "더파마 리크루트 공고 등록",   b: true,  s: true,        f: true,        p: true,  gap: false },
-                    // 웹사이트 노출 3행은 기간이 상품마다 다른 게 아니라 "구매한 이용 기간만큼"이라 제공/미제공만 남긴다(각주로 보충).
-                    { label: "웹사이트 추천 공고 노출",      b: false, s: true,  f: true,  p: true, gap: false },
-                    { label: "웹사이트 상단 추천 노출",      b: false, s: false, f: true,  p: true, gap: false },
-                    { label: "웹사이트 최상단 추천 노출",    b: false, s: false, f: false, p: true, gap: false },
-                    { label: "SNS 주간 추천 공고",  sub: "업계 타깃 채널 묶음 노출",        b: false, s: false, f: "1회", p: "1회", gap: true,  pharmacyExcluded: true },
-                    { label: "카카오톡 주간 추천 공고", sub: "4,000명 대상 노출",              b: false, s: false, f: "1회", p: "1회", gap: false, pharmacyExcluded: true },
-                    { label: "이주의 추천 공고 팝업",        b: false, s: false,   f: false,   p: "7일",  gap: true,  pharmacyExcluded: true },
-                    { label: "SNS 단독 공고 노출",   sub: "평균 조회수 3~4만 회",             b: false, s: false, f: false, p: "1회", gap: false, pharmacyExcluded: true },
-                    { label: "카카오톡 단독 공고 노출", sub: "4,000명 대상 노출",              b: false, s: false, f: false, p: "1회", gap: false, pharmacyExcluded: true },
-                    { label: "더파마뉴스 사이드 배너",       b: false, s: false,   f: false,   p: "7일",  gap: false, pharmacyExcluded: true },
-                  ] as const).map((row, ri) => {
-                    const excluded = activeCat === "pharmacy" && "pharmacyExcluded" in row && row.pharmacyExcluded;
-                    return (
-                      <tr key={ri} className={row.gap ? "border-t-[8px] border-[#f5f5f5]" : ""}>
-                        <td className="border-t border-[#e5e5e5] py-[18px] pl-6 text-[15px] font-semibold text-[#0a0a0a]">
-                          {row.label}
-                          {"sub" in row && row.sub && <small className="mt-[3px] block text-[12px] font-normal text-[#a3a3a3]">{row.sub}</small>}
+                  {FEATURE_ROWS.map((row, ri) => (
+                    <tr key={ri} className={row.gap ? "border-t-[8px] border-[#f5f5f5]" : ""}>
+                      <td className="border-t border-[#e5e5e5] py-[18px] pl-6 text-[15px] font-semibold text-[#0a0a0a]">
+                        {row.label}
+                        {row.sub && <small className="mt-[3px] block text-[12px] font-normal text-[#a3a3a3]">{row.sub}</small>}
+                      </td>
+                      {FEATURE_TIERS.map((_, ci) => (
+                        <td key={ci} className={clsx("border-t border-[#e5e5e5] py-[18px] text-center text-[15px] font-semibold", ci === 3 && "bg-[rgba(23,166,140,0.05)]")}>
+                          <FeatureMark value={featureCell(row, ci, activeCat)} />
                         </td>
-                        {([row.b, row.s, row.f, row.p] as const).map((val, ci) => {
-                          // 제외되는 것은 유료 상단 두 등급(FEATURED·PREMIUM)뿐 — BASIC·STANDARD는 원래 미제공이라 그대로 둔다
-                          const shown = excluded && ci >= 2 ? false : val;
-                          return (
-                            <td key={ci} className={clsx("border-t border-[#e5e5e5] py-[18px] text-center text-[15px] font-semibold", ci === 3 && "bg-[rgba(23,166,140,0.05)]")}>
-                              {shown === true  ? <span className="inline-flex justify-center"><Check size={18} strokeWidth={2} className="text-[#17A68C]" /></span>
-                              : shown === false ? <span className="text-[#d4d4d4]">—</span>
-                              : shown}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
+                      ))}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* ≤760px 대체 — 등급 하나를 골라 그 열만 세로로 읽는다.
+                탭 상태는 미리보기 하이라이트(pinnedTier)와 별개다. 여기서 고르는 것은 "표의 어느 열을 볼지"라
+                두 상태를 묶으면 가격 카드를 탭할 때 이 표가 같이 움직여 버린다. */}
+            <div className="mt-6 hidden max-[760px]:block">
+              {/* 2열 2행 — 4개를 한 줄에 넣으면 320px에서 STANDARD/FEATURED가 잘린다. 순서는 표와 동일 */}
+              <div className="grid grid-cols-2 gap-2">
+                {FEATURE_TIERS.map((h, i) => (
+                  <button
+                    key={h.tier}
+                    type="button"
+                    onClick={() => setFeatureTier(i)}
+                    className={clsx(
+                      "min-h-[44px] border px-3 py-[10px] text-[13px] font-semibold transition-colors",
+                      featureTier === i
+                        ? "border-transparent bg-[#0a0a0a] text-white"
+                        : "border-[#e5e5e5] bg-white text-[#737373]",
+                    )}
+                  >
+                    {h.tier}
+                    <span className={clsx("ml-[6px] text-[12px] font-normal", featureTier === i ? "text-white/70" : "text-[#a3a3a3]")}>{h.sub}</span>
+                  </button>
+                ))}
+              </div>
+              <ul className="mt-5 divide-y divide-[#e5e5e5] border-y border-[#e5e5e5]">
+                {FEATURE_ROWS.map((row, ri) => (
+                  <li key={ri} className="flex items-start justify-between gap-4 py-[14px]">
+                    <div className="min-w-0">
+                      <p className="text-[14px] text-[#0a0a0a]">{row.label}</p>
+                      {row.sub && <small className="mt-[3px] block text-[12px] text-[#a3a3a3]">{row.sub}</small>}
+                    </div>
+                    <span className="shrink-0 text-[14px] font-semibold text-[#0a0a0a]">
+                      <FeatureMark value={featureCell(row, featureTier, activeCat)} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
             <p className="mt-6 text-center text-[12.5px] text-[#a3a3a3]">
               * 노출 기간·횟수는 상품 기준이며, 직무·시기에 따라 달라질 수 있습니다. 모든 금액은 부가세 별도입니다.
