@@ -68,8 +68,8 @@ export function TrackSelectionClient() {
             onClick={() => router.push(track.href)}
             className="track-card"
           >
-            {/* 이미지 16:10 */}
-            <div className="relative aspect-[16/10] overflow-hidden">
+            {/* 이미지 16:10 — shrink-0: 설명문이 길어져도 사진이 눌리지 않게 한다 */}
+            <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
               <Image
                 src={track.image}
                 alt={track.label}

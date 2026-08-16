@@ -335,6 +335,9 @@ input:focus-visible {
 /* ── 공고 등록 STEP1 — 트랙 선택 카드 ───────────────────────── */
 .track-card {
   position: relative;
+  /* button의 UA 기본 세로 중앙 정렬 차단 — 행 이웃보다 내용이 짧을 때 사진이 내려앉음(남는 높이는 아래로, 2f0f788과 같은 원칙) */
+  display: flex;
+  flex-direction: column;
   background: white;
   border: 1px solid #dfe4ea;
   cursor: pointer;
