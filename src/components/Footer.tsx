@@ -1,7 +1,9 @@
 "use client";
 
+import clsx from "clsx";
 import { ChevronUp } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { sharedRoutes } from "@/config/routes";
 
 /**
@@ -58,7 +60,26 @@ function FooterMetaLine({ tokens }: { tokens: MetaToken[] }) {
   );
 }
 
+/**
+ * 맨 위로 버튼은 한 화면 넘게 내려왔을 때만 꺼낸다 — 첫 화면에서는 올라갈 곳이 없어 방해만 된다.
+ * 마운트 직후에도 한 번 판정한다: 새로고침이 스크롤 위치를 복원하면 이벤트 없이 중간에 서 있게 된다.
+ */
+function useScrolledPastViewport() {
+  const [scrolledPast, setScrolledPast] = useState(false);
+
+  useEffect(() => {
+    const update = () => setScrolledPast(window.scrollY > window.innerHeight);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
+  return scrolledPast;
+}
+
 export function Footer() {
+  const showScrollTop = useScrolledPastViewport();
+
   return (
     <footer className="relative bg-[#262626]">
       <div className="app-shell pt-14 pb-12">
@@ -106,7 +127,15 @@ export function Footer() {
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="페이지 상단으로 이동"
-        className="absolute bottom-6 right-6 grid h-10 w-10 place-items-center rounded-full border-[0.5px] border-[#4a4a4a] bg-[#2e2e2e] transition-colors hover:bg-[#383838]"
+        className={clsx(
+          // fixed라 <footer>의 relative와 무관하게 뷰포트에 붙는다. z-50은 헤더와 같은 층 —
+          // 모달(z-[70])보다는 아래라 모달이 뜬 동안 위로 튀어나오지 않는다.
+          "fixed bottom-6 right-6 z-50 grid h-10 w-10 place-items-center rounded-full border-[0.5px] border-[#4a4a4a] bg-[#2e2e2e]",
+          // 761px 미만에서 하단 탭바(fixed bottom-0 z-40, 56px+safe-area)를 피해 위로 올린다.
+          "max-[760px]:bottom-[calc(76px+env(safe-area-inset-bottom)+16px)]",
+          "transition-[background-color,opacity] hover:bg-[#383838]",
+          showScrollTop ? "opacity-100" : "opacity-0 pointer-events-none",
+        )}
       >
         <ChevronUp size={20} className="text-[#cfcfcf]" />
       </button>
