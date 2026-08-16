@@ -7,6 +7,7 @@ import { FieldLabel, Segmented, TextInput } from "@/components/business/Business
 import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { Button } from "@/components/ui/Button";
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
+import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
 import { REVIEW_TAG_MAX, interviewDifficultyOptions, interviewFormatOptions } from "@/config/reviewTags";
 import type { CompanyReviewType, JobTrack } from "@/types/jobs";
@@ -28,6 +29,9 @@ const JOB_ROLE_PLACEHOLDERS: Record<JobTrack, string> = {
   pharmacy: "예: 근무약사",
   research: "예: 연구원, 박사후연구원",
 };
+
+/** 기업 상세 모바일 통합 브레이크포인트 — CompanyDetailTabs(모바일 탭 행 숨김)·CompanyMobileOverviewRedirect와 동일 기준 */
+const MOBILE_QUERY = "(max-width: 760px)";
 
 const TEXTAREA_CLASS =
   "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[15px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]";
@@ -59,7 +63,8 @@ function FormSection({
   );
 }
 
-/** 리뷰/면접 후기 작성 목업 폼. reviewType에 따라 필드 구성만 다르고, 제출은 실제 저장 없이 토스트 + 목록 이동만 한다. */
+/** 리뷰/면접 후기 작성 목업 폼. reviewType에 따라 필드 구성만 다르고, 제출은 실제 저장 없이 토스트 + 이동만 한다.
+ * 떠날 곳은 폭이 가른다(getLeaveHref) — 761px 이상은 목록, ≤760px는 개요의 해당 섹션 앵커다. */
 export function ReviewWriteClient({ companyId, companyName, track, reviewType }: ReviewWriteClientProps) {
   const router = useRouter();
   const isInterview = reviewType === "interview";
@@ -78,6 +83,21 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const titleLabel = isInterview ? "면접 후기 작성" : "기업 리뷰 작성";
   const contentGuide = isInterview ? "200~350자 권장" : "100~150자 권장";
   const listHref = isInterview ? `/companies/${companyId}/interviews` : `/companies/${companyId}/reviews`;
+  /** ≤760px 개요에서 이 후기가 들어가 있는 섹션. 목록 라우트가 그 폭에서 리다이렉트로 도착하는 곳과 같은 앵커다. */
+  const overviewHref = `/companies/${companyId}#${isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews}`;
+
+  /**
+   * 폼을 떠날 때의 목적지. 제출·취소가 함께 쓴다.
+   *
+   * ≤760px에서 목록 라우트로 보내면 도착하자마자 CompanyMobileOverviewRedirect가 개요로 다시 옮기므로,
+   * 떠나려던 폼 대신 목록이 한 프레임 스쳤다가 사라진다(리다이렉트는 마운트 후에 도는 클라이언트 동작).
+   * 그 폭에서는 최종 도착지인 개요 앵커로 곧장 보낸다 — 목적지는 같고 경유만 없앤 것이다.
+   * 761px 이상은 목록이 그대로 도착지라 종전과 같다.
+   *
+   * 렌더가 아니라 이동 시점에 폭을 재는 것은 두 가지 이유다: SSR에는 window가 없고, 폼을 길게 열어 둔
+   * 사이 창 폭이 바뀌었을 수 있다.
+   */
+  const getLeaveHref = () => (window.matchMedia(MOBILE_QUERY).matches ? overviewHref : listHref);
   // 실제 시계를 쓰지 않는다 — 시연 기준일 연도부터 7년치를 거슬러 만든다.
   const applyYearOptions = Array.from({ length: 7 }, (_, index) => MOCK_TODAY_DATE.getFullYear() - index);
 
@@ -107,7 +127,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const handleSubmit = () => {
     setShowToast(true);
     window.setTimeout(() => {
-      router.push(listHref);
+      router.push(getLeaveHref());
     }, 900);
   };
 
@@ -265,7 +285,7 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
       <div className="grid gap-3">
         <InlineInfoHint>{submitHint}</InlineInfoHint>
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={() => router.push(listHref)}>
+          <Button type="button" variant="secondary" onClick={() => router.push(getLeaveHref())}>
             취소
           </Button>
           <Button type="button" variant="gradient" onClick={handleSubmit}>
