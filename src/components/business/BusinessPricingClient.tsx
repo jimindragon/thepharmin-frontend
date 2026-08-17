@@ -1265,10 +1265,12 @@ export function BusinessPricingClient() {
                     onClick={() => setActiveCat(cat)}
                     aria-pressed={activeCat === cat}
                     className={clsx(
-                      // relative + after: 시각 높이는 그대로 두고 ≤760px 히트 영역만 44px로 넓힌다
+                      // relative + after: 시각 높이는 그대로 두고 ≤760px 히트 영역만 넓힌다
                       // (대시보드 처리할 항목 버튼과 같은 관용구). 세로로만 늘려 옆 세그먼트와 겹치지 않는다.
+                      // 5px인 이유: ≤760px 버튼 높이가 12×1.65 + py-2(16) = 35.8px이라
+                      // 위아래 5px씩 더해야 45.8px로 44를 넘는다(4px이면 43.8px로 미달).
                       "relative px-3 py-2 text-[13px] transition-colors max-[760px]:text-[12px]",
-                      "max-[760px]:after:absolute max-[760px]:after:inset-x-0 max-[760px]:after:-inset-y-[4px] max-[760px]:after:content-['']",
+                      "max-[760px]:after:absolute max-[760px]:after:inset-x-0 max-[760px]:after:-inset-y-[5px] max-[760px]:after:content-['']",
                       i > 0 && "border-l border-[#e5e5e5]",
                       activeCat === cat
                         ? "bg-[#111111] font-medium text-white"
