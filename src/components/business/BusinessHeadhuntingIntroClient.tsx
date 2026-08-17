@@ -146,16 +146,29 @@ export function BusinessHeadhuntingIntroClient() {
               덮을 수 없다. clamp 값(36/5.2vw/58)과 600은 그대로라 >760px 렌더 결과는 동일하다.
               행간·자간은 분기가 없어 인라인에 남긴다.
 
-              break-keep만 걸고 줄 묶음(nowrap)은 걸지 않는다 — 첫 소절 "제약·바이오·약국·병원 채용은"이
-              28px에서 299px라 390px(본문 342px)에는 들어가지만 320px(본문 272px)에서는 넘친다.
-              nowrap을 걸면 그 폭에서 잘려 나가므로, 접히도록 두고 카피 정리는 STEP 2에서 함께 본다. */}
+              ≤760px는 카피가 다르다(데스크톱 벌은 팀 논의 대기 중인 의도된 이원화). h1을 둘로 늘리지
+              않고 한 h1 안에서 두 벌을 갈라 끼운다 — 문서에 h1이 두 개 있는 것으로 읽히지 않게.
+
+              모바일 두 줄에 nowrap을 걸 수 있는 것은 카피가 짧아졌기 때문이다. 28px·weight 500·
+              자간 -0.045em에서 실측 240.5px / 172.3px이고 본문 폭은 뷰포트-48px이므로, 320px(272px)에서
+              첫 줄이 31.5px 남는다. 폰트 실측 오차 ±3%를 얹어도 248px이라 320px에서 안전하고,
+              289px 아래로 내려가야 넘친다. 데스크톱 벌은 종전대로 break-keep에 맡긴다
+              (그쪽 첫 소절은 28px 환산 299px이라 nowrap을 걸면 320px에서 잘린다). */}
           <h1
             className="mt-4 max-w-[980px] break-keep text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[28px] max-[760px]:font-medium"
             style={{ lineHeight: 1.15, letterSpacing: "-0.045em" }}
           >
-            제약·바이오·약국·병원 채용은
-            <br />
-            산업을 이해하는 파트너에게 맡기세요.
+            <span className="max-[760px]:hidden">
+              제약·바이오·약국·병원 채용은
+              <br />
+              산업을 이해하는 파트너에게 맡기세요.
+            </span>
+            {/* 줄마다 nowrap — 두 줄은 <br>로 고정하고, 그 안에서 다시 접히는 일이 없게 한다. */}
+            <span className="hidden max-[760px]:block">
+              <span className="whitespace-nowrap">산업을 아는 파트너에게</span>
+              <br />
+              <span className="whitespace-nowrap">채용을 맡기세요.</span>
+            </span>
           </h1>
           <p className="mt-6 max-w-[75ch] break-keep text-[17px] font-normal leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
             채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다.<br />
