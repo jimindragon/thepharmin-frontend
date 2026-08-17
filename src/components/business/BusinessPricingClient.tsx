@@ -719,14 +719,17 @@ export function BusinessPricingClient() {
                 table-fixed — 라벨 88px을 뺀 나머지를 두 열이 정확히 반씩 나눠 가져야 좌우가 대칭이 된다.
                 auto로 두면 글자 수가 많은 더파마 열이 넓어져 비교가 한쪽으로 기운다. */}
             <div className="mt-8 hidden max-[760px]:block">
-              <table className="w-full table-fixed border-collapse border border-[#111111] text-left">
+              {/* 외곽선은 검정이 아니라 border-border — 검정 테두리는 표 전체를 강조로 만들어
+                  안에서 유일하게 강조여야 할 더파마 열(검정 머리·#fafafa 면)과 경쟁했다.
+                  셀 여백(px-[10px] py-[14px])·행간(1.55)은 머리행까지 한 값으로 맞춘다. */}
+              <table className="w-full table-fixed border-collapse border border-border text-left">
                 <thead>
                   <tr>
-                    <th className="w-[88px] border-b border-border px-2 py-[9px]" />
-                    <th className="border-b border-l border-border bg-[#111111] px-2 py-[9px] text-[11px] font-semibold text-white">
+                    <th className="w-[88px] border-b border-border px-[10px] py-[14px]" />
+                    <th className="border-b border-l border-border bg-[#111111] px-[10px] py-[14px] text-[11px] font-semibold leading-[1.55] text-white">
                       {VS_TP_LABEL}
                     </th>
-                    <th className="border-b border-l border-border px-2 py-[9px] text-[11px] font-semibold text-[#737373]">
+                    <th className="border-b border-l border-border px-[10px] py-[14px] text-[11px] font-semibold leading-[1.55] text-[#737373]">
                       {VS_GEN_LABEL}
                     </th>
                   </tr>
@@ -734,17 +737,21 @@ export function BusinessPricingClient() {
                 <tbody>
                   {VS_ROWS.map((row) => (
                     <tr key={row.label}>
-                      <td className="border-t border-border px-2 py-[11px] align-top text-[11px] font-semibold leading-[1.4] text-[#111111]">
+                      {/* 라벨 11→12px — 두 값 열과 같은 크기다. 항목 이름이 답보다 작으면
+                          무엇을 견주는 표인지가 답보다 늦게 읽힌다. 구분은 굵기(600)가 맡는다. */}
+                      <td className="border-t border-border px-[10px] py-[14px] align-top text-[12px] font-semibold leading-[1.55] text-[#111111]">
                         {row.label}
                       </td>
-                      <td className="border-l border-t border-border bg-[#fafafa] px-2 py-[11px] align-top text-[12px] leading-[1.45] text-[#111111]">
-                        {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로). */}
-                        <span className="flex gap-1">
-                          <Check size={12} strokeWidth={2.5} className="mt-[2px] shrink-0 text-[#0D7369]" />
+                      <td className="border-l border-t border-border bg-[#fafafa] px-[10px] py-[14px] align-top text-[12px] leading-[1.55] text-[#111111]">
+                        {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로).
+                            items-start + mt-[3px]: 12px 글자의 첫 줄 상자가 18.6px(12×1.55)이고 아이콘이
+                            12px이라 (18.6-12)/2 ≈ 3px 내리면 체크가 첫 줄 한가운데 선다. */}
+                        <span className="flex items-start gap-1">
+                          <Check size={12} strokeWidth={2.5} className="mt-[3px] shrink-0 text-[#0D7369]" />
                           <span className="min-w-0">{row.tp}</span>
                         </span>
                       </td>
-                      <td className="border-l border-t border-border px-2 py-[11px] align-top text-[12px] leading-[1.45] text-[#737373]">
+                      <td className="border-l border-t border-border px-[10px] py-[14px] align-top text-[12px] leading-[1.55] text-[#737373]">
                         {row.gen}
                       </td>
                     </tr>
