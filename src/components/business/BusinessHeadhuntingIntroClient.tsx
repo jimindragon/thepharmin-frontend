@@ -57,15 +57,17 @@ function ClosingCtaRow({ isMember }: { isMember: boolean }) {
     : { primary: "/business/signup", secondary: "/business/support" };
   return (
     <>
+      {/* ≤760px 풀폭 세로 스택. 히어로와 달리 보조를 밑줄로 강등하지 않는다 — 이 섹션은
+          어두운 배경 위에 버튼 둘만 서 있어 아웃라인이 사라지면 두 번째 CTA가 배경에 묻힌다. */}
       <Link
         href={hrefs.primary}
-        className="inline-flex items-center bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[30px] py-[15px] text-[15px] font-semibold text-white transition-[filter] hover:brightness-[1.08]"
+        className="inline-flex items-center bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[30px] py-[15px] text-[15px] font-semibold text-white transition-[filter] hover:brightness-[1.08] max-[760px]:w-full max-[760px]:justify-center"
       >
         인재추천 의뢰하기
       </Link>
       <Link
         href={hrefs.secondary}
-        className="inline-flex items-center border border-white/40 px-[30px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+        className="inline-flex items-center border border-white/40 px-[30px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:bg-white/10 max-[760px]:w-full max-[760px]:justify-center"
       >
         서비스 소개자료 받기
       </Link>
@@ -73,25 +75,35 @@ function ClosingCtaRow({ isMember }: { isMember: boolean }) {
   );
 }
 
+/**
+ * ≤760px에서는 버튼 두 장이 같은 무게로 나란히 서지 않게 한다 — 주 CTA는 풀폭,
+ * 보조는 아웃라인을 벗겨 텍스트 링크로 내린다. 위계가 생기므로 세로 간격도 함께 좁힌다.
+ * (BusinessPricingClient 히어로와 같은 처리.)
+ * h-11(44px)은 테두리를 벗긴 뒤에도 터치 타깃을 유지하기 위한 것이다.
+ */
+const HERO_PRIMARY_CTA = "max-[760px]:w-full";
+const HERO_SECONDARY_CTA =
+  "max-[760px]:h-11 max-[760px]:w-full max-[760px]:justify-center max-[760px]:border-0 max-[760px]:underline max-[760px]:underline-offset-4";
+
 function HeroCtaRow({ isMember }: { isMember: boolean }) {
   if (isMember) {
     return (
-      <div className="flex flex-wrap gap-3">
-        <LinkButton href="/business/headhunting/manage/new" variant="gradient" size="lg">
+      <div className="flex flex-wrap gap-3 max-[760px]:gap-1">
+        <LinkButton href="/business/headhunting/manage/new" variant="gradient" size="lg" className={HERO_PRIMARY_CTA}>
           인재추천 의뢰하기
         </LinkButton>
-        <LinkButton href="/business/headhunting/manage" variant="secondary" tone="dark" size="lg">
+        <LinkButton href="/business/headhunting/manage" variant="secondary" tone="dark" size="lg" className={HERO_SECONDARY_CTA}>
           서비스 소개자료 받기
         </LinkButton>
       </div>
     );
   }
   return (
-    <div className="flex flex-wrap gap-3">
-      <LinkButton href="/business/signup" variant="gradient" size="lg">
+    <div className="flex flex-wrap gap-3 max-[760px]:gap-1">
+      <LinkButton href="/business/signup" variant="gradient" size="lg" className={HERO_PRIMARY_CTA}>
         인재추천 의뢰하기
       </LinkButton>
-      <LinkButton href="/business/support" variant="secondary" tone="dark" size="lg">
+      <LinkButton href="/business/support" variant="secondary" tone="dark" size="lg" className={HERO_SECONDARY_CTA}>
         서비스 소개자료 받기
       </LinkButton>
     </div>
@@ -129,16 +141,23 @@ export function BusinessHeadhuntingIntroClient() {
             (BusinessPricingClient가 같은 겹침을 먼저 푼 선례가 있다.)
             히어로는 밴드가 px를 쥐고 있어 className으로 덮을 수 없으므로 mobileFlush로 켠다. */}
         <BusinessImageBand image={companyExampleImages.headhuntingHero} gradient="horizontal" variant="hero" mobileFlush>
-          <p className="text-[12px] font-medium uppercase tracking-[0.08em]" style={{ color: "#7fcdb9" }}>THE PHARMA HEADHUNTING</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#7fcdb9]">THE PHARMA HEADHUNTING</p>
+          {/* fontSize·fontWeight를 인라인 style에서 클래스로 옮겼다 — 인라인은 max-[760px] 분기로
+              덮을 수 없다. clamp 값(36/5.2vw/58)과 600은 그대로라 >760px 렌더 결과는 동일하다.
+              행간·자간은 분기가 없어 인라인에 남긴다.
+
+              break-keep만 걸고 줄 묶음(nowrap)은 걸지 않는다 — 첫 소절 "제약·바이오·약국·병원 채용은"이
+              28px에서 299px라 390px(본문 342px)에는 들어가지만 320px(본문 272px)에서는 넘친다.
+              nowrap을 걸면 그 폭에서 잘려 나가므로, 접히도록 두고 카피 정리는 STEP 2에서 함께 본다. */}
           <h1
-            className="mt-4 max-w-[980px] text-white"
-            style={{ fontSize: "clamp(36px, 5.2vw, 58px)", fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.045em" }}
+            className="mt-4 max-w-[980px] break-keep text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[28px] max-[760px]:font-medium"
+            style={{ lineHeight: 1.15, letterSpacing: "-0.045em" }}
           >
             제약·바이오·약국·병원 채용은
             <br />
             산업을 이해하는 파트너에게 맡기세요.
           </h1>
-          <p className="mt-6 max-w-[75ch] text-[17px] font-normal leading-[1.7] text-[#c4c8c6]">
+          <p className="mt-6 max-w-[75ch] break-keep text-[17px] font-normal leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
             채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다.<br />
             연구개발부터 임상, 사업개발, 생산·품질까지 기업이 찾는 인재를 직접 발굴해 연결합니다.
           </p>
@@ -150,7 +169,7 @@ export function BusinessHeadhuntingIntroClient() {
 
         <BusinessSection tone="light" className="max-[760px]:px-0 reveal">
           <div className="text-center">
-            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>WHY THE PHARMA</p>
+            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
           </div>
           <div className="mt-10 grid grid-cols-3 max-[900px]:grid-cols-1 max-[900px]:gap-8">
@@ -193,13 +212,15 @@ export function BusinessHeadhuntingIntroClient() {
 
         <BusinessSection tone="muted" className="!bg-[#fafafa] max-[760px]:px-0 reveal">
           <div className="text-center">
-            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>SPECIALIZED POSITIONS</p>
+            <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">SPECIALIZED POSITIONS</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
               제약·바이오 주요 직무의
               <br className="max-[640px]:hidden" />
               전문인재를 연결합니다.
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] font-normal leading-[1.6] text-[#737373]">
+            {/* ≤760px 16→14px — 섹션 리드는 타이틀과 본문 사이를 잇는 줄이라 좁은 폭에서
+                본문(14px 안팎)과 같은 크기까지 내려도 위계가 유지된다. leading은 이미 1.6이라 그대로. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] font-normal leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
               산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해{" "}
               <br className="max-[640px]:hidden" />
               실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
@@ -225,7 +246,8 @@ export function BusinessHeadhuntingIntroClient() {
 
         <BusinessSection tone="dark" className="!bg-[#1a1d1c] max-[760px]:px-0 reveal">
           <div className="text-center">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
+            {/* 다크 섹션 eyebrow. text-white/55 = rgba(255,255,255,0.55) — 종전 인라인 색과 같은 값이다. */}
+            <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-white/55">PROCESS</p>
             <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.02em" }}>
               인재 채용의 시작부터 최종 입사까지
               <br />
@@ -294,6 +316,10 @@ export function BusinessHeadhuntingIntroClient() {
         </BusinessSection>
 
         {/* ══ CLOSING CTA ══════════════════════════════════════ */}
+        {/* 구분선 규칙(인접 섹션의 배경이 같을 때만 아래 섹션 상단에 선을 둔다): 위 PROCESS와
+            이 섹션은 같은 #1a1d1c라 규칙상 선이 필요한 자리다. 아래 3px 그라데이션 띠가 그 경계를
+            이미 긋고 있으므로 1px 선을 겹쳐 두지 않는다 — 같은 자리에 경계가 두 번 그어진다.
+            나머지 인접(히어로→WHY, WHY→직무, 직무→PROCESS)은 배경이 모두 달라 선이 없다. */}
         <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white max-[760px]:px-0">
           <div
             aria-hidden="true"
@@ -318,7 +344,9 @@ export function BusinessHeadhuntingIntroClient() {
               <br />
               더파마와 함께 찾아보세요.
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6]">
+            {/* ≤760px 16→14px. leading은 값이 없어 body의 1.65를 물려받고 있었으므로
+                다른 리드와 같은 1.6을 좁은 폭에서만 명시한다. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6] max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
               채용 직무와 필요한 경력을 남겨주시면{" "}
               <br className="max-[640px]:hidden" />
               담당자가 확인 후 적합한 진행 방법을 안내드립니다.
@@ -326,7 +354,7 @@ export function BusinessHeadhuntingIntroClient() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <ClosingCtaRow isMember={isMember} />
             </div>
-            <p className="mt-5 text-[12px] font-normal text-white/50">
+            <p className="mx-auto mt-5 max-w-[52ch] text-[12px] font-normal text-white/50">
               상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
             </p>
           </div>
