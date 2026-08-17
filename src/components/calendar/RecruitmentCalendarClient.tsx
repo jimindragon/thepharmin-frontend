@@ -36,7 +36,7 @@ import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { buildPreferenceChips } from "@/utils/preferenceChips";
 import { formatDday, getDaysUntil } from "@/utils/dday";
 import { addMonths, buildMonthDays, dateKey } from "@/utils/monthGrid";
-import type { FilterOption, Job, JobCategoryOption, JobTrack } from "@/types/jobs";
+import type { FilterOption, Job, JobCategoryOption, JobTrack, TrackPreferences } from "@/types/jobs";
 import { jobs } from "@/data/jobs";
 import { hasJobDetail } from "@/data/jobDetailIndex";
 
@@ -792,12 +792,15 @@ export function RecruitmentCalendarClient() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [moreJobs, setMoreJobs] = useState<{ dateLabel: string; jobs: CalendarJob[] } | null>(null);
   const [emailAlertOn, setEmailAlertOn] = useState(false);
+  /** 저장된 관심조건. 하나도 없으면 null로 두고 mock으로 떨어진다(아래 interestConditionChips). */
+  const [storedPreferences, setStoredPreferences] = useState<TrackPreferences | null>(null);
   /** ≤760px 미니 캘린더에서 선택된 날짜. 데스크톱 렌더는 이 값을 읽지 않는다. */
   const [selectedDateKey, setSelectedDateKey] = useState(initialSelectedDateKey);
 
   useEffect(() => {
     const stored = getAllStoredJobPreferences();
     setEmailAlertOn(Object.values(stored).some((preference) => preference?.emailAlertEnabled));
+    setStoredPreferences(Object.keys(stored).length > 0 ? stored : null);
   }, []);
 
   const availableCalendarJobs = calendarJobs;
@@ -875,11 +878,18 @@ export function RecruitmentCalendarClient() {
   const appliedJobsCount = appliedJobsAll.length;
   const appliedJobs = useMemo(() => appliedJobsAll.slice(0, 3), [appliedJobsAll]);
 
-  /** 트랙별 저장 파이프라인이 아직 없어 전 트랙의 mock 관심조건을 합쳐 칩으로 보여준다 — 데이터 정비는 별도 범위. */
+  /**
+   * 전 트랙의 관심조건을 합쳐 칩으로 보여준다 — 캘린더는 분야 구분 없이 한 달을 통으로 보는 화면이라
+   * 트랙 하나만 골라 보여줄 근거가 없다.
+   *
+   * 실제로 저장된 값이 있으면 그것을 쓰고, 하나도 없을 때만 mock으로 떨어진다 — 목업이라 저장 전에도
+   * 이 카드가 빈 채로 서 있지 않아야 한다.
+   */
   const interestConditionChips = useMemo(() => {
-    const chips = Object.values(mockUserPreferences).flatMap((preference) => (preference ? buildPreferenceChips(preference) : []));
+    const source = storedPreferences ?? mockUserPreferences;
+    const chips = Object.values(source).flatMap((preference) => (preference ? buildPreferenceChips(preference) : []));
     return Array.from(new Set(chips));
-  }, []);
+  }, [storedPreferences]);
 
   const requireLogin = () => {
     if (isLoggedIn) return false;
