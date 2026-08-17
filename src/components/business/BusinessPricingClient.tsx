@@ -830,7 +830,9 @@ export function BusinessPricingClient() {
                     <th className="w-[calc((100%_-_84px)_*_0.55)] bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[10px] py-[16px] align-middle text-[12.5px] font-medium leading-[1.55] text-white">
                       {VS_TP_LABEL}
                     </th>
-                    <th className="px-[10px] py-[16px] align-middle text-[11px] font-semibold leading-[1.55] text-[#737373]">
+                    {/* 옆 머리와 같은 12.5px·500 — 11px·600이던 때는 두 셀의 세로 중심은 같아도
+                        글자 크기가 달라 기준선이 어긋나 한 줄로 읽히지 않았다. 색과 배경 없음은 그대로다. */}
+                    <th className="px-[10px] py-[16px] align-middle text-[12.5px] font-medium leading-[1.55] text-[#737373]">
                       {VS_GEN_LABEL}
                     </th>
                   </tr>
