@@ -167,10 +167,14 @@ export function BusinessHeadhuntingIntroClient() {
           <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
         </BusinessImageBand>
 
-        <BusinessSection tone="light" className="max-[760px]:px-0 reveal">
+        {/* .reveal은 섹션이 아니라 안쪽 콘텐츠에 건다 — 섹션에 걸면 배경면째로 떠올라
+            바탕색이 위아래 섹션과 함께 흔들린다. BusinessSection이 쥔 app-shell--default에
+            직접 클래스를 줄 수 없어(공용 컴포넌트) 안쪽 래퍼 한 겹으로 같은 결과를 만든다. */}
+        <BusinessSection tone="light" className="max-[760px]:px-0">
+          <div className="reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
-            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
+            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.04em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
           </div>
           {/* 3분할은 세로 칸막이 선이 세 항목을 가르는 구조라, 1열로 접히면(≤900px) 선이 사라지고
               32px 간격만 남아 세 덩이를 구분하는 요소가 아무것도 없다. ≤760px에서는 아래 번호
@@ -231,12 +235,14 @@ export function BusinessHeadhuntingIntroClient() {
               }}
             />
           </div>
+          </div>
         </BusinessSection>
 
-        <BusinessSection tone="muted" className="!bg-[#fafafa] max-[760px]:px-0 reveal">
+        <BusinessSection tone="muted" className="!bg-[#fafafa] max-[760px]:px-0">
+          <div className="reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">SPECIALIZED POSITIONS</p>
-            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
+            <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.04em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
               제약·바이오 주요 직무의
               <br className="max-[640px]:hidden" />
               전문인재를 연결합니다.
@@ -282,13 +288,15 @@ export function BusinessHeadhuntingIntroClient() {
           <p className="mt-8 text-center text-[13px] font-normal text-[#68717e] max-[760px]:mt-6">
             제약회사, 바이오텍, CRO, CDMO, 의료기기 및 헬스케어 기업의 채용을 지원합니다.
           </p>
+          </div>
         </BusinessSection>
 
-        <BusinessSection tone="dark" className="!bg-[#1a1d1c] max-[760px]:px-0 reveal">
+        <BusinessSection tone="dark" className="!bg-[#1a1d1c] max-[760px]:px-0">
+          <div className="reveal">
           <div className="text-center">
             {/* 다크 섹션 eyebrow. text-white/55 = rgba(255,255,255,0.55) — 종전 인라인 색과 같은 값이다. */}
             <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-white/55">PROCESS</p>
-            <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.02em" }}>
+            <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.04em" }}>
               인재 채용의 시작부터 최종 입사까지
               <br />
               더파마가 전 과정을 정교하게 설계합니다.
@@ -391,6 +399,7 @@ export function BusinessHeadhuntingIntroClient() {
                 );
               })}
             </div>
+          </div>
           </div>
         </BusinessSection>
 
