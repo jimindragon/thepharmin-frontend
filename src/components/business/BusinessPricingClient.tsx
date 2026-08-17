@@ -633,12 +633,15 @@ export function BusinessPricingClient() {
                 통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.{" "}
                 <br />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
               </span>
-              {/* break-keep이 어절 중간을 막고, 두 묶음은 그 위에 한 덩어리를 더 지정한 것이다 —
-                  keep-all은 가운뎃점·쉼표 뒤의 끊을 자리까지 막지는 않아 "약국· / 병원까지",
-                  "6, / 000명"이 남는다. */}
+              {/* break-keep이 어절 중간을 막고, 세 묶음은 그 위에 한 덩어리를 더 지정한 것이다 —
+                  keep-all은 가운뎃점·쉼표 뒤의 끊을 자리까지 막지는 않아 "제약· / 바이오부터",
+                  "약국· / 병원까지", "6, / 000명"이 남는다.
+                  br은 첫 줄(대상 범위)과 둘째 줄(무엇을 하는가)의 경계라 폭에 맡기지 않는다. */}
               <span className="hidden break-keep max-[760px]:block">
-                <span className="whitespace-nowrap">약국·병원까지,</span> 약사·연구원·업계 실무자{" "}
-                <span className="whitespace-nowrap">6,000명</span> 네트워크에 직접 연결합니다.
+                <span className="whitespace-nowrap">제약·바이오부터</span>{" "}
+                <span className="whitespace-nowrap">약국·병원까지,</span>
+                <br />
+                업계 실무자 <span className="whitespace-nowrap">6,000명</span> 네트워크에 직접 연결합니다.
               </span>
             </p>
             {/* ≤760px에서는 버튼 두 장이 같은 무게로 나란히 서지 않게 한다 — 주 CTA는 풀폭,
