@@ -604,11 +604,13 @@ export function BusinessPricingClient() {
                 ≤760px는 카피가 다르다(팀 결정 대기 중인 의도된 이원화). h1을 둘로 늘리지 않고
                 한 h1 안에서 두 벌을 갈라 끼운다 — 문서에 h1이 두 개 있는 것으로 읽히지 않게.
 
-                26px인 이유: 모바일 두 줄은 nowrap이라 폭이 곧 하한이다. 둘째 줄
-                "더파마 리크루트 하나로."가 32px에서 약 326px라 320px 기기의 본문 폭(272px)을
-                넘겼다. 26px에서 약 265px가 되어 들어간다. */}
+                크기가 두 단인 이유: 모바일 두 줄은 nowrap이라 폭이 곧 하한이다. 둘째 줄
+                "더파마 리크루트 하나로."는 글자당 폭이 대략 자간 포함 10.2배라 28px에서 약 285px,
+                26px에서 약 265px다. 본문 폭이 뷰포트-48px이므로 28px은 334px보다 좁은 화면에서
+                넘친다 — 폰트 실측 오차(±3%)를 얹어 경계를 344px로 잡고 그 아래만 26px로 내린다.
+                (320px에서 26px 둘째 줄이 265px, 본문 272px으로 들어간다.) */}
             <h1
-              className="mt-5 text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[26px] max-[760px]:font-medium"
+              className="mt-5 text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[28px] max-[760px]:font-medium max-[344px]:text-[26px]"
               style={{ letterSpacing: "-.045em", lineHeight: 1.15 }}
             >
               <span className="max-[760px]:hidden">
@@ -648,10 +650,12 @@ export function BusinessPricingClient() {
                 <ChevronRight size={17} />
               </LinkButton>
               {/* h-11(44px)은 테두리를 벗긴 뒤에도 터치 타깃을 유지하기 위한 것 — 글자는 담백하게 두고
-                  밑줄로만 링크임을 표시한다. 글자색은 아웃라인 버튼의 것을 그대로 쓴다. */}
+                  밑줄로만 링크임을 표시한다. 글자색은 아웃라인 버튼의 것을 그대로 쓴다.
+                  ≤760px에서 w-full + justify-center: 위 주 CTA가 풀폭이라 그 아래 텍스트 링크만
+                  왼쪽에 붙어 있으면 두 CTA가 다른 축에 선다. 밑줄은 글자에만 걸리므로 그대로다. */}
               <a
                 href={freeHref}
-                className="inline-flex h-12 items-center border border-white/30 px-7 text-[15px] font-medium text-white transition-colors hover:bg-white/10 max-[760px]:h-11 max-[760px]:border-0 max-[760px]:px-0 max-[760px]:underline max-[760px]:underline-offset-4 max-[760px]:hover:bg-transparent"
+                className="inline-flex h-12 items-center border border-white/30 px-7 text-[15px] font-medium text-white transition-colors hover:bg-white/10 max-[760px]:h-11 max-[760px]:w-full max-[760px]:justify-center max-[760px]:border-0 max-[760px]:px-0 max-[760px]:underline max-[760px]:underline-offset-4 max-[760px]:hover:bg-transparent"
               >
                 무료로 공고 등록
               </a>
