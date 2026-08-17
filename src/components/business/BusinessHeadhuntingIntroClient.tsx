@@ -123,7 +123,12 @@ export function BusinessHeadhuntingIntroClient() {
     <>
       <BusinessHeader />
       <main>
-        <BusinessImageBand image={companyExampleImages.headhuntingHero} gradient="horizontal" variant="hero">
+        {/* ≤760px 좌우 여백은 셸 gutter 하나가 담당한다 — 섹션마다 붙은 px-6(24px)이 셸
+            gutter(--shell-gutter 48px = 좌우 24px씩)와 겹쳐 실제로는 한쪽 48px씩 물고 있었고,
+            390px에서 본문이 294px까지 눌렸다. 각 섹션의 px를 그 폭에서만 접어 24px로 되돌린다.
+            (BusinessPricingClient가 같은 겹침을 먼저 푼 선례가 있다.)
+            히어로는 밴드가 px를 쥐고 있어 className으로 덮을 수 없으므로 mobileFlush로 켠다. */}
+        <BusinessImageBand image={companyExampleImages.headhuntingHero} gradient="horizontal" variant="hero" mobileFlush>
           <p className="text-[12px] font-medium uppercase tracking-[0.08em]" style={{ color: "#7fcdb9" }}>THE PHARMA HEADHUNTING</p>
           <h1
             className="mt-4 max-w-[980px] text-white"
@@ -143,7 +148,7 @@ export function BusinessHeadhuntingIntroClient() {
           <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
         </BusinessImageBand>
 
-        <BusinessSection tone="light" className="reveal">
+        <BusinessSection tone="light" className="max-[760px]:px-0 reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>WHY THE PHARMA</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
@@ -186,7 +191,7 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
         </BusinessSection>
 
-        <BusinessSection tone="muted" className="!bg-[#fafafa] reveal">
+        <BusinessSection tone="muted" className="!bg-[#fafafa] max-[760px]:px-0 reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "#a3a3a3" }}>SPECIALIZED POSITIONS</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
@@ -218,7 +223,7 @@ export function BusinessHeadhuntingIntroClient() {
           </p>
         </BusinessSection>
 
-        <BusinessSection tone="dark" className="!bg-[#1a1d1c] reveal">
+        <BusinessSection tone="dark" className="!bg-[#1a1d1c] max-[760px]:px-0 reveal">
           <div className="text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.55)" }}>PROCESS</p>
             <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.02em" }}>
@@ -229,9 +234,11 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
 
           <div className="relative mt-[54px]">
-            {/* Horizontal connecting line — desktop only */}
+            {/* Horizontal connecting line — desktop only.
+                브레이크포인트는 이 페이지의 760 단일 기준을 쓴다(종전 md=768은 761~768px에서
+                4열 그리드만 먼저 켜져 연결선과 어긋났다). */}
             <div
-              className="pointer-events-none absolute hidden md:block"
+              className="pointer-events-none absolute hidden min-[761px]:block"
               style={{
                 top: "12px",
                 left: "calc(12.5% - 7.5px)",
@@ -242,7 +249,7 @@ export function BusinessHeadhuntingIntroClient() {
               }}
             />
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-5">
+            <div className="grid grid-cols-1 gap-8 min-[761px]:grid-cols-4 min-[761px]:gap-5">
               {processSteps.map((step, index) => {
                 const isLast = index === processSteps.length - 1;
                 return (
@@ -287,7 +294,7 @@ export function BusinessHeadhuntingIntroClient() {
         </BusinessSection>
 
         {/* ══ CLOSING CTA ══════════════════════════════════════ */}
-        <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white">
+        <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white max-[760px]:px-0">
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center opacity-[.32]"
@@ -302,7 +309,7 @@ export function BusinessHeadhuntingIntroClient() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px] opacity-[.65]"
             style={{ background: "var(--gradient-cta)" }}
           />
-          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-16">
+          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-[72px]">
             <h2
               className="font-semibold text-white"
               style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.04em", lineHeight: 1.22 }}
