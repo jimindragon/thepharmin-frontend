@@ -136,16 +136,22 @@ const UPCOMING_INTERVIEWS: Array<{
 
 function TaskRow({ dday, target, what, action }: (typeof TASKS)[0]) {
   return (
-    <div className="flex items-center gap-4 px-6 py-4 max-[760px]:px-4">
-      {/* D-day가 없는 행도 같은 폭을 차지한다 — 비우면 대상 열이 행마다 좌우로 흔들린다. */}
-      <span className="w-[42px] shrink-0 text-[13px] font-medium text-status-urgent">{dday}</span>
+    // items-center — 본문이 2줄로 꺾여도 D-day와 버튼은 행 세로 중앙에 남는다(별도 분기 불필요).
+    <div className="flex items-center gap-4 px-6 py-4 max-[760px]:gap-3 max-[760px]:px-4">
+      {/* D-day가 없는 행도 같은 폭을 차지한다 — 비우면 대상 열이 행마다 좌우로 흔들린다.
+          좁은 폭에서는 본문이 바로 옆까지 차오르므로 한 단계 굵게 해 대상과 구분한다. */}
+      <span className="w-[42px] shrink-0 text-[13px] font-medium text-status-urgent max-[760px]:font-semibold">{dday}</span>
       <p className="min-w-0 flex-1 text-[15px] text-[#17202c]">
         {target}
         <span className="text-[#68717e]"> · {what}</span>
       </p>
+      {/* ≤760px 히트 영역 44px — 테두리 높이는 h-8(32px) 그대로 두고 투명한 ::after로 위아래 6px씩
+          넓힌다. 행 padding이 16px이라 확장분이 이웃 행을 침범하지 않는다.
+          docs/mobile-guidelines.md에는 터치 타깃 기준이 없어 캘린더 필터 칩
+          (RecruitmentCalendarClient의 relative + after:absolute)의 선례를 따랐다. */}
       <Link
         href={action.href}
-        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111]"
+        className="inline-flex h-8 shrink-0 items-center border border-[#cfd8e3] bg-white px-3 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] hover:text-[#111111] max-[760px]:relative max-[760px]:after:absolute max-[760px]:after:inset-x-0 max-[760px]:after:-inset-y-[6px] max-[760px]:after:content-['']"
       >
         {action.label}
       </Link>
