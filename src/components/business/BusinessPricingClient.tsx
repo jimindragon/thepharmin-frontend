@@ -79,7 +79,7 @@ const CAT_LABEL: Record<Cat, string> = {
 const VS_ROWS = [
   { label: "운영 주체",     tp: "약사·업계 출신 전문 컨설턴트", gen: "분야 비전문 일반 운영" },
   { label: "홍보 채널",     tp: "SNS·미디어 연계 노출 약 10배", gen: "자사 게시판 한정" },
-  { label: "평균 조회수",   tp: "공고당 3~4만 회",              gen: "수백~수천 회" },
+  { label: "평균 조회수",   tp: "SNS 단독 공고당 3~4만 회",     gen: "수백~수천 회" },
   { label: "타깃 인재",     tp: "업계 전문 인재 6,000명",       gen: "분야 무관 불특정 다수" },
   { label: "채용 방식",     tp: "공고 + 헤드헌팅 + 기업정보 통합", gen: "공고 등록 위주" },
 ] as const;
@@ -465,7 +465,7 @@ export function BusinessPricingClient() {
                 둘이 동시에 보이면 같은 수치가 두 번 나온다. */}
             <div className="mt-8 hidden grid-cols-3 border-t border-[rgba(255,255,255,0.18)] pt-5 max-[760px]:grid">
               {([
-                { value: "3~4만 회", sub: "SNS 공고 1건당 평균 조회" },
+                { value: "3~4만 회", sub: "SNS 단독 공고 1건당 조회" },
                 { value: "4,000명",  sub: "카카오톡 단독 공고 대상" },
                 { value: "약 10배",  sub: "미디어 연계 노출 (일반 대비)" },
               ] as const).map((s, i) => (
