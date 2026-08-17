@@ -560,20 +560,45 @@ export function BusinessPricingClient() {
                 밝은 민트가 바로 아래 h1의 그라데이션과 같은 채도로 경쟁한다. 둘 다 페이지 안의 기존 값. */}
             <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9] max-[760px]:tracking-[.12em] max-[760px]:text-[#5cb89f]">결국, 사람이 경쟁력입니다</p>
             {/* fontSize를 인라인 style에서 클래스로 옮겼다 — 인라인은 max-[760px] 분기로 덮을 수 없다.
-                clamp 값은 그대로라 >760px 렌더 결과는 동일하다. 자간(-.045em)은 건드리지 않는다. */}
+                clamp 값은 그대로라 >760px 렌더 결과는 동일하다. 자간(-.045em)·행간은 건드리지 않는다.
+
+                ≤760px는 카피가 다르다(팀 결정 대기 중인 의도된 이원화). h1을 둘로 늘리지 않고
+                한 h1 안에서 두 벌을 갈라 끼운다 — 문서에 h1이 두 개 있는 것으로 읽히지 않게.
+
+                26px인 이유: 모바일 두 줄은 nowrap이라 폭이 곧 하한이다. 둘째 줄
+                "더파마 리크루트 하나로."가 32px에서 약 326px라 320px 기기의 본문 폭(272px)을
+                넘겼다. 26px에서 약 265px가 되어 들어간다. */}
             <h1
-              className="mt-5 text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[32px]"
+              className="mt-5 text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[26px] max-[760px]:font-medium"
               style={{ letterSpacing: "-.045em", lineHeight: 1.15 }}
             >
-              제약·바이오·약국·병원 전문 채용,{" "}
-              {/* ≤760px에서는 강제 줄바꿈을 풀어 자연 줄바꿈에 맡긴다(390·360px에서 4줄 → 3줄).
-                  앞의 {" "}는 br이 꺼졌을 때 어절이 붙지 않게 하는 것 — 데스크톱에서는 줄 끝 공백이라 렌더에 영향이 없다. */}
-              <br className="max-[760px]:hidden" />
-              <span className="text-gradient-cta font-bold">더파마 리크루트</span> 하나로.
+              <span className="max-[760px]:hidden">
+                제약·바이오·약국·병원 전문 채용,{" "}
+                <br />
+                <span className="text-gradient-cta font-bold">더파마 리크루트</span> 하나로.
+              </span>
+              {/* 줄마다 nowrap — 두 줄은 <br>로 고정하고, 그 안에서 다시 접히는 일이 없게 한다.
+                  자연 줄바꿈에 맡기면 폭에 따라 "채용," 한 어절만 둘째 줄로 떨어진다. */}
+              <span className="hidden max-[760px]:block">
+                <span className="whitespace-nowrap">제약·바이오 전문 채용,</span>
+                <br />
+                <span className="whitespace-nowrap">
+                  <span className="text-gradient-cta font-bold">더파마 리크루트</span> 하나로.
+                </span>
+              </span>
             </h1>
             <p className="mt-6 max-w-[52ch] text-[17px] leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
-              통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.{" "}
-              <br className="max-[760px]:hidden" />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
+              <span className="max-[760px]:hidden">
+                통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.{" "}
+                <br />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
+              </span>
+              {/* break-keep이 어절 중간을 막고, 두 묶음은 그 위에 한 덩어리를 더 지정한 것이다 —
+                  keep-all은 가운뎃점·쉼표 뒤의 끊을 자리까지 막지는 않아 "약국· / 병원까지",
+                  "6, / 000명"이 남는다. */}
+              <span className="hidden break-keep max-[760px]:block">
+                <span className="whitespace-nowrap">약국·병원까지,</span> 약사·연구원·업계 실무자{" "}
+                <span className="whitespace-nowrap">6,000명</span> 네트워크에 직접 연결합니다.
+              </span>
             </p>
             {/* ≤760px에서는 버튼 두 장이 같은 무게로 나란히 서지 않게 한다 — 주 CTA는 풀폭,
                 보조는 아웃라인을 벗겨 텍스트 링크로 내린다. 위계가 생기므로 세로 간격도 함께 좁힌다. */}
