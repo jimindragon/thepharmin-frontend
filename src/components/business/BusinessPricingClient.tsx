@@ -157,9 +157,21 @@ function featureCell(row: FeatureRow, tierIndex: number, cat: Cat): boolean | st
   return excluded && tierIndex >= 2 ? false : row.cells[tierIndex];
 }
 
-/** 제공/미제공 마크 — 데스크톱 표 셀과 모바일 리스트가 같은 기호를 쓴다. */
-function FeatureMark({ value }: { value: boolean | string }) {
-  if (value === true) return <span className="inline-flex justify-center"><Check size={18} strokeWidth={2} className="text-[#17A68C]" /></span>;
+/**
+ * 제공/미제공 마크 — 데스크톱 표 셀과 모바일 리스트가 같은 기호를 쓴다.
+ * 체크 색·크기만 호출부가 덮을 수 있다: 모바일 리스트는 다른 모바일 블록과 같은 딥 톤(#0D7369)을
+ * 쓰고, 데스크톱 표는 종전의 밝은 틸(#17A68C)을 기본값으로 그대로 받는다.
+ */
+function FeatureMark({
+  value,
+  checkSize = 18,
+  checkClassName = "text-[#17A68C]",
+}: {
+  value: boolean | string;
+  checkSize?: number;
+  checkClassName?: string;
+}) {
+  if (value === true) return <span className="inline-flex justify-center"><Check size={checkSize} strokeWidth={2} className={checkClassName} /></span>;
   if (value === false) return <span className="text-[#d4d4d4]">—</span>;
   return <>{value}</>;
 }
@@ -1239,7 +1251,7 @@ export function BusinessPricingClient() {
                     className={clsx(
                       "min-h-[44px] border px-3 py-[10px] text-[13px] font-semibold transition-colors",
                       featureTier === i
-                        ? "border-transparent bg-[#0a0a0a] text-white"
+                        ? "border-transparent bg-[#111111] text-white"
                         : "border-[#e5e5e5] bg-white text-[#737373]",
                     )}
                   >
@@ -1248,15 +1260,18 @@ export function BusinessPricingClient() {
                   </button>
                 ))}
               </div>
-              <ul className="mt-5 divide-y divide-[#e5e5e5] border-y border-[#e5e5e5]">
+              {/* 행 높이를 한 단계 낮춘다 — 10행이 세로로 늘어서는 목록이라 행마다 4px씩만 줄여도
+                  한 화면에 들어오는 항목 수가 달라진다. 값은 500으로 — 좌우가 같은 굵기면
+                  어느 쪽이 항목이고 어느 쪽이 답인지 흐려지고, 600은 10행이 전부 강조가 된다. */}
+              <ul className="mt-5 divide-y divide-border border-y border-border">
                 {FEATURE_ROWS.map((row, ri) => (
-                  <li key={ri} className="flex items-start justify-between gap-4 py-[14px]">
+                  <li key={ri} className="flex items-start justify-between gap-4 py-3">
                     <div className="min-w-0">
-                      <p className="text-[14px] text-[#0a0a0a]">{row.label}</p>
-                      {row.sub && <small className="mt-[3px] block text-[12px] text-[#a3a3a3]">{row.sub}</small>}
+                      <p className="text-[12.5px] leading-[1.5] text-[#0a0a0a]">{row.label}</p>
+                      {row.sub && <small className="mt-[2px] block text-[11px] leading-[1.4] text-[#a3a3a3]">{row.sub}</small>}
                     </div>
-                    <span className="shrink-0 text-[14px] font-semibold text-[#0a0a0a]">
-                      <FeatureMark value={featureCell(row, featureTier, activeCat)} />
+                    <span className="shrink-0 text-[12.5px] font-medium text-[#0a0a0a]">
+                      <FeatureMark value={featureCell(row, featureTier, activeCat)} checkSize={15} checkClassName="text-[#0D7369]" />
                     </span>
                   </li>
                 ))}
