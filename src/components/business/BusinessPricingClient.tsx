@@ -65,19 +65,26 @@ const CAT_LABEL: Record<Cat, string> = {
 };
 
 /**
- * VS 대조표 행. 데스크톱 표(>760px)와 모바일 카드 리스트(≤760px)가 같은 배열을 렌더한다 —
+ * VS 대조표 행. 데스크톱 표(>760px)와 모바일 표(≤760px)가 같은 배열을 렌더한다 —
  * 두 렌더가 갈라지는 것은 마크업뿐이고 문구는 여기 한 곳에만 둔다.
+ *
+ * 라벨·문구는 모바일 3열 표에 맞춰 짧게 고쳤다. 열 하나가 130px 남짓이라 종전의
+ * 긴 문장("LinkedIn·Instagram 등 미디어 연계 노출 (타 플랫폼 대비 약 10배)")은
+ * 셀 안에서 네댓 줄로 접혀 좌우 비교라는 표의 목적 자체가 사라진다.
+ * 데스크톱 표도 같은 배열을 읽으므로 함께 짧아진다(의도된 것).
+ *
+ * 6행이던 것을 5행으로 줄였다 — 마지막 "후보 검증·추천"은 바로 위 "채용 방식"의
+ * 헤드헌팅과 같은 것을 말이만 바꿔 되풀이한다.
  */
 const VS_ROWS = [
-  { label: "업계 전문성",           tp: "약사·업계 출신 전문 컨설턴트가 직접 운영",                             gen: "분야 비전문 일반 채용 운영" },
-  { label: "SNS·미디어 홍보",        tp: "LinkedIn·Instagram 등 미디어 연계 노출 (타 플랫폼 대비 약 10배)", gen: "자사 공고 게시판 노출에 한정" },
-  { label: "공고 1건당 평균 조회수",  tp: "평균 3~4만 회 노출",                                               gen: "수백~수천 회 수준" },
-  { label: "타깃 인재",              tp: "제약·바이오·약국·병원 전문 인재 (통합 구독자 6,000명)",            gen: "분야 무관 불특정 다수" },
-  { label: "채용 방식",              tp: "채용공고 + 헤드헌팅 + 기업 정보 관리 통합",                        gen: "공고 등록 위주" },
-  { label: "후보 검증·추천",          tp: "업계 이해 기반의 검증·추천",                                      gen: "키워드 자동 매칭" },
+  { label: "운영 주체",     tp: "약사·업계 출신 전문 컨설턴트", gen: "분야 비전문 일반 운영" },
+  { label: "홍보 채널",     tp: "SNS·미디어 연계 노출 약 10배", gen: "자사 게시판 한정" },
+  { label: "평균 조회수",   tp: "공고당 3~4만 회",              gen: "수백~수천 회" },
+  { label: "타깃 인재",     tp: "업계 전문 인재 6,000명",       gen: "분야 무관 불특정 다수" },
+  { label: "채용 방식",     tp: "공고 + 헤드헌팅 + 기업정보 통합", gen: "공고 등록 위주" },
 ] as const;
 
-/** 표 헤더의 두 열 이름. 모바일 카드에서는 행 라벨로 다시 쓴다(로고 이미지를 쓸 자리가 없다). */
+/** 표 헤더의 두 열 이름. 모바일 표에서도 그대로 열 머리글로 쓴다(로고 이미지를 쓸 자리가 없다). */
 const VS_TP_LABEL = "더파마 리크루트";
 const VS_GEN_LABEL = "다른 채용 플랫폼";
 
@@ -572,28 +579,49 @@ export function BusinessPricingClient() {
               </table>
             </div>
 
-            {/* ≤760px 대체 — 한 행을 한 장의 카드로 세운다. 표 헤더(로고 / "다른 채용 플랫폼")가 사라지므로
-                두 값이 각각 누구 것인지 카드 안에서 라벨로 밝힌다. nowrap은 쓰지 않는다(자연 줄바꿈). */}
-            <div className="mt-8 hidden flex-col gap-3 max-[760px]:flex">
-              {VS_ROWS.map((row) => (
-                <div key={row.label} className="border border-[#e5e5e5] bg-white p-5">
-                  <p className="text-[15px] font-semibold text-[#0a0a0a]">{row.label}</p>
-                  <div className="mt-3 flex flex-col gap-2">
-                    {/* flex — 기호(체크·대시)는 그대로 두고 둘째 줄이 기호 아래로 파고들지 않게 매단다.
-                        데스크톱 셀은 nowrap이라 줄바꿈이 없어 이 문제가 없었다. */}
-                    <div className="bg-[#eef6f2] px-4 py-3">
-                      <p className="text-[12px] text-[#737373]">{VS_TP_LABEL}</p>
-                      <p className="mt-[5px] flex text-[15px] font-medium text-[#0a0a0a]"><TpCheck />{row.tp}</p>
-                    </div>
-                    <div className="px-4 py-3">
-                      <p className="text-[12px] text-[#737373]">{VS_GEN_LABEL}</p>
-                      <p className="mt-[5px] flex text-[15px] text-[#a3a3a3]">
-                        <span className="mr-[10px] text-[#d4d4d4]">—</span>{row.gen}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {/* ≤760px 대체 — 카드 6장을 3열 표 하나로 되돌린다.
+                카드는 한 행마다 라벨·더파마·타사를 세로로 쌓아서, 두 값을 나란히 놓고 견주는 동작이
+                스크롤로 바뀌어 있었다. 좁아도 두 열을 맞대어 두는 편이 대조표의 목적에 맞다.
+
+                데스크톱 표(위)와 다른 점은 폭에서 오는 것뿐이다 — 로고 대신 글자 머리글, 초록 열 배경
+                대신 #fafafa(목록 사이 안내 행과 같은 값), 채워진 초록 사각 대신 딥 톤 체크.
+                초록 면을 130px 열에 깔면 같은 화면의 CTA·미리보기 하이라이트와 채도로 경쟁한다.
+
+                table-fixed — 라벨 88px을 뺀 나머지를 두 열이 정확히 반씩 나눠 가져야 좌우가 대칭이 된다.
+                auto로 두면 글자 수가 많은 더파마 열이 넓어져 비교가 한쪽으로 기운다. */}
+            <div className="mt-8 hidden max-[760px]:block">
+              <table className="w-full table-fixed border-collapse border border-[#111111] text-left">
+                <thead>
+                  <tr>
+                    <th className="w-[88px] border-b border-border px-2 py-[9px]" />
+                    <th className="border-b border-l border-border bg-[#111111] px-2 py-[9px] text-[11px] font-semibold text-white">
+                      {VS_TP_LABEL}
+                    </th>
+                    <th className="border-b border-l border-border px-2 py-[9px] text-[11px] font-semibold text-[#737373]">
+                      {VS_GEN_LABEL}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {VS_ROWS.map((row) => (
+                    <tr key={row.label}>
+                      <td className="border-t border-border px-2 py-[11px] align-top text-[11px] font-semibold leading-[1.4] text-[#111111]">
+                        {row.label}
+                      </td>
+                      <td className="border-l border-t border-border bg-[#fafafa] px-2 py-[11px] align-top text-[12px] leading-[1.45] text-[#111111]">
+                        {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로). */}
+                        <span className="flex gap-1">
+                          <Check size={12} strokeWidth={2.5} className="mt-[2px] shrink-0 text-[#0D7369]" />
+                          <span className="min-w-0">{row.tp}</span>
+                        </span>
+                      </td>
+                      <td className="border-l border-t border-border px-2 py-[11px] align-top text-[12px] leading-[1.45] text-[#737373]">
+                        {row.gen}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <p className="mt-6 text-center text-[12.5px] text-[#a3a3a3]">
               * 더파마 리크루트 자체 채널 운영 기준. 노출·조회수는 직무·시기에 따라 달라질 수 있습니다.
