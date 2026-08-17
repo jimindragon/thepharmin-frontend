@@ -718,20 +718,29 @@ export function BusinessPricingClient() {
                 대신 #fafafa(목록 사이 안내 행과 같은 값), 채워진 초록 사각 대신 딥 톤 체크.
                 초록 면을 130px 열에 깔면 같은 화면의 CTA·미리보기 하이라이트와 채도로 경쟁한다.
 
-                table-fixed — 라벨 88px을 뺀 나머지를 두 열이 정확히 반씩 나눠 가져야 좌우가 대칭이 된다.
-                auto로 두면 글자 수가 많은 더파마 열이 넓어져 비교가 한쪽으로 기운다. */}
+                table-fixed — 열 폭을 글자 수가 아니라 이쪽에서 정한다. auto로 두면 행마다 열 경계가
+                움직여 좌우 비교가 성립하지 않는다. 라벨 76px을 뺀 나머지는 55:45로 나눈다 —
+                더파마 열의 문구가 항상 더 길어서 반씩 주면 그쪽만 줄 수가 늘어난다. */}
             <div className="mt-8 hidden max-[760px]:block">
               {/* 외곽선은 검정이 아니라 border-border — 검정 테두리는 표 전체를 강조로 만들어
                   안에서 유일하게 강조여야 할 더파마 열(검정 머리·#fafafa 면)과 경쟁했다.
-                  셀 여백(px-[10px] py-[14px])·행간(1.55)은 머리행까지 한 값으로 맞춘다. */}
-              <table className="w-full table-fixed border-collapse border border-border text-left">
+                  셀 여백(px-[10px] py-[12px])·행간(1.55)은 머리행까지 한 값으로 맞춘다.
+                  세로 여백은 14→12px — 열 폭을 다시 나눠 줄 수가 줄면서 14px은 행 사이가 비어 보인다. */}
+              {/* break-keep — 어절 안에서 끊지 않는다. 기본 word-break는 CJK를 아무 데서나 잘라
+                  "3~4만 / 회", "약 10 / 배"처럼 수치와 단위가 갈라졌다. 표에 걸면 머리행·라벨·두 값 열이
+                  모두 물려받는다. 끊을 자리가 없는 어절(최장 "SNS·미디어" 약 62px)도 열 폭 안에 들어가
+                  넘치는 셀은 없다. */}
+              <table className="w-full table-fixed break-keep border-collapse border border-border text-left">
                 <thead>
                   <tr>
-                    <th className="w-[88px] border-b border-border px-[10px] py-[14px]" />
-                    <th className="border-b border-l border-border bg-[#111111] px-[10px] py-[14px] text-[11px] font-semibold leading-[1.55] text-white">
+                    {/* 76px — 라벨 5글자 기준값. 남는 폭은 아래 55% 지정이 가져간다. */}
+                    <th className="w-[76px] border-b border-border px-[10px] py-[12px] align-top" />
+                    {/* 나머지 폭의 55%. 셋째 열은 폭을 주지 않아 남는 45%를 그대로 받는다 —
+                        두 열에 각각 %를 적으면 합이 100%를 넘어 브라우저가 임의로 줄인다. */}
+                    <th className="w-[calc((100%_-_76px)_*_0.55)] border-b border-l border-border bg-[#111111] px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-white">
                       {VS_TP_LABEL}
                     </th>
-                    <th className="border-b border-l border-border px-[10px] py-[14px] text-[11px] font-semibold leading-[1.55] text-[#737373]">
+                    <th className="border-b border-l border-border px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-[#737373]">
                       {VS_GEN_LABEL}
                     </th>
                   </tr>
@@ -741,10 +750,10 @@ export function BusinessPricingClient() {
                     <tr key={row.label}>
                       {/* 라벨 11→12px — 두 값 열과 같은 크기다. 항목 이름이 답보다 작으면
                           무엇을 견주는 표인지가 답보다 늦게 읽힌다. 구분은 굵기(600)가 맡는다. */}
-                      <td className="border-t border-border px-[10px] py-[14px] align-top text-[12px] font-semibold leading-[1.55] text-[#111111]">
+                      <td className="border-t border-border px-[10px] py-[12px] align-top text-[12px] font-semibold leading-[1.55] text-[#111111]">
                         {row.label}
                       </td>
-                      <td className="border-l border-t border-border bg-[#fafafa] px-[10px] py-[14px] align-top text-[12px] leading-[1.55] text-[#111111]">
+                      <td className="border-l border-t border-border bg-[#fafafa] px-[10px] py-[12px] align-top text-[12px] leading-[1.55] text-[#111111]">
                         {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로).
                             items-start + mt-[3px]: 12px 글자의 첫 줄 상자가 18.6px(12×1.55)이고 아이콘이
                             12px이라 (18.6-12)/2 ≈ 3px 내리면 체크가 첫 줄 한가운데 선다. */}
@@ -753,7 +762,7 @@ export function BusinessPricingClient() {
                           <span className="min-w-0">{row.tp}</span>
                         </span>
                       </td>
-                      <td className="border-l border-t border-border px-[10px] py-[14px] align-top text-[12px] leading-[1.55] text-[#737373]">
+                      <td className="border-l border-t border-border px-[10px] py-[12px] align-top text-[12px] leading-[1.55] text-[#737373]">
                         {row.gen}
                       </td>
                     </tr>
