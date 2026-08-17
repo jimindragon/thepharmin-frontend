@@ -651,7 +651,9 @@ export function BusinessPricingClient() {
             >
               다른 채용 플랫폼과<br />무엇이 다를까요?
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373]">
+            {/* ≤760px 16→14px — 섹션 리드는 타이틀과 본문 사이를 잇는 줄이라 좁은 폭에서
+                본문(14px 안팎)과 같은 크기까지 내려도 위계가 유지된다. leading은 1.6 그대로. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
               같은 비용으로, 업계 전문 인재에게 훨씬 더 넓고 정확하게 도달합니다.
             </p>
             <div className="mt-[22px] flex flex-wrap justify-center gap-x-[28px] gap-y-[10px]">
@@ -764,7 +766,8 @@ export function BusinessPricingClient() {
                 >
                   필요한 인재를<br />더파마가 찾아드립니다.
                 </h2>
-                <p className="mt-4 text-[16px] leading-[1.7] text-[#525252]">
+                {/* ≤760px 16→14px, leading 1.7→1.6 — 다른 섹션 리드와 같은 값으로 모은다. */}
+                <p className="mt-4 text-[16px] leading-[1.7] text-[#525252] max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
                   포지션 요건을 정밀 분석해, 공개 시장에 드러나지 않는 업계 핵심 인재까지 직접 서칭·검증해 추천합니다.
                 </p>
                 <div className="mt-6 flex flex-col gap-[13px] max-[760px]:hidden">
@@ -1218,7 +1221,8 @@ export function BusinessPricingClient() {
             >
               상품별 제공 항목 비교
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373]">
+            {/* ≤760px 16→14px — WHY 섹션 리드와 같은 값. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
               추천 · 상단 · 최상단 노출까지, 상품별로 한눈에 비교하세요.
             </p>
             {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다 */}
@@ -1334,7 +1338,9 @@ export function BusinessPricingClient() {
             >
               지금, 더파마 채용솔루션을 시작하세요.
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6]">
+            {/* ≤760px 16→14px. leading은 값이 없어 body의 1.65를 물려받고 있었으므로
+                다른 리드와 같은 1.6을 좁은 폭에서만 명시한다. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6] max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
               담당자가 채용 목표에 맞는 진행 방법과 상품을 안내해 드립니다.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
