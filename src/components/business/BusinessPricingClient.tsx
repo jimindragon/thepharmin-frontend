@@ -642,7 +642,11 @@ export function BusinessPricingClient() {
         </div>
 
         {/* ══ VS 대조표 ═════════════════════════════════════════ */}
-        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:py-[60px]">
+        {/* 구분선 규칙: 인접 섹션의 배경이 같을 때만 아래 섹션 상단에 선을 둔다.
+            ≤760px에서는 위 지표 밴드가 숨어 이 섹션이 다크 히어로와 맞닿으므로 선을 끈다 —
+            면이 이미 바뀌는 자리에 선을 겹치면 경계가 두 번 그어진다.
+            >760px은 밴드(#f5f5f5)가 그대로 위에 있어 종전 선을 유지한다. */}
+        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:border-t-0 max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
             <h2
@@ -898,7 +902,9 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ PRICING ══════════════════════════════════════════ */}
-        <section id="pricing" className="scroll-mt-[88px] bg-white px-6 py-[88px] max-[760px]:py-[60px]">
+        {/* ≤760px에서는 위 START FREE(#fafafa)가 숨어 흰 배경의 HEADHUNTING과 바로 맞닿는다 —
+            같은 면이 이어지므로 여기에 구분선이 필요하다. >760px은 배경이 갈리므로 선 없이 그대로. */}
+        <section id="pricing" className="scroll-mt-[88px] bg-white px-6 py-[88px] max-[760px]:border-t max-[760px]:border-border max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">PRICING</p>
             <h2
@@ -1212,7 +1218,9 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ 상품별 제공 항목 비교표 ══════════════════════════ */}
-        <section className="border-t border-[#e5e5e5] bg-white px-6 py-[88px] max-[760px]:py-[60px]">
+        {/* 위 PRICING과 같은 흰 배경이라 선을 둔다(양쪽 폭 공통). ≤760px에서만 색을 토큰으로 —
+            좁은 폭의 섹션 구분선은 border-border 하나로 통일한다. */}
+        <section className="border-t border-[#e5e5e5] bg-white px-6 py-[88px] max-[760px]:border-border max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">PRICING</p>
             <h2
