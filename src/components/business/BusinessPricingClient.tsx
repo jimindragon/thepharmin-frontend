@@ -531,8 +531,18 @@ export function BusinessPricingClient() {
       <BusinessHeader />
       <main className="bg-white">
 
+        {/* ≤760px 좌우 여백은 셸 gutter 하나가 담당한다 — 섹션마다 붙은 px-6(24px)이 셸
+            gutter(--shell-gutter 48px = 좌우 24px씩)와 겹쳐 실제로는 한쪽 48px씩 물고 있었고,
+            390px에서 본문이 294px까지 눌렸다. 각 섹션의 px를 그 폭에서만 접어 24px로 되돌린다.
+            (기업센터 셸이 max-[760px]:px-0으로 같은 겹침을 이미 푼 선례가 있다.)
+
+            이 페이지의 실측 주석들이 원래 이 폭을 전제로 쓰였다는 근거도 있다 —
+            히어로 지표 스트립의 "320px에서 셀이 약 91px", VS 표의 "열 하나가 130px 남짓"은
+            좌우 24px씩일 때의 값이고, 48px씩에서는 각각 74.7px·103px이었다.
+
+            상하는 ≤760px 60px(다크 두 섹션은 64px)을 72px로 모은다. */}
         {/* ══ HERO ══════════════════════════════════════════════ */}
-        <section className="relative overflow-hidden bg-[#1a1a1a] px-6 text-white">
+        <section className="relative overflow-hidden bg-[#1a1a1a] px-6 text-white max-[760px]:px-0">
           {/* 배경 사진 */}
           <div
             aria-hidden="true"
@@ -545,7 +555,7 @@ export function BusinessPricingClient() {
             className="pointer-events-none absolute inset-0"
             style={{ background: "linear-gradient(90deg,rgba(12,12,12,.68) 0%,rgba(12,12,12,.62) 30%,rgba(12,12,12,.3) 75%,rgba(12,12,12,.15) 100%)" }}
           />
-<div className="app-shell--default relative z-10 py-[100px] max-[760px]:py-16">
+<div className="app-shell--default relative z-10 py-[100px] max-[760px]:py-[72px]">
             {/* ≤760px에서 자간·색을 한 단계씩 죽인다 — 좁은 폭에서는 넓은 자간이 한 줄을 더 잡아먹고,
                 밝은 민트가 바로 아래 h1의 그라데이션과 같은 채도로 경쟁한다. 둘 다 페이지 안의 기존 값. */}
             <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9] max-[760px]:tracking-[.12em] max-[760px]:text-[#5cb89f]">결국, 사람이 경쟁력입니다</p>
@@ -648,7 +658,7 @@ export function BusinessPricingClient() {
             ≤760px에서는 위 지표 밴드가 숨어 이 섹션이 다크 히어로와 맞닿으므로 선을 끈다 —
             면이 이미 바뀌는 자리에 선을 겹치면 경계가 두 번 그어진다.
             >760px은 밴드(#f5f5f5)가 그대로 위에 있어 종전 선을 유지한다. */}
-        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:border-t-0 max-[760px]:py-[60px]">
+        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:border-t-0 max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
             <h2
@@ -777,7 +787,7 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ HEADHUNTING ══════════════════════════════════════ */}
-        <section className="bg-white px-6 py-[88px] max-[760px]:py-[60px]">
+        <section className="bg-white px-6 py-[88px] max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-9">
               <div>
@@ -883,7 +893,7 @@ export function BusinessPricingClient() {
         {/* ≤760px에서는 통째로 내리고 PRICING 도입부 두 줄이 대신한다 — 1열로 접히면 이 섹션은
             "등록은 무료" 한 마디를 위해 제목·본문·3행 표로 화면 하나를 더 쓰는 꼴이 되고,
             바로 아래 PRICING이 같은 말을 상품으로 다시 한다. */}
-        <section className="bg-[#fafafa] px-6 py-[88px] max-[760px]:hidden max-[760px]:py-[60px]">
+        <section className="bg-[#fafafa] px-6 py-[88px] max-[760px]:hidden max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <div className="grid grid-cols-[1fr_0.9fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-8">
               <div>
@@ -922,7 +932,7 @@ export function BusinessPricingClient() {
         {/* ══ PRICING ══════════════════════════════════════════ */}
         {/* ≤760px에서는 위 START FREE(#fafafa)가 숨어 흰 배경의 HEADHUNTING과 바로 맞닿는다 —
             같은 면이 이어지므로 여기에 구분선이 필요하다. >760px은 배경이 갈리므로 선 없이 그대로. */}
-        <section id="pricing" className="scroll-mt-[88px] bg-white px-6 py-[88px] max-[760px]:border-t max-[760px]:border-border max-[760px]:py-[60px]">
+        <section id="pricing" className="scroll-mt-[88px] bg-white px-6 py-[88px] max-[760px]:border-t max-[760px]:border-border max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">PRICING</p>
             <h2
@@ -1248,7 +1258,7 @@ export function BusinessPricingClient() {
         {/* ══ 상품별 제공 항목 비교표 ══════════════════════════ */}
         {/* 위 PRICING과 같은 흰 배경이라 선을 둔다(양쪽 폭 공통). ≤760px에서만 색을 토큰으로 —
             좁은 폭의 섹션 구분선은 border-border 하나로 통일한다. */}
-        <section className="border-t border-[#e5e5e5] bg-white px-6 py-[88px] max-[760px]:border-border max-[760px]:py-[60px]">
+        <section className="border-t border-[#e5e5e5] bg-white px-6 py-[88px] max-[760px]:border-border max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">PRICING</p>
             <h2
@@ -1391,7 +1401,7 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ CLOSING CTA ══════════════════════════════════════ */}
-        <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white">
+        <section className="relative overflow-hidden bg-[#1a1d1c] px-6 text-center text-white max-[760px]:px-0">
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center opacity-[.32]"
@@ -1406,7 +1416,7 @@ export function BusinessPricingClient() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
             style={{ background: "var(--gradient-cta)" }}
           />
-          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-16">
+          <div className="app-shell--default relative z-10 py-[96px] max-[760px]:py-[72px]">
             <h2
               className="font-bold text-white"
               style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.04em", lineHeight: 1.22 }}
@@ -1448,7 +1458,7 @@ export function BusinessPricingClient() {
       {!isMember && !bannerDismissed ? (
         <div className="fixed inset-x-0 bottom-0 z-[60] hidden bg-[#15181c] pb-[env(safe-area-inset-bottom)] max-[760px]:block">
           {/* py-1 — 44px 닫기 버튼이 높이를 정하고 위아래 4px씩만 더해 52px에 맞춘다. */}
-          <div className="flex items-center gap-2 px-4 py-1">
+          <div className="flex items-center gap-2 px-6 py-1">
             <p className="min-w-0 flex-1 text-[12.5px] leading-[1.4] text-white">
               공고 등록·게시는 <span className="font-medium text-[#23D9A5]">무료</span>입니다
             </p>
