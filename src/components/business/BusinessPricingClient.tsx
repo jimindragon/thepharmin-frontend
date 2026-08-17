@@ -367,6 +367,14 @@ export function BusinessPricingClient() {
   const [featPeriod, setFeatPeriod] = useState(1);
   const [stdPeriod,  setStdPeriod]  = useState(1);
 
+  /**
+   * ≤760px 상품 아코디언에서 펼쳐 둔 등급. 한 번에 하나만 열린다.
+   * 미리보기 하이라이트(pinnedTier)와 묶지 않는다 — 저쪽은 "어느 구좌를 짚어 보는가"이고
+   * 이쪽은 "어느 상품을 읽는가"라, 묶으면 카드를 펼칠 때마다 미리보기가 따라 움직인다.
+   * (featureTier를 pinnedTier와 분리해 둔 것과 같은 이유다.)
+   */
+  const [openTier, setOpenTier] = useState<PreviewTier | null>("premium");
+
   // 미리보기 하이라이트 — hover는 스쳐가는 강조, click은 고정.
   // hover가 풀리면 고정해 둔 등급으로 돌아간다(둘 다 없으면 무강조).
   const [hoveredTier, setHoveredTier] = useState<PreviewTier | null>(null);
@@ -423,6 +431,62 @@ export function BusinessPricingClient() {
 
   const applyHref = isMember ? "/support/contact" : "/business/signup";
   const freeHref  = isMember ? "/business/jobs/new" : "/business/signup";
+
+  /**
+   * ≤760px 상품 아코디언이 읽는 표. 데스크톱 카드 네 장이 각자 인라인으로 들고 있던 값을 한 줄씩
+   * 모은 것으로, 문구·가격·링크는 전부 같은 출처(premCopy·PRICES·applyHref)를 가리킨다 —
+   * 아코디언용으로 따로 적어 두면 데스크톱 카드와 곧 갈라진다.
+   *
+   * collapsed(접힌 행)에 적는 값은 2주 기준가다. 카드를 펼치기 전에는 기간을 고를 수 없는데
+   * 기간마다 값이 다르므로, 기본 기간(2주 = PeriodSelect의 초기 index 1)의 할인가에 "~"를 붙여
+   * 하한선임을 표시한다. 하드코딩하지 않고 PRICES에서 뽑는다.
+   */
+  const mobileTierCards = [
+    {
+      id: "premium" as PreviewTier,
+      name: "PREMIUM",
+      area: "최상단 추천 영역",
+      accent: "빠른 채용",
+      copy: premCopy,
+      period: { value: premPeriod, onChange: setPremPeriod, points: BOOST_PRICING.premium[activeCat] },
+      pp: prem,
+      collapsed: `${PRICES.premium[activeCat][1].price}~`,
+      cta: { label: "신청하기", href: applyHref, kind: "gradient" as const },
+    },
+    {
+      id: "featured" as PreviewTier,
+      name: "FEATURED",
+      area: "상단 추천 영역",
+      accent: "BEST",
+      copy: featCopy,
+      period: { value: featPeriod, onChange: setFeatPeriod, points: BOOST_PRICING.featured[activeCat] },
+      pp: feat,
+      collapsed: `${PRICES.featured[activeCat][1].price}~`,
+      cta: { label: "신청하기", href: applyHref, kind: "black" as const },
+    },
+    {
+      id: "standard" as PreviewTier,
+      name: "STANDARD",
+      area: "추천 공고 영역",
+      accent: null,
+      copy: { subtitle: "웹사이트 추천 노출", desc: "추천 공고 영역에 선택한 기간 동안 안정적으로 노출됩니다." },
+      period: { value: stdPeriod, onChange: setStdPeriod, points: BOOST_PRICING.standard[activeCat] },
+      pp: std,
+      collapsed: `${PRICES.standard[activeCat][1].price}~`,
+      cta: { label: "신청하기", href: applyHref, kind: "black" as const },
+    },
+    {
+      id: "basic" as PreviewTier,
+      name: "BASIC",
+      area: "전체 공고 목록",
+      accent: null,
+      copy: { subtitle: "공고 등록·게시 무료", desc: "마감일까지 노출되며, 별도 마감일이 없으면 최대 30일까지 게시됩니다." },
+      period: null,
+      pp: null,
+      collapsed: "무료",
+      cta: { label: "무료로 등록", href: freeHref, kind: "outline" as const },
+    },
+  ];
 
   return (
     <>
@@ -754,8 +818,11 @@ export function BusinessPricingClient() {
           </div>
         </section>
 
-        {/* ══ BOOST ════════════════════════════════════════════ */}
-        <section className="bg-[#fafafa] px-6 py-[88px] max-[760px]:py-[60px]">
+        {/* ══ BOOST (>760px 전용) ══════════════════════════════ */}
+        {/* ≤760px에서는 통째로 내리고 PRICING 도입부 두 줄이 대신한다 — 1열로 접히면 이 섹션은
+            "등록은 무료" 한 마디를 위해 제목·본문·3행 표로 화면 하나를 더 쓰는 꼴이 되고,
+            바로 아래 PRICING이 같은 말을 상품으로 다시 한다. */}
+        <section className="bg-[#fafafa] px-6 py-[88px] max-[760px]:hidden max-[760px]:py-[60px]">
           <div className="app-shell--default reveal">
             <div className="grid grid-cols-[1fr_0.9fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-8">
               <div>
@@ -801,7 +868,14 @@ export function BusinessPricingClient() {
             >
               분류별 상품 안내
             </h2>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373]">
+            {/* ≤760px 전용 — 위에서 내린 START FREE 섹션이 하던 말을 두 줄로 옮겨 온 것.
+                "유료 상품 안내"만 먼저 보이면 등록 자체가 유료인 것처럼 읽힌다. */}
+            <p className="mx-auto mt-[14px] hidden max-w-[52ch] text-center text-[14px] leading-[1.6] text-[#525252] max-[760px]:block">
+              공고 등록·게시는 모든 트랙에서 무료.
+              <br />
+              노출이 필요할 때만 상품을 더하세요.
+            </p>
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:mt-2 max-[760px]:text-[14px]">
               산업·연구기관 / 병원 / 약국에 따라 금액이 다릅니다.
             </p>
 
@@ -831,11 +905,15 @@ export function BusinessPricingClient() {
               </div>
             </div>
 
-            {/* ≤1040px 축약 미리보기 — 오른쪽 목업이 빠지는 폭에서 그 자리를 대신한다.
-                데스크톱 목업의 max-[1040px]:hidden과 정확히 상보적으로 켜지고, 같은 activeTier를 읽는다.
-                sticky top은 헤더(h-[64px] sticky top-0 z-50) 바로 아래. z는 헤더보다 낮게 두되
-                가격 카드의 기간 드롭다운(z-20)보다도 낮아야 드롭다운이 이 위에 뜬다. */}
-            <div className="sticky top-[64px] z-10 mt-7 hidden border border-[#e5e5e5] bg-white max-[1040px]:block">
+            {/* 761~1040px 축약 미리보기 — 오른쪽 목업이 빠지는 폭에서 그 자리를 대신한다.
+                같은 activeTier를 읽는다. sticky top은 헤더(h-[64px] sticky top-0 z-50) 바로 아래.
+                z는 헤더보다 낮게 두되 가격 카드의 기간 드롭다운(z-20)보다도 낮아야 드롭다운이 이 위에 뜬다.
+
+                ≤760px에서는 끈다 — 상품 카드가 아코디언이 되면서 화면에 한 장만 펼쳐지는데, 이 바가
+                화면 위 88px을 상시 물고 있으면 펼친 카드가 볼 자리를 그만큼 잃는다. 노출 위치는
+                카드 안 배지("최상단 추천 영역" 등)가 이미 말한다.
+                MiniPreviewZone은 이 구간(761~1040px)에서 계속 쓰이므로 컴포넌트는 그대로 둔다. */}
+            <div className="sticky top-[64px] z-10 mt-7 hidden border border-[#e5e5e5] bg-white max-[1040px]:block max-[760px]:hidden">
               <div className="flex flex-col gap-[2px] p-[8px]">
                 <MiniPreviewZone label="PREMIUM"  active={activeTier === "premium"}  slots={3} />
                 <MiniPreviewZone label="FEATURED" active={activeTier === "featured"} slots={4} />
@@ -910,8 +988,79 @@ export function BusinessPricingClient() {
                 </p>
               </div>
 
+              {/* ≤760px 상품 아코디언 — 카드 네 장을 그대로 세우면 한 장이 화면 대부분을 먹어
+                  네 상품을 견주려면 아래위로 한참 오가야 한다. 한 번에 한 장만 펼치고 나머지는
+                  이름·배지·기준가만 남긴 행으로 접어 네 상품이 한 화면에 들어오게 한다.
+                  펼친 내용은 데스크톱 카드와 같은 구성(배지·설명·기간·가격·CTA)이다. */}
+              <div className="hidden flex-col gap-2 max-[760px]:flex">
+                {mobileTierCards.map((t) => {
+                  const open = openTier === t.id;
+                  // PREMIUM만 1.5px 검정 — 접혀 있을 때도 유지한다. 데스크톱 카드가 2px 검정으로
+                  // 급을 가르는 것과 같은 장치이며, 펼칠 때만 굵어지면 테두리가 상태 표시로 읽힌다.
+                  return (
+                    <div key={t.id} className={clsx("border", t.id === "premium" ? "border-[1.5px] border-[#111111]" : "border-[#e5e5e5]")}>
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        onClick={() => setOpenTier((current) => (current === t.id ? null : t.id))}
+                        className="flex min-h-[44px] w-full items-center gap-2 px-4 py-3 text-left"
+                      >
+                        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                          <b className="text-[15px] font-bold text-[#0a0a0a]">{t.name}</b>
+                          <span className={AREA_BADGE}>{t.area}</span>
+                        </span>
+                        {/* 접힌 행의 기준가. BASIC만 초록으로 — 무료라는 사실이 이 목록에서 가장 다른 값이다. */}
+                        <span className={clsx("shrink-0 text-[13px] font-semibold", t.id === "basic" ? "text-[#0D7369]" : "text-[#0a0a0a]")}>
+                          {t.collapsed}
+                        </span>
+                        <ChevronDown
+                          size={16}
+                          aria-hidden="true"
+                          className={clsx("shrink-0 text-[#737373] transition-transform duration-150", open && "rotate-180")}
+                        />
+                      </button>
+
+                      {open ? (
+                        <div className="border-t border-border px-4 pb-4 pt-3">
+                          {t.accent ? <div className="mb-[10px]"><span className={ACCENT_BADGE}>{t.accent}</span></div> : null}
+                          <p className="text-[14px] font-medium text-[#0a0a0a]">{t.copy.subtitle}</p>
+                          <p className="mt-[4px] text-[12.5px] leading-[1.5] text-[#a3a3a3]">{t.copy.desc}</p>
+
+                          <div className="mt-4">
+                            {t.period ? (
+                              <PeriodSelect value={t.period.value} onChange={t.period.onChange} points={t.period.points} />
+                            ) : null}
+                            {t.pp?.original ? (
+                              <p className="text-[12px] text-[#a3a3a3] line-through">정상가 {t.pp.original}</p>
+                            ) : null}
+                            <p className="my-[3px] text-[22px] font-bold tracking-[-0.02em] text-[#0a0a0a]">
+                              {t.pp ? t.pp.price : "무료"}
+                              {t.pp ? null : <small className="mt-[2px] block text-[12px] font-normal text-[#737373]">공고 등록 무료</small>}
+                            </p>
+                          </div>
+
+                          {t.cta.kind === "gradient" ? (
+                            <LinkButton href={t.cta.href} variant="gradient" size="md" className="mt-3 w-full justify-center">
+                              {t.cta.label}
+                            </LinkButton>
+                          ) : t.cta.kind === "black" ? (
+                            <a href={t.cta.href} className="mt-3 flex min-h-[44px] w-full items-center justify-center bg-[#0a0a0a] text-[14px] font-semibold text-white transition-opacity hover:opacity-[.88]">
+                              {t.cta.label}
+                            </a>
+                          ) : (
+                            <a href={t.cta.href} className="mt-3 flex min-h-[44px] w-full items-center justify-center border border-[#e5e5e5] text-[14px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#f5f5f5]">
+                              {t.cta.label}
+                            </a>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+
               {/* 가격 카드 */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 max-[760px]:hidden">
                 {/* PREMIUM — 2px 검정 테두리로 다른 세 장과 급을 가른다.
                     초록은 CTA와 미리보기 존 하이라이트(선택 연동 신호) 몫이라 카드 프레임에 쓰지 않는다. */}
                 <div
