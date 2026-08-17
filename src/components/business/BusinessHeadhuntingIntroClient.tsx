@@ -172,7 +172,10 @@ export function BusinessHeadhuntingIntroClient() {
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.02em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>더파마 헤드헌팅이 특별한 이유</h2>
           </div>
-          <div className="mt-10 grid grid-cols-3 max-[900px]:grid-cols-1 max-[900px]:gap-8">
+          {/* 3분할은 세로 칸막이 선이 세 항목을 가르는 구조라, 1열로 접히면(≤900px) 선이 사라지고
+              32px 간격만 남아 세 덩이를 구분하는 요소가 아무것도 없다. ≤760px에서는 아래 번호
+              리스트로 교체한다(reasons 하나를 두 렌더가 공유). 761~900px 구간은 종전 그대로다. */}
+          <div className="mt-10 grid grid-cols-3 max-[900px]:grid-cols-1 max-[900px]:gap-8 max-[760px]:hidden">
             {reasons.map((reason, index) => {
               const isFirst = index === 0;
               const isLast = index === reasons.length - 1;
@@ -188,6 +191,26 @@ export function BusinessHeadhuntingIntroClient() {
                 >
                   <h3 className="mt-0 text-[22px] font-bold leading-[1.3] tracking-[-0.02em] text-[#17202c]">{reason.title}</h3>
                   <p className="mt-2 text-[14px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">{reason.description}</p>
+                </div>
+              );
+            })}
+          </div>
+          {/* ≤760px 번호 구분선 리스트. 데이터에만 있고 여태 렌더되지 않던 number를 여기서 처음 쓴다 —
+              가로 칸막이가 사라진 자리를 번호 열과 가로선이 대신한다.
+              번호는 tabular-nums로 폭을 고정해 세 행의 제목 시작선이 어긋나지 않게 한다. */}
+          <div className="mt-8 hidden text-left max-[760px]:block">
+            {reasons.map((reason, index) => {
+              const isLast = index === reasons.length - 1;
+              return (
+                <div
+                  key={reason.number}
+                  className={["flex border-t border-border py-[16px]", isLast ? "border-b" : ""].filter(Boolean).join(" ")}
+                >
+                  <span className="w-6 shrink-0 text-[13px] font-semibold tabular-nums leading-[1.4] text-[#0D7369]">{reason.number}</span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="break-keep text-[14px] font-semibold leading-[1.4] tracking-[-0.01em] text-[#0a0a0a]">{reason.title}</h3>
+                    <p className="mt-1 break-keep text-[12.5px] font-normal leading-[1.6] text-[#737373]">{reason.description}</p>
+                  </div>
                 </div>
               );
             })}
@@ -226,7 +249,12 @@ export function BusinessHeadhuntingIntroClient() {
               실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
             </p>
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
+          {/* 이미지 카드 6장은 1열로 접히면 카드 하나가 250px 남짓이라 여섯 장이 1,600px을 넘는다 —
+              사진이 294px 폭에서 크게 잘리기까지 해 스크롤만 길어진다. ≤760px에서는 아래 컴팩트
+              리스트로 교체한다(specializedPositions 하나를 두 렌더가 공유).
+              max-[760px]:grid-cols-1은 남겨 둔다 — "이미지 복원" 결정이 나면 아래 리스트와 이
+              max-[760px]:hidden만 걷어 내면 종전 1열 카드가 그대로 살아난다. */}
+          <div className="mt-10 grid grid-cols-2 gap-5 max-[760px]:grid-cols-1 max-[760px]:hidden">
             {specializedPositions.map((position) => (
               <BusinessCard key={position.title} padding="none" className="overflow-hidden transition-[transform,box-shadow,border-color] duration-[220ms] hover:-translate-y-0.5 hover:border-[#111111] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
                 <div className="h-[140px] overflow-hidden bg-[#f2f3f4]">
@@ -239,7 +267,19 @@ export function BusinessHeadhuntingIntroClient() {
               </BusinessCard>
             ))}
           </div>
-          <p className="mt-8 text-center text-[13px] font-normal text-[#68717e]">
+          {/* ≤760px 컴팩트 리스트 — 흰 박스 하나에 여섯 행. 행 사이 선만 두고 카드 테두리는 겹치지 않는다. */}
+          <div className="mt-8 hidden border border-[#e5e5e5] bg-white text-left max-[760px]:block">
+            {specializedPositions.map((position, index) => (
+              <div
+                key={position.title}
+                className={["px-4 py-[13px]", index > 0 ? "border-t border-border" : ""].filter(Boolean).join(" ")}
+              >
+                <h3 className="text-[13px] font-semibold leading-[1.4] tracking-[-0.01em] text-[#0a0a0a]">{position.title}</h3>
+                <p className="mt-1 break-keep text-[11.5px] font-normal leading-[1.5] text-[#8a94a3]">{position.tags}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 text-center text-[13px] font-normal text-[#68717e] max-[760px]:mt-6">
             제약회사, 바이오텍, CRO, CDMO, 의료기기 및 헬스케어 기업의 채용을 지원합니다.
           </p>
         </BusinessSection>
