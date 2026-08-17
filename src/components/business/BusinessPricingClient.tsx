@@ -929,10 +929,9 @@ export function BusinessPricingClient() {
               <br />
               노출이 필요할 때만 상품을 더하세요.
             </p>
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:mt-2 max-[760px]:text-[14px]">
-              산업·연구기관 / 병원 / 약국에 따라 금액이 다릅니다.
-            </p>
 
+            {/* "산업·연구기관 / 병원 / 약국에 따라 금액이 다릅니다." 줄은 걷었다 —
+                바로 아래 분류 탭이 세 이름을 그대로 늘어놓아 같은 말을 두 번 하고 있었다. */}
             {/* 분류 탭 — 중앙 정렬 */}
             <div className="mt-9 flex justify-center">
               {/* flex-wrap — 좁은 폭에서 세 탭이 한 줄에 못 들어가면 잘리는 대신 접힌다.
@@ -1219,8 +1218,10 @@ export function BusinessPricingClient() {
                       </div>
                     </div>
                     <div className="min-w-[190px] text-right max-[640px]:text-left">
+                      {/* 캡션("공고 등록 무료")은 걷었다 — 부제·큰 값·버튼이 이미 무료를 말한다.
+                          큰 "무료"는 남긴다: 네 카드의 가격 슬롯이 같은 자리에서 시작하게 하는 것이 이 값이다. */}
                       <p className="text-[26px] font-bold tracking-[-0.02em] text-[#0a0a0a]">
-                        무료<small className="mt-[2px] block text-[12px] font-normal text-[#737373]">공고 등록 무료</small>
+                        무료
                       </p>
                       <a href={freeHref} className="mt-[14px] block w-full border border-[#e5e5e5] py-3 text-center text-[14px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#f5f5f5]">무료로 등록</a>
                     </div>
@@ -1247,10 +1248,8 @@ export function BusinessPricingClient() {
             >
               상품별 제공 항목 비교
             </h2>
-            {/* ≤760px 16→14px — WHY 섹션 리드와 같은 값. */}
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
-              추천 · 상단 · 최상단 노출까지, 상품별로 한눈에 비교하세요.
-            </p>
+            {/* 부제("추천 · 상단 · 최상단 노출까지…")는 걷었다 — 표가 바로 아래에서 같은 것을
+                항목으로 보여 주므로, 읽고 나서 다시 표를 읽어야 하는 줄이었다. */}
             {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다 */}
             <p className="mt-[10px] text-center text-[13px] font-semibold text-[#0D7369]">
               {CAT_LABEL[activeCat]} 기준
@@ -1331,13 +1330,23 @@ export function BusinessPricingClient() {
                 ))}
               </ul>
             </div>
-            <p className="mt-6 text-center text-[12.5px] text-[#a3a3a3]">
-              * 노출 기간·횟수는 상품 기준이며, 직무·시기에 따라 달라질 수 있습니다. 모든 금액은 부가세 별도입니다.
-              <br />
-              * 웹사이트 노출은 구매한 이용 기간 동안 적용됩니다.
-              <br />
-              * 약국 상품은 웹사이트 노출 중심으로 구성되며 SNS·카카오톡·미디어 노출이 포함되지 않습니다.
-            </p>
+            {/* 각주는 가운데 정렬을 걷고 왼쪽으로 세운다 — 가운데로 모으면 줄마다 시작 x가 달라
+                세 줄이 한 묶음으로 읽히지 않는다. pl/-indent 짝은 hanging indent다: * 가 첫 줄
+                왼쪽에 걸리고 접힌 줄은 본문 시작선에 맞는다(8px ≈ "* "의 폭).
+                약국 각주는 약국을 보고 있을 때만 — 다른 분류에서는 해당 없는 예외 설명이다. */}
+            <div className="mt-6 text-left text-[12px] leading-[1.6] text-[#a3a3a3] max-[760px]:text-[11px]">
+              <p className="pl-[8px] -indent-[8px]">
+                * 노출 기간·횟수는 상품 기준이며, 직무·시기에 따라 달라질 수 있습니다. 모든 금액은 부가세 별도입니다.
+              </p>
+              <p className="mt-1 pl-[8px] -indent-[8px]">
+                * 웹사이트 노출은 구매한 이용 기간 동안 적용됩니다.
+              </p>
+              {activeCat === "pharmacy" ? (
+                <p className="mt-1 pl-[8px] -indent-[8px]">
+                  * 약국 상품은 웹사이트 노출 중심으로 구성되며 SNS·카카오톡·미디어 노출이 포함되지 않습니다.
+                </p>
+              ) : null}
+            </div>
           </div>
         </section>
 
