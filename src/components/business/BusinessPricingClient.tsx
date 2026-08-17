@@ -205,6 +205,45 @@ function TpCheck() {
   );
 }
 
+// ── 분류 선택 칩 ────────────────────────────────────────────
+/**
+ * 산업·연구기관 / 병원 / 약국 칩. PRICING 상단의 분류 탭과 제공 항목 비교의 기준 전환기가
+ * 같은 부품을 쓴다 — 둘 다 activeCat 하나를 읽고 쓰는데 생김새가 갈리면 같은 컨트롤을
+ * 두 번 다르게 배우게 된다. 전환기 쪽에 있던 검정 세그먼트가 이쪽 값으로 흡수된 것이다.
+ *
+ * 바깥 정렬·위 여백은 호출부가 정한다(탭은 mt-9, 전환기는 mt-[14px]).
+ *
+ * 칩 높이는 14px×1.65 + py-[11px]×2 = 45.1px이라 ≤760px 터치 타깃 44px을 상자 자체로 채운다.
+ * 전환기가 쓰던 투명 ::after 확장은 그래서 함께 걷었다 — 같은 목적을 두 벌로 들 이유가 없다.
+ */
+function TrackChips({ value, onChange }: { value: Cat; onChange: (cat: Cat) => void }) {
+  return (
+    // flex-wrap — 좁은 폭에서 세 칩이 한 줄에 못 들어가면 잘리는 대신 접힌다.
+    // 데스크톱은 한 줄로 들어가므로 wrap이 걸리지 않는다.
+    <div className="flex flex-wrap justify-center gap-2">
+      {CATS.map((cat) => {
+        const label = CAT_LABEL[cat];
+        return (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => onChange(cat)}
+            aria-pressed={value === cat}
+            className={clsx(
+              "border px-[26px] py-[11px] text-[14px] font-semibold transition-all max-[760px]:px-4",
+              value === cat
+                ? "border-transparent bg-[linear-gradient(160deg,#0D7369,#17A68C)] text-white"
+                : "border-[#e5e5e5] bg-white text-[#737373] hover:border-[#a3a3a3]",
+            )}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── 카드 내장 기간 선택 드롭다운 ────────────────────────────
 function PeriodSelect({ value, onChange, points }: { value: number; onChange: (i: number) => void; points: BoostPricePoint[] }) {
   const [open, setOpen] = useState(false);
@@ -999,28 +1038,7 @@ export function BusinessPricingClient() {
                 바로 아래 분류 탭이 세 이름을 그대로 늘어놓아 같은 말을 두 번 하고 있었다. */}
             {/* 분류 탭 — 중앙 정렬 */}
             <div className="mt-9 flex justify-center">
-              {/* flex-wrap — 좁은 폭에서 세 탭이 한 줄에 못 들어가면 잘리는 대신 접힌다.
-                  데스크톱은 한 줄로 들어가므로 wrap이 걸리지 않는다. */}
-              <div className="flex flex-wrap justify-center gap-2">
-                {CATS.map((cat) => {
-                  const label = CAT_LABEL[cat];
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setActiveCat(cat)}
-                      className={clsx(
-                        "border px-[26px] py-[11px] text-[14px] font-semibold transition-all max-[760px]:px-4",
-                        activeCat === cat
-                          ? "border-transparent bg-[linear-gradient(160deg,#0D7369,#17A68C)] text-white"
-                          : "border-[#e5e5e5] bg-white text-[#737373] hover:border-[#a3a3a3]",
-                      )}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+              <TrackChips value={activeCat} onChange={setActiveCat} />
             </div>
 
             {/* 761~1040px 축약 미리보기 — 오른쪽 목업이 빠지는 폭에서 그 자리를 대신한다.
@@ -1316,36 +1334,11 @@ export function BusinessPricingClient() {
             {/* 부제("추천 · 상단 · 최상단 노출까지…")는 걷었다 — 표가 바로 아래에서 같은 것을
                 항목으로 보여 주므로, 읽고 나서 다시 표를 읽어야 하는 줄이었다. */}
             {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다.
-                읽기만 하던 "○○ 기준" 캡션을 세그먼트로 바꾼 것 — 분류를 바꾸려고 화면 위 탭까지
+                읽기만 하던 "○○ 기준" 캡션을 컨트롤로 바꾼 것 — 분류를 바꾸려고 화면 위 탭까지
                 되돌아가야 했다. 상태는 위 탭과 같은 activeCat이라 어느 쪽을 눌러도 함께 움직인다.
-
-                검정·1px·radius 0으로 둔다. 위 분류 탭이 그라데이션을 쓰는 주 컨트롤이고 이것은
-                표 하나의 기준을 바꾸는 보조 컨트롤이라, 같은 초록을 쓰면 둘의 급이 같아 보인다. */}
+                생김새도 위 탭과 같은 부품을 쓴다(TrackChips) — 같은 것을 두 번 다르게 배우지 않게. */}
             <div className="mt-[14px] flex justify-center">
-              <div className="inline-flex border border-[#e5e5e5]">
-                {CATS.map((cat, i) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setActiveCat(cat)}
-                    aria-pressed={activeCat === cat}
-                    className={clsx(
-                      // relative + after: 시각 높이는 그대로 두고 ≤760px 히트 영역만 넓힌다
-                      // (대시보드 처리할 항목 버튼과 같은 관용구). 세로로만 늘려 옆 세그먼트와 겹치지 않는다.
-                      // 5px인 이유: ≤760px 버튼 높이가 12×1.65 + py-2(16) = 35.8px이라
-                      // 위아래 5px씩 더해야 45.8px로 44를 넘는다(4px이면 43.8px로 미달).
-                      "relative px-3 py-2 text-[13px] transition-colors max-[760px]:text-[12px]",
-                      "max-[760px]:after:absolute max-[760px]:after:inset-x-0 max-[760px]:after:-inset-y-[5px] max-[760px]:after:content-['']",
-                      i > 0 && "border-l border-[#e5e5e5]",
-                      activeCat === cat
-                        ? "bg-[#111111] font-medium text-white"
-                        : "bg-white text-[#737373] hover:text-[#111111]",
-                    )}
-                  >
-                    {CAT_LABEL[cat]}
-                  </button>
-                ))}
-              </div>
+              <TrackChips value={activeCat} onChange={setActiveCat} />
             </div>
             <p className="mt-2 text-center text-[12px] text-[#a3a3a3] max-[760px]:text-[11px]">
               위 상품 안내와 같은 기준으로 표시됩니다
