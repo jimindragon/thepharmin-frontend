@@ -733,7 +733,11 @@ export function BusinessPricingClient() {
             ≤760px에서는 위 지표 밴드가 숨어 이 섹션이 다크 히어로와 맞닿으므로 선을 끈다 —
             면이 이미 바뀌는 자리에 선을 겹치면 경계가 두 번 그어진다.
             >760px은 밴드(#f5f5f5)가 그대로 위에 있어 종전 선을 유지한다. */}
-        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:border-t-0 max-[760px]:px-0 max-[760px]:py-[72px]">
+        {/* ≤760px 흰 배경 — 좁은 폭에서는 이 섹션 하나가 화면을 통째로 채우는데, 회색 면이
+            히어로(다크)와 아래 흰 섹션 사이에 끼어 한 화면 안에서 바탕이 세 번 바뀌었다.
+            데스크톱은 지표 밴드(#f5f5f5)와 이어지는 리듬이 있어 #fafafa 그대로 둔다.
+            위 구분선은 그대로 없다 — 위가 다크라 면이 이미 바뀐다. */}
+        <section className="border-t border-[#e5e5e5] bg-[#fafafa] px-6 py-[88px] max-[760px]:border-t-0 max-[760px]:bg-white max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <p className="text-center text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
             <h2
@@ -885,7 +889,9 @@ export function BusinessPricingClient() {
         </section>
 
         {/* ══ HEADHUNTING ══════════════════════════════════════ */}
-        <section className="bg-white px-6 py-[88px] max-[760px]:px-0 max-[760px]:py-[72px]">
+        {/* ≤760px에서 위 WHY가 흰 배경이 되면서 흰-흰으로 맞닿는다 — 같은 면이 이어지므로
+            여기에 구분선이 필요하다. >760px은 위가 #fafafa라 종전대로 선 없이 둔다. */}
+        <section className="bg-white px-6 py-[88px] max-[760px]:border-t max-[760px]:border-border max-[760px]:px-0 max-[760px]:py-[72px]">
           <div className="app-shell--default reveal">
             <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-9">
               <div>
