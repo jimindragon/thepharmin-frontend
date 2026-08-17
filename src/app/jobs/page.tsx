@@ -86,6 +86,16 @@ export default function JobsPage() {
     filterState.clearPreferenceFilters(preference);
   };
 
+  /**
+   * 온보딩에서 방금 저장한 관심조건을 곧바로 목록에 적용한다.
+   * 트랙 전환 시의 불러오기(위 useEffect)는 이 페이지가 그 트랙에 머물러 있어 다시 돌지 않으므로,
+   * 저장 직후 여기서 한 번 더 읽는다 — 적용 경로 자체는 사이드바 CTA와 같은 applyPreference다.
+   */
+  const applyStoredPreference = () => {
+    const stored = getStoredJobPreference(activeTrack);
+    if (stored) applyPreference(stored);
+  };
+
   const toggleBookmark = (jobId: number) => {
     setBookmarkedIds((current) =>
       current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId],
@@ -95,7 +105,7 @@ export default function JobsPage() {
   return (
     <>
       <Header />
-      <InterestPromptGate />
+      <InterestPromptGate onSaved={applyStoredPreference} />
       {/*
         ≤760px h1 상단 여백은 캘린더(app-shell pt-8 = 32px) 기준으로 맞춘다. 데스크톱 18px은 유지.
         배경도 ≤760px에서만 QNA·캘린더와 같은 회색으로 — 탭바로 오가는 화면끼리 바탕이 끊기지 않게 한다.

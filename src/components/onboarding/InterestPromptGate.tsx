@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { InterestPromptModal } from "@/components/onboarding/InterestPromptModal";
+import { InterestPromptModal, type InterestPromptAnswers } from "@/components/onboarding/InterestPromptModal";
 import {
   hospitalJobCategoryOptions,
   industryJobCategoryOptions,
@@ -10,12 +10,13 @@ import {
 } from "@/config/jobFilters";
 import { emptyUserPreference } from "@/data/mockUserPreferences";
 import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
+import { normalizeRegionIdsForTrack } from "@/hooks/useJobFilters";
 import { getAllStoredJobPreferences, setStoredJobPreference } from "@/hooks/useJobPreferenceStorage";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import type { JobTrack } from "@/types/jobs";
 
 /**
- * 관심 분야 안내 창을 띄울지 판정하고, 답을 관심조건으로 저장하는 껍데기.
+ * 관심 조건 온보딩 창을 띄울지 판정하고, 답을 관심조건으로 저장하는 껍데기.
  *
  * 창(InterestPromptModal)은 값을 어디에 저장하는지 모른다 — 판정과 저장을 여기 한 곳에 모아 두고
  * 공고 목록 화면들은 이것 한 줄만 놓는다. 목록 화면이 둘(`/jobs`의 JobsPage와 트랙 랜딩의
@@ -49,9 +50,13 @@ const TRACK_BY_CATEGORY_ID: Record<string, JobTrack> = Object.fromEntries(
   ),
 );
 
-export function InterestPromptGate() {
+/** 저장 완료 토스트가 떠 있는 시간. 마이페이지 관심조건 저장(MyPagePreferencesClient)과 같은 값이다. */
+const TOAST_DURATION_MS = 2400;
+
+export function InterestPromptGate({ onSaved }: { onSaved?: () => void } = {}) {
   const { isLoggedIn } = usePersonalLoginState();
   const { hasSeen, markSeen } = useInterestPromptSeen();
+  const [showSavedToast, setShowSavedToast] = useState(false);
 
   /**
    * 관심조건을 이미 하나라도 저장해 뒀다면 묻지 않는다 — 설정해 본 사람은 리크루트를 이미 써 본
@@ -70,17 +75,26 @@ export function InterestPromptGate() {
   /**
    * 고른 직무를 소속 트랙별로 갈라 그 트랙의 관심조건으로 저장한다.
    * 직무를 하나도 고르지 않은 트랙도 빈 값으로 저장한다 — 분야를 골랐다는 사실 자체가 답이다.
-   * 지역·경력·급여 등 나머지는 묻지 않았으므로 비워 둔다(emptyUserPreference).
+   * 경력·지역은 트랙별로 따로 묻지 않았으므로 고른 값 하나를 전 트랙에 같이 넣는다.
+   * 학력·급여 등 묻지 않은 나머지는 비워 둔다(emptyUserPreference).
    */
-  const handleSubmit = (tracks: JobTrack[], categoryIds: string[]) => {
+  const handleSubmit = ({ tracks, categoryIds, experienceId, regionIds }: InterestPromptAnswers) => {
     for (const track of tracks) {
       setStoredJobPreference(track, {
         ...emptyUserPreference,
         jobCategoryIds: categoryIds.filter((id) => TRACK_BY_CATEGORY_ID[id] === track),
+        experienceId,
+        // 약국·병원에는 "해외"가 없다 — 그 트랙에 남으면 화면에 칩이 없어 해제할 수 없는 값이 된다.
+        regionIds: normalizeRegionIdsForTrack(track, regionIds),
       });
     }
+    // TODO(backend): 온보딩 관심조건 저장 — 백엔드 연결 시 localStorage 대신 서버 저장으로 교체. 경력·지역은 전 트랙 동일 값 복사 정책(A안).
 
     markSeen();
+    setShowSavedToast(true);
+    window.setTimeout(() => setShowSavedToast(false), TOAST_DURATION_MS);
+    // 저장이 끝난 뒤에 알린다 — 받는 쪽(공고 목록)이 방금 쓴 값을 곧바로 다시 읽는다.
+    onSaved?.();
   };
 
   /**
@@ -91,5 +105,19 @@ export function InterestPromptGate() {
    *
    * 빈 배열을 넘기지 않는 것도 일부러다 — 매 렌더 새 배열이 되어 창 안의 선택이 계속 초기화된다.
    */
-  return <InterestPromptModal open={open} onClose={markSeen} onSubmit={handleSubmit} />;
+  return (
+    <>
+      <InterestPromptModal open={open} onClose={markSeen} onSubmit={handleSubmit} />
+      {/* 마이페이지 관심조건 저장 토스트와 같은 자리·같은 모양 — 같은 일을 알리는 알림이 두 모양이 되지 않게. */}
+      {showSavedToast ? (
+        <div
+          className="fixed right-6 top-[84px] z-[80] border border-border bg-white px-5 py-3 text-[13px] font-medium text-[#303946] shadow-[0_10px_28px_rgba(17,24,39,0.08)]"
+          role="status"
+          aria-live="polite"
+        >
+          관심 조건이 저장되었습니다
+        </div>
+      ) : null}
+    </>
+  );
 }
