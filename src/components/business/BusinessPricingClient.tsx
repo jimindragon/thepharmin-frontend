@@ -88,6 +88,29 @@ const VS_ROWS = [
 const VS_TP_LABEL = "더파마 리크루트";
 const VS_GEN_LABEL = "다른 채용 플랫폼";
 
+// ── 헤드헌팅 ────────────────────────────────────────────────
+/**
+ * 헤드헌팅 섹션이 쓰는 두 목록. JSX 안에 있던 배열을 그대로 끌어올린 것으로 내용은 바뀌지 않았다.
+ * 데스크톱 렌더와 ≤760px 렌더가 같은 배열을 읽어야 해서(VS_ROWS와 같은 이유) 모듈 스코프에 둔다.
+ */
+const HH_POINTS = [
+  "포지션·직무 요건 정밀 분석",
+  "산업 네트워크 기반 핵심 인재 서칭",
+  "이직 의향·이력 검증된 후보 추천",
+  "전담 컨설턴트의 채용 동행",
+] as const;
+
+const HH_CANDIDATES = [
+  { init: "K", role: "임상개발 PM",            meta: "경력 8년 · 서울",  tags: ["임상 2/3상","종양학"],     dark: false },
+  { init: "L", role: "공정개발 (Downstream)", meta: "경력 6년 · 인천",  tags: ["CDMO","정제공정"],         dark: true  },
+  { init: "P", role: "사업개발 BD",             meta: "경력 10년 · 서울", tags: ["라이선싱","글로벌"],       dark: false },
+] as const;
+
+/** 아바타 배경 — 데스크톱 카드와 ≤760px 리스트가 같은 두 색을 쓴다. */
+function hhAvatarBg(dark: boolean) {
+  return dark ? "bg-[#2c6f63]" : "bg-[#232726]";
+}
+
 // ── 상품별 제공 항목 비교 ───────────────────────────────────
 /** 등급 열. 데스크톱 표의 <th>와 모바일 등급 탭이 같은 순서·이름을 쓴다. */
 const FEATURE_TIERS = [
@@ -644,28 +667,65 @@ export function BusinessPricingClient() {
                 <p className="mt-4 text-[16px] leading-[1.7] text-[#525252]">
                   포지션 요건을 정밀 분석해, 공개 시장에 드러나지 않는 업계 핵심 인재까지 직접 서칭·검증해 추천합니다.
                 </p>
-                <div className="mt-6 flex flex-col gap-[13px]">
-                  {([
-                    "포지션·직무 요건 정밀 분석",
-                    "산업 네트워크 기반 핵심 인재 서칭",
-                    "이직 의향·이력 검증된 후보 추천",
-                    "전담 컨설턴트의 채용 동행",
-                  ] as const).map((c) => (
+                <div className="mt-6 flex flex-col gap-[13px] max-[760px]:hidden">
+                  {HH_POINTS.map((c) => (
                     <div key={c} className="flex items-center gap-[11px] text-[15px] text-[#404040]">
                       <BlackIc />{c}
                     </div>
                   ))}
                 </div>
-                <Link href="/business/headhunting" className="mt-[30px] inline-flex bg-[#0a0a0a] px-[26px] py-[14px] text-[14px] font-semibold text-white transition-opacity hover:opacity-[.88]">
+
+                {/* ≤760px 대체 — 검정 사각 아이콘을 걷고 구분선 리스트로 바꾼다. 좁은 폭에서는 20px
+                    사각이 네 줄 왼쪽에 블록처럼 쌓여 글보다 먼저 읽힌다. 선 하나면 항목 구분은 충분하다. */}
+                <div className="mt-5 hidden max-[760px]:block">
+                  {HH_POINTS.map((c) => (
+                    <div key={c} className="flex items-start gap-2 border-b border-border py-[11px] text-[12.5px] leading-[1.5] text-[#333333]">
+                      <Check size={13} strokeWidth={2.5} className="mt-[2px] shrink-0 text-[#0D7369]" />
+                      <span className="min-w-0">{c}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link href="/business/headhunting" className="mt-[30px] inline-flex bg-[#0a0a0a] px-[26px] py-[14px] text-[14px] font-semibold text-white transition-opacity hover:opacity-[.88] max-[760px]:hidden">
                   헤드헌팅 의뢰하기
                 </Link>
               </div>
               <div className="flex flex-col gap-[14px]">
-                {([
-                  { init: "K", role: "임상개발 PM",            meta: "경력 8년 · 서울",  tags: ["임상 2/3상","종양학"],     dark: false },
-                  { init: "L", role: "공정개발 (Downstream)", meta: "경력 6년 · 인천",  tags: ["CDMO","정제공정"],         dark: true  },
-                  { init: "P", role: "사업개발 BD",             meta: "경력 10년 · 서울", tags: ["라이선싱","글로벌"],       dark: false },
-                ] as const).map((c) => (
+                {/* ≤760px에서만 붙는 소제목 — 리스트가 컴팩트해지면서 이 세 줄이 무엇인지 알려 주는
+                    단서가 카드 모양뿐이던 것이 사라진다. */}
+                <p className="hidden text-[11px] text-[#a3a3a3] max-[760px]:block">최근 추천 인재 예시</p>
+
+                {/* ≤760px 대체 — 카드 세 장을 테두리 하나에 담은 리스트 행으로 낮춘다.
+                    카드에서는 태그가 칩으로 서고 "프로필 보기"가 둘째 줄을 통째로 먹어 한 장이 120px을
+                    넘었다. 이 목록은 헤드헌팅이 어떤 인재를 다루는지 보여주는 예시라 그만한 자리를
+                    쓸 것이 아니다 — 태그는 메타 줄에 · 로 잇고 버튼은 뺀다(행마다 갈 곳이 같았다). */}
+                <div className="hidden border border-[#e5e5e5] max-[760px]:block">
+                  {HH_CANDIDATES.map((c, i) => (
+                    <div key={c.role} className={clsx("flex items-center gap-3 px-4 py-3", i > 0 && "border-t border-border")}>
+                      <span className={clsx("grid h-9 w-9 shrink-0 place-items-center text-[14px] font-bold text-white", hhAvatarBg(c.dark))}>
+                        {c.init}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <b className="block text-[13px] font-medium text-[#0a0a0a]">{c.role}</b>
+                        <p className="mt-[2px] text-[11.5px] leading-[1.4] text-[#737373]">
+                          {c.meta} · {c.tags.join(" · ")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 모바일 CTA는 섹션 맨 아래 — 예시를 본 다음에 놓인다. 데스크톱 버튼(위)은 왼쪽 열
+                    본문 끝에 붙어 있어 1열로 접히면 후보 목록보다 위로 올라간다. */}
+                <Link
+                  href="/business/headhunting"
+                  className="hidden h-12 w-full items-center justify-center border border-[#111111] bg-white text-[14px] font-semibold text-[#111111] transition-colors hover:bg-[#f5f5f5] max-[760px]:mt-1 max-[760px]:flex"
+                >
+                  헤드헌팅 의뢰하기
+                </Link>
+
+                <div className="contents max-[760px]:hidden">
+                {HH_CANDIDATES.map((c) => (
                   <div
                     key={c.role}
                     className="flex items-center gap-[18px] border border-[#e5e5e5] bg-white px-6 py-5 transition-[transform,box-shadow,border-color] duration-[220ms] hover:-translate-y-0.5 hover:border-[#d4d4d4] hover:shadow-[0_10px_26px_-16px_rgba(0,0,0,0.18)] max-[760px]:flex-wrap"
@@ -688,6 +748,7 @@ export function BusinessPricingClient() {
                     </button>
                   </div>
                 ))}
+                </div>
               </div>
             </div>
           </div>
