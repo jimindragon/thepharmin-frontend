@@ -1352,16 +1352,19 @@ export function BusinessPricingClient() {
             </h2>
             {/* 부제("추천 · 상단 · 최상단 노출까지…")는 걷었다 — 표가 바로 아래에서 같은 것을
                 항목으로 보여 주므로, 읽고 나서 다시 표를 읽어야 하는 줄이었다. */}
+            {/* 값·색·마진은 위 분류별 상품 안내의 보조문구와 같은 값이다 — 두 섹션의 머리가
+                같은 리듬(타이틀 → 한 줄 → 칩)으로 서게 하는 것이 요점이다. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[14px] leading-[1.6] text-[#525252]">
+              선택한 분류 기준의 제공 항목입니다.
+            </p>
             {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다.
                 읽기만 하던 "○○ 기준" 캡션을 컨트롤로 바꾼 것 — 분류를 바꾸려고 화면 위 탭까지
                 되돌아가야 했다. 상태는 위 탭과 같은 activeCat이라 어느 쪽을 눌러도 함께 움직인다.
-                생김새도 위 탭과 같은 부품을 쓴다(TrackChips) — 같은 것을 두 번 다르게 배우지 않게. */}
+                생김새도 위 탭과 같은 부품을 쓴다(TrackChips) — 같은 것을 두 번 다르게 배우지 않게.
+                아래에 있던 안내 한 줄은 걷었다 — 위 보조문구가 같은 말을 먼저 한다. */}
             <div className="mt-[14px] flex justify-center">
               <TrackChips value={activeCat} onChange={setActiveCat} />
             </div>
-            <p className="mt-2 text-center text-[12px] text-[#a3a3a3] max-[760px]:text-[11px]">
-              위 상품 안내와 같은 기준으로 표시됩니다
-            </p>
             {/* 5열 × 10행 표라 모바일에서는 등급 열이 전부 화면 밖으로 나간다.
                 ≤760px에서는 아래 등급 탭 + 1열 리스트로 교체한다(FEATURE_ROWS·featureCell 공유). */}
             <div className="mt-[18px] overflow-x-auto max-[760px]:hidden">
@@ -1426,7 +1429,9 @@ export function BusinessPricingClient() {
                   어느 쪽이 항목이고 어느 쪽이 답인지 흐려지고, 600은 10행이 전부 강조가 된다. */}
               <ul className="mt-5 divide-y divide-border border-y border-border">
                 {FEATURE_ROWS.map((row, ri) => (
-                  <li key={ri} className="flex items-start justify-between gap-4 py-3">
+                  // px-2 — 항목·값이 구분선 끝에 닿지 않게 행 안쪽으로 8px 들인다. padding은 행 안이라
+                  // 구분선(li의 border)은 종전대로 전체 폭을 그린다.
+                  <li key={ri} className="flex items-start justify-between gap-4 px-2 py-3">
                     <div className="min-w-0">
                       <p className="text-[12.5px] leading-[1.5] text-[#0a0a0a]">{row.label}</p>
                       {row.sub && <small className="mt-[2px] block text-[11px] leading-[1.4] text-[#a3a3a3]">{row.sub}</small>}
