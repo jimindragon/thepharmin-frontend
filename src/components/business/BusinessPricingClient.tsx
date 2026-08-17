@@ -599,19 +599,26 @@ export function BusinessPricingClient() {
                 데스크톱(>760px)은 종전대로 아래 밴드가 맡으므로 이 스트립은 ≤760px에서만 켠다 —
                 둘이 동시에 보이면 같은 수치가 두 번 나온다. */}
             <div className="mt-8 hidden grid-cols-3 border-t border-[rgba(255,255,255,0.18)] pt-5 max-[760px]:grid">
+              {/* 캡션을 앞머리와 꼬리로 나눠 둔다 — 렌더되는 문자열은 "앞머리 + 공백 + 꼬리"로 종전과 같고,
+                  꼬리만 nowrap으로 묶어 "1건당 / 조회", "(일반 / 대비)"처럼 한 덩어리로 읽히는 말이
+                  줄 끝에서 갈라지지 않게 한다. */}
               {([
-                { value: "3~4만 회", sub: "SNS 단독 공고 1건당 조회" },
-                { value: "4,000명",  sub: "카카오톡 단독 공고 대상" },
-                { value: "약 10배",  sub: "미디어 연계 노출 (일반 대비)" },
+                { value: "3~4만 회", subHead: "SNS 단독 공고",   subTail: "1건당 조회" },
+                { value: "4,000명",  subHead: "카카오톡 단독",    subTail: "공고 대상" },
+                { value: "약 10배",  subHead: "미디어 연계 노출", subTail: "(일반 대비)" },
               ] as const).map((s, i) => (
                 <div key={s.value} className="relative px-2 text-center">
                   {/* 열 사이 세로선. 위 구분선과 같은 값을 쓴다 — 어두운 배경 위에서 두 선의 밝기가
                       갈리면 스트립이 격자가 아니라 서로 다른 두 요소로 읽힌다. */}
                   {i > 0 && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-px bg-[rgba(255,255,255,0.18)]" />}
                   <b className="block text-[16px] font-semibold text-white">{s.value}</b>
-                  {/* 설명은 2줄까지 접히도록 nowrap을 걸지 않는다 — 320px에서 셀이 약 91px이라
-                      "SNS 공고 1건당 평균 조회"는 반드시 접힌다. 회색은 히어로 본문과 같은 값. */}
-                  <span className="mt-1 block text-[11px] leading-[1.4] text-[#c4c8c6]">{s.sub}</span>
+                  {/* 설명은 2줄까지 접히도록 줄 전체에 nowrap을 걸지 않는다 — 320px에서 셀이 약 91px이라
+                      "SNS 공고 1건당 평균 조회"는 반드시 접힌다. 회색은 히어로 본문과 같은 값.
+                      break-keep은 어절 중간(카카오 / 톡)에서 끊기는 것만 막고, 꼬리 묶음은 그 위에
+                      한 덩어리를 더 지정한 것이다. 묶음 자체는 320px 셀(약 75px)에도 들어가 넘치지 않는다. */}
+                  <span className="mt-1 block break-keep text-[11px] leading-[1.4] text-[#c4c8c6]">
+                    {s.subHead} <span className="whitespace-nowrap">{s.subTail}</span>
+                  </span>
                 </div>
               ))}
             </div>
