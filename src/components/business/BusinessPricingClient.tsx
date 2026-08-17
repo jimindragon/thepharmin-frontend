@@ -901,10 +901,14 @@ export function BusinessPricingClient() {
                 {/* ≤760px 16→14px, leading 1.7→1.6 — 다른 섹션 리드와 같은 값으로 모은다.
                     break-keep은 좁은 폭에만 건다(데스크톱 줄바꿈을 바꾸지 않기 위해서다).
                     가운데 정렬에서는 어절 하나가 홀로 떨어진 줄이 왼쪽 정렬보다 눈에 띈다.
-                    "서칭·검증해"는 keep-all이 가운뎃점 뒤 끊을 자리까지 막지는 않아 따로 묶었다. */}
+                    "서칭·검증해"는 keep-all이 가운뎃점 뒤 끊을 자리까지 막지는 않아 따로 묶었다.
+
+                    문구는 두 폭이 같고 줄바꿈만 갈린다 — br을 ≤760px에서만 켜서 카피가
+                    이원화되지 않게 한다(데스크톱은 한 줄, 좁은 폭은 두 줄). */}
                 <p className="mt-4 text-[16px] leading-[1.7] text-[#525252] max-[760px]:break-keep max-[760px]:text-center max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
-                  포지션 요건을 정밀 분석해, 공개 시장에 드러나지 않는 업계 핵심 인재까지 직접{" "}
-                  <span className="max-[760px]:whitespace-nowrap">서칭·검증해</span> 추천합니다.
+                  공개 시장에 드러나지 않는 핵심 인재까지{" "}
+                  <br className="hidden max-[760px]:inline" />
+                  직접 <span className="max-[760px]:whitespace-nowrap">서칭·검증해</span> 추천합니다.
                 </p>
                 <div className="mt-6 flex flex-col gap-[13px] max-[760px]:hidden">
                   {HH_POINTS.map((c) => (
