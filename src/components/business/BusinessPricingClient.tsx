@@ -838,9 +838,9 @@ export function BusinessPricingClient() {
                       <tr key={row.label}>
                         {/* 라벨 11→12px — 두 값 열과 같은 크기다. 항목 이름이 답보다 작으면
                             무엇을 견주는 표인지가 답보다 늦게 읽힌다. 구분은 굵기(600)가 맡는다.
-                            한 줄짜리 라벨을 두 줄 값 옆에서 위로 붙이면 행이 기울어 보여 세로 중앙에 둔다
-                            (데스크톱 표의 td도 중앙 정렬이다). */}
-                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-middle text-[12px] font-semibold leading-[1.55] text-[#111111]", last && "border-b")}>
+                            세 열 모두 align-top + 같은 py라 첫 줄이 한 시작선에서 출발한다 —
+                            라벨만 중앙에 두면 두 줄짜리 값 옆에서 항목 이름이 답보다 아래에서 시작한다. */}
+                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-top text-[12px] font-semibold leading-[1.55] text-[#111111]", last && "border-b")}>
                           {row.label}
                         </td>
                         <td className={clsx("border-t border-border bg-[#eef6f2] px-[10px] py-[16px] align-top text-[12px] leading-[1.55] text-[#111111]", last && "border-b")}>
@@ -854,10 +854,15 @@ export function BusinessPricingClient() {
                             <span className="min-w-0">{row.tp}</span>
                           </span>
                         </td>
-                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-middle text-[12px] leading-[1.55] text-[#8a94a3]", last && "border-b")}>
-                          {/* 데스크톱 표와 같은 표기 — 값 앞의 연회색 대시. 간격만 10→4px로,
-                              좁은 열에서 10px은 첫 줄을 한 어절만큼 잡아먹는다(옆 열 체크의 gap과도 같은 값). */}
-                          <span className="mr-1 text-[#d4d4d4]">—</span>{row.gen}
+                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-top text-[12px] leading-[1.55] text-[#8a94a3]", last && "border-b")}>
+                          {/* 데스크톱 표와 같은 표기(값 앞의 연회색 대시)를 옆 열 체크와 같은 구조로 매단다 —
+                              인라인으로 두면 둘째 줄이 대시 아래로 파고들어 두 열의 둘째 줄 시작선이 어긋났다.
+                              체크와 달리 mt 보정이 없는 것은 대시가 아이콘이 아니라 같은 12px 글자라
+                              줄 상자 높이가 본문과 같기 때문이다. 간격은 체크와 같은 gap-1. */}
+                          <span className="flex items-start gap-1">
+                            <span className="shrink-0 text-[#d4d4d4]">—</span>
+                            <span className="min-w-0">{row.gen}</span>
+                          </span>
                         </td>
                       </tr>
                     );
