@@ -295,7 +295,8 @@ export function BusinessHeadhuntingIntroClient() {
             </h2>
           </div>
 
-          <div className="relative mt-[54px]">
+          {/* ≤760px 32px — WHY·직무의 모바일 리스트와 같은 머리-본문 간격으로 맞춘다(데스크톱 54px 유지). */}
+          <div className="relative mt-[54px] max-[760px]:mt-8">
             {/* Horizontal connecting line — desktop only.
                 브레이크포인트는 이 페이지의 760 단일 기준을 쓴다(종전 md=768은 761~768px에서
                 4열 그리드만 먼저 켜져 연결선과 어긋났다). */}
@@ -311,7 +312,10 @@ export function BusinessHeadhuntingIntroClient() {
               }}
             />
 
-            <div className="grid grid-cols-1 gap-8 min-[761px]:grid-cols-4 min-[761px]:gap-5">
+            {/* 4단계를 잇는 것은 위 가로선인데 그 선이 ≤760px에서 꺼지고, 마커·텍스트가 전부
+                가운데 정렬이라 1열에서는 넉 덩이가 순서 없이 반복되는 것으로만 읽힌다.
+                ≤760px에서는 아래 세로 타임라인으로 교체한다(processSteps 하나를 두 렌더가 공유). */}
+            <div className="grid grid-cols-1 gap-8 min-[761px]:grid-cols-4 min-[761px]:gap-5 max-[760px]:hidden">
               {processSteps.map((step, index) => {
                 const isLast = index === processSteps.length - 1;
                 return (
@@ -345,6 +349,41 @@ export function BusinessHeadhuntingIntroClient() {
                         {step.title}
                       </h3>
                       <p className="mt-1.5" style={{ color: "#aeb4b2", fontSize: 13, lineHeight: 1.7 }}>
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ≤760px 세로 타임라인. 마커는 네 단계 모두 같은 형태로 통일한다 — 데스크톱은 가로선이
+                진행 방향을 그려 주지만 세로 1열에서는 레일 자체가 순서를 말하므로, 04만 체크로 다르면
+                "마지막"이 아니라 "완료된 것"으로 읽힌다(데스크톱 벌은 종전대로 체크를 유지).
+                연결선은 마지막 행에만 없다 — 레일이 끝나는 자리가 곧 과정의 끝이다. */}
+            <div className="hidden text-left max-[760px]:block">
+              {processSteps.map((step, index) => {
+                const isLast = index === processSteps.length - 1;
+                return (
+                  <div key={step.number} className="flex gap-4">
+                    <div className="flex w-6 shrink-0 flex-col items-center">
+                      <span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center bg-[#23D9A5]">
+                        <span className="block h-2 w-2 bg-[#0a0a0a]" />
+                      </span>
+                      {!isLast && (
+                        <span
+                          aria-hidden="true"
+                          className="w-px flex-1"
+                          style={{ background: "linear-gradient(180deg, rgba(35,217,165,0.5), rgba(255,255,255,0.15))" }}
+                        />
+                      )}
+                    </div>
+                    <div className={isLast ? "min-w-0 flex-1" : "min-w-0 flex-1 pb-6"}>
+                      <p className="text-[11px] font-semibold tabular-nums tracking-[.08em] text-[#7fcdb9]">STEP {step.number}</p>
+                      <h3 className="mt-1.5 break-keep text-[14.5px] font-semibold leading-[1.4] tracking-[-0.01em] text-white">
+                        {step.title}
+                      </h3>
+                      <p className="mt-1.5 break-keep text-[12.5px] font-normal leading-[1.6] text-[#a8adaa]">
                         {step.description}
                       </p>
                     </div>
