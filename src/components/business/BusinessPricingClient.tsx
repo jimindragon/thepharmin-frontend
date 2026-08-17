@@ -414,27 +414,38 @@ export function BusinessPricingClient() {
             style={{ background: "linear-gradient(90deg,rgba(12,12,12,.68) 0%,rgba(12,12,12,.62) 30%,rgba(12,12,12,.3) 75%,rgba(12,12,12,.15) 100%)" }}
           />
 <div className="app-shell--default relative z-10 py-[100px] max-[760px]:py-16">
-            <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9]">결국, 사람이 경쟁력입니다</p>
+            {/* ≤760px에서 자간·색을 한 단계씩 죽인다 — 좁은 폭에서는 넓은 자간이 한 줄을 더 잡아먹고,
+                밝은 민트가 바로 아래 h1의 그라데이션과 같은 채도로 경쟁한다. 둘 다 페이지 안의 기존 값. */}
+            <p className="text-[12px] font-semibold tracking-[.14em] text-[#7fcdb9] max-[760px]:tracking-[.12em] max-[760px]:text-[#5cb89f]">결국, 사람이 경쟁력입니다</p>
+            {/* fontSize를 인라인 style에서 클래스로 옮겼다 — 인라인은 max-[760px] 분기로 덮을 수 없다.
+                clamp 값은 그대로라 >760px 렌더 결과는 동일하다. 자간(-.045em)은 건드리지 않는다. */}
             <h1
-              className="mt-5 font-semibold text-white"
-              style={{ fontSize: "clamp(36px,5.2vw,58px)", letterSpacing: "-.045em", lineHeight: 1.15 }}
+              className="mt-5 text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[32px]"
+              style={{ letterSpacing: "-.045em", lineHeight: 1.15 }}
             >
-              제약·바이오·약국·병원 전문 채용,
-              <br />
+              제약·바이오·약국·병원 전문 채용,{" "}
+              {/* ≤760px에서는 강제 줄바꿈을 풀어 자연 줄바꿈에 맡긴다(390·360px에서 4줄 → 3줄).
+                  앞의 {" "}는 br이 꺼졌을 때 어절이 붙지 않게 하는 것 — 데스크톱에서는 줄 끝 공백이라 렌더에 영향이 없다. */}
+              <br className="max-[760px]:hidden" />
               <span className="text-gradient-cta font-bold">더파마 리크루트</span> 하나로.
             </h1>
-            <p className="mt-6 max-w-[52ch] text-[17px] leading-[1.7] text-[#c4c8c6]">
-              통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.<br />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
+            <p className="mt-6 max-w-[52ch] text-[17px] leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
+              통합 구독자 6,000명의 약사·연구원·업계 실무자 네트워크.{" "}
+              <br className="max-[760px]:hidden" />다른 채용 플랫폼이 닿지 못하는 제약·바이오 전문 인재를 직접 연결합니다.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            {/* ≤760px에서는 버튼 두 장이 같은 무게로 나란히 서지 않게 한다 — 주 CTA는 풀폭,
+                보조는 아웃라인을 벗겨 텍스트 링크로 내린다. 위계가 생기므로 세로 간격도 함께 좁힌다. */}
+            <div className="mt-10 flex flex-wrap gap-3 max-[760px]:gap-1">
               {/* 사진 히어로 위 주 CTA — 어두운 변형(보조 버튼·하단 CTA는 기존 유지) */}
-              <LinkButton href="#pricing" variant="gradient-dark" size="lg">
+              <LinkButton href="#pricing" variant="gradient-dark" size="lg" className="max-[760px]:w-full">
                 노출 상품 보기
                 <ChevronRight size={17} />
               </LinkButton>
+              {/* h-11(44px)은 테두리를 벗긴 뒤에도 터치 타깃을 유지하기 위한 것 — 글자는 담백하게 두고
+                  밑줄로만 링크임을 표시한다. 글자색은 아웃라인 버튼의 것을 그대로 쓴다. */}
               <a
                 href={freeHref}
-                className="inline-flex h-12 items-center border border-white/30 px-7 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
+                className="inline-flex h-12 items-center border border-white/30 px-7 text-[15px] font-medium text-white transition-colors hover:bg-white/10 max-[760px]:h-11 max-[760px]:border-0 max-[760px]:px-0 max-[760px]:underline max-[760px]:underline-offset-4 max-[760px]:hover:bg-transparent"
               >
                 무료로 공고 등록
               </a>
@@ -456,11 +467,14 @@ export function BusinessPricingClient() {
               { value: "4,000명",        sub: "카카오톡 단독 공고 대상" },
               { value: "약 10배",        sub: "미디어 연계 노출 (일반 대비)" },
             ] as const).map((s, i) => (
-              <div key={i} className="relative py-[34px] text-center max-[640px]:border-t max-[640px]:border-[#e5e5e5] max-[640px]:text-left">
+              <div key={i} className="relative py-[34px] text-center max-[640px]:border-t max-[640px]:border-[#e5e5e5] max-[640px]:text-left max-[760px]:py-6">
                 {i > 0 && <span className="absolute inset-y-7 left-0 w-px bg-[#e5e5e5] max-[640px]:hidden" />}
+                {/* h1과 같은 이유로 fontSize를 클래스로 옮겼다(인라인은 분기 불가). clamp 값은 그대로.
+                    ≤760px 18px — 가장 긴 "평균 3~4만 회"가 2열 셀에서 한 줄에 들어가는 최대 크기다.
+                    320px 셀이 102px이라 19px 이상은 "평균 3~4만 / 회"로 접힌다(실측). */}
                 <b
-                  className="block font-bold text-[#0a0a0a]"
-                  style={{ fontSize: "clamp(26px,3.2vw,34px)", letterSpacing: "-.035em" }}
+                  className="block text-[clamp(26px,3.2vw,34px)] font-bold text-[#0a0a0a] max-[760px]:text-[18px] max-[760px]:font-semibold"
+                  style={{ letterSpacing: "-.035em" }}
                 >
                   {s.value}
                 </b>
