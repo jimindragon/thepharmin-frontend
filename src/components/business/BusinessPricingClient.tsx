@@ -739,8 +739,10 @@ export function BusinessPricingClient() {
               다른 채용 플랫폼과<br />무엇이 다를까요?
             </h2>
             {/* ≤760px 16→14px — 섹션 리드는 타이틀과 본문 사이를 잇는 줄이라 좁은 폭에서
-                본문(14px 안팎)과 같은 크기까지 내려도 위계가 유지된다. leading은 1.6 그대로. */}
-            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
+                본문(14px 안팎)과 같은 크기까지 내려도 위계가 유지된다. leading은 1.6 그대로.
+                ≤760px에서는 아예 내린다 — 바로 아래 체크 배지 두 줄이 같은 말을 근거로 다시 하고,
+                좁은 폭에서는 타이틀과 배지 사이에 낀 두 줄이 표까지 가는 길만 늘린다. */}
+            <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] leading-[1.6] text-[#737373] max-[760px]:hidden max-[760px]:text-[14px]">
               같은 비용으로, 업계 전문 인재에게 훨씬 더 넓고 정확하게 도달합니다.
             </p>
             <div className="mt-[22px] flex flex-wrap justify-center gap-x-[28px] gap-y-[10px]">
@@ -881,16 +883,24 @@ export function BusinessPricingClient() {
           <div className="app-shell--default reveal">
             <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[56px] max-[1040px]:grid-cols-1 max-[1040px]:gap-9">
               <div>
-                <p className="text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3]">HEADHUNTING</p>
+                {/* ≤760px에서 머리 세 줄(아이브로·타이틀·리드)만 가운데로 세운다 — 1열로 접히면
+                    이 블록이 화면 맨 위에 서는데, WHY·PRICING의 머리는 가운데라 여기만 왼쪽이면
+                    섹션마다 시작하는 방식이 달라진다. 아래 체크리스트·후보 목록·버튼은 왼쪽 그대로 —
+                    읽는 덩어리가 아니라 훑는 목록이라 시작선이 하나여야 한다. */}
+                <p className="text-[12px] font-semibold tracking-[.06em] text-[#a3a3a3] max-[760px]:text-center">HEADHUNTING</p>
                 <h2
-                  className="mt-[14px] font-bold text-[#0a0a0a]"
+                  className="mt-[14px] font-bold text-[#0a0a0a] max-[760px]:text-center"
                   style={{ fontSize: "clamp(24px,3vw,38px)", letterSpacing: "-.035em", lineHeight: 1.28 }}
                 >
                   필요한 인재를<br />더파마가 찾아드립니다.
                 </h2>
-                {/* ≤760px 16→14px, leading 1.7→1.6 — 다른 섹션 리드와 같은 값으로 모은다. */}
-                <p className="mt-4 text-[16px] leading-[1.7] text-[#525252] max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
-                  포지션 요건을 정밀 분석해, 공개 시장에 드러나지 않는 업계 핵심 인재까지 직접 서칭·검증해 추천합니다.
+                {/* ≤760px 16→14px, leading 1.7→1.6 — 다른 섹션 리드와 같은 값으로 모은다.
+                    break-keep은 좁은 폭에만 건다(데스크톱 줄바꿈을 바꾸지 않기 위해서다).
+                    가운데 정렬에서는 어절 하나가 홀로 떨어진 줄이 왼쪽 정렬보다 눈에 띈다.
+                    "서칭·검증해"는 keep-all이 가운뎃점 뒤 끊을 자리까지 막지는 않아 따로 묶었다. */}
+                <p className="mt-4 text-[16px] leading-[1.7] text-[#525252] max-[760px]:break-keep max-[760px]:text-center max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
+                  포지션 요건을 정밀 분석해, 공개 시장에 드러나지 않는 업계 핵심 인재까지 직접{" "}
+                  <span className="max-[760px]:whitespace-nowrap">서칭·검증해</span> 추천합니다.
                 </p>
                 <div className="mt-6 flex flex-col gap-[13px] max-[760px]:hidden">
                   {HH_POINTS.map((c) => (
