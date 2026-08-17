@@ -450,15 +450,42 @@ export function BusinessPricingClient() {
                 무료로 공고 등록
               </a>
             </div>
+
+            {/* ≤760px 지표 스트립 — 아래 회색 지표 밴드를 히어로 다크 영역 안으로 흡수한 것.
+                밴드가 히어로 바로 뒤에 별도 블록으로 서면 좁은 폭에서 회색 면이 한 겹 끼어 히어로와
+                본문이 두 번 끊긴다. 수치는 히어로 카피를 뒷받침하는 근거라 CTA와 같은 면에 둔다.
+                데스크톱(>760px)은 종전대로 아래 밴드가 맡으므로 이 스트립은 ≤760px에서만 켠다 —
+                둘이 동시에 보이면 같은 수치가 두 번 나온다. */}
+            <div className="mt-8 hidden grid-cols-3 border-t border-[rgba(255,255,255,0.18)] pt-5 max-[760px]:grid">
+              {([
+                { value: "3~4만 회", sub: "SNS 공고 1건당 평균 조회" },
+                { value: "4,000명",  sub: "카카오톡 단독 공고 대상" },
+                { value: "약 10배",  sub: "미디어 연계 노출 (일반 대비)" },
+              ] as const).map((s, i) => (
+                <div key={s.value} className="relative px-2 text-center">
+                  {/* 열 사이 세로선. 위 구분선과 같은 값을 쓴다 — 어두운 배경 위에서 두 선의 밝기가
+                      갈리면 스트립이 격자가 아니라 서로 다른 두 요소로 읽힌다. */}
+                  {i > 0 && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-px bg-[rgba(255,255,255,0.18)]" />}
+                  <b className="block text-[16px] font-semibold text-white">{s.value}</b>
+                  {/* 설명은 2줄까지 접히도록 nowrap을 걸지 않는다 — 320px에서 셀이 약 91px이라
+                      "SNS 공고 1건당 평균 조회"는 반드시 접힌다. 회색은 히어로 본문과 같은 값. */}
+                  <span className="mt-1 block text-[11px] leading-[1.4] text-[#c4c8c6]">{s.sub}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ══ 지표 밴드 ══════════════════════════════════════════ */}
+        {/* ══ 지표 밴드 (>760px 전용) ═══════════════════════════ */}
         {/* 이 밴드만 px-6이 없어 다른 섹션보다 좌우 24px씩 넓게 나갔다.
             app-shell--default는 ≤1180px에서 100vw가 아닌 100% 기준이라, 부모 패딩이 폭에 그대로 반영된다.
             그래서 무조건 px-6을 주면 1041~1180px 구간의 폭까지 함께 바뀐다 — 데스크톱 무변화를 위해
             표준 브레이크포인트 1040 이하로만 건다(그 위는 원래 정렬을 그대로 유지). */}
-        <div className="border-b border-[#e5e5e5] bg-[#f5f5f5] max-[1040px]:px-6">
+        {/* ≤760px에서는 통째로 내린다 — 같은 수치를 히어로 스트립이 맡는다.
+            아래 셀의 max-[640px]:* / max-[760px]:* 클래스는 그래서 이제 닿지 않는 구간이다.
+            지우지 않고 둔 것은 주석에 남은 실측값(2열 147px·320px 셀 102px) 때문이며,
+            스트립을 되돌리면 그대로 살아난다. 모바일 렌더를 여기서 고치려 하지 말 것. */}
+        <div className="border-b border-[#e5e5e5] bg-[#f5f5f5] max-[1040px]:px-6 max-[760px]:hidden">
           {/* 2열에서는 열 간격이 필요하다 — 3열 데스크톱은 셀이 넓어 gap 없이도 떨어져 보이지만,
               2열(147px)에서는 "평균 3~4만 회"가 셀을 꽉 채워 옆 셀 값과 맞닿는다. */}
           <div className="app-shell--default grid grid-cols-3 max-[640px]:grid-cols-2 max-[640px]:gap-x-5">
