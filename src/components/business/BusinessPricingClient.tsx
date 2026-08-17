@@ -729,7 +729,7 @@ export function BusinessPricingClient() {
                 초록 면을 130px 열에 깔면 같은 화면의 CTA·미리보기 하이라이트와 채도로 경쟁한다.
 
                 table-fixed — 열 폭을 글자 수가 아니라 이쪽에서 정한다. auto로 두면 행마다 열 경계가
-                움직여 좌우 비교가 성립하지 않는다. 라벨 76px을 뺀 나머지는 55:45로 나눈다 —
+                움직여 좌우 비교가 성립하지 않는다. 라벨 84px을 뺀 나머지는 55:45로 나눈다 —
                 더파마 열의 문구가 항상 더 길어서 반씩 주면 그쪽만 줄 수가 늘어난다. */}
             <div className="mt-8 hidden max-[760px]:block">
               {/* 외곽선은 검정이 아니라 border-border — 검정 테두리는 표 전체를 강조로 만들어
@@ -743,11 +743,13 @@ export function BusinessPricingClient() {
               <table className="w-full table-fixed break-keep border-collapse border border-border text-left">
                 <thead>
                   <tr>
-                    {/* 76px — 라벨 5글자 기준값. 남는 폭은 아래 55% 지정이 가져간다. */}
-                    <th className="w-[76px] border-b border-border px-[10px] py-[12px] align-top" />
+                    {/* 84px — 최장 라벨 "평균 조회수"가 한 줄에 들어가는 최소값이다. 12px 5자 + 어절 공백이
+                        약 62.4px이고 좌우 padding 20px과 collapse 테두리 1px을 빼면 63px이 남는다.
+                        더 줄이면 이 라벨만 두 줄이 되어 다른 네 행과 첫 줄 시작선이 어긋난다. */}
+                    <th className="w-[84px] border-b border-border px-[10px] py-[12px] align-top" />
                     {/* 나머지 폭의 55%. 셋째 열은 폭을 주지 않아 남는 45%를 그대로 받는다 —
                         두 열에 각각 %를 적으면 합이 100%를 넘어 브라우저가 임의로 줄인다. */}
-                    <th className="w-[calc((100%_-_76px)_*_0.55)] border-b border-l border-border bg-[#111111] px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-white">
+                    <th className="w-[calc((100%_-_84px)_*_0.55)] border-b border-l border-border bg-[#111111] px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-white">
                       {VS_TP_LABEL}
                     </th>
                     <th className="border-b border-l border-border px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-[#737373]">
