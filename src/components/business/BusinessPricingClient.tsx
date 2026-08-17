@@ -516,6 +516,8 @@ export function BusinessPricingClient() {
       name: "BASIC",
       area: "전체 공고 목록",
       accent: null,
+      // subtitle은 네 등급이 같은 표를 쓰기 위해 자리를 지킬 뿐 아코디언은 렌더하지 않는다 —
+      // 무료 상품은 접힌 행의 "무료"와 겹쳐서 뺐다(펼침 렌더 참조). 데스크톱 BASIC 카드는 자기 문구를 따로 갖는다.
       copy: { subtitle: "공고 등록·게시 무료", desc: "마감일까지 노출되며, 별도 마감일이 없으면 최대 30일까지 게시됩니다." },
       period: null,
       pp: null,
@@ -1075,21 +1077,28 @@ export function BusinessPricingClient() {
                       {open ? (
                         <div className="border-t border-border px-4 pb-4 pt-3">
                           {t.accent ? <div className="mb-[10px]"><span className={ACCENT_BADGE}>{t.accent}</span></div> : null}
-                          <p className="text-[14px] font-medium text-[#0a0a0a]">{t.copy.subtitle}</p>
-                          <p className="mt-[4px] text-[12.5px] leading-[1.5] text-[#a3a3a3]">{t.copy.desc}</p>
+                          {/* 무료 상품(pp 없음)은 부제·가격 블록을 함께 뺀다 — 접힌 행이 이미 우측에
+                              "무료"를 달고 있어서, 펼치면 "공고 등록·게시 무료" / "무료" / "공고 등록 무료" /
+                              "무료로 등록"까지 같은 말이 네 번 서 있었다. 남는 것은 조건을 말하는 설명과
+                              버튼뿐이다. 유료 3종은 pp가 있어 종전 구성 그대로 지난다. */}
+                          {t.pp ? (
+                            <p className="text-[14px] font-medium text-[#0a0a0a]">{t.copy.subtitle}</p>
+                          ) : null}
+                          <p className={clsx(t.pp && "mt-[4px]", "text-[12.5px] leading-[1.5] text-[#a3a3a3]")}>{t.copy.desc}</p>
 
-                          <div className="mt-4">
-                            {t.period ? (
-                              <PeriodSelect value={t.period.value} onChange={t.period.onChange} points={t.period.points} />
-                            ) : null}
-                            {t.pp?.original ? (
-                              <p className="text-[12px] text-[#a3a3a3] line-through">정상가 {t.pp.original}</p>
-                            ) : null}
-                            <p className="my-[3px] text-[22px] font-bold tracking-[-0.02em] text-[#0a0a0a]">
-                              {t.pp ? t.pp.price : "무료"}
-                              {t.pp ? null : <small className="mt-[2px] block text-[12px] font-normal text-[#737373]">공고 등록 무료</small>}
-                            </p>
-                          </div>
+                          {t.pp ? (
+                            <div className="mt-4">
+                              {t.period ? (
+                                <PeriodSelect value={t.period.value} onChange={t.period.onChange} points={t.period.points} />
+                              ) : null}
+                              {t.pp.original ? (
+                                <p className="text-[12px] text-[#a3a3a3] line-through">정상가 {t.pp.original}</p>
+                              ) : null}
+                              <p className="my-[3px] text-[22px] font-bold tracking-[-0.02em] text-[#0a0a0a]">
+                                {t.pp.price}
+                              </p>
+                            </div>
+                          ) : null}
 
                           {t.cta.kind === "gradient" ? (
                             <LinkButton href={t.cta.href} variant="gradient" size="md" className="mt-3 w-full justify-center">
@@ -1100,7 +1109,9 @@ export function BusinessPricingClient() {
                               {t.cta.label}
                             </a>
                           ) : (
-                            <a href={t.cta.href} className="mt-3 flex min-h-[44px] w-full items-center justify-center border border-[#e5e5e5] text-[14px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#f5f5f5]">
+                            // mt-4 — 이 분기(outline)를 쓰는 것은 가격 블록이 빠진 무료 상품뿐이라,
+                            // 버튼이 그 자리를 대신하며 유료 카드의 설명→가격 간격(mt-4)을 그대로 받는다.
+                            <a href={t.cta.href} className="mt-4 flex min-h-[44px] w-full items-center justify-center border border-[#e5e5e5] text-[14px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#f5f5f5]">
                               {t.cta.label}
                             </a>
                           )}
