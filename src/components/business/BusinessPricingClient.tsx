@@ -732,53 +732,65 @@ export function BusinessPricingClient() {
                 움직여 좌우 비교가 성립하지 않는다. 라벨 84px을 뺀 나머지는 55:45로 나눈다 —
                 더파마 열의 문구가 항상 더 길어서 반씩 주면 그쪽만 줄 수가 늘어난다. */}
             <div className="mt-8 hidden max-[760px]:block">
-              {/* 외곽선은 검정이 아니라 border-border — 검정 테두리는 표 전체를 강조로 만들어
-                  안에서 유일하게 강조여야 할 더파마 열(검정 머리·#fafafa 면)과 경쟁했다.
-                  셀 여백(px-[10px] py-[12px])·행간(1.55)은 머리행까지 한 값으로 맞춘다.
-                  세로 여백은 14→12px — 열 폭을 다시 나눠 줄 수가 줄면서 14px은 행 사이가 비어 보인다. */}
+              {/* 격자를 걷고 데스크톱 표와 같은 문법으로 맞춘다 — 외곽선·세로선을 지우고 행 사이
+                  가로선 하나만 남긴 뒤, 더파마 열은 선이 아니라 면(그라데이션 머리 + #eef6f2 본문)으로
+                  세운다. 색 값은 전부 위 데스크톱 표가 쓰는 리터럴 그대로다.
+                  선이 빠진 만큼 세로 여백이 리듬을 맡는다(py 12→16px). 좌우는 10px 그대로. */}
               {/* break-keep — 어절 안에서 끊지 않는다. 기본 word-break는 CJK를 아무 데서나 잘라
                   "3~4만 / 회", "약 10 / 배"처럼 수치와 단위가 갈라졌다. 표에 걸면 머리행·라벨·두 값 열이
                   모두 물려받는다. 끊을 자리가 없는 어절(최장 "SNS·미디어" 약 62px)도 열 폭 안에 들어가
                   넘치는 셀은 없다. */}
-              <table className="w-full table-fixed break-keep border-collapse border border-border text-left">
+              <table className="w-full table-fixed break-keep border-collapse text-left">
                 <thead>
                   <tr>
                     {/* 84px — 최장 라벨 "평균 조회수"가 한 줄에 들어가는 최소값이다. 12px 5자 + 어절 공백이
-                        약 62.4px이고 좌우 padding 20px과 collapse 테두리 1px을 빼면 63px이 남는다.
+                        약 62.4px이고 좌우 padding 20px을 빼면 64px이 남는다.
                         더 줄이면 이 라벨만 두 줄이 되어 다른 네 행과 첫 줄 시작선이 어긋난다. */}
-                    <th className="w-[84px] border-b border-border px-[10px] py-[12px] align-top" />
+                    <th className="w-[84px] px-[10px] py-[16px] align-middle" />
                     {/* 나머지 폭의 55%. 셋째 열은 폭을 주지 않아 남는 45%를 그대로 받는다 —
-                        두 열에 각각 %를 적으면 합이 100%를 넘어 브라우저가 임의로 줄인다. */}
-                    <th className="w-[calc((100%_-_84px)_*_0.55)] border-b border-l border-border bg-[#111111] px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-white">
+                        두 열에 각각 %를 적으면 합이 100%를 넘어 브라우저가 임의로 줄인다.
+                        머리행 그라데이션은 데스크톱 표의 것과 같은 값이다(그쪽은 로고, 이쪽은 글자). */}
+                    <th className="w-[calc((100%_-_84px)_*_0.55)] bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[10px] py-[16px] align-middle text-[12.5px] font-medium leading-[1.55] text-white">
                       {VS_TP_LABEL}
                     </th>
-                    <th className="border-b border-l border-border px-[10px] py-[12px] align-top text-[11px] font-semibold leading-[1.55] text-[#737373]">
+                    <th className="px-[10px] py-[16px] align-middle text-[11px] font-semibold leading-[1.55] text-[#737373]">
                       {VS_GEN_LABEL}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {VS_ROWS.map((row) => (
-                    <tr key={row.label}>
-                      {/* 라벨 11→12px — 두 값 열과 같은 크기다. 항목 이름이 답보다 작으면
-                          무엇을 견주는 표인지가 답보다 늦게 읽힌다. 구분은 굵기(600)가 맡는다. */}
-                      <td className="border-t border-border px-[10px] py-[12px] align-top text-[12px] font-semibold leading-[1.55] text-[#111111]">
-                        {row.label}
-                      </td>
-                      <td className="border-l border-t border-border bg-[#fafafa] px-[10px] py-[12px] align-top text-[12px] leading-[1.55] text-[#111111]">
-                        {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로).
-                            items-start + mt-[3px]: 12px 글자의 첫 줄 상자가 18.6px(12×1.55)이고 아이콘이
-                            12px이라 (18.6-12)/2 ≈ 3px 내리면 체크가 첫 줄 한가운데 선다. */}
-                        <span className="flex items-start gap-1">
-                          <Check size={12} strokeWidth={2.5} className="mt-[3px] shrink-0 text-[#0D7369]" />
-                          <span className="min-w-0">{row.tp}</span>
-                        </span>
-                      </td>
-                      <td className="border-l border-t border-border px-[10px] py-[12px] align-top text-[12px] leading-[1.55] text-[#737373]">
-                        {row.gen}
-                      </td>
-                    </tr>
-                  ))}
+                  {/* 행선은 각 행의 상단에만 둔다 — 첫 행의 것이 머리행과의 경계를 겸한다.
+                      마지막 행만 아래를 닫아 표의 끝을 알린다(외곽선이 없으므로 이 선이 그 몫이다). */}
+                  {VS_ROWS.map((row, i) => {
+                    const last = i === VS_ROWS.length - 1;
+                    return (
+                      <tr key={row.label}>
+                        {/* 라벨 11→12px — 두 값 열과 같은 크기다. 항목 이름이 답보다 작으면
+                            무엇을 견주는 표인지가 답보다 늦게 읽힌다. 구분은 굵기(600)가 맡는다.
+                            한 줄짜리 라벨을 두 줄 값 옆에서 위로 붙이면 행이 기울어 보여 세로 중앙에 둔다
+                            (데스크톱 표의 td도 중앙 정렬이다). */}
+                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-middle text-[12px] font-semibold leading-[1.55] text-[#111111]", last && "border-b")}>
+                          {row.label}
+                        </td>
+                        <td className={clsx("border-t border-border bg-[#eef6f2] px-[10px] py-[16px] align-top text-[12px] leading-[1.55] text-[#111111]", last && "border-b")}>
+                          {/* flex — 둘째 줄이 체크 아래로 파고들지 않게 매단다(카드 뷰에서 쓰던 처리 그대로).
+                              items-start + mt-[3px]: 12px 글자의 첫 줄 상자가 18.6px(12×1.55)이고 아이콘이
+                              12px이라 (18.6-12)/2 ≈ 3px 내리면 체크가 첫 줄 한가운데 선다.
+                              이 열만 위 정렬인 것은 체크가 첫 줄에 걸려야 하기 때문이다(데스크톱은 체크가
+                              인라인이라 같은 문제가 없다). */}
+                          <span className="flex items-start gap-1">
+                            <Check size={12} strokeWidth={2.5} className="mt-[3px] shrink-0 text-[#0D7369]" />
+                            <span className="min-w-0">{row.tp}</span>
+                          </span>
+                        </td>
+                        <td className={clsx("border-t border-border px-[10px] py-[16px] align-middle text-[12px] leading-[1.55] text-[#8a94a3]", last && "border-b")}>
+                          {/* 데스크톱 표와 같은 표기 — 값 앞의 연회색 대시. 간격만 10→4px로,
+                              좁은 열에서 10px은 첫 줄을 한 어절만큼 잡아먹는다(옆 열 체크의 gap과도 같은 값). */}
+                          <span className="mr-1 text-[#d4d4d4]">—</span>{row.gen}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
