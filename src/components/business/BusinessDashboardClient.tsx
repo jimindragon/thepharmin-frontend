@@ -224,7 +224,9 @@ export function BusinessDashboardClient() {
         ) : null}
 
         {/* 통계 4분할 */}
-        <BusinessStatGrid cols={4}>
+        {/* mobileCompact — 카드 4장이 세로로 쌓이면 ≤760px에서 첫 화면을 통계만으로 채운다.
+            같은 그리드를 쓰는 지원자 관리·헤드헌팅 관리·요금제 관리는 이 prop을 넘기지 않아 그대로다. */}
+        <BusinessStatGrid cols={4} mobileCompact>
           <BusinessStatCard
             label="진행 중 공고"
             value={String(activeJobs.length)}
