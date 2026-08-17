@@ -316,9 +316,19 @@ export function BusinessDashboardClient() {
                           <span className="break-keep text-[16px] font-semibold text-[#17202c]">
                             {job.title}
                           </span>
-                          <TrackBadge label={jobTrackLabel(job.track)} />
+                          {/* ≤760px에서는 이 배지 대신 아래 메타 줄의 사본을 쓴다 — 제목 옆에 두면
+                              156px짜리 제목 열을 배지가 한 번 더 좁힌다. 래퍼는 display:contents라
+                              >760px 렌더에서 배지는 여전히 이 flex의 직계 아이템이다. */}
+                          <span className="contents max-[760px]:hidden">
+                            <TrackBadge label={jobTrackLabel(job.track)} />
+                          </span>
                         </div>
                         <p className="mt-0.5 text-[13px] text-[#68717e]">
+                          {/* 메타 줄의 배지 사본 — >760px에서는 display:none이라 데스크톱 렌더에 없다.
+                              13px 줄에 얹히므로 큰 쪽(md)이 아니라 sm(11px)을 쓴다. */}
+                          <span className="hidden max-[760px]:mr-1.5 max-[760px]:inline-flex max-[760px]:align-middle">
+                            <TrackBadge label={jobTrackLabel(job.track)} size="sm" />
+                          </span>
                           {job.registeredAt} 등록 · 게시 중
                         </p>
                       </div>
