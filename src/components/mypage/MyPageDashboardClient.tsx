@@ -29,6 +29,7 @@ import {
   toMonthDay,
   type DdayTier,
 } from "@/utils/dday";
+import type { JobTrack, UserJobPreference } from "@/types/jobs";
 
 // ─── mock data ─────────────────────────────────────────────────────────────────
 
@@ -37,23 +38,18 @@ const USER_NAME = myPageUser.name;
 // ─── 관심 조건 요약 ────────────────────────────────────────────────────────────
 
 /**
- * 대시보드 요약은 산업 트랙 하나만 보여준다 — 전 트랙을 합치면(캘린더 사이드바 방식) 직무 칩이
+ * 대시보드 요약은 트랙 하나만 보여준다 — 전 트랙을 합치면(캘린더 사이드바 방식) 직무 칩이
  * 분야를 넘나들어 "내가 무엇을 설정했는지"가 오히려 흐려진다. 트랙별 수정은 /mypage/preferences 몫이다.
+ *
+ * 저장된 트랙 중 첫 번째를 그 하나로 삼고, 저장된 것이 하나도 없을 때만 mock 산업 트랙으로 떨어진다.
  */
-const INTEREST_PREFERENCE = mockUserPreferences.industry;
+const FALLBACK_INTEREST_PREFERENCE = mockUserPreferences.industry ?? null;
 
 function toOptionLabels(ids: string[], mapKey: string): string[] {
   return ids
     .map((id) => optionLabelMaps[mapKey]?.get(id))
     .filter((label): label is string => Boolean(label));
 }
-
-const interestJobLabels = toOptionLabels(INTEREST_PREFERENCE?.jobSubcategoryIds ?? [], "jobSubcategory");
-const interestExperienceLabel = INTEREST_PREFERENCE?.experienceId
-  ? optionLabelMaps.experience?.get(INTEREST_PREFERENCE.experienceId)
-  : undefined;
-const interestRegionLabel = toOptionLabels(INTEREST_PREFERENCE?.regionIds ?? [], "region").join("·");
-const interestEmailAlertOn = INTEREST_PREFERENCE?.emailAlertEnabled ?? false;
 
 /** D-day 배지는 점 없이 텍스트 색만 쓴다 — 프로젝트 규칙상 D-day에는 상태 점을 붙이지 않는다. */
 const DDAY_BADGE_STYLE: Record<DdayTier, { className: string }> = {
@@ -245,11 +241,21 @@ function ScheduleRow({ date, eventLabel, jobTitle, company, badge: badgeInput }:
 export function MyPageDashboardClient() {
   const builtResumes = mockResumes.filter((r): r is BuiltResume => r.kind === "built");
   const [hasPreferences, setHasPreferences] = useState(false);
+  const [interestPreference, setInterestPreference] = useState<UserJobPreference | null>(null);
 
   useEffect(() => {
     const stored = getAllStoredJobPreferences();
-    setHasPreferences(Object.keys(stored).length > 0);
+    const storedTracks = Object.keys(stored) as JobTrack[];
+    setHasPreferences(storedTracks.length > 0);
+    setInterestPreference(storedTracks.length > 0 ? stored[storedTracks[0]] ?? null : FALLBACK_INTEREST_PREFERENCE);
   }, []);
+
+  const interestJobLabels = toOptionLabels(interestPreference?.jobSubcategoryIds ?? [], "jobSubcategory");
+  const interestExperienceLabel = interestPreference?.experienceId
+    ? optionLabelMaps.experience?.get(interestPreference.experienceId)
+    : undefined;
+  const interestRegionLabel = toOptionLabels(interestPreference?.regionIds ?? [], "region").join("·");
+  const interestEmailAlertOn = interestPreference?.emailAlertEnabled ?? false;
 
   const { isRead, markRead, isLoaded } = useNotificationReadState("personal");
 
