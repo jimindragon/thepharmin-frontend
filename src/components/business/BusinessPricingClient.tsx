@@ -1250,9 +1250,38 @@ export function BusinessPricingClient() {
             </h2>
             {/* 부제("추천 · 상단 · 최상단 노출까지…")는 걷었다 — 표가 바로 아래에서 같은 것을
                 항목으로 보여 주므로, 읽고 나서 다시 표를 읽어야 하는 줄이었다. */}
-            {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다 */}
-            <p className="mt-[10px] text-center text-[13px] font-semibold text-[#0D7369]">
-              {CAT_LABEL[activeCat]} 기준
+            {/* 분류 탭에서 한참 아래로 떨어진 표라, 지금 어느 분류를 보고 있는지 여기서 다시 알려 준다.
+                읽기만 하던 "○○ 기준" 캡션을 세그먼트로 바꾼 것 — 분류를 바꾸려고 화면 위 탭까지
+                되돌아가야 했다. 상태는 위 탭과 같은 activeCat이라 어느 쪽을 눌러도 함께 움직인다.
+
+                검정·1px·radius 0으로 둔다. 위 분류 탭이 그라데이션을 쓰는 주 컨트롤이고 이것은
+                표 하나의 기준을 바꾸는 보조 컨트롤이라, 같은 초록을 쓰면 둘의 급이 같아 보인다. */}
+            <div className="mt-[14px] flex justify-center">
+              <div className="inline-flex border border-[#e5e5e5]">
+                {CATS.map((cat, i) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCat(cat)}
+                    aria-pressed={activeCat === cat}
+                    className={clsx(
+                      // relative + after: 시각 높이는 그대로 두고 ≤760px 히트 영역만 44px로 넓힌다
+                      // (대시보드 처리할 항목 버튼과 같은 관용구). 세로로만 늘려 옆 세그먼트와 겹치지 않는다.
+                      "relative px-3 py-2 text-[13px] transition-colors max-[760px]:text-[12px]",
+                      "max-[760px]:after:absolute max-[760px]:after:inset-x-0 max-[760px]:after:-inset-y-[4px] max-[760px]:after:content-['']",
+                      i > 0 && "border-l border-[#e5e5e5]",
+                      activeCat === cat
+                        ? "bg-[#111111] font-medium text-white"
+                        : "bg-white text-[#737373] hover:text-[#111111]",
+                    )}
+                  >
+                    {CAT_LABEL[cat]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="mt-2 text-center text-[12px] text-[#a3a3a3] max-[760px]:text-[11px]">
+              위 상품 안내와 같은 기준으로 표시됩니다
             </p>
             {/* 5열 × 10행 표라 모바일에서는 등급 열이 전부 화면 밖으로 나간다.
                 ≤760px에서는 아래 등급 탭 + 1열 리스트로 교체한다(FEATURE_ROWS·featureCell 공유). */}
