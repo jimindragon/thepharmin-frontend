@@ -11,7 +11,7 @@
  */
 
 import clsx from "clsx";
-import { Check, ChevronDown, ChevronRight } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
@@ -87,6 +87,14 @@ const VS_ROWS = [
 /** 표 헤더의 두 열 이름. 모바일 표에서도 그대로 열 머리글로 쓴다(로고 이미지를 쓸 자리가 없다). */
 const VS_TP_LABEL = "더파마 리크루트";
 const VS_GEN_LABEL = "다른 채용 플랫폼";
+
+// ── 하단 무료 안내 배너 ─────────────────────────────────────
+/**
+ * 닫음 기록. 세션 한정이라 sessionStorage에 둔다 — 다음 방문에는 다시 보여도 되는 안내이고,
+ * 영구 저장할 만큼 무거운 선택이 아니다. 키는 콜론형(thepharmin:resume-convert-draft 등)을 따른다.
+ */
+const FREE_BANNER_KEY = "thepharmin:business-free-banner";
+const FREE_BANNER_DISMISSED = "done";
 
 // ── 헤드헌팅 ────────────────────────────────────────────────
 /**
@@ -386,6 +394,22 @@ export function BusinessPricingClient() {
    * (featureTier를 pinnedTier와 분리해 둔 것과 같은 이유다.)
    */
   const [openTier, setOpenTier] = useState<PreviewTier | null>("premium");
+
+  /**
+   * 하단 무료 안내 배너를 닫았는지. 기본값을 "닫음"에 두고 마운트 후 교정한다 —
+   * sessionStorage는 서버에서 읽을 수 없어, 안 닫은 것으로 시작하면 이미 닫은 사람에게도
+   * 배너가 한 프레임 떴다 사라진다(useInterestPromptSeen이 hasSeen을 다루는 방식과 같다).
+   */
+  const [bannerDismissed, setBannerDismissed] = useState(true);
+
+  useEffect(() => {
+    setBannerDismissed(window.sessionStorage.getItem(FREE_BANNER_KEY) === FREE_BANNER_DISMISSED);
+  }, []);
+
+  const dismissBanner = () => {
+    window.sessionStorage.setItem(FREE_BANNER_KEY, FREE_BANNER_DISMISSED);
+    setBannerDismissed(true);
+  };
 
   // 미리보기 하이라이트 — hover는 스쳐가는 강조, click은 고정.
   // hover가 풀리면 고정해 둔 등급으로 돌아간다(둘 다 없으면 무강조).
@@ -1331,6 +1355,42 @@ export function BusinessPricingClient() {
         </section>
 
       </main>
+
+      {/* ══ ≤760px 하단 무료 안내 배너 ═══════════════════════════ */}
+      {/* 페이지가 유료 상품 안내로 길게 이어지는 동안 "등록 자체는 무료"라는 사실이 히어로와
+          PRICING 도입부에만 있어 스크롤 중에는 보이지 않는다. 그 한 줄만 화면에 붙여 둔다.
+
+          이미 기업 회원이면 띄우지 않는다 — 가입 유도 문구인데 그들에게는 할 말이 아니다.
+          z-[60]: 페이지 콘텐츠 위, 모달 계열(70)·드로어(75)·토스트(80) 아래.
+          이 랜딩에는 하단 탭바가 없다(BusinessTabBar의 allowlist에 /business가 없다) —
+          겹칠 상대가 없어 본문 하단 보정 없이 얹는다. */}
+      {!isMember && !bannerDismissed ? (
+        <div className="fixed inset-x-0 bottom-0 z-[60] hidden bg-[#15181c] pb-[env(safe-area-inset-bottom)] max-[760px]:block">
+          {/* py-1 — 44px 닫기 버튼이 높이를 정하고 위아래 4px씩만 더해 52px에 맞춘다. */}
+          <div className="flex items-center gap-2 px-4 py-1">
+            <p className="min-w-0 flex-1 text-[12.5px] leading-[1.4] text-white">
+              공고 등록·게시는 <span className="font-medium text-[#23D9A5]">무료</span>입니다
+            </p>
+            {/* 히어로 "무료로 공고 등록"과 같은 분기(freeHref)를 그대로 쓴다 — 두 곳이 갈라지면 안 된다. */}
+            <a
+              href={freeHref}
+              className="shrink-0 px-[14px] py-2 text-[12px] font-semibold text-white transition-[filter] hover:brightness-[1.08]"
+              style={{ background: "var(--gradient-cta)" }}
+            >
+              무료로 등록
+            </a>
+            {/* -mr-2 — 44px 터치 타깃은 그대로 두고 아이콘만 가장자리 쪽으로 당긴다. */}
+            <button
+              type="button"
+              onClick={dismissBanner}
+              aria-label="안내 닫기"
+              className="-mr-2 grid h-11 w-11 shrink-0 place-items-center text-[#8a94a3] transition-colors hover:text-white"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
