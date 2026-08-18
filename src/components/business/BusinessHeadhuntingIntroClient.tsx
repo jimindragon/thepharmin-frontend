@@ -256,7 +256,10 @@ export function BusinessHeadhuntingIntroClient() {
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">SPECIALIZED POSITIONS</p>
             <h2 className="mt-[14px] font-bold text-[#17202c] tracking-[-0.04em]" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.22 }}>
-              제약·바이오 주요 직무의
+              {/* {" "}는 br이 숨는 폭(≤640px)에서 두 줄이 한 줄로 이어질 때의 어절 공백이다 —
+                  JSX가 줄바꿈 앞뒤 공백을 지우므로 이게 없으면 "직무의전문인재를"로 붙는다.
+                  아래 리드문·CTA 리드문이 이미 쓰는 것과 같은 자리(br 앞)에 둔다. */}
+              제약·바이오 주요 직무의{" "}
               <br className="max-[640px]:hidden" />
               전문인재를 연결합니다.
             </h2>
