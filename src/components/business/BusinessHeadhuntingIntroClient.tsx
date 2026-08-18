@@ -9,11 +9,12 @@
  * "스케일 위반"으로 보고 일괄 치환하지 말 것 — 바꾸려면 두 랜딩을 함께 재설계해야 한다.
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { BusinessImageBand, BusinessCard, BusinessSection } from "@/components/business/BusinessMarketingSections";
 import { BusinessHeader } from "@/components/business/BusinessHeaders";
-import { LinkButton } from "@/components/ui/Button";
+import { HeadhuntingBrochureModal } from "@/components/business/HeadhuntingBrochureModal";
+import { Button, LinkButton } from "@/components/ui/Button";
 import { companyExampleImages } from "@/config/companyImages";
 import { useBusinessMember } from "@/hooks/useBusinessMember";
 
@@ -51,26 +52,30 @@ const processSteps = [
   { number: "04", title: "면접 및 입사 지원", description: "면접 조율부터 처우 협의, 입사까지 전 과정을 지원합니다." },
 ];
 
-function ClosingCtaRow({ isMember }: { isMember: boolean }) {
-  const hrefs = isMember
-    ? { primary: "/business/headhunting/manage/new", secondary: "/business/headhunting/manage" }
-    : { primary: "/business/signup", secondary: "/business/support" };
+/**
+ * 보조 CTA "서비스 소개자료 받기"는 링크가 아니라 이메일 수집창을 연다(히어로·하단 CTA 공통).
+ * 회원·비회원 분기는 여기서 사라졌다 — 소개자료는 로그인 여부와 무관하게 받는 것이다.
+ * 주 CTA("인재추천 의뢰하기")의 isMember 분기는 그대로다.
+ */
+function ClosingCtaRow({ isMember, onBrochure }: { isMember: boolean; onBrochure: (e: MouseEvent<HTMLButtonElement>) => void }) {
+  const primaryHref = isMember ? "/business/headhunting/manage/new" : "/business/signup";
   return (
     <>
       {/* ≤760px 풀폭 세로 스택. 히어로와 달리 보조를 밑줄로 강등하지 않는다 — 이 섹션은
           어두운 배경 위에 버튼 둘만 서 있어 아웃라인이 사라지면 두 번째 CTA가 배경에 묻힌다. */}
       <Link
-        href={hrefs.primary}
+        href={primaryHref}
         className="inline-flex items-center bg-[linear-gradient(160deg,#0D7369,#17A68C)] px-[30px] py-[15px] text-[15px] font-semibold text-white transition-[filter] hover:brightness-[1.08] max-[760px]:w-full max-[760px]:justify-center"
       >
         인재추천 의뢰하기
       </Link>
-      <Link
-        href={hrefs.secondary}
+      <button
+        type="button"
+        onClick={onBrochure}
         className="inline-flex items-center border border-white/40 px-[30px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:bg-white/10 max-[760px]:w-full max-[760px]:justify-center"
       >
         서비스 소개자료 받기
-      </Link>
+      </button>
     </>
   );
 }
@@ -85,33 +90,44 @@ const HERO_PRIMARY_CTA = "max-[760px]:w-full";
 const HERO_SECONDARY_CTA =
   "max-[760px]:h-11 max-[760px]:w-full max-[760px]:justify-center max-[760px]:border-0 max-[760px]:underline max-[760px]:underline-offset-4";
 
-function HeroCtaRow({ isMember }: { isMember: boolean }) {
-  if (isMember) {
-    return (
-      <div className="flex flex-wrap gap-3 max-[760px]:gap-1">
-        <LinkButton href="/business/headhunting/manage/new" variant="gradient" size="lg" className={HERO_PRIMARY_CTA}>
-          인재추천 의뢰하기
-        </LinkButton>
-        <LinkButton href="/business/headhunting/manage" variant="secondary" tone="dark" size="lg" className={HERO_SECONDARY_CTA}>
-          서비스 소개자료 받기
-        </LinkButton>
-      </div>
-    );
-  }
+function HeroCtaRow({ isMember, onBrochure }: { isMember: boolean; onBrochure: (e: MouseEvent<HTMLButtonElement>) => void }) {
   return (
     <div className="flex flex-wrap gap-3 max-[760px]:gap-1">
-      <LinkButton href="/business/signup" variant="gradient" size="lg" className={HERO_PRIMARY_CTA}>
+      <LinkButton
+        href={isMember ? "/business/headhunting/manage/new" : "/business/signup"}
+        variant="gradient"
+        size="lg"
+        className={HERO_PRIMARY_CTA}
+      >
         인재추천 의뢰하기
       </LinkButton>
-      <LinkButton href="/business/support" variant="secondary" tone="dark" size="lg" className={HERO_SECONDARY_CTA}>
+      <Button type="button" onClick={onBrochure} variant="secondary" tone="dark" size="lg" className={HERO_SECONDARY_CTA}>
         서비스 소개자료 받기
-      </LinkButton>
+      </Button>
     </div>
   );
 }
 
 export function BusinessHeadhuntingIntroClient() {
   const isMember = useBusinessMember();
+
+  /**
+   * 소개자료 수집창. 히어로와 하단 CTA 두 곳이 같은 창을 여는데, 닫을 때 포커스는 "누른 쪽"으로
+   * 돌아가야 하므로 눌린 버튼 자체를 기억한다(둘 중 어느 쪽인지 상태로 따로 들 필요가 없다).
+   * 닫힌 동안에는 모달을 마운트하지 않는다 — ModalShell 관례이자, 다시 열 때 입력이 비워지는 방법이다.
+   */
+  const [brochureOpen, setBrochureOpen] = useState(false);
+  const brochureTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const openBrochure = (e: MouseEvent<HTMLButtonElement>) => {
+    brochureTriggerRef.current = e.currentTarget;
+    setBrochureOpen(true);
+  };
+
+  const closeBrochure = () => {
+    setBrochureOpen(false);
+    brochureTriggerRef.current?.focus();
+  };
 
   // 스크롤 페이드인
   useEffect(() => {
@@ -180,7 +196,7 @@ export function BusinessHeadhuntingIntroClient() {
           {/* ≤760px 20px/40px — eyebrow→h1, 리드→CTA 간격을 기업 랜딩 히어로와 같은 값으로 맞춘다
               (h1의 max-[760px]:mt-5와 한 쌍). 데스크톱은 이 페이지의 16px/36px 그대로. */}
           <div className="mt-9 max-[760px]:mt-10">
-            <HeroCtaRow isMember={isMember} />
+            <HeroCtaRow isMember={isMember} onBrochure={openBrochure} />
           </div>
           <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
         </BusinessImageBand>
@@ -475,7 +491,7 @@ export function BusinessHeadhuntingIntroClient() {
               담당자가 진행 방법을 안내드립니다.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <ClosingCtaRow isMember={isMember} />
+              <ClosingCtaRow isMember={isMember} onBrochure={openBrochure} />
             </div>
             <p className="mx-auto mt-5 max-w-[52ch] text-[12px] font-normal text-white/50">
               상담 신청 단계에서는 비용이 발생하지 않으며, 진행 조건과 비용은 상담 후 안내드립니다.
@@ -483,6 +499,8 @@ export function BusinessHeadhuntingIntroClient() {
           </div>
         </section>
       </main>
+
+      {brochureOpen ? <HeadhuntingBrochureModal onClose={closeBrochure} /> : null}
     </>
   );
 }
