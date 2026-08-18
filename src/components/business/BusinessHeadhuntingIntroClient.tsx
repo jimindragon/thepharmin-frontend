@@ -337,11 +337,13 @@ export function BusinessHeadhuntingIntroClient() {
           <div className="relative mt-[54px] max-[760px]:mt-8">
             {/* Horizontal connecting line — desktop only.
                 브레이크포인트는 이 페이지의 760 단일 기준을 쓴다(종전 md=768은 761~768px에서
-                4열 그리드만 먼저 켜져 연결선과 어긋났다). */}
+                4열 그리드만 먼저 켜져 연결선과 어긋났다).
+                선 자체(그라데이션·1px·좌우 끝 위치)는 종전 그대로다. top만 마커 중심을 따라간다 —
+                25px 마커의 중심 12px에 맞춰져 있던 값이라, 18px로 줄인 뒤에는 9px가 중심이다. */}
             <div
               className="pointer-events-none absolute hidden min-[761px]:block"
               style={{
-                top: "12px",
+                top: "9px",
                 left: "calc(12.5% - 7.5px)",
                 right: "calc(12.5% - 7.5px)",
                 height: "1px",
@@ -354,30 +356,23 @@ export function BusinessHeadhuntingIntroClient() {
                 가운데 정렬이라 1열에서는 넉 덩이가 순서 없이 반복되는 것으로만 읽힌다.
                 ≤760px에서는 아래 세로 타임라인으로 교체한다(processSteps 하나를 두 렌더가 공유). */}
             <div className="grid grid-cols-1 gap-8 min-[761px]:grid-cols-4 min-[761px]:gap-5 max-[760px]:hidden">
-              {processSteps.map((step, index) => {
-                const isLast = index === processSteps.length - 1;
-                return (
+              {processSteps.map((step) => (
                   <div key={step.number} className="flex flex-col items-center">
+                    {/* 마커는 18px 단일 면 — 모바일 타임라인(14px)과 같은 언어다. 종전의 25px 민트
+                        사각은 후광(box-shadow 0 0 0 5px)을 두르고 안에 점·체크를 담고 있었는데,
+                        장식 그림자는 이 프로젝트가 쓰지 않는 표현이고(오버레이 예외에도 해당하지
+                        않는다) 04만 체크였던 것은 세로 벌에서 이미 정리한 이유와 같다 —
+                        진행 표시는 순서를 말할 뿐 완료를 말하지 않는다.
+                        z-10은 유지: 뒤로 지나가는 가로 연결선을 마커가 덮어야 한다. */}
                     <div
-                      className="relative z-10 flex items-center justify-center"
+                      className="relative z-10"
                       style={{
-                        width: 25,
-                        height: 25,
-                        background: "#1FBF92",
+                        width: 18,
+                        height: 18,
+                        background: "linear-gradient(160deg,#0D7369,#23D9A5)",
                         borderRadius: 0,
-                        boxShadow: isLast
-                          ? "0 0 0 5px rgba(31,191,146,0.18)"
-                          : "0 0 0 5px rgba(31,191,146,0.12)",
                       }}
-                    >
-                      {isLast ? (
-                        <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
-                          <path d="M1 4.5L4.5 8L11 1" stroke="#1a1d1c" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter" />
-                        </svg>
-                      ) : (
-                        <div style={{ width: 7, height: 7, background: "#1a1d1c" }} />
-                      )}
-                    </div>
+                    />
 
                     <div className="mt-5 text-center">
                       <p style={{ color: "#23D9A5", fontSize: 11, fontWeight: 500, letterSpacing: "0.1em" }}>
@@ -391,8 +386,7 @@ export function BusinessHeadhuntingIntroClient() {
                       </p>
                     </div>
                   </div>
-                );
-              })}
+              ))}
             </div>
 
             {/* ≤760px 세로 타임라인. 마커는 네 단계 모두 같은 형태로 통일한다 — 데스크톱은 가로선이
