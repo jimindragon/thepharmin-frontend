@@ -188,12 +188,16 @@ export function BusinessHeadhuntingIntroClient() {
         {/* .reveal은 섹션이 아니라 안쪽 콘텐츠에 건다 — 섹션에 걸면 배경면째로 떠올라
             바탕색이 위아래 섹션과 함께 흔들린다. BusinessSection이 쥔 app-shell--default에
             직접 클래스를 줄 수 없어(공용 컴포넌트) 안쪽 래퍼 한 겹으로 같은 결과를 만든다. */}
-        {/* ≤760px pb-0 — 풀블리드 이미지 띠가 이 섹션의 마지막 요소라, 섹션 하단 py(72px)가 띠
-            아래에 흰 면으로 한 겹 더 깔리고 그 아래 직무 섹션의 pt(72px)가 또 붙어 여백이 두 번
-            들어갔다. 띠는 아래 섹션과 바로 맞닿는 것이 맞다(위 여백 mt-9는 콘텐츠→띠 간격이라 유지).
-            BusinessSection의 py는 축약형이라 pb만 따로 끌 수 없어 호출부에서 덮는다 —
-            생성 CSS에서 pb-0이 py 뒤에 와 이긴다(Tailwind의 padding 속성 정렬 순서). */}
-        <BusinessSection tone="light" className="max-[760px]:px-0 max-[760px]:pb-0">
+        {/* pb-0 — 풀블리드 이미지 띠가 이 섹션의 마지막 요소라, 섹션 하단 py가 띠 아래에 흰 면으로
+            한 겹 더 깔리고 그 아래 직무 섹션의 pt가 또 붙어 여백이 두 번 들어갔다(모바일 72+72,
+            데스크톱 80+80=160px). 띠는 아래 섹션과 바로 맞닿는 것이 맞다
+            (위 여백 mt-9는 콘텐츠→띠 간격이라 유지).
+
+            BusinessSection의 py는 축약형이라 pb만 따로 끌 수 없어 호출부에서 덮는다. 두 폭을
+            따로 적는 이유는 생성 CSS 순서 때문이다 — 접두사 없는 pb-0은 base의 py-20보다는
+            뒤에 오지만 미디어 블록의 max-[760px]:py-[72px]보다는 앞이라, 그것 하나만으로는
+            모바일에서 pb가 72px로 되돌아간다. 각 폭에서 자기 py 뒤에 오도록 둘로 나눈다. */}
+        <BusinessSection tone="light" className="max-[760px]:px-0 max-[760px]:pb-0 min-[761px]:pb-0">
           <div className="reveal">
           <div className="text-center">
             <p className="text-center text-[12px] font-semibold uppercase tracking-[0.06em] text-[#a3a3a3]">WHY THE PHARMA</p>
