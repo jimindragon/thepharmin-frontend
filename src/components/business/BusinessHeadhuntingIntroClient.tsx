@@ -45,10 +45,10 @@ const specializedPositions = [
 ];
 
 const processSteps = [
-  { number: "01", title: "채용 컨설팅", description: "채용 배경과 조직의 상황을 이해하고, 포지션의 역할과 핵심 역량을 구체화합니다." },
-  { number: "02", title: "후보자 탐색", description: "축적된 인재풀과 업계 네트워크를 바탕으로 포지션에 적합한 후보자를 발굴합니다." },
-  { number: "03", title: "후보자 추천", description: "경력과 역량, 조직 적합도와 이직 의사를 검증한 인재를 엄선해 추천합니다." },
-  { number: "04", title: "면접 및 입사 지원", description: "면접 일정과 피드백 조율부터 처우 협의, 최종 입사까지 전 과정을 세심하게 지원합니다." },
+  { number: "01", title: "채용 컨설팅", description: "채용 배경과 조직 상황을 이해하고 포지션의 역할과 핵심 역량을 구체화합니다." },
+  { number: "02", title: "후보자 탐색", description: "인재풀과 업계 네트워크로 적합한 후보자를 발굴합니다." },
+  { number: "03", title: "후보자 추천", description: "경력과 역량, 이직 의사를 검증한 인재를 선별해 추천합니다." },
+  { number: "04", title: "면접 및 입사 지원", description: "면접 조율부터 처우 협의, 입사까지 전 과정을 지원합니다." },
 ];
 
 function ClosingCtaRow({ isMember }: { isMember: boolean }) {
@@ -171,8 +171,7 @@ export function BusinessHeadhuntingIntroClient() {
             </span>
           </h1>
           <p className="mt-6 max-w-[75ch] break-keep text-[17px] font-normal leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
-            채용공고만으로 만나기 어려운 인재, 더파마가 찾아드립니다.<br />
-            연구개발부터 임상, 사업개발, 생산·품질까지 기업이 찾는 인재를 직접 발굴해 연결합니다.
+            채용공고만으로 만나기 어려운 인재를 더파마가 직접 발굴해 연결합니다.
           </p>
           <div className="mt-9">
             <HeroCtaRow isMember={isMember} />
@@ -266,9 +265,9 @@ export function BusinessHeadhuntingIntroClient() {
             {/* ≤760px 16→14px — 섹션 리드는 타이틀과 본문 사이를 잇는 줄이라 좁은 폭에서
                 본문(14px 안팎)과 같은 크기까지 내려도 위계가 유지된다. leading은 이미 1.6이라 그대로. */}
             <p className="mx-auto mt-[14px] max-w-[52ch] text-center text-[16px] font-normal leading-[1.6] text-[#737373] max-[760px]:text-[14px]">
-              산업계부터 보건의료인까지, 기업의 사업 구조와 포지션별 요구 경험을 고려해{" "}
+              사업 구조와 포지션별 요구 경험을 고려해{" "}
               <br className="max-[640px]:hidden" />
-              실무자부터 팀장·임원급까지 적합한 후보자를 탐색합니다.
+              실무자부터 임원급까지 적합한 후보자를 탐색합니다.
             </p>
           </div>
           {/* 이미지 카드 6장은 1열로 접히면 카드 하나가 250px 남짓이라 여섯 장이 1,600px을 넘는다 —
@@ -302,7 +301,7 @@ export function BusinessHeadhuntingIntroClient() {
             ))}
           </div>
           <p className="mt-8 text-center text-[13px] font-normal text-[#68717e] max-[760px]:mt-6">
-            제약회사, 바이오텍, CRO, CDMO, 의료기기 및 헬스케어 기업의 채용을 지원합니다.
+            제약사·바이오텍·CRO·CDMO·의료기기·헬스케어 기업의 채용을 지원합니다.
           </p>
           </div>
         </BusinessSection>
@@ -313,9 +312,9 @@ export function BusinessHeadhuntingIntroClient() {
             {/* 다크 섹션 eyebrow. text-white/55 = rgba(255,255,255,0.55) — 종전 인라인 색과 같은 값이다. */}
             <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-white/55">PROCESS</p>
             <h2 className="mt-[14px] font-semibold text-white" style={{ fontSize: "clamp(24px, 3vw, 38px)", lineHeight: 1.25, letterSpacing: "-0.04em" }}>
-              인재 채용의 시작부터 최종 입사까지
+              채용 의뢰부터 입사까지
               <br />
-              더파마가 전 과정을 정교하게 설계합니다.
+              더파마가 함께합니다.
             </h2>
           </div>
 
@@ -451,15 +450,15 @@ export function BusinessHeadhuntingIntroClient() {
             {/* ≤760px 16→14px. leading은 값이 없어 body의 1.65를 물려받고 있었으므로
                 다른 리드와 같은 1.6을 좁은 폭에서만 명시한다. */}
             <p className="mx-auto mt-[14px] max-w-[52ch] text-[16px] text-[#c4c8c6] max-[760px]:text-[14px] max-[760px]:leading-[1.6]">
-              채용 직무와 필요한 경력을 남겨주시면{" "}
+              채용 직무와 필요 경력을 남겨주시면{" "}
               <br className="max-[640px]:hidden" />
-              담당자가 확인 후 적합한 진행 방법을 안내드립니다.
+              담당자가 진행 방법을 안내드립니다.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <ClosingCtaRow isMember={isMember} />
             </div>
             <p className="mx-auto mt-5 max-w-[52ch] text-[12px] font-normal text-white/50">
-              상담 신청 단계에서는 별도의 비용이 발생하지 않습니다. 구체적인 진행 조건과 비용은 상담 후 안내드립니다.
+              상담 신청 단계에서는 비용이 발생하지 않으며, 진행 조건과 비용은 상담 후 안내드립니다.
             </p>
           </div>
         </section>
