@@ -141,7 +141,11 @@ export function BusinessHeadhuntingIntroClient() {
             (BusinessPricingClient가 같은 겹침을 먼저 푼 선례가 있다.)
             히어로는 밴드가 px를 쥐고 있어 className으로 덮을 수 없으므로 mobileFlush로 켠다. */}
         <BusinessImageBand image={companyExampleImages.headhuntingHero} gradient="horizontal" variant="hero" mobileFlush>
-          <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#7fcdb9]">THE PHARMA HEADHUNTING</p>
+          {/* ≤760px 무게·색을 기업 랜딩 히어로(BusinessPricingClient)와 같은 값으로 맞춘다 —
+              두 히어로가 같은 사다리로 읽혀야 한다. 자간(0.08em)만 이 페이지 값을 지킨다:
+              영문 대문자 아이브로우라 랜딩의 한글 문구(.12em)와 같은 자간을 쓸 이유가 없다.
+              데스크톱은 이 페이지의 종전 값(500/#7fcdb9) 그대로 둔다. */}
+          <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#7fcdb9] max-[760px]:font-semibold max-[760px]:text-[#5cb89f]">THE PHARMA HEADHUNTING</p>
           {/* fontSize·fontWeight를 인라인 style에서 클래스로 옮겼다 — 인라인은 max-[760px] 분기로
               덮을 수 없다. clamp 값(36/5.2vw/58)과 600은 그대로라 >760px 렌더 결과는 동일하다.
               행간·자간은 분기가 없어 인라인에 남긴다.
@@ -155,7 +159,7 @@ export function BusinessHeadhuntingIntroClient() {
               289px 아래로 내려가야 넘친다. 데스크톱 벌은 종전대로 break-keep에 맡긴다
               (그쪽 첫 소절은 28px 환산 299px이라 nowrap을 걸면 320px에서 잘린다). */}
           <h1
-            className="mt-4 max-w-[980px] break-keep text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:text-[28px] max-[760px]:font-medium"
+            className="mt-4 max-w-[980px] break-keep text-[clamp(36px,5.2vw,58px)] font-semibold text-white max-[760px]:mt-5 max-[760px]:text-[28px] max-[760px]:font-medium"
             style={{ lineHeight: 1.15, letterSpacing: "-0.045em" }}
           >
             <span className="max-[760px]:hidden">
@@ -173,7 +177,9 @@ export function BusinessHeadhuntingIntroClient() {
           <p className="mt-6 max-w-[75ch] break-keep text-[17px] font-normal leading-[1.7] text-[#c4c8c6] max-[760px]:text-[15px]">
             채용공고만으로 만나기 어려운 인재를 더파마가 직접 발굴해 연결합니다.
           </p>
-          <div className="mt-9">
+          {/* ≤760px 20px/40px — eyebrow→h1, 리드→CTA 간격을 기업 랜딩 히어로와 같은 값으로 맞춘다
+              (h1의 max-[760px]:mt-5와 한 쌍). 데스크톱은 이 페이지의 16px/36px 그대로. */}
+          <div className="mt-9 max-[760px]:mt-10">
             <HeroCtaRow isMember={isMember} />
           </div>
           <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
