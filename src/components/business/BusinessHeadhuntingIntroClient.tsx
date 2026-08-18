@@ -394,14 +394,25 @@ export function BusinessHeadhuntingIntroClient() {
                 const isLast = index === processSteps.length - 1;
                 return (
                   <div key={step.number} className="flex gap-4">
-                    <div className="flex w-6 shrink-0 flex-col items-center">
-                      <span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center bg-[#23D9A5]">
-                        <span className="block h-2 w-2 bg-[#0a0a0a]" />
-                      </span>
+                    {/* 마커는 14px 단일 면 — 24px 사각 안에 검정 점을 박은 종전 형태는 좁은 폭에서
+                        레일이 텍스트만큼 무거워져 STEP 라벨보다 먼저 읽혔다. 글리프를 빼고 면적을 줄여
+                        진행 표시로만 남긴다(데스크톱 아이콘 마커는 무변경).
+                        mt-[2px]: 14px 마커의 세로 중심을 STEP 라벨 첫 줄의 잉크 중심에 맞춘 값이다.
+                        상자 중심이 아니라 잉크 기준인 이유는 라벨이 전부 대문자·숫자라 디센더가 비어
+                        글자 덩어리가 상자 위쪽에 몰리기 때문 — 상자로 맞추면 마커가 1.4px 내려앉는다.
+                        (실측: 11px/600 기준 잉크 높이 8px, 잔차 0.4px) */}
+                    <div className="flex w-[14px] shrink-0 flex-col items-center">
+                      <span
+                        aria-hidden="true"
+                        className="mt-[2px] block h-[14px] w-[14px] shrink-0"
+                        style={{ background: "linear-gradient(160deg,#0D7369,#23D9A5)", borderRadius: 0 }}
+                      />
+                      {/* -mb-[2px] — 마커의 mt-[2px]만큼 다음 행 마커가 내려앉아 레일에 그만큼 틈이
+                          생긴다. 선을 행 아래로 2px 더 내보내 다음 마커 머리에 붙인다. */}
                       {!isLast && (
                         <span
                           aria-hidden="true"
-                          className="w-px flex-1"
+                          className="-mb-[2px] w-px flex-1"
                           style={{ background: "linear-gradient(180deg, rgba(35,217,165,0.5), rgba(255,255,255,0.15))" }}
                         />
                       )}
