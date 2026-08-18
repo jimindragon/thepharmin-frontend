@@ -198,7 +198,9 @@ export function BusinessHeadhuntingIntroClient() {
           <div className="mt-9 max-[760px]:mt-10">
             <HeroCtaRow isMember={isMember} onBrochure={openBrochure} />
           </div>
-          <p className="mt-5 text-[12px] font-normal text-white/50">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
+          {/* ≤760px 가운데 — 바로 위 CTA 두 장이 풀폭 가운데 정렬이라, 고지문만 왼쪽에 붙으면
+              히어로 하단이 두 축으로 갈린다. 데스크톱은 CTA가 좌측 정렬이라 그대로 왼쪽. */}
+          <p className="mt-5 text-[12px] font-normal text-white/50 max-[760px]:text-center">기업의 채용 정보와 상담 내용은 비공개로 관리됩니다.</p>
         </BusinessImageBand>
 
         {/* .reveal은 섹션이 아니라 안쪽 콘텐츠에 건다 — 섹션에 걸면 배경면째로 떠올라
