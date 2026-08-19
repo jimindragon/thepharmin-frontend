@@ -125,15 +125,19 @@ function OptionButtonGroup({
 }
 
 /**
- * 면허 검토 상태별 pill. none은 아무것도 띄우지 않는다 — 아직 아무 일도 일어나지 않은 칸에
- * 상태를 붙이면 무언가 진행 중인 것으로 읽힌다. 색은 statusTone의 3단 원칙 그대로다
- * (진행 중 파랑 · 완료 초록 · 부정 결과 빨강).
+ * 면허 검토 상태별 pill. 진행 축의 두 상태만 pill을 갖는다 — 색은 statusTone의 원칙 그대로
+ * (진행 중 파랑 · 완료 초록).
+ *
+ * none이 없는 이유는 아직 아무 일도 일어나지 않았기 때문이다 — 빈 칸에 상태를 붙이면 무언가
+ * 진행 중인 것으로 읽힌다. rejected가 없는 이유는 반대다: 그 자리에는 사유 문장이 이미 서 있고,
+ * 그 문장이 빨간 글씨로 무엇이 잘못됐는지까지 말한다. 점 하나에 "반려"를 더 붙이면 같은 말을
+ * 두 줄에 걸쳐 두 번 하게 된다.
  */
-const LICENSE_STATUS_PILL: Record<LicenseVerificationState, { tone: "progress" | "success" | "danger"; label: string } | null> = {
+const LICENSE_STATUS_PILL: Record<LicenseVerificationState, { tone: "progress" | "success"; label: string } | null> = {
   none: null,
   pending: { tone: "progress", label: "검토 중" },
   approved: { tone: "success", label: "인증 완료" },
-  rejected: { tone: "danger", label: "반려" },
+  rejected: null,
 };
 
 /**
@@ -445,13 +449,13 @@ export function MyPageAccountClient() {
                         disabled={licenseLocked}
                       />
                       {/* 상태는 번호가 있든 없든 상태대로 말한다 — 종전처럼 파일명 유무로 지어내지 않는다.
-                          none은 pill 자체가 없어(LICENSE_STATUS_PILL) 아무것도 그리지 않는다. */}
+                          none·rejected는 pill 자체가 없어(LICENSE_STATUS_PILL) 아무것도 그리지 않는다. */}
                       {licensePill ? (
                         <div className="pt-0.5">
                           <StatusPill tone={licensePill.tone} label={licensePill.label} />
                         </div>
                       ) : null}
-                      {/* 사유는 pill 바로 아래다 — 무엇이 되었는지 다음 줄에 왜가 와야 한 문장으로 읽힌다. */}
+                      {/* 반려는 이 사유 문장이 상태 표시를 겸한다 — 자리도 pill이 서던 그 자리 그대로다. */}
                       {licenseStatus === "rejected" ? (
                         <p className="break-keep text-[13px] font-normal leading-[1.6] text-status-error">{LICENSE_REJECTED_REASON}</p>
                       ) : null}
