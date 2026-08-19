@@ -5,11 +5,13 @@ import clsx from "clsx";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { BusinessCenterShell } from "@/components/business/BusinessCenterShell";
 import { CompanyReviewCard } from "@/components/company/CompanyReviewCard";
+import { PharmacyClaimGate } from "@/components/business/PharmacyClaimGate";
 import { PharmacyReviewRecheckModal } from "@/components/business/PharmacyReviewRecheckModal";
 import { PharmacyReviewReportModal } from "@/components/business/PharmacyReviewReportModal";
 import { Button } from "@/components/ui/Button";
 import { PageTitle } from "@/components/ui/Typography";
 import { MOCK_TODAY } from "@/config/mockToday";
+import { usePharmacyClaimState } from "@/hooks/usePharmacyClaimDemo";
 import { companyReviews } from "@/data/companies";
 import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
 import {
@@ -50,6 +52,7 @@ function StatusText({ label, tone }: { label: string; tone: "done" | "progress" 
  * 저장은 없다 — 초기값을 로컬 state로 복사해 쓰고 새로고침하면 되돌아간다.
  */
 export function BusinessReviewsClient() {
+  const claimState = usePharmacyClaimState();
   const [ownerState, setOwnerState] = useState<Record<string, PharmacyReviewOwnerState>>(initialPharmacyReviewOwnerState);
   /** 인라인으로 열린 답변 편집기의 후기 id. 모달이 아닌 것은 원문을 보면서 써야 하기 때문이다. */
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
@@ -99,6 +102,16 @@ export function BusinessReviewsClient() {
     setRecheckTargetId(null);
     showToast("사실관계 재검토 신청이 접수되었습니다.");
   };
+
+  /* 어느 약국의 후기인지가 정해지지 않은 계정에는 목록 대신 인증 신청이 선다.
+     셸 안에 두는 것은 사이드바를 남기기 위해서다 — 게이트가 화면 전체를 덮으면 다른 메뉴로 나갈 길이 없다. */
+  if (claimState === "unclaimed") {
+    return (
+      <BusinessCenterShell>
+        <PharmacyClaimGate />
+      </BusinessCenterShell>
+    );
+  }
 
   return (
     <BusinessCenterShell>

@@ -26,6 +26,7 @@ import { setOrgVerificationStatus, useOrgVerificationStatus } from "@/hooks/useO
 import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
 import { useLicenseVerificationDemo } from "@/hooks/useLicenseVerificationDemo";
 import { clearAllStoredJobPreferences, getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
+import { setPharmacyClaimState, usePharmacyClaimState } from "@/hooks/usePharmacyClaimDemo";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 
 /**
@@ -257,6 +258,7 @@ export function DevStatePanel() {
   const orgStatus = useOrgVerificationStatus();
   const { demoState: reviewAccessDemo, setDemoState: setReviewAccessDemo } = useReviewAccessDemo();
   const { demoState: licenseDemo, setDemoState: setLicenseDemo } = useLicenseVerificationDemo();
+  const pharmacyClaim = usePharmacyClaimState();
 
   /**
    * 후기 목록이 프리셋을 정하는 규칙(패널이 고른 값 없으면 로그인 여부)을 그대로 따라 계산한다 —
@@ -345,6 +347,13 @@ export function DevStatePanel() {
         <Row label="기업 인증" on={orgStatus === "approved"} valueLabel={orgStatus === "approved" ? "승인 완료" : "검토 중"}>
           <RowButton label="검토중" onClick={() => applyOrgStatus("pending")} disabled={orgStatus === "pending"} />
           <RowButton label="승인" onClick={() => applyOrgStatus("approved")} disabled={orgStatus === "approved"} />
+        </Row>
+
+        {/* 기업 인증과 다른 축이다 — 그쪽은 회사가 실재하는지, 이쪽은 이 계정이 어느 약국의 주인인지.
+            리로드하지 않는다: 훅이 발행하는 이벤트로 후기 관리 화면이 같은 탭에서 즉시 따라온다. */}
+        <Row label="약국 계정" on={pharmacyClaim === "claimed"} valueLabel={pharmacyClaim === "claimed" ? "인증 완료" : "미인증"}>
+          <RowButton label="인증" onClick={() => setPharmacyClaimState("claimed")} disabled={pharmacyClaim === "claimed"} />
+          <RowButton label="미인증" onClick={() => setPharmacyClaimState("unclaimed")} disabled={pharmacyClaim === "unclaimed"} />
         </Row>
 
         <InterestPromptRow />
