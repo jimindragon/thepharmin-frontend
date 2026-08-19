@@ -24,6 +24,7 @@ import { clearBusinessMember, markBusinessMember, useBusinessMember } from "@/ho
 import { useMemberMigration } from "@/hooks/useMemberMigration";
 import { setOrgVerificationStatus, useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
+import { clearAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 
 /**
@@ -206,6 +207,15 @@ export function DevStatePanel() {
   const reviewAccessState = reviewAccessDemo ?? (personalOn ? "hasCredits" : "loggedOut");
 
   /**
+   * 온보딩 창의 노출 조건은 "로그인 && 안내 안 봄 && 저장된 관심조건 없음"(InterestPromptGate)이라,
+   * 안내 기록만 지우면 조건을 이미 저장해 둔 상태에서는 눌러도 창이 뜨지 않는다. 둘을 함께 지운다.
+   */
+  const resetInterestOnboarding = () => {
+    resetInterestPrompt();
+    clearAllStoredJobPreferences();
+  };
+
+  /**
    * 인증 상태를 읽는 화면(사이드바 잠금·헤더 드롭다운·대시보드 안내)은 모두 마운트 때 한 번만
    * localStorage를 읽는다. 값만 바꾸면 지금 보고 있는 화면이 그대로라 리로드로 반영한다 —
    * ?orgStatus= 쿼리로 이동했을 때와 같은 상태가 된다.
@@ -288,10 +298,12 @@ export function DevStatePanel() {
           <RowButton label="승인" onClick={() => applyOrgStatus("approved")} disabled={orgStatus === "approved"} />
         </Row>
 
-        {/* 초기화만 하고 리로드하지 않는다 — 안내 창(InterestPromptGate)은 채용 페이지로 이동할 때
-            새로 마운트되며 읽으므로, 지금 보고 있는 화면을 날릴 이유가 없다. */}
+        {/* 다시 보기는 안내 노출 기록과 저장된 관심조건을 모두 초기화한다 — 온보딩을 처음 상태부터
+            재현하기 위해. 데모 저장값이라 삭제 부담 없음.
+            초기화만 하고 리로드하지 않는다 — 안내 창(InterestPromptGate)도, 관심조건을 읽는 화면들도
+            모두 마운트 때 읽으므로 지금 보고 있는 화면을 날릴 이유가 없다. */}
         <Row label="관심조건 안내" on={interestPromptSeen} valueLabel={interestPromptSeen ? "봤음" : "안 봤음"}>
-          <RowButton label="다시 보기" onClick={resetInterestPrompt} disabled={!interestPromptSeen} />
+          <RowButton label="다시 보기" onClick={resetInterestOnboarding} disabled={!interestPromptSeen} />
         </Row>
 
         {/* 리로드하지 않는다 — 훅이 발행하는 이벤트로 후기 목록이 같은 탭에서 즉시 따라온다. */}
