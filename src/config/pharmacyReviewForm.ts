@@ -11,8 +11,8 @@ import { MOCK_TODAY_DATE } from "@/config/mockToday";
  * (pharmacyFeatureOptions·LabInstitutionType·HospitalType), 다음 단계인 표시·집계 개편이
  * 키로 삼을 값이라 문구가 다듬어져도 흔들리지 않아야 한다. 화면에 찍히는 것은 label뿐이다.
  *
- * 저장 타입(CompanyReview)은 이 단계에서 건드리지 않는다 — 폼은 로컬 state로만 값을 들고 있고,
- * 실제 저장·표시·집계는 다음 단계에서 붙는다.
+ * 저장 타입(CompanyReview.pharmacyAnswers)은 이 파일에서 파생한다(PharmacyReviewAnswers) —
+ * 선택지 id를 저장 쪽에 다시 적어 두면 문항을 고칠 때 두 곳이 갈린다. 문항이 이 파일의 정본이다.
  */
 
 export interface PharmacyReviewChoice {
@@ -37,11 +37,13 @@ export interface PharmacyReviewQuestion {
   id: PharmacyReviewChoiceFieldId;
   /** 화면의 FieldLabel에 그대로 찍는 문항 문구 */
   label: string;
-  choices: PharmacyReviewChoice[];
+  /** readonly인 것은 아래 정의들이 `as const`라서다 — 저장 타입(PharmacyReviewAnswers)이 이 배열에서
+   * 선택지 id 유니온을 직접 뽑아 쓰므로, id가 string으로 넓어지면 안 된다. */
+  choices: readonly PharmacyReviewChoice[];
 }
 
 /** 01 기본 정보 — 직무·작성자 상태(4트랙 공통) 아래에 약국만 추가로 받는 두 문항 */
-export const pharmacyReviewBasicQuestions: PharmacyReviewQuestion[] = [
+export const pharmacyReviewBasicQuestions = [
   {
     id: "workType",
     label: "근무 형태",
@@ -61,7 +63,7 @@ export const pharmacyReviewBasicQuestions: PharmacyReviewQuestion[] = [
       { id: "over_3y", label: "3년 이상" },
     ],
   },
-];
+] as const satisfies readonly PharmacyReviewQuestion[];
 
 /** 01 기본 정보 — "근무 시기" 연도 select의 라벨 */
 export const PHARMACY_REVIEW_WORK_YEAR_LABEL = "근무 시기";
@@ -83,7 +85,7 @@ export const PHARMACY_REVIEW_RATING_LABEL = "이 약국에서의 근무를 종�
 export const PHARMACY_REVIEW_RATING_MAX = 5;
 
 /** 03 근무 환경 — 6문항. 강도 → 인력 → 휴게 → 퇴근 → 연차 → 급여 순으로, 하루 안에서 겪는 순서를 따른다. */
-export const pharmacyReviewEnvironmentQuestions: PharmacyReviewQuestion[] = [
+export const pharmacyReviewEnvironmentQuestions = [
   {
     id: "workIntensity",
     label: "업무 강도는 어땠나요?",
@@ -138,10 +140,10 @@ export const pharmacyReviewEnvironmentQuestions: PharmacyReviewQuestion[] = [
       { id: "disappointed", label: "아쉬웠어요" },
     ],
   },
-];
+] as const satisfies readonly PharmacyReviewQuestion[];
 
 /** 04 근무 분위기 — 1문항 */
-export const pharmacyReviewAtmosphereQuestion: PharmacyReviewQuestion = {
+export const pharmacyReviewAtmosphereQuestion = {
   id: "atmosphere",
   label: "함께 일하는 분위기는 어땠나요?",
   choices: [
@@ -149,10 +151,10 @@ export const pharmacyReviewAtmosphereQuestion: PharmacyReviewQuestion = {
     { id: "fine", label: "무난했어요" },
     { id: "hard", label: "힘들었어요" },
   ],
-};
+} as const satisfies PharmacyReviewQuestion;
 
 /** 05 종합 — 1문항. 위 문항들의 결론에 해당해 별도 섹션으로 세운다. */
-export const pharmacyReviewRehireQuestion: PharmacyReviewQuestion = {
+export const pharmacyReviewRehireQuestion = {
   id: "rehireIntent",
   label: "이 약국에서 다시 근무할 의향이 있나요?",
   choices: [
@@ -160,7 +162,7 @@ export const pharmacyReviewRehireQuestion: PharmacyReviewQuestion = {
     { id: "depends", label: "조건에 따라 고려할 것 같아요" },
     { id: "no", label: "다시 근무하고 싶지 않아요" },
   ],
-};
+} as const satisfies PharmacyReviewQuestion;
 
 export type PharmacyReviewNarrativeFieldId = "goodPoints" | "badPoints";
 
@@ -205,4 +207,71 @@ export const emptyPharmacyReviewChoices: PharmacyReviewChoiceState = {
   salary: "",
   atmosphere: "",
   rehireIntent: "",
+};
+
+/** 단일 선택 문항 10개를 정의 순서대로 한 줄에 세운 목록. 라벨 조회와 저장 타입 파생이 함께 쓴다. */
+export const pharmacyReviewQuestions = [
+  ...pharmacyReviewBasicQuestions,
+  ...pharmacyReviewEnvironmentQuestions,
+  pharmacyReviewAtmosphereQuestion,
+  pharmacyReviewRehireQuestion,
+] as const;
+
+type PharmacyReviewQuestionUnion = (typeof pharmacyReviewQuestions)[number];
+
+/** 문항 하나가 받을 수 있는 선택지 id 유니온 */
+type ChoiceIdOf<Q extends { choices: readonly { id: string }[] }> = Q["choices"][number]["id"];
+
+/**
+ * 저장되는 답변 묶음. 각 키의 값 타입을 위 문항 정의에서 그대로 뽑아 쓴다 —
+ * "workIntensity는 relaxed|moderate|busy|very_busy" 같은 목록을 저장 타입 쪽에 옮겨 적으면
+ * 문항에서 선택지를 하나 지웠을 때 목데이터가 컴파일을 통과해 버린다.
+ *
+ * workYear만 문항이 아니라 연도 select라 number다(pharmacyReviewWorkYearOptions의 값).
+ */
+export type PharmacyReviewAnswers = {
+  [Id in PharmacyReviewChoiceFieldId]: ChoiceIdOf<Extract<PharmacyReviewQuestionUnion, { id: Id }>>;
+} & {
+  /** 근무를 시작한 연도 */
+  workYear: number;
+};
+
+/** 종합 평가 별점. 0(미평가)은 저장하지 않는다 — 값이 없으면 필드 자체가 없다. */
+export type PharmacyReviewRating = 1 | 2 | 3 | 4 | 5;
+
+/** 문항 id → 선택지 id → 라벨. 아래 조회 함수가 매번 배열을 훑지 않도록 모듈 로드 시 한 번만 만든다. */
+const choiceLabelIndex = new Map<string, Map<string, string>>(
+  pharmacyReviewQuestions.map((question) => [question.id, new Map(question.choices.map((choice) => [choice.id, choice.label]))]),
+);
+
+/**
+ * 저장된 선택지 id를 화면 문구로 되돌린다. 카드·목록이 id를 그대로 찍지 않게 하는 유일한 통로다.
+ *
+ * 없는 id에는 undefined를 돌려준다 — 문항에서 선택지가 사라졌는데 옛 후기가 그 값을 들고 있는
+ * 경우가 실제로 생기고, 그때 id 문자열("very_busy")이 화면에 그대로 찍히는 것보다 그 줄이
+ * 빠지는 편이 낫다(호출부가 값 없음으로 다룬다).
+ */
+export function getPharmacyReviewChoiceLabel(field: PharmacyReviewChoiceFieldId, choiceId: string): string | undefined {
+  return choiceLabelIndex.get(field)?.get(choiceId);
+}
+
+/**
+ * 후기 카드에 값까지 펼쳐 보여 줄 문항 셋과 그때 쓰는 짧은 라벨.
+ *
+ * 열한 개를 다 늘어놓으면 카드가 표가 되고 목록에서 후기끼리 견줄 수 없어, 고를 때 가장 먼저 보는
+ * 세 가지만 남긴다 — 얼마나 바쁜지, 정시에 나올 수 있는지, 그래서 다시 갈 것인지.
+ *
+ * 라벨을 문항 문구 대신 따로 두는 것은 문항이 묻는 말("업무 강도는 어땠나요?")이라서다.
+ * 카드에서는 답을 이미 들고 있으므로 물음이 아니라 항목 이름이 필요하다.
+ */
+export const pharmacyReviewCardHighlights = [
+  { field: "workIntensity", label: "업무 강도" },
+  { field: "leaveOnTime", label: "퇴근시간" },
+  { field: "rehireIntent", label: "재근무 의향" },
+] as const satisfies readonly { field: PharmacyReviewChoiceFieldId; label: string }[];
+
+/** 카드에서 서술 두 블록에 붙이는 라벨. 폼 쪽 라벨("좋았던 점을 알려주세요")은 묻는 말이라 읽는 화면에 맞지 않는다. */
+export const pharmacyReviewNarrativeCardLabels: Record<PharmacyReviewNarrativeFieldId, string> = {
+  goodPoints: "좋았던 점",
+  badPoints: "아쉬웠던 점",
 };

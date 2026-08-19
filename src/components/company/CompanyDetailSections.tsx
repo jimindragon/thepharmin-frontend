@@ -29,7 +29,7 @@ import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { CompanyInterviewsListClient } from "@/components/company/CompanyInterviewsListClient";
-import { toCompanyReviewCardItem, toInterviewCardItem } from "@/data/companyReviewItems";
+import { toCompanyReviewCardItem, toInterviewCardItem, toPharmacyReviewDisplay } from "@/data/companyReviewItems";
 import { getPharmacyTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -375,6 +375,9 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
     helpfulCount: review.helpfulCount,
     outcome: review.outcome,
     isInterview: review.type === "interview",
+    // 약국 재직 후기의 별점·근무 메타는 접힘 카드에도 싣는다 — 본문이 없는 자리에서 이 두 줄이
+    // 그 후기를 견줄 수 있게 하는 전부다(본문은 펼쳐야 나온다).
+    pharmacy: toPharmacyReviewDisplay(review),
   };
 }
 

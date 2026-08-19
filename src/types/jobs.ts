@@ -1,3 +1,6 @@
+// 약국 재직 후기의 답변 타입은 문항 정의에서 파생된다 — `import type`이라 런타임 의존은 남지 않는다.
+import type { PharmacyReviewAnswers, PharmacyReviewRating } from "@/config/pharmacyReviewForm";
+
 export type JobTrack = "industry" | "research" | "pharmacy" | "hospital";
 
 export type Category = "산업" | "연구" | "약국" | "병원";
@@ -492,6 +495,23 @@ export interface CompanyReview {
   applyHalf?: "상반기" | "하반기";
   /** 현재 로그인 사용자가 작성한 후기인지. 열람권 게이팅과 무관하게 항상 원문이 노출된다(면접 후기 전용). */
   isMine?: boolean;
+
+  // ── 약국 재직 후기(type: "company", 약국 트랙) 전용 ────────────────────────────
+  // 아래 넷은 약국 재직 후기에만 있다. 다른 세 트랙의 재직 후기와 면접 후기는 값을 갖지 않으며,
+  // 화면도 값이 있을 때만 해당 영역을 그린다(없으면 종전 카드 그대로다).
+  //
+  // content를 대체하지 않고 나란히 둔다 — 기업 리뷰 목록·개요 미리보기·허브 피드가 모두 content를
+  // 읽고 있어, 여기로 갈아타면 약국 후기가 그 세 곳에서 한꺼번에 빈칸이 된다. 약국 후기의 content는
+  // goodPoints 요약을 담아 종전 소비처를 그대로 살린다.
+
+  /** 종합 평가 별점 */
+  overallRating?: PharmacyReviewRating;
+  /** 구조화 문항 답변. 값은 pharmacyReviewForm.ts의 선택지 id이고, 라벨은 그 파일이 되돌려 준다 */
+  pharmacyAnswers?: PharmacyReviewAnswers;
+  /** 자유서술 — 좋았던 점 */
+  goodPoints?: string;
+  /** 자유서술 — 아쉬웠던 점 */
+  badPoints?: string;
 }
 
 /** 면접 후기 열람권(credit) 데모 상태의 정본 타입. reviewAccessMock이 이 타입의 초기값 소스다. */

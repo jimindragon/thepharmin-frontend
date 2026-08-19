@@ -2,8 +2,26 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import { Bookmark, Quote, ThumbsUp } from "lucide-react";
+import { Bookmark, Quote, Star, ThumbsUp } from "lucide-react";
 import { LockedContent } from "@/components/companies/LockedContent";
+import type { PharmacyReviewRating } from "@/config/pharmacyReviewForm";
+
+/**
+ * 약국 재직 후기의 구조화 표시값. 선택지 id는 이미 문구로 바뀐 뒤라 이 카드는 문항 정의를 알지 못한다
+ * (되돌리는 일은 companyReviewItems의 매핑이 한다).
+ *
+ * meta와 rating은 잠금 위, narratives·highlights는 잠금 아래에 선다 — 어떤 자리에서 얼마나 일했고
+ * 몇 점을 줬는지는 열지 않아도 보이고, 왜 그런지가 열람 대상이다.
+ */
+export interface PharmacyReviewDisplay {
+  rating?: PharmacyReviewRating;
+  /** "정규직(풀타임) · 1~3년 · 2024년" */
+  meta: string;
+  /** 좋았던 점 / 아쉬웠던 점. 값이 없는 블록은 애초에 들어오지 않는다 */
+  narratives: Array<{ label: string; text: string }>;
+  /** 카드에 펼치는 항목별 답변(업무 강도·퇴근시간·재근무 의향) */
+  highlights: Array<{ label: string; value: string }>;
+}
 
 export interface CompanyReviewCardItem {
   id: string;
@@ -27,6 +45,8 @@ export interface CompanyReviewCardItem {
   isInterview?: boolean;
   /** 현재 로그인 사용자가 작성한 후기인지. interviewAccess 게이팅과 무관하게 항상 원문을 노출해야 한다. */
   isMine?: boolean;
+  /** 약국 재직 후기에만 존재. 값이 있으면 본문이 원문 한 덩어리가 아니라 구조화 블록으로 그려진다 */
+  pharmacy?: PharmacyReviewDisplay;
 }
 
 /** 면접 후기 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라
@@ -92,6 +112,52 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
   }
 }
 
+/**
+ * 종합 평가 별점(읽기 전용). 작성 폼의 별점(PharmacyReviewFormSections)과 같은 두 색을 쓴다 —
+ * 채운 별은 본문 검정(#111111), 빈 별은 채운 회색(#e6e9ee). 빈 별을 외곽선으로 두면 다섯 칸이
+ * 서로 다른 굵기로 읽혀 몇 점인지가 한눈에 들어오지 않는다.
+ */
+function ReviewRatingStars({ value, size }: { value: PharmacyReviewRating; size: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" role="img" aria-label={`5점 만점에 ${value}점`}>
+      {[1, 2, 3, 4, 5].map((score) => (
+        <Star
+          key={score}
+          size={size}
+          className={score <= value ? "fill-[#111111] text-[#111111]" : "fill-[#e6e9ee] text-[#e6e9ee]"}
+          aria-hidden
+        />
+      ))}
+    </span>
+  );
+}
+
+/** 약국 재직 후기의 본문 — 서술 두 블록 + 항목별 답변 3행. 잠금이 걸리면 이 덩어리째 LockedContent로 바뀐다. */
+function PharmacyReviewBody({ pharmacy }: { pharmacy: PharmacyReviewDisplay }) {
+  return (
+    <div className="grid gap-3">
+      {pharmacy.narratives.map((block) => (
+        <div key={block.label}>
+          <p className="text-[13px] font-medium text-[#596373]">{block.label}</p>
+          <p className="mt-1 text-[15px] font-normal leading-[1.7] text-[#3f4855]">{block.text}</p>
+        </div>
+      ))}
+      {pharmacy.highlights.length ? (
+        /* 라벨 열 + 값 열. 가운뎃점으로 이으면 세 항목이 한 문장으로 읽혀 어디까지가 라벨인지 흐려진다 —
+           위 메타 행(근무 형태·기간·시기)이 이미 그 문법을 쓰고 있어 두 줄이 같은 것으로 보이기도 한다. */
+        <div className="grid gap-1.5 border-t border-[#edf1f5] pt-3">
+          {pharmacy.highlights.map((row) => (
+            <div key={row.label} className="flex gap-2 text-[13px] leading-[1.5]">
+              <span className="w-[70px] shrink-0 font-normal text-[#8a95a5]">{row.label}</span>
+              <span className="min-w-0 font-medium text-[#3f4855]">{row.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** [companyId]/reviews, [companyId]/interviews 전용 페이지(variant="full")와 개요 미리보기(variant="compact")가
  * 공유하는 단일 카드. 원문 게이팅 대상(면접 후기)만 content가 null로 내려오며, full에서는 그 경우 태그·메타는
  * 그대로 두고 원문 영역만 잠그고(LockedContent), compact에서는 애초에 면접 후기 본문 영역 자체를 렌더하지 않는다. */
@@ -155,6 +221,15 @@ export function CompanyReviewCard({
           ) : null}
         </div>
       </div>
+      {/* 별점 + 근무 형태·기간·시기. 잠금 대상이 아니라 헤더 바로 아래, 태그 위에 선다 */}
+      {review.pharmacy ? (
+        <div className={clsx("flex flex-wrap items-center gap-x-2 gap-y-1", compact ? "mt-1.5" : "mt-2")}>
+          {review.pharmacy.rating ? <ReviewRatingStars value={review.pharmacy.rating} size={compact ? 13 : 15} /> : null}
+          {review.pharmacy.meta ? (
+            <span className={clsx("font-normal text-[#7a838f]", compact ? "text-[12px]" : "text-[13px]")}>{review.pharmacy.meta}</span>
+          ) : null}
+        </div>
+      ) : null}
       <div className={clsx("flex flex-wrap gap-1.5", compact ? "mt-2" : "mt-3")}>
         {review.tags.map((tag) => (
           <span
@@ -204,10 +279,16 @@ export function CompanyReviewCard({
       ) : (
         <>
           {accessLabel ? <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
-          <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
-            <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
-            <span>{review.content}</span>
-          </p>
+          {review.pharmacy ? (
+            <div className={clsx(accessLabel ? "mt-1.5" : "mt-3")}>
+              <PharmacyReviewBody pharmacy={review.pharmacy} />
+            </div>
+          ) : (
+            <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
+              <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
+              <span>{review.content}</span>
+            </p>
+          )}
         </>
       )}
       {!compact && applyLabel ? <p className="mt-2 text-[12px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}

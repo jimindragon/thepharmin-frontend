@@ -59,9 +59,10 @@ function ChoiceQuestion({
     <div>
       <FieldLabel>{question.label}</FieldLabel>
       <div className="mt-1.5">
+        {/* choices는 문항 정의가 `as const`라 readonly다 — Segmented는 일반 배열을 받으므로 여기서 편다 */}
         <Segmented<string>
           value={value}
-          options={question.choices}
+          options={[...question.choices]}
           onChange={(next) => onChange(question.id, next === value ? "" : next)}
         />
       </div>
