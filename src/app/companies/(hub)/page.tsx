@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CompaniesHomeClient } from "@/components/companies/CompaniesHomeClient";
 import { companies, companyReviews } from "@/data/companies";
 import { companyDirectory } from "@/data/companyDirectory";
-import { isPharmacyWorkReview } from "@/data/companyReviewItems";
+import { isFeedVisibleReview, isPharmacyWorkReview } from "@/data/companyReviewItems";
 
 export const metadata: Metadata = {
   title: "기업 인사이트 | THE PHARMA Recruit.",
@@ -25,7 +25,7 @@ export default function CompaniesPage() {
   }
 
   const companyFeedItems = companyReviews
-    .filter((review) => review.type === "company")
+    .filter((review) => review.type === "company" && isFeedVisibleReview(review))
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
     .slice(0, 7)
     .map((review) => {
@@ -45,7 +45,7 @@ export default function CompaniesPage() {
     });
 
   const interviewFeedItems = companyReviews
-    .filter((review) => review.type === "interview")
+    .filter((review) => review.type === "interview" && isFeedVisibleReview(review))
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
     .slice(0, 7)
     .map((review) => ({

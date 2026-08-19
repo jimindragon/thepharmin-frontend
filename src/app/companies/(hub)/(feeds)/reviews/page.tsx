@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewFeedCard } from "@/components/companies/ReviewFeedCard";
 import { companies, companyReviews } from "@/data/companies";
-import { PHARMACY_REVIEW_FEED_LOCK, isPharmacyWorkReview } from "@/data/companyReviewItems";
+import { PHARMACY_REVIEW_FEED_LOCK, isFeedVisibleReview, isPharmacyWorkReview } from "@/data/companyReviewItems";
 
 export const metadata: Metadata = {
   title: "기업 리뷰 | THE PHARMA Recruit.",
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
  */
 export default function CompaniesReviewsPage() {
   const items = companyReviews
-    .filter((review) => review.type === "company")
+    /* 비공개·삭제된 후기는 피드에서 뺀다 — 자리표시를 남기는 것은 기업 상세의 몫이다(isFeedVisibleReview) */
+    .filter((review) => review.type === "company" && isFeedVisibleReview(review))
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))
     .map((review) => {
       const company = companies.find((item) => item.id === review.companyId);
