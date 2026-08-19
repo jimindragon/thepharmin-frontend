@@ -153,24 +153,53 @@ function ReviewRatingStars({ value, size }: { value: PharmacyReviewRating; size:
   );
 }
 
-/** 약국 재직 후기의 본문 — 서술 두 블록 + 항목별 답변 3행. 잠금이 걸리면 이 덩어리째 LockedContent로 바뀐다. */
-function PharmacyReviewBody({ pharmacy }: { pharmacy: PharmacyReviewDisplay }) {
+/**
+ * 약국 재직 후기 본문의 블록 경계. 구분선 위아래가 같은 16px이라 선이 어느 블록에 딸린 것인지가
+ * 생기지 않는다 — 종전에는 항목별 답변만 12px 위·12px 아래였고 그 위 서술 블록은 여백이 달라,
+ * 같은 카드 안에서 두 개의 리듬이 겹쳤다. 여백은 전부 py 축으로만 준다(마진과 섞지 않는다).
+ */
+const PHARMACY_BLOCK_CLASS = "mt-4 border-t border-border pt-4";
+
+/**
+ * 약국 재직 후기의 본문 — 열람 상태 행 + 서술 두 블록 + 항목별 답변 3행. 잠금이 걸리면 이 덩어리째
+ * LockedContent로 바뀐다.
+ *
+ * 열람 상태 행이 여기로 들어온 것은 그것이 후기의 메타가 아니라 **본문의 상태**라서다. 태그 아래
+ * 12px 회색 한 줄로 떠 있을 때는 작성일·직무와 같은 층으로 읽혀, 무엇이 열려 있다는 말인지가
+ * 본문과 이어지지 않았다. 구분선 위에 세우면 그 아래가 열린 내용이라는 것이 자리로 드러난다.
+ */
+function PharmacyReviewBody({ pharmacy, accessLabel }: { pharmacy: PharmacyReviewDisplay; accessLabel?: string }) {
   return (
-    <div className="grid gap-3">
-      {pharmacy.narratives.map((block) => (
-        <div key={block.label}>
-          <p className="text-[13px] font-medium text-[#596373]">{block.label}</p>
-          <p className="mt-1 text-[15px] font-normal leading-[1.7] text-[#3f4855]">{block.text}</p>
-        </div>
-      ))}
+    <div className="mt-3">
+      {accessLabel ? (
+        /* 점 문법은 기업센터 상태 행(BusinessReviewsClient의 StatusText)과 같은 한 줄이다 —
+           statusTone.ts의 3단 원칙에서 초록 = 완료. 열람이 끝난 상태라 진행 중(파랑)이 아니다. */
+        <p className="flex items-center gap-[8px] pb-4 text-[13px] font-medium text-status-positive">
+          <span className="h-[8px] w-[8px] shrink-0 rounded-full bg-status-positive-dot" aria-hidden />
+          {accessLabel}
+        </p>
+      ) : null}
+      {/* 서술 두 블록. 라벨은 회색 한 색뿐이다 — 좋았던 점·아쉬웠던 점에 색을 주면 카드가 후기를
+          읽기도 전에 평가해 버린다(별점이 이미 그 일을 한다). 구분선은 위에 상태 행이 있을 때만
+          긋는다: 없으면 태그 행이 바로 위라 선이 한 줄 더 생기는 것에 지나지 않는다. */}
+      <div className={clsx("grid gap-4", accessLabel && "border-t border-border pt-4")}>
+        {pharmacy.narratives.map((block) => (
+          <div key={block.label}>
+            <p className="text-[13px] font-medium text-[#6b7280]">{block.label}</p>
+            <p className="mt-1.5 text-[15px] font-normal leading-[1.7] text-[#3f4855]">{block.text}</p>
+          </div>
+        ))}
+      </div>
       {pharmacy.highlights.length ? (
         /* 라벨 열 + 값 열. 가운뎃점으로 이으면 세 항목이 한 문장으로 읽혀 어디까지가 라벨인지 흐려진다 —
-           위 메타 행(근무 형태·기간·시기)이 이미 그 문법을 쓰고 있어 두 줄이 같은 것으로 보이기도 한다. */
-        <div className="grid gap-1.5 border-t border-[#edf1f5] pt-3">
+           위 메타 행(근무 형태·기간·시기)이 이미 그 문법을 쓰고 있어 두 줄이 같은 것으로 보이기도 한다.
+           값은 본문 검정 일반 텍스트다: 여기가 이 후기에서 비교 대상이 되는 답이라 서술(#3f4855)보다
+           앞에 서야 하고, 그 일을 굵기나 배경이 아니라 색 한 단계로만 한다. */
+        <div className={clsx("grid gap-2", PHARMACY_BLOCK_CLASS)}>
           {pharmacy.highlights.map((row) => (
-            <div key={row.label} className="flex gap-2 text-[13px] leading-[1.5]">
-              <span className="w-[70px] shrink-0 font-normal text-[#8a95a5]">{row.label}</span>
-              <span className="min-w-0 font-medium text-[#3f4855]">{row.value}</span>
+            <div key={row.label} className="flex gap-2 leading-[1.5]">
+              <span className="w-[70px] shrink-0 text-[13px] font-normal text-[#8a95a5]">{row.label}</span>
+              <span className="min-w-0 text-[14px] font-normal text-[#111111]">{row.value}</span>
             </div>
           ))}
         </div>
@@ -311,21 +340,23 @@ export function CompanyReviewCard({
         )
       ) : (
         <>
-          {accessLabel ? <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
+          {/* 약국 재직 후기는 열람 상태 행까지 본문 쪽이 든다(PharmacyReviewBody 주석). 나머지 후기는
+              종전 그대로 — 본문이 원문 한 덩어리라 상태 행을 그 위에 얹는 것 말고 둘 자리가 없다. */}
           {review.pharmacy ? (
-            <div className={clsx(accessLabel ? "mt-1.5" : "mt-3")}>
-              <PharmacyReviewBody pharmacy={review.pharmacy} />
-            </div>
+            <PharmacyReviewBody pharmacy={review.pharmacy} accessLabel={accessLabel} />
           ) : (
-            <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
-              <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
-              <span>{review.content}</span>
-            </p>
+            <>
+              {accessLabel ? <p className="mt-3 text-[12px] font-medium text-[#8a95a5]">{accessLabel}</p> : null}
+              <p className={clsx("flex gap-1.5 text-[13px] font-normal leading-[1.7] text-[#3f4855]", accessLabel ? "mt-1.5" : "mt-3")}>
+                <Quote size={14} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />
+                <span>{review.content}</span>
+              </p>
+            </>
           )}
           {review.officialReply ? (
             /* 회색 판 위에 얹어 후기 본문과 목소리를 가른다 — 같은 카드 안이지만 쓴 사람이 다르다.
                잠금 분기 안쪽이라 잠긴 카드에서는 이 블록 자체가 렌더되지 않는다. */
-            <div className="mt-3 border-l-2 border-[#d8dee6] bg-[#f7f8fa] px-4 py-3">
+            <div className="mt-4 border-l-2 border-[#d8dee6] bg-[#f7f8fa] px-4 py-3">
               <p className="flex flex-wrap items-baseline gap-x-2 text-[13px] font-medium text-[#3f4855]">
                 약국 공식 답변
                 <span className="text-[12px] font-normal text-[#9aa5b2]">{review.officialReply.writtenAt}</span>
