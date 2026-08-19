@@ -49,8 +49,12 @@ export interface CompanyReviewCardItem {
   pharmacy?: PharmacyReviewDisplay;
 }
 
-/** 면접 후기 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라
- * 본문을 잠근다 — interviews 탭(CompanyInterviewsListClient)에서만 전달되고, 그 외 사용처는 undefined다. */
+/** 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라 본문을 잠근다.
+ *
+ * 면접 후기 목록(CompanyInterviewsListClient)과 약국 재직 후기 목록(PharmacyReviewsListClient)이 전달하고,
+ * 그 외 사용처는 undefined다. 문구는 두 후기 종류가 그대로 공유한다 — 아래 getInterviewAccessCopy가
+ * 처음부터 "후기"라고만 말하고 있어 갈라 둘 이유가 없다. 다른 것은 writeHref가 가리키는 작성 폼뿐이다.
+ * (이름에 Interview가 남은 것은 면접 후기 쪽 호출부를 건드리지 않기 위해서다.) */
 export interface CompanyReviewInterviewAccess {
   status: "loggedOut" | "noCredits" | "canUnlock";
   /** canUnlock일 때 보조 문구("보유 n장")에 쓰는 현재 보유 장수 */
@@ -73,8 +77,9 @@ interface CompanyReviewCardProps {
   lockedCtaHref?: string;
   lockedCtaVariant?: "outline" | "gradient";
   onLockedCtaClick?: () => void;
-  /** 면접 후기 열람권 게이팅 — 지정되면 review.content 값과 무관하게 이 상태로 잠금 여부를 결정한다.
-   * 미지정 시(기본) 기존처럼 review.content === null 여부로만 잠금을 판단한다. */
+  /** 열람권 게이팅(면접 후기·약국 재직 후기) — 지정되면 review.content 값과 무관하게 이 상태로 잠금 여부를
+   * 결정한다. 미지정 시(기본) 기존처럼 review.content === null 여부로만 잠금을 판단한다.
+   * 약국 재직 후기에서는 별점·근무 메타·태그가 잠금 위에 남고 서술 두 블록과 항목별 답변만 가려진다. */
   interviewAccess?: CompanyReviewInterviewAccess;
   /** 잠기지 않은 본문 위에 그리는 보조 라벨(예: "열람 완료 · 추가 차감 없음", "내가 작성한 후기"). */
   accessLabel?: string;

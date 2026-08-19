@@ -29,7 +29,8 @@ import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { CompanyInterviewsListClient } from "@/components/company/CompanyInterviewsListClient";
-import { toCompanyReviewCardItem, toInterviewCardItem, toPharmacyReviewDisplay } from "@/data/companyReviewItems";
+import { PharmacyReviewsListClient } from "@/components/company/PharmacyReviewsListClient";
+import { isPharmacyWorkReview, toCompanyReviewCardItem, toInterviewCardItem, toPharmacyReviewDisplay } from "@/data/companyReviewItems";
 import { getPharmacyTypeLabel, hospitalOperatorLabels, hospitalTypeLabels } from "@/config/companyTypes";
 import { medicalDepartmentOptions } from "@/config/jobFilters/hospitalFilters";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
@@ -368,7 +369,9 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
   return {
     id: review.id,
     tags: review.tags,
-    content: review.type === "company" ? review.content : null,
+    // 잠금 대상(약국 재직 후기)은 원문을 싣지 않는다 — 접힘 카드가 goodPoints 요약을 그대로 보여 주면
+    // 펼침에서 걸어 둔 열람권 잠금이 그 자리에서 무너진다. 면접 후기가 같은 이유로 처음부터 null이다.
+    content: review.type === "company" && !isPharmacyWorkReview(review) ? review.content : null,
     jobRole: review.jobRole,
     authorStatus: review.authorStatus,
     writtenAt: review.writtenAt,
@@ -426,6 +429,8 @@ export function CompanyReviewsPreviewSection({
   const all = companyReviews
     .filter((review) => review.companyId === profile.id && review.type === type)
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt));
+  /** 약국 재직 후기 펼침은 정적 격자가 아니라 열람권 목록이다(면접 후기와 같은 지갑을 쓴다) */
+  const isGatedPharmacyReviews = !isInterview && all.some(isPharmacyWorkReview);
   const preview = all.slice(0, 2).map(toReviewCardItem);
   const topKeywords = all.length >= 3 ? topTagsByFrequency(all.map((review) => review.tags)) : [];
 
@@ -499,6 +504,16 @@ export function CompanyReviewsPreviewSection({
                 <CompanyInterviewsListClient
                   companyId={profile.id}
                   items={all.map(toInterviewCardItem)}
+                  isLoggedIn={isLoggedIn}
+                  framed={false}
+                />
+              ) : isGatedPharmacyReviews ? (
+                /* 약국 재직 후기도 목록을 통째로 재사용한다 — 면접 후기와 같은 이유다. 잠금·확인 모달을
+                   여기서 다시 조립하면 개요와 탭의 게이팅 규칙이 갈리고, 열람권은 화면 밖 store에 있어
+                   개요에서 쓴 1장이 탭에서도 빠져 있어야 한다. */
+                <PharmacyReviewsListClient
+                  companyId={profile.id}
+                  items={all.map(toCompanyReviewCardItem)}
                   isLoggedIn={isLoggedIn}
                   framed={false}
                 />

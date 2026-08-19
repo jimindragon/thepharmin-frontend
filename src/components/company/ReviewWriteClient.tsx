@@ -90,9 +90,17 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
     : `가장 기억에 남는 근무 경험을 최대 ${REVIEW_TAG_MAX}개까지 선택해 주세요.`;
   const contentDetailGuide = isInterview ? "경험을 자유롭게 작성해 주세요." : "근무 경험을 자유롭게 작성해 주세요.";
   const CONTENT_RECOMMENDED_MAX = isInterview ? 350 : 150;
-  // 열람권은 면접 후기에만 지급된다(mypage/review-credits의 "면접 후기 작성 승인 시 +2장",
-  // InterviewAccessStatusCard). 기업 리뷰는 지급 대상이 아니라 게시 문구만 남긴다.
-  const submitHint = isInterview
+  /**
+   * 열람권 지급 대상 — 면접 후기와 **약국 재직 후기**다.
+   *
+   * 약국 재직 후기가 지급 대상이 된 것은 그쪽도 열람권으로 잠기기 때문이다(PharmacyReviewsListClient).
+   * 잠긴 후기의 CTA가 "후기 작성하고 열람권 받기"로 이 폼을 가리키는데 정작 써도 지급되지 않으면
+   * 그 CTA가 거짓말이 된다. 두 후기 종류가 지갑 하나를 나눠 쓰므로 지급도 같은 규칙을 따른다.
+   *
+   * 다른 세 트랙의 재직 후기는 여전히 미지급이다 — 잠기지 않아 열람권을 쓸 일 자체가 없다.
+   */
+  const grantsReviewCredits = isInterview || isPharmacyReview;
+  const submitHint = grantsReviewCredits
     ? "작성한 후기는 운영팀 검토 후 게시되며, 게시되면 열람권이 지급됩니다."
     : "작성한 리뷰는 운영팀 검토 후 게시됩니다.";
 
