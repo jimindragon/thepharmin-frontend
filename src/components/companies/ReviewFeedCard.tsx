@@ -71,8 +71,12 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
         </div>
       ) : null}
       {locked ? (
+        /* 자물쇠 판만 compact(32px)다 — 이 카드의 잠금 영역은 스켈레톤 2줄 높이라, 상세 잠금 카드와
+           같은 44px 판을 쓰면 판이 그 아래 안내문·CTA보다 무거워진다. 두 크기는 판:잉크 비가 같아
+           같은 문법으로 읽힌다(SquareIcon). 두 허브 피드가 이 카드 하나를 함께 쓰므로 여기서 정한다. */
         <LockedContent
           className="relative z-20 mt-3"
+          iconSize="compact"
           lines={2}
           message={lockedMessage ?? ""}
           ctaLabel={lockedCtaLabel ?? ""}

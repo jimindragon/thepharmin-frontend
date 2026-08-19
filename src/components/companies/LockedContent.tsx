@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { Lock } from "lucide-react";
 import Link from "next/link";
-import { SquareIcon } from "@/components/ui/SquareIcon";
+import { SquareIcon, type SquareIconSize } from "@/components/ui/SquareIcon";
 
 interface LockedContentProps {
   message: string;
@@ -22,6 +22,14 @@ interface LockedContentProps {
   ctaVariant?: "outline" | "gradient" | "solid";
   /** 상하 여백/요소 간격을 한 단계 넓힌 변형. 미지정 시 기존 레이아웃과 동일하다. */
   roomy?: boolean;
+  /**
+   * 자물쇠 판 크기. 기본은 44px이고, 카드가 낮아 그 판이 남은 글줄보다 무거워지는 자리에서만
+   * "compact"(32px)를 쓴다 — 허브 피드 잠금 카드가 그렇다(ReviewFeedCard).
+   *
+   * 기업 상세의 잠금 카드는 기본값 그대로다. 그쪽은 카드 한 장이 통째로 잠금 영역이라
+   * 44px 판이 그 영역의 머리 노릇을 한다.
+   */
+  iconSize?: SquareIconSize;
 }
 
 /**
@@ -39,6 +47,7 @@ export function LockedContent({
   className,
   ctaVariant = "outline",
   roomy = false,
+  iconSize = "default",
 }: LockedContentProps) {
   const ctaClassName =
     ctaVariant === "gradient"
@@ -85,7 +94,7 @@ export function LockedContent({
           roomy ? "gap-2.5" : "gap-2 pb-5 pt-9",
         )}
       >
-        <SquareIcon icon={Lock} />
+        <SquareIcon icon={Lock} size={iconSize} />
         <p className="max-w-[260px] text-[15px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
         {secondaryMessage ? <p className="max-w-[260px] text-[12px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
         {ctaHref ? (
