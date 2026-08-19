@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import { Bookmark, Quote, Star, ThumbsUp } from "lucide-react";
+import { Bookmark, Quote, ThumbsUp } from "lucide-react";
 import { LockedContent } from "@/components/companies/LockedContent";
+import { ReviewRatingStars } from "@/components/company/ReviewRatingStars";
 import type { PharmacyReviewRating } from "@/config/pharmacyReviewForm";
 
 /**
@@ -131,26 +132,6 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
         ctaVariant: "solid" as const,
       };
   }
-}
-
-/**
- * 종합 평가 별점(읽기 전용). 작성 폼의 별점(PharmacyReviewFormSections)과 같은 두 색을 쓴다 —
- * 채운 별은 본문 검정(#111111), 빈 별은 채운 회색(#e6e9ee). 빈 별을 외곽선으로 두면 다섯 칸이
- * 서로 다른 굵기로 읽혀 몇 점인지가 한눈에 들어오지 않는다.
- */
-function ReviewRatingStars({ value, size }: { value: PharmacyReviewRating; size: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5" role="img" aria-label={`5점 만점에 ${value}점`}>
-      {[1, 2, 3, 4, 5].map((score) => (
-        <Star
-          key={score}
-          size={size}
-          className={score <= value ? "fill-[#111111] text-[#111111]" : "fill-[#e6e9ee] text-[#e6e9ee]"}
-          aria-hidden
-        />
-      ))}
-    </span>
-  );
 }
 
 /**

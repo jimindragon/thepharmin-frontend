@@ -31,6 +31,21 @@ export function isPharmacyWorkReview(review: CompanyReview) {
 }
 
 /**
+ * 허브 피드(/companies 홈 · /companies/reviews)가 약국 재직 후기 자리에 원문 대신 그리는 안내.
+ *
+ * 두 피드가 같은 문자열을 쓰도록 여기 둔다 — 잠금은 한 가지 사실을 말하는데 문구가 화면마다
+ * 다르면 읽는 쪽에서는 서로 다른 제약으로 읽힌다.
+ *
+ * **피드는 열람 창구가 아니다.** CTA가 기업 상세로 보내기만 하고 열람권을 쓰지 않는 것이 핵심이다 —
+ * 차감이 두 자리에서 일어나면 같은 지갑을 건드리는 곳이 늘고, 확인 모달·잔량 표시·열람 이력까지
+ * 피드 쪽에 한 벌 더 생긴다. 열람은 기업 상세 한 곳에서만 한다.
+ */
+export const PHARMACY_REVIEW_FEED_LOCK = {
+  message: "열람권으로 볼 수 있는 후기입니다",
+  ctaLabel: "약국 상세에서 열람하기",
+} as const;
+
+/**
  * 약국 재직 후기의 구조화 표시값. 선택지 id를 화면 문구로 되돌리는 일이 전부 여기서 끝난다 —
  * 카드는 문항 정의(pharmacyReviewForm)를 알지 못한 채 문자열만 그린다.
  *

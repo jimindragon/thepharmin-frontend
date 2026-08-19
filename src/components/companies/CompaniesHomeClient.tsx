@@ -14,6 +14,7 @@ import { heroImages } from "@/config/companyImages";
 import { jobTracks, jobTrackLabels } from "@/config/jobTracks";
 import { FEATURED_COMPANY_IDS, isJobActive } from "@/data/companyDirectory";
 import type { CompanyDirectoryEntry, IndustryGroup } from "@/data/companyDirectory";
+import { PHARMACY_REVIEW_FEED_LOCK } from "@/data/companyReviewItems";
 import { jobs } from "@/data/jobs";
 import type { JobTrack } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
@@ -30,7 +31,11 @@ interface RecentFeedCompanyItem {
   type: "company";
   jobRole: string;
   writtenAt: string;
-  content: string;
+  /**
+   * 원문. 약국 재직 후기는 기업 상세에서 열람권으로 잠기므로 서버가 null로 내려보낸다 —
+   * 면접 후기가 처음부터 tags만 받는 것과 같은 자리다(그쪽은 필드 자체가 없다).
+   */
+  content: string | null;
   helpfulCount: number;
 }
 
@@ -369,9 +374,15 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
       <span aria-hidden="true" className="h-10 w-px shrink-0 self-center bg-[#e5e9ef] max-[560px]:hidden" />
       <div className="min-w-0">
         {item.type === "company" ? (
-          <p className="line-clamp-2 text-[15px] font-normal leading-[1.65] text-[#3f4855] transition group-hover:text-[#111111]">
-            “{item.content}”
-          </p>
+          /* 잠긴 약국 재직 후기는 원문 두 줄 대신 안내 한 줄이다. 행 골격은 그대로 두고 이 칸의
+             내용만 바뀐다 — 같은 15px·같은 line-clamp-2 자리라 행 높이가 달라지지 않는다. */
+          item.content === null ? (
+            <p className="line-clamp-2 text-[15px] font-normal leading-[1.65] text-[#8a94a3]">{PHARMACY_REVIEW_FEED_LOCK.message}</p>
+          ) : (
+            <p className="line-clamp-2 text-[15px] font-normal leading-[1.65] text-[#3f4855] transition group-hover:text-[#111111]">
+              “{item.content}”
+            </p>
+          )
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {item.tags.map((tag) => (
@@ -384,7 +395,18 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
       </div>
       <div className="shrink-0 justify-self-end self-center whitespace-nowrap">
         {item.type === "company" ? (
-          <p className="text-[12px] font-normal text-[#a0a9b7]">도움돼요 {item.helpfulCount}</p>
+          /* 잠긴 행의 우측은 도움돼요 수 대신 이동 링크다 — 면접 후기 행이 같은 자리에 안내 액션을
+             두는 것과 같은 문법이고, 행 전체 오버레이 링크와 목적지가 같다(리뷰 탭). */
+          item.content === null ? (
+            <Link
+              href={href}
+              className="relative z-20 text-[12px] font-medium text-[#a0a9b7] underline decoration-[#d8dce2] underline-offset-2 transition hover:text-[#111111]"
+            >
+              {PHARMACY_REVIEW_FEED_LOCK.ctaLabel}
+            </Link>
+          ) : (
+            <p className="text-[12px] font-normal text-[#a0a9b7]">도움돼요 {item.helpfulCount}</p>
+          )
         ) : (
           <button
             type="button"

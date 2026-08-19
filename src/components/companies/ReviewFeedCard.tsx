@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { LockedContent } from "@/components/companies/LockedContent";
+import { ReviewRatingStars } from "@/components/company/ReviewRatingStars";
+import type { PharmacyReviewRating } from "@/config/pharmacyReviewForm";
 
 export interface ReviewFeedItem {
   id: string;
@@ -12,6 +14,13 @@ export interface ReviewFeedItem {
   /** 지원(면접)한 시기. writtenAt(작성일)과 별개 — 값이 있을 때만 하단에 한 줄 노출한다. 면접 후기 피드에서만 채워진다 */
   applyYear?: number;
   applyHalf?: "상반기" | "하반기";
+  /**
+   * 약국 재직 후기의 종합 평가 별점. 값이 있을 때만 그린다(면접 후기 카드는 종전 그대로다).
+   *
+   * **잠금 위에 선다.** 기업 상세 카드가 별점·근무 메타를 잠금 밖에 두는 것과 같은 분할이다 —
+   * 몇 점을 줬는지는 열지 않아도 보여야 후기끼리 견줄 수 있고, 왜 그런지가 열람 대상이다.
+   */
+  rating?: PharmacyReviewRating;
   /** 게이팅 대상이 아니면 항상 문자열, 잠긴 경우에만 서버에서부터 null로 내려온다 */
   preview: string | null;
 }
@@ -50,6 +59,7 @@ export function ReviewFeedCard({ review, href, lockedMessage, lockedCtaLabel, lo
       <p className="mt-1.5 text-[12px] font-normal text-[#8a95a5]">
         {review.jobRole} · {review.writtenAt}
       </p>
+      {review.rating ? <div className="mt-1.5"><ReviewRatingStars value={review.rating} size={13} /></div> : null}
       {applyLabel ? <p className="mt-1 text-[12px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
       {review.tags.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5">
