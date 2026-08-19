@@ -19,7 +19,7 @@ import { usePharmacistNoticeSeen } from "@/hooks/usePharmacistNoticeSeen";
  * Escape·스크롤 잠금을 직접 들고 z-[70]에 서는 것은 ConfirmDialog가 이미 쓰는 방식이다.
  */
 
-const NOTICE_PRIMARY = "약사 Q&A는 약사 인증 회원만 이용할 수 있습니다.";
+const NOTICE_PRIMARY = "약사 Q&A는 인증 회원만 이용할 수 있습니다.";
 const NOTICE_SECONDARY = "면허를 등록하시면 확인 후 이용 가능합니다.";
 const NOTICE_CTA = "면허 등록하러 가기";
 
@@ -52,8 +52,10 @@ function PharmacistLicenseNoticeModal({ onClose }: { onClose: () => void }) {
             <div className="grid h-10 w-10 place-items-center bg-[#111111] text-white">
               <Lock size={18} />
             </div>
-            {/* 제목이 문장이라 20px에서도 두 줄이 될 수 있다 — break-keep 없이 두면 단어 중간에서 갈린다 */}
-            <h2 className="mt-5 break-keep text-[20px] font-bold leading-tight tracking-[-0.02em] text-[#171b20]">
+            {/* 데스크톱 420px 창에서 제목 칸은 322px인데 이 문장은 20px에서 342px이라 두 줄로 갈렸다 —
+                18px에서 308px이 되어 한 줄에 든다. 390px에서는 칸이 252px이라 어차피 두 줄이고,
+                break-keep이 그 줄바꿈을 어절 경계에 묶는다(없으면 단어 중간에서 갈린다). */}
+            <h2 className="mt-5 break-keep text-[18px] font-bold leading-tight tracking-[-0.02em] text-[#171b20]">
               {NOTICE_PRIMARY}
             </h2>
             <p className="mt-3 break-keep text-[13px] font-medium leading-6 text-[#7a8490]">{NOTICE_SECONDARY}</p>
