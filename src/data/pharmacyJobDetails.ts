@@ -999,6 +999,101 @@ export const hyeongangPharmacyJobDetail: PharmacyJobDetail = {
   },
 };
 
+// ---- 더파마 약국 정본 ----
+// fictional mock data — 실존 약국 아님. 기업센터 "후기 관리" 시연용 약국(companies.ts 주석 참조)의 공고.
+//
+// 이 정본이 없던 동안 jobs.ts 317은 목록에 카드로만 서고 제목이 링크가 되지 않았다 —
+// JobCard가 hasJobDetail(slug)로 링크 여부를 가르고, 그 색인(jobDetailIndex)이 아래 배열에서 만들어진다.
+// 값은 전부 이미 있는 더파마 데이터에서 옮겨 온 것이다: 공고 문구·급여·직무는 jobs.ts 317,
+// 약국 정보(인원·처방과·소프트웨어·영업시간)는 companyProfiles.ts, 유형·주소는 companies.ts.
+export const thepharmaPharmacyJobDetail: PharmacyJobDetail = {
+  id: "thepharma-pharmacy-317",
+  slug: "thepharma-pharmacy-fulltime-pharmacist",
+  companyId: "thepharma-pharmacy",
+
+  job: {
+    title: "더파마 약국 근무약사 채용",
+    jobCategoryLabel: "약국 > 풀타임근무약사",
+    workTypeIds: ["full_time"],
+    employmentTypeId: "permanent",
+    experienceId: "any",
+    educationId: "bachelor",
+    headcount: "1명",
+
+    summary: "처방조제와 일반약 상담을 함께 보는 관악구 일반약국에서 근무약사를 모십니다.",
+    // jobs.ts 317은 responsibilities/requirements 배열 대신 *Content(bullet)만 갖고 있어 items를 그대로 옮겼다
+    responsibilities: ["처방조제 및 복약지도", "일반의약품 상담"],
+    requirements: ["약사 면허 소지자", "경력무관", "대졸(4년제)"],
+    // preferred: 없음 — 원본에 근거 없음
+    preferred: [],
+    workConditionDetail:
+      "평일 주 5일 근무입니다. 약사 2명과 직원 1명이 조제와 일반약 상담을 나누어 맡습니다.",
+
+    // jobs.ts 317에 근무 시각이 없어 companyProfiles.ts의 businessHours(평일 09:00~19:00)로 복원했다.
+    // 토요일(09:00~14:00)은 약국 영업시간이라 org.businessHours에만 둔다 — 이 자리에 함께 넣으면
+    // 상세 요약이 근무일을 6일로 세어, 같은 화면의 "#주 5일"(jobs.ts 317 coreKeywords)과 어긋난다.
+    // 이 공고가 평일 주간 근무(scheduleIds: ["weekday-day"])라는 것도 공고 원장 쪽 값이다.
+    workSchedule: [{ days: ["월", "화", "수", "목", "금"], time: "09:00–19:00" }],
+
+    salary: { kind: "면접후결정", amount: "면접 후 결정", note: "경력에 따라 협의" },
+    // benefits: 없음 — 원본에 근거 없음
+    benefits: [],
+
+    coreKeywords: ["처방조제", "일반약 상담", "주 5일", "유팜"],
+
+    staffPharmacistCount: 2,
+    staffSupportCount: 1,
+    // mainPrescribingHospital: 인근 내과·이비인후과 처방이라 대표 병원이 특정되지 않는다
+    mainPrescribingHospital: "",
+
+    apply: {
+      method: "quick",
+      notice: "간편지원으로 접수해 주세요. 근무 가능 시기를 함께 남겨 주세요.",
+    },
+    isRolling: true,
+  },
+
+  org: {
+    pharmacyName: "더파마 약국",
+    logoText: "더파마",
+    logoColor: "#111111",
+    // jobs.ts 317의 coverImageMode가 "none"이라 약국 트랙 기본 이미지를 쓴다
+    coverImageUrl: null,
+
+    location: {
+      // 실재하는 약국과 겹치지 않도록 번지 없이 "일대"로 둔 주소를 그대로 쓴다(companies.ts 주석)
+      address: "서울 관악구 봉천로 일대",
+      // detailAddress/parkingTransit: 없음 — 원본에 근거 없음
+      detailAddress: "",
+      parkingTransit: "",
+    },
+    businessHours: "평일 09:00~19:00 · 토 09:00~14:00",
+
+    pharmacyTypeId: "local",
+    pharmacyFeatureId: "otc_focused",
+
+    shortIntro: "처방조제와 일반약 상담을 함께 보는 동네 일반약국",
+    fullIntro:
+      "인근 내과·이비인후과 처방을 주로 조제하며, 일반약 상담도 함께 보는 소형 약국입니다. 약사 2명과 직원 1명이 조제와 응대를 나누어 맡고 있습니다. 처방 건수가 과하지 않아 복약지도에 시간을 들일 수 있는 편입니다.",
+    features: [
+      "처방조제, 복약지도, 일반의약품 상담",
+      "내과·이비인후과 처방 중심",
+      "약사 2명·직원 1명 소규모 근무",
+    ],
+    keywords: ["일반약국", "처방조제", "일반약 상담", "소규모"],
+
+    avgDailyPrescriptions: "약 150건",
+    mainDepartments: "내과·이비인후과",
+    software: "유팜",
+    dispensingEquipment: ["자동조제기"],
+    // mainHospitals: 없음 — 원본에 근거 없음
+    mainHospitals: [],
+
+    staffPharmacistCount: 2,
+    staffSupportCount: 1,
+  },
+};
+
 export const pharmacyJobDetails: PharmacyJobDetail[] = [
   eunhaengPharmacyJobDetail,
   hyundaiPharmacyJobDetail,
@@ -1010,6 +1105,7 @@ export const pharmacyJobDetails: PharmacyJobDetail[] = [
   masanYugilPharmacyJobDetail,
   munmuPharmacyJobDetail,
   hyeongangPharmacyJobDetail,
+  thepharmaPharmacyJobDetail,
 ];
 
 export function getPharmacyJobDetail(slug: string): PharmacyJobDetail | undefined {
