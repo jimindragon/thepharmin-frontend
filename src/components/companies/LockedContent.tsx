@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { Lock } from "lucide-react";
 import Link from "next/link";
+import { SquareIcon } from "@/components/ui/SquareIcon";
 
 interface LockedContentProps {
   message: string;
@@ -84,7 +85,7 @@ export function LockedContent({
           roomy ? "gap-2.5" : "gap-2 pb-5 pt-9",
         )}
       >
-        <Lock size={17} className="text-[#8a95a5]" aria-hidden="true" />
+        <SquareIcon icon={Lock} />
         <p className="max-w-[260px] text-[15px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
         {secondaryMessage ? <p className="max-w-[260px] text-[12px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
         {ctaHref ? (
