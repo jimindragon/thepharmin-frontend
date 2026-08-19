@@ -35,6 +35,7 @@ export const businessCenterMenuGroups: BusinessCenterMenuGroup[] = [
     items: [
       { label: "기업정보 관리", href: "/business/profile-hub" },
       { label: "브랜드 페이지 미리보기", href: "/business/company/preview" },
+      { label: "후기 관리", href: "/business/reviews" },
     ],
   },
   {
@@ -57,7 +58,14 @@ export const businessCenterMenuGroups: BusinessCenterMenuGroup[] = [
  * 기업 인증(승인) 대기 상태일 때 접근을 막는 경로 prefix. 사이드바 잠금 아이콘·헤더 드롭다운
  * 잠금 아이콘·BusinessCenterShell 게이트 패널이 모두 이 배열 하나에서 판정을 파생한다.
  */
-export const approvalGatedPathPrefixes = ["/business/jobs", "/business/applicants", "/business/headhunting", "/business/billing"];
+export const approvalGatedPathPrefixes = [
+  "/business/jobs",
+  "/business/applicants",
+  "/business/headhunting",
+  "/business/billing",
+  // 후기 관리는 "우리 약국"이 확정돼야 성립한다 — 인증 전에는 어느 약국의 후기를 보여줄지가 없다.
+  "/business/reviews",
+];
 
 export function isApprovalGatedPath(pathname: string): boolean {
   return approvalGatedPathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));

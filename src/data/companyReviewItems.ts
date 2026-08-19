@@ -6,6 +6,7 @@ import {
   pharmacyReviewNarrativeCardLabels,
 } from "@/config/pharmacyReviewForm";
 import { REVIEW_HIDDEN_NOTICE } from "@/config/reviewModeration";
+import { getPharmacyOfficialReply } from "@/data/pharmacyReviewOwnerState";
 import type { CompanyReview } from "@/types/jobs";
 
 /**
@@ -80,6 +81,7 @@ export function toCompanyReviewCardItem(review: CompanyReview): CompanyReviewCar
     applyHalf: review.applyHalf,
     pharmacy: toPharmacyReviewDisplay(review),
     hiddenNotice: review.hiddenReason ? REVIEW_HIDDEN_NOTICE[review.hiddenReason] : undefined,
+    officialReply: getPharmacyOfficialReply(review.id),
     isMine: review.isMine,
   };
 }

@@ -53,6 +53,11 @@ export interface CompanyReviewCardItem {
    * 열고 나서야 빈 것을 알게 된다.
    */
   hiddenNotice?: string;
+  /**
+   * 약국이 이 후기에 남긴 공식 답변. 잠긴 카드에서는 그리지 않는다(아래 렌더 위치가 잠금 안쪽이다) —
+   * 본문이 가려졌는데 답변만 보이면 답변이 무엇에 대한 반박인지로 원문이 유추된다.
+   */
+  officialReply?: { content: string; writtenAt: string };
 }
 
 /** 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라 본문을 잠근다.
@@ -89,6 +94,11 @@ interface CompanyReviewCardProps {
   interviewAccess?: CompanyReviewInterviewAccess;
   /** 잠기지 않은 본문 위에 그리는 보조 라벨(예: "열람 완료 · 추가 차감 없음", "내가 작성한 후기"). */
   accessLabel?: string;
+  /**
+   * 카드 자신의 테두리·배경·패딩을 벗는다. 기업센터 후기 관리처럼 이미 흰 블록 안에 놓일 때만 쓴다 —
+   * 그대로 넣으면 1px 액자가 겹쳐 프레임 안의 프레임이 된다. 안쪽 내용은 그대로다.
+   */
+  frameless?: boolean;
 }
 
 function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
@@ -182,6 +192,7 @@ export function CompanyReviewCard({
   onLockedCtaClick,
   interviewAccess,
   accessLabel,
+  frameless = false,
 }: CompanyReviewCardProps) {
   const compact = variant === "compact";
   const locked = interviewAccess ? true : review.content === null;
@@ -195,7 +206,7 @@ export function CompanyReviewCard({
     review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} ${review.isInterview ? "면접" : "지원"}` : null;
 
   return (
-    <article className={clsx("border border-border bg-white", compact ? "p-3" : "p-4")}>
+    <article className={clsx(!frameless && "border border-border bg-white", !frameless && (compact ? "p-3" : "p-4"))}>
       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
         <span className={clsx("min-w-0 truncate font-medium text-[#3f4855]", compact ? "text-[12px]" : "text-[13px]")}>
           {review.jobRole} · {review.authorStatus}
@@ -311,6 +322,17 @@ export function CompanyReviewCard({
               <span>{review.content}</span>
             </p>
           )}
+          {review.officialReply ? (
+            /* 회색 판 위에 얹어 후기 본문과 목소리를 가른다 — 같은 카드 안이지만 쓴 사람이 다르다.
+               잠금 분기 안쪽이라 잠긴 카드에서는 이 블록 자체가 렌더되지 않는다. */
+            <div className="mt-3 border-l-2 border-[#d8dee6] bg-[#f7f8fa] px-4 py-3">
+              <p className="flex flex-wrap items-baseline gap-x-2 text-[13px] font-medium text-[#3f4855]">
+                약국 공식 답변
+                <span className="text-[12px] font-normal text-[#9aa5b2]">{review.officialReply.writtenAt}</span>
+              </p>
+              <p className="mt-1.5 text-[13px] font-normal leading-[1.7] text-[#4f5967]">{review.officialReply.content}</p>
+            </div>
+          ) : null}
         </>
       )}
       {!compact && applyLabel ? <p className="mt-2 text-[12px] font-normal text-[#9aa5b2]">{applyLabel}</p> : null}
