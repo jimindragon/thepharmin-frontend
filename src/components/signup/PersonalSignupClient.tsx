@@ -16,13 +16,13 @@ import { SEL } from "@/components/job-registration/fieldClasses";
 import { PhoneVerificationField } from "@/components/signup/PhoneVerificationField";
 import {
   affiliationConfig,
+  getStudentGradeField,
   memberAffiliationOptions,
-  memberGradeOptions,
   memberPositionOptions,
   shouldShowLicenseField,
+  shouldShowPreliminaryPharmacist,
   upcomingPharmacistExamExpiry,
   GRADE_BASE_YEAR,
-  PRELIMINARY_PHARMACIST_GRADE,
   type MemberAffiliationId,
   type MemberOption,
   type PreliminaryPharmacistVerification,
@@ -281,9 +281,12 @@ function ProfileGroup({
 }) {
   const config = value.affiliationId ? affiliationConfig[value.affiliationId] : null;
   const showLicense = config ? shouldShowLicenseField(config, value.secondaryId, value.hasPharmacistLicense) : false;
-  /** 예비약사 인증은 학년 칸이 있는 소속(=학생)의 6학년에만 나온다. 약사 면허 칸과는 서로 배타적이다. */
-  const showPreliminaryPharmacist =
-    Boolean(config?.showGrade) && value.studentGrade?.grade === PRELIMINARY_PHARMACIST_GRADE;
+  /** 학년 선택지·안내는 전공 계열(2차 선택)에 따라 갈린다 — 약학 6년 / 의학·간호 예과·본과 / 나머지 4년. */
+  const gradeField = getStudentGradeField(value.secondaryId);
+  /** 예비약사 인증은 약학 6학년에만 나온다. 판정은 memberAffiliation.ts가 정본이다. */
+  const showPreliminaryPharmacist = config
+    ? shouldShowPreliminaryPharmacist(config, value.secondaryId, value.studentGrade)
+    : false;
 
   return (
     <div>
@@ -345,14 +348,12 @@ function ProfileGroup({
           <div className="space-y-2">
             <FieldLabel required>학년</FieldLabel>
             <OptionButtonGroup
-              options={memberGradeOptions}
+              options={gradeField.options}
               value={value.studentGrade ? String(value.studentGrade.grade) : ""}
               onChange={(id) => onChangeGrade(Number(id))}
               ariaLabel="학년"
             />
-            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
-              {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
-            </p>
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">{gradeField.hint}</p>
           </div>
         ) : null}
 
@@ -622,29 +623,44 @@ export function PersonalSignupClient() {
     setProfile({ ...emptyProfileState, ...resetProfileBelowAffiliation, affiliationId: id });
   };
 
-  /** 2차 선택을 바꿔 면허 칸이 사라지는 경우 면허번호·면허증도 함께 비운다. */
+  /**
+   * 2차 선택을 바꿔 면허 칸이 사라지는 경우 면허번호·면허증도 함께 비운다.
+   * 전공(학생의 2차 선택)이 바뀌면 학년도 비운다 — 선택지가 전공마다 갈려(약학 6 / 의학·간호
+   * 예과·본과 / 나머지 4) 고른 값이 새 목록에 없거나 다른 학년을 가리키게 된다. 소속을 바꿀 때
+   * 그 아래를 전부 비우는 규칙과 같은 자리다. 예비약사 인증도 약학 6학년에만 있는 칸이라 함께 비운다.
+   */
   const changeSecondary = (id: string) => {
     setProfile((current) => {
       if (!current.affiliationId) return current;
       const config = affiliationConfig[current.affiliationId];
       const stillShowsLicense = shouldShowLicenseField(config, id, current.hasPharmacistLicense);
+      // 같은 값을 다시 눌렀을 때는 비우지 않는다 — 고른 것이 그대로인데 아래가 사라지면 오작동으로 읽힌다.
+      const majorChanged = Boolean(config.showGrade) && id !== current.secondaryId;
       return {
         ...current,
         secondaryId: id,
         licenseNumber: stillShowsLicense ? current.licenseNumber : "",
         licenseFileName: stillShowsLicense ? current.licenseFileName : null,
+        studentGrade: majorChanged ? null : current.studentGrade,
+        preliminaryPharmacist: majorChanged ? null : current.preliminaryPharmacist,
       };
     });
   };
 
-  /** 6학년에서 벗어나면 예비약사 인증 칸이 사라지므로 등록해 둔 재학증명서도 함께 비운다. */
+  /** 예비약사 인증 칸이 사라지는 학년으로 옮기면 등록해 둔 재학증명서도 함께 비운다. */
   const changeGrade = (grade: number) => {
-    setProfile((current) => ({
-      ...current,
-      studentGrade: { grade, baseYear: GRADE_BASE_YEAR },
-      preliminaryPharmacist:
-        grade === PRELIMINARY_PHARMACIST_GRADE ? current.preliminaryPharmacist : null,
-    }));
+    setProfile((current) => {
+      const studentGrade = { grade, baseYear: GRADE_BASE_YEAR };
+      const config = current.affiliationId ? affiliationConfig[current.affiliationId] : null;
+      const keepsPreliminary = config
+        ? shouldShowPreliminaryPharmacist(config, current.secondaryId, studentGrade)
+        : false;
+      return {
+        ...current,
+        studentGrade,
+        preliminaryPharmacist: keepsPreliminary ? current.preliminaryPharmacist : null,
+      };
+    });
   };
 
   const updateProfile = <K extends keyof ProfileState>(key: K, next: ProfileState[K]) => {

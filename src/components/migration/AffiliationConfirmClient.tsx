@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Typography";
 import {
   affiliationConfig,
+  getStudentGradeField,
   memberAffiliationOptions,
-  memberGradeOptions,
   memberPositionOptions,
   shouldShowLicenseField,
   GRADE_BASE_YEAR,
@@ -155,9 +155,25 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
 
   const config = profile.affiliationId ? affiliationConfig[profile.affiliationId] : null;
   const showLicense = config ? shouldShowLicenseField(config, profile.secondaryId, profile.hasPharmacistLicense) : false;
+  /** 학년 선택지·안내는 전공 계열(2차 선택)에 따라 갈린다 — 약학 6년 / 의학·간호 예과·본과 / 나머지 4년. */
+  const gradeField = getStudentGradeField(profile.secondaryId);
 
   const updateProfile = <K extends keyof ProfileState>(key: K, next: ProfileState[K]) => {
     setProfile((current) => ({ ...current, [key]: next }));
+  };
+
+  /**
+   * 전공(학생의 2차 선택)이 바뀌면 학년을 비운다 — 선택지가 전공마다 갈려 고른 값이 새 목록에
+   * 없거나 다른 학년을 가리키게 된다. 소속을 바꿀 때 아래를 전부 비우는 규칙과 같은 자리다.
+   * 이 화면에는 예비약사 인증 칸이 없어(가입 폼과 달리 ProfileState에 없다) 학년만 비운다.
+   */
+  const changeSecondary = (id: string) => {
+    setProfile((current) => ({
+      ...current,
+      secondaryId: id,
+      // 같은 값을 다시 눌렀을 때는 비우지 않는다.
+      studentGrade: config?.showGrade && id !== current.secondaryId ? null : current.studentGrade,
+    }));
   };
 
   // 소속을 바꾸면 아래 항목을 전부 비운다. 2차만은 변환표 값이 그 소속에서 유효할 때 되살린다.
@@ -229,7 +245,7 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
                 <OptionButtonGroup
                   options={config.secondary.options}
                   value={profile.secondaryId}
-                  onChange={(id) => updateProfile("secondaryId", id)}
+                  onChange={changeSecondary}
                   ariaLabel={config.secondary.label}
                 />
               </div>
@@ -266,14 +282,12 @@ export function AffiliationConfirmClient({ redirectTo }: { redirectTo: string })
               <div className="space-y-2">
                 <FieldLabel required>학년</FieldLabel>
                 <OptionButtonGroup
-                  options={memberGradeOptions}
+                  options={gradeField.options}
                   value={profile.studentGrade ? String(profile.studentGrade.grade) : ""}
                   onChange={(id) => updateProfile("studentGrade", { grade: Number(id), baseYear: GRADE_BASE_YEAR })}
                   ariaLabel="학년"
                 />
-                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
-                  {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
-                </p>
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">{gradeField.hint}</p>
               </div>
             ) : null}
 

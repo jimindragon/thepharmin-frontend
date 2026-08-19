@@ -13,13 +13,13 @@ import { StatusPill } from "@/components/business/table/StatusPill";
 import { SEL } from "@/components/job-registration/fieldClasses";
 import {
   affiliationConfig,
+  getStudentGradeField,
   memberAffiliationOptions,
-  memberGradeOptions,
   memberPositionOptions,
   shouldShowLicenseField,
+  shouldShowPreliminaryPharmacist,
   upcomingPharmacistExamExpiry,
   GRADE_BASE_YEAR,
-  PRELIMINARY_PHARMACIST_GRADE,
   type MemberAffiliationId,
   type MemberOption,
   type StudentGrade,
@@ -149,9 +149,12 @@ export function MyPageAccountClient() {
 
   const config = affiliationId ? affiliationConfig[affiliationId] : null;
   const showLicenseField = config ? shouldShowLicenseField(config, secondaryId, hasPharmacistLicense) : false;
-  /** 예비약사 인증은 학년 칸이 있는 소속(=학생)의 6학년에만 나온다. 약사 면허 칸과는 서로 배타적이다. */
-  const showPreliminaryPharmacist =
-    Boolean(config?.showGrade) && studentGrade?.grade === PRELIMINARY_PHARMACIST_GRADE;
+  /** 학년 선택지·안내는 전공 계열(2차 선택)에 따라 갈린다 — 약학 6년 / 의학·간호 예과·본과 / 나머지 4년. */
+  const gradeField = getStudentGradeField(secondaryId);
+  /** 예비약사 인증은 약학 6학년에만 나온다. 판정은 memberAffiliation.ts가 정본이다. */
+  const showPreliminaryPharmacist = config
+    ? shouldShowPreliminaryPharmacist(config, secondaryId, studentGrade)
+    : false;
   /**
    * §5는 안에 실제로 들어갈 것이 있을 때만 렌더한다 — checkbox 모드는 체크박스가 항상 있고,
    * auto 모드는 2차 선택이 면허 직군일 때만, 학생(none)은 6학년일 때만 내용이 생긴다.
@@ -184,10 +187,19 @@ export function MyPageAccountClient() {
     setPreliminaryFileName(null);
   };
 
-  /** 2차 선택을 바꿔 면허 칸이 사라지는 경우(auto 모드) 면허번호·면허증도 함께 비운다. */
+  /**
+   * 2차 선택을 바꿔 면허 칸이 사라지는 경우(auto 모드) 면허번호·면허증도 함께 비운다.
+   * 전공(학생의 2차 선택)이 바뀌면 학년과 예비약사 인증도 비운다 — 학년 선택지가 전공마다
+   * 갈려 고른 값이 새 목록에 없거나 다른 학년을 가리키게 된다. 가입 폼의 changeSecondary와 같은 규칙.
+   */
   const changeSecondary = (id: string) => {
     setSecondaryId(id);
     if (config && !shouldShowLicenseField(config, id, hasPharmacistLicense)) clearLicense();
+    // 같은 값을 다시 눌렀을 때는 비우지 않는다.
+    if (config?.showGrade && id !== secondaryId) {
+      setStudentGrade(null);
+      setPreliminaryFileName(null);
+    }
   };
 
   /**
@@ -200,10 +212,11 @@ export function MyPageAccountClient() {
     if (!next) clearLicense();
   };
 
-  /** 6학년에서 벗어나면 예비약사 인증 칸이 사라지므로 등록해 둔 재학증명서도 함께 비운다. */
+  /** 예비약사 인증 칸이 사라지는 학년으로 옮기면 등록해 둔 재학증명서도 함께 비운다. */
   const changeGrade = (grade: number) => {
-    setStudentGrade({ grade, baseYear: GRADE_BASE_YEAR });
-    if (grade !== PRELIMINARY_PHARMACIST_GRADE) setPreliminaryFileName(null);
+    const next = { grade, baseYear: GRADE_BASE_YEAR };
+    setStudentGrade(next);
+    if (!config || !shouldShowPreliminaryPharmacist(config, secondaryId, next)) setPreliminaryFileName(null);
   };
 
   const handleChangePassword = () => {
@@ -334,14 +347,12 @@ export function MyPageAccountClient() {
             {config?.showGrade ? (
               <Field label="학년" required>
                 <OptionButtonGroup
-                  options={memberGradeOptions}
+                  options={gradeField.options}
                   value={studentGrade ? String(studentGrade.grade) : ""}
                   onChange={(id) => changeGrade(Number(id))}
                   ariaLabel="학년"
                 />
-                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
-                  {GRADE_BASE_YEAR}년 기준으로 저장됩니다. 4년제 전공이면 4학년까지만 선택하시면 됩니다.
-                </p>
+                <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">{gradeField.hint}</p>
               </Field>
             ) : null}
           </div>

@@ -86,16 +86,6 @@ const jobSeekingOptions: MemberOption[] = [
   { id: "nurse", label: "간호사" },
 ];
 
-/** 약대가 6년제라 6학년까지 둔다. 4년제 전공자는 4학년까지만 고르면 된다. */
-export const memberGradeOptions: MemberOption[] = [
-  { id: "1", label: "1학년" },
-  { id: "2", label: "2학년" },
-  { id: "3", label: "3학년" },
-  { id: "4", label: "4학년" },
-  { id: "5", label: "5학년" },
-  { id: "6", label: "6학년" },
-];
-
 /** 학년 저장의 기준 연도. 실제 시계가 아니라 시연 기준일에서 뽑는다. */
 export const GRADE_BASE_YEAR = MOCK_TODAY_DATE.getFullYear();
 
@@ -104,13 +94,74 @@ export const GRADE_BASE_YEAR = MOCK_TODAY_DATE.getFullYear();
  * "어느 해 기준의 몇 학년"으로 저장해 두면 나중에 경과 연수를 더해 현재 학년을 계산할 수 있다.
  */
 export interface StudentGrade {
-  /** baseYear 시점의 학년(1~6) */
+  /** baseYear 시점의 학년(1~6). 전공별로 라벨만 다르고 숫자 체계는 하나다 */
   grade: number;
   baseYear: number;
 }
 
+/**
+ * 라벨 목록에서 학년 선택지를 만든다 — 번호는 순서에서 뽑는다.
+ * id를 손으로 적으면 라벨과 번호가 갈릴 자리가 생기고, 그 어긋남은 저장된 값이 틀려야 드러난다.
+ */
+function gradeOptions(labels: string[]): MemberOption[] {
+  return labels.map((label, index) => ({ id: String(index + 1), label }));
+}
+
+/** 약대는 6년제다. 예비약사 인증이 붙는 유일한 전공이기도 하다. */
+const pharmacyGradeOptions = gradeOptions(["1학년", "2학년", "3학년", "4학년", "5학년", "6학년"]);
+
+/**
+ * 의·치·한의는 예과 2년 + 본과 4년이고 간호는 4년이다. 두 학제가 한 계열에 묶여 있어
+ * 라벨은 6년제 쪽으로 두고, 4년제 전공자는 본과 1~4학년을 쓰도록 안내(hint)로 가른다.
+ * 내부 값은 1~6으로 약학과 같다 — 저장 형태(StudentGrade)를 전공마다 갈라 두지 않는다.
+ */
+const medicineNursingGradeOptions = gradeOptions([
+  "예과 1학년",
+  "예과 2학년",
+  "본과 1학년",
+  "본과 2학년",
+  "본과 3학년",
+  "본과 4학년",
+]);
+
+/** 나머지 계열(생명과학·화학공학·경영인문·기타)은 4년제다. */
+const fourYearGradeOptions = gradeOptions(["1학년", "2학년", "3학년", "4학년"]);
+
+/** 어느 전공이든 저장 형태가 같으므로 이 문장은 공통이다. */
+const GRADE_BASE_YEAR_HINT = `${GRADE_BASE_YEAR}년 기준으로 저장됩니다.`;
+
+/** 예비약사 인증 대상 전공. 학생 2차 선택(전공 계열)의 id다. */
+export const PRELIMINARY_PHARMACIST_MAJOR = "pharmacy";
+
 /** 예비약사 인증 대상 학년. 약대 6학년(졸업예정자)만 해당한다. */
 export const PRELIMINARY_PHARMACIST_GRADE = 6;
+
+export interface StudentGradeField {
+  options: MemberOption[];
+  /** 학년 목록 아래 안내. 기준 연도 문장에 전공별 안내가 덧붙는다. */
+  hint: string;
+}
+
+/**
+ * 전공 계열별 학년 칸. 세 화면(가입·소속 확인·회원정보)이 이 하나를 함께 쓴다 —
+ * 종전에는 1~6학년 한 벌을 전공 구분 없이 세 곳이 각자 렌더해, 의학·간호에 "5학년"이 뜨고
+ * 4년제 전공에도 6학년이 남았다.
+ *
+ * 전공을 아직 고르지 않았으면 4년제로 둔다. 폼에서 전공 칸이 학년 칸보다 위에 있어 스쳐 가는
+ * 상태이고, 전공을 고르는 순간 학년은 비워지므로(각 화면의 2차 선택 변경 처리) 남지 않는다.
+ */
+export function getStudentGradeField(majorId: string): StudentGradeField {
+  if (majorId === PRELIMINARY_PHARMACIST_MAJOR) {
+    return { options: pharmacyGradeOptions, hint: GRADE_BASE_YEAR_HINT };
+  }
+  if (majorId === "medicine_nursing") {
+    return {
+      options: medicineNursingGradeOptions,
+      hint: `${GRADE_BASE_YEAR_HINT} 간호 등 4년제 전공은 본과 1~4학년을 선택해 주세요.`,
+    };
+  }
+  return { options: fourYearGradeOptions, hint: GRADE_BASE_YEAR_HINT };
+}
 
 /**
  * 예비약사 자격의 만료 기준일 — "다가오는 약사 국가시험 이후".
@@ -251,6 +302,25 @@ export const affiliationConfig: Record<MemberAffiliationId, AffiliationConfig> =
     licenseMode: "checkbox",
   },
 };
+
+/**
+ * 현재 소속·전공·학년에서 예비약사 인증 칸을 보여줄지.
+ *
+ * 약학 6학년만이다 — 종전에는 학년 칸이 있는 소속의 6학년이면 전공을 보지 않아, 의학·간호
+ * 6학년(본과 4학년)에도 "예비약사 인증"이 떴다. 약사 면허 칸과는 서로 배타적이다
+ * (학생 소속은 licenseMode가 "none"이라 면허 칸이 애초에 나오지 않는다).
+ */
+export function shouldShowPreliminaryPharmacist(
+  config: AffiliationConfig,
+  secondaryId: string,
+  studentGrade: StudentGrade | null,
+): boolean {
+  return (
+    Boolean(config.showGrade) &&
+    secondaryId === PRELIMINARY_PHARMACIST_MAJOR &&
+    studentGrade?.grade === PRELIMINARY_PHARMACIST_GRADE
+  );
+}
 
 /** 현재 소속·2차 선택·체크박스 상태에서 약사 면허 칸을 보여줄지 */
 export function shouldShowLicenseField(
