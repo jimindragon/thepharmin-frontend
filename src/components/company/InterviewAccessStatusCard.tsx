@@ -2,6 +2,7 @@
 
 import { LinkButton } from "@/components/ui/Button";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
+import { REVIEW_ACCESS_INFO_LINES, REVIEW_ACCESS_INFO_TITLE } from "@/config/reviewAccessCopy";
 
 export type InterviewAccessUserState = "loggedOut" | "noCredits" | "hasCredits";
 
@@ -10,14 +11,6 @@ interface InterviewAccessStatusCardProps {
   credits: number;
   writeHref: string;
 }
-
-const ACCESS_INFO_TITLE = "열람권 이용 안내";
-const ACCESS_INFO_LINES = [
-  "가입 시 열람권 2장 지급",
-  "면접 후기 승인 시 2장 추가 지급",
-  "후기 1개 열람 시 1장 사용",
-  "이미 열람한 후기는 추가 차감 없음",
-];
 
 const MANAGE_HREF = "/mypage/review-credits";
 
@@ -93,7 +86,7 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
             subtext: "후기 1개 열람 시 1장 사용",
             primaryLabel: "면접 후기 작성하기",
             primaryHref: writeHref,
-            // 승인 전제를 noCredits의 "작성 승인 시 지급"·툴팁의 "면접 후기 승인 시 2장 추가 지급"과 맞춘다.
+            // 승인 전제를 noCredits의 "작성 승인 시 지급"·툴팁의 "… 승인 시 2장 추가 지급"과 맞춘다.
             primaryCaption: "작성 승인 시 열람권 +2장",
             secondaryLabel: "열람권 관리",
             secondaryHref: MANAGE_HREF,
@@ -127,7 +120,7 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           <div className="flex items-baseline justify-center gap-2">
             <span className="flex items-center gap-1">
               <p className="text-[13px] font-medium text-[#596373]">{copy.label}</p>
-              <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
+              <InfoTooltip title={REVIEW_ACCESS_INFO_TITLE} lines={REVIEW_ACCESS_INFO_LINES} />
             </span>
             {/* 17px/semibold — 상태값이지 제목이 아니다. 라벨(13px)보다 한 단계만 크면 어느 쪽이 값인지
                 충분히 갈린다. 확정 스케일의 17. */}
@@ -137,7 +130,7 @@ export function InterviewAccessStatusCard({ userState, credits, writeHref }: Int
           /* loggedOut은 셀 숫자가 없어 첫 줄이 제목 한 줄이다. 정렬·간격 문법은 위와 같다. */
           <div className="flex items-center justify-center gap-1.5">
             <span className="text-[14px] font-semibold text-[#171b21]">{copy.title}</span>
-            <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
+            <InfoTooltip title={REVIEW_ACCESS_INFO_TITLE} lines={REVIEW_ACCESS_INFO_LINES} />
           </div>
         )}
         {/* 2줄 — 세 상태가 같은 자리에 둔다. 첫 줄에 딸린 조건이라 mt-1.5(6px)로 바짝 붙인다.

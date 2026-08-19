@@ -5,21 +5,15 @@ import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { LinkButton } from "@/components/ui/Button";
+import { REVIEW_ACCESS_INFO_LINES, REVIEW_ACCESS_INFO_TITLE } from "@/config/reviewAccessCopy";
 import { companyReviews, myUnlockedInterviewReviewsMock, reviewAccessHistoryMock } from "@/data/companies";
 import { getCompanyProfile } from "@/data/companyProfiles";
 import type { CompanyReview } from "@/types/jobs";
 
-const ACCESS_INFO_TITLE = "열람권 이용 안내";
-const ACCESS_INFO_LINES = [
-  "가입 시 열람권 2장 지급",
-  "면접 후기 승인 시 2장 추가 지급",
-  "후기 1개 열람 시 1장 사용",
-  "이미 열람한 후기는 추가 차감 없음",
-];
-
+/** 위 툴팁(REVIEW_ACCESS_INFO_LINES)과 같은 규칙을 표로 편 것이다 — 지급 대상 서술이 두 벌로 갈리지 않게 함께 본다 */
 const HOW_TO_EARN_ROWS: { label: string; delta: string }[] = [
   { label: "가입 시", delta: "+2장" },
-  { label: "면접 후기 작성 승인 시", delta: "+2장" },
+  { label: "면접 후기·약국 재직 후기 승인 시", delta: "+2장" },
   { label: "후기 열람 시", delta: "-1장" },
 ];
 
@@ -39,7 +33,7 @@ export function MyPageReviewCreditsClient() {
 
       <h1 className="mt-5 text-[28px] font-bold leading-[1.2] tracking-[-0.02em] text-[#242b36]">후기 열람권</h1>
       <p className="mt-2.5 text-[15px] font-normal leading-[1.7] tracking-[-0.01em] text-[#68717e]">
-        면접 후기 열람권 보유 현황과 사용 내역을 확인할 수 있습니다.
+        후기 열람권 보유 현황과 사용 내역을 확인할 수 있습니다.
       </p>
 
       <section className="mt-8 border border-border bg-white">
@@ -48,7 +42,7 @@ export function MyPageReviewCreditsClient() {
             <p className="text-[13px] font-medium text-[#596373]">보유 열람권</p>
             <div className="mt-2 flex items-center gap-2">
               <span className="text-[44px] font-bold leading-none tracking-[-0.02em] text-[#111111]">{totalCredits}장</span>
-              <InfoTooltip title={ACCESS_INFO_TITLE} lines={ACCESS_INFO_LINES} />
+              <InfoTooltip title={REVIEW_ACCESS_INFO_TITLE} lines={REVIEW_ACCESS_INFO_LINES} />
             </div>
             <p className="mt-1.5 text-[12px] font-normal text-[#9aa3af]">후기 1개 열람 시 1장 사용</p>
           </div>
@@ -67,12 +61,12 @@ export function MyPageReviewCreditsClient() {
 
           <div className="px-8 py-7">
             <h2 className="text-[16px] font-semibold tracking-[-0.02em] text-[#17202c]">다음 열람권 받기</h2>
-            <p className="mt-3 text-[13px] font-normal text-[#9aa3af]">면접 후기를 작성하면 열람권을 더 받을 수 있어요</p>
+            <p className="mt-3 text-[13px] font-normal text-[#9aa3af]">후기를 작성하면 열람권을 더 받을 수 있어요</p>
             <Link
               href="/companies"
               className="mt-3 inline-flex items-center justify-center bg-[#111111] px-4 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2a2a2a]"
             >
-              면접 후기 작성하기
+              후기 작성하기
             </Link>
           </div>
         </div>
