@@ -17,7 +17,8 @@
  */
 
 import clsx from "clsx";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { usePersonalLoginState } from "@/hooks/usePersonalLoginState";
 import { clearBusinessMember, markBusinessMember, useBusinessMember } from "@/hooks/useBusinessMember";
 import { useMemberMigration } from "@/hooks/useMemberMigration";
@@ -163,8 +164,34 @@ function Row({
   );
 }
 
+/**
+ * 약사 QNA 접근 데모의 세 상태. 값과 쿼리의 대응은 qnaAccess.ts의 판정을 그대로 따른다 —
+ * 판정을 여기서 다시 쓰지 않고, 그 판정이 읽는 주소를 만들기만 한다.
+ */
+type QnaDemoState = "verified" | "unverified" | "ineligible";
+
+const QNA_DEMO_HREF: Record<QnaDemoState, string> = {
+  verified: "/qna",
+  unverified: "/qna?pharmacist=false",
+  ineligible: "/qna?pharmacist=false&licenseEligible=false",
+};
+
+/** 쿼리를 소비하는 라우트(/qna, /qna/[id], /qna/activity) 위에 있을 때만 현재 상태를 읽을 수 있다. */
+function isQnaRoute(pathname: string) {
+  return pathname === "/qna" || pathname.startsWith("/qna/");
+}
+
+/** 판정 순서는 resolveQnaViewerState와 같다 — pharmacist가 먼저고 licenseEligible은 그 아래에 걸린다. */
+function readQnaDemoState(): QnaDemoState {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("pharmacist") !== "false") return "verified";
+  return params.get("licenseEligible") === "false" ? "ineligible" : "unverified";
+}
+
 export function DevStatePanel() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
   const { isLoggedIn: personalOn, login: personalLogin, logout: personalLogout } = usePersonalLoginState();
   const businessOn = useBusinessMember();
   const { isMigrated, markMigrated, resetMigration } = useMemberMigration();
@@ -186,6 +213,28 @@ export function DevStatePanel() {
   const applyOrgStatus = (status: "pending" | "approved") => {
     setOrgVerificationStatus(status);
     window.location.reload();
+  };
+
+  /**
+   * QNA 밖에서는 null이다 — 읽을 쿼리가 없어 "지금 어느 상태인지"를 말할 수 없고,
+   * 그때는 세 버튼이 모두 활성이라 어느 것을 눌러도 그 상태로 QNA에 들어간다.
+   * 서버에서는 주소 쿼리를 알 수 없어 마운트 후에 읽는다(useOrgVerificationStatus와 같은 자리).
+   * useSearchParams를 쓰지 않는 이유는 MigrationGuard와 같다 — 루트 레이아웃에서 그 훅을 쓰면
+   * 앱 전체가 Suspense 경계를 요구하게 된다.
+   */
+  const [qnaState, setQnaState] = useState<QnaDemoState | null>(null);
+
+  useEffect(() => {
+    setQnaState(isQnaRoute(pathname) ? readQnaDemoState() : null);
+  }, [pathname]);
+
+  /**
+   * 고른 값을 먼저 반영하고 이동한다 — /qna?pharmacist=false에서 "인증됨"을 누르면 경로가 그대로라
+   * 위 이펙트가 다시 돌지 않는다. 주소만 바뀌고 버튼은 이전 상태로 남는 것을 막는다.
+   */
+  const applyQnaState = (next: QnaDemoState) => {
+    setQnaState(next);
+    router.push(QNA_DEMO_HREF[next]);
   };
 
   if (!DEV_PANEL_ENABLED) return null;
@@ -254,6 +303,15 @@ export function DevStatePanel() {
           />
           <RowButton label="0장" onClick={() => setReviewAccessDemo("noCredits")} disabled={reviewAccessState === "noCredits"} />
           <RowButton label="2장" onClick={() => setReviewAccessDemo("hasCredits")} disabled={reviewAccessState === "hasCredits"} />
+        </Row>
+
+        {/* QNA 접근 상태는 서버 판정(쿼리 기반)이라 저장소가 아닌 URL로 전환한다.
+            패널에서 유일하게 화면을 이동시키는 행 — 쿼리가 QNA 라우트에서만 소비되므로
+            QNA로 데려가는 것까지가 전환이다. 헤더로 QNA를 벗어나면 상태가 풀린다(의도된 데모 한계). */}
+        <Row label="약사 QNA" on={qnaState === "verified"}>
+          <RowButton label="인증됨" onClick={() => applyQnaState("verified")} disabled={qnaState === "verified"} />
+          <RowButton label="미인증" onClick={() => applyQnaState("unverified")} disabled={qnaState === "unverified"} />
+          <RowButton label="자격없음" onClick={() => applyQnaState("ineligible")} disabled={qnaState === "ineligible"} />
         </Row>
       </div>
     </div>
