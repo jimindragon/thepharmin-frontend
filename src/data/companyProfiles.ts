@@ -1556,6 +1556,45 @@ export const companyProfiles: CompanyProfile[] = [
       address: "충남 천안시 서북구 번영로 100 센트럴프라자 1층",
     },
   },
+  // fictional mock data — 실존 약국 아님. 기업센터 "후기 관리" 시연용 약국(companies.ts 주석 참조)
+  {
+    id: "thepharma-pharmacy",
+    name: "더파마 약국",
+    logoText: "더파마",
+    tagline: "처방조제와 일반약 상담을 함께 보는 동네 일반약국",
+    tags: ["일반약국", "설립 2021.03.02"],
+    coverImage: companyExampleImages.hero,
+    fullIntro:
+      "인근 내과·이비인후과 처방을 주로 조제하며, 일반약 상담도 함께 보는 소형 약국입니다. 약사 2명과 직원 1명이 조제와 응대를 나누어 맡고 있습니다. 처방 건수가 과하지 않아 복약지도에 시간을 들일 수 있는 편입니다.",
+    metrics: [
+      { label: "일평균 처방", value: "약 150건" },
+      { label: "주요 처방과", value: "내과·이비인후과" },
+    ],
+    businessSummary: [
+      { label: "근무 약사", value: "2명" },
+      { label: "직원", value: "1명" },
+    ],
+    recruitSummary: "처방조제와 일반약 상담을 균형 있게 경험하고 싶은 약사에게 맞는 소형 일반약국입니다.",
+    details: [{ label: "본사 위치", value: "서울 관악구 봉천로 일대" }],
+    phone: "02-0000-0000",
+    email: "thepharma-pharmacy@pharmacy.example",
+    keywords: ["일반약국", "처방조제", "일반약 상담", "소규모"],
+    pharmacySoftware: "유팜",
+    businessHours: "평일 09:00~19:00 · 토 09:00~14:00",
+    dispensingEquipment: ["자동조제기"],
+    pharmacyFeatures: "otc_focused",
+    features: [
+      { label: "근무 형태", text: "주 5일, 토요일 오전 근무" },
+      { label: "업무 구성", text: "처방조제와 일반약 상담을 함께 맡습니다" },
+    ],
+    news: [],
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "6개",
+      products: [],
+      address: "서울 관악구 봉천로 일대",
+    },
+  },
   {
     id: "hyundai-pharmacy",
     name: "현대약국",

@@ -48,6 +48,7 @@ const trackById: Record<string, JobTrack> = {
   "shin-jungang-pharmacy": "pharmacy",
   "munmu-pharmacy": "pharmacy",
   "buldang-central-pharmacy": "pharmacy",
+  "thepharma-pharmacy": "pharmacy",
   yuhan: "industry",
   "samsung-biologics": "industry",
   hugel: "industry",

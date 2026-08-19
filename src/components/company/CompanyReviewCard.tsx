@@ -47,6 +47,12 @@ export interface CompanyReviewCardItem {
   isMine?: boolean;
   /** 약국 재직 후기에만 존재. 값이 있으면 본문이 원문 한 덩어리가 아니라 구조화 블록으로 그려진다 */
   pharmacy?: PharmacyReviewDisplay;
+  /**
+   * 비공개·삭제된 후기의 자리표시 문구(REVIEW_HIDDEN_NOTICE). 값이 있으면 본문 대신 이 한 줄만 그린다.
+   * 잠금보다 먼저 판정한다 — 내려갈 내용이 아예 없는 후기에 "열람권 1장으로 보기"를 붙이면
+   * 열고 나서야 빈 것을 알게 된다.
+   */
+  hiddenNotice?: string;
 }
 
 /** 열람권(credit) 게이팅 상태. 값이 있으면 review.content 유무와 무관하게 이 상태에 따라 본문을 잠근다.
@@ -250,7 +256,18 @@ export function CompanyReviewCard({
           <span className="inline-block border border-[#d9d9d9] bg-white px-2 py-1 text-[13px] font-medium text-[#3f4855]">{interviewMeta}</span>
         </div>
       ) : null}
-      {compact ? (
+      {review.hiddenNotice ? (
+        /* 자리표시 — 태그·별점이 없는 후기라 이 한 줄이 카드 본문의 전부다.
+           LockedContent와 달리 CTA가 없다: 열 수 있는 것이 남아 있지 않다. */
+        <p
+          className={clsx(
+            "border border-border bg-[#f7f8fa] px-4 text-center font-normal leading-[1.6] text-[#8a95a5]",
+            compact ? "mt-2 py-3 text-[12px]" : "mt-3 py-5 text-[13px]",
+          )}
+        >
+          {review.hiddenNotice}
+        </p>
+      ) : compact ? (
         !review.isInterview && review.content ? (
           <p className="mt-2 flex gap-1.5 text-[12px] leading-[1.6] text-[#596373]">
             <Quote size={12} className="mt-0.5 shrink-0 rotate-180 text-[#9aa5b2]" aria-hidden />

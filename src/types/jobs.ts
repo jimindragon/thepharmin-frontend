@@ -512,6 +512,16 @@ export interface CompanyReview {
   goodPoints?: string;
   /** 자유서술 — 아쉬웠던 점 */
   badPoints?: string;
+  /**
+   * 본문이 내려가지 않는 후기의 사유. 값이 있으면 카드가 본문·구조화 답변 대신 자리표시 문구만 그린다.
+   *
+   * 지워 버리지 않고 자리를 남기는 것은 후기 수가 조용히 줄어드는 편이 더 나쁘기 때문이다 —
+   * 읽는 쪽에서는 "원래 없었다"와 구분되지 않아, 불리한 후기가 사라진 자리를 알아볼 수 없다.
+   *
+   *   agreement — 약국의 이의제기 후 작성자와 협의해 비공개 처리
+   *   violation — 운영정책 위반으로 삭제
+   */
+  hiddenReason?: "agreement" | "violation";
 }
 
 /** 면접 후기 열람권(credit) 데모 상태의 정본 타입. reviewAccessMock이 이 타입의 초기값 소스다. */

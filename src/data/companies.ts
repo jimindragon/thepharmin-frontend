@@ -170,6 +170,26 @@ export const companies: Company[] = [
     website: "",
     address: "충남 천안시 서북구 번영로 100 센트럴프라자 1층",
   },
+
+  // fictional mock data — 실존 약국 아님
+  // 기업센터 "후기 관리" 화면의 시연 대상. 후기·공식 답변·신고·재검토가 한 약국에 모여 있어야
+  // 약국장 시점을 보여줄 수 있는데, 기존 10곳은 구직자 화면의 표본이라 그쪽 데이터를 흔들지 않는다.
+  // 주소를 번지 없이 "일대"로 둔 것도 같은 이유다 — 실재하는 약국과 겹치지 않게 한다.
+  {
+    id: "thepharma-pharmacy",
+    name: "더파마 약국",
+    logoText: "더파마",
+    logoColor: "#111111",
+    verified: true,
+    repName: "김*수",
+    description: "서울 관악구 봉천로 일대에서 처방조제와 일반약 상담을 함께 운영하는 소형 일반약국입니다.",
+    industry: "일반약국",
+    pharmacyType: "local",
+    employeeCount: "-",
+    foundedYear: "2021.03.02",
+    website: "",
+    address: "서울 관악구 봉천로 일대",
+  },
   {
     id: "yuhan",
     name: "(주)유한양행",
@@ -1997,6 +2017,115 @@ export const companyReviews: CompanyReview[] = [
       "대체 근무였는데 근무 시간과 업무 범위를 미리 정확히 안내받았습니다.",
     badPoints:
       "짧은 기간이라 전산 단축키에 익숙해질 때쯤 근무가 끝났습니다.",
+  },
+  // ── 더파마 약국(fictional mock data) 재직 후기 4건 ─────────────────────────────
+  // 앞의 셋은 구직자 화면에서 여느 약국 후기와 똑같이 동작한다(별점·구조화 답변·열람권 잠금).
+  // 넷째만 비공개 자리표시다. 신고·재검토·공식 답변 같은 약국장 쪽 상태는 여기 두지 않는다 —
+  // 그 셋은 후기 자체의 성질이 아니라 약국 계정이 후기에 대해 한 일이라, 구직자 화면이 읽을 수
+  // 있는 곳에 있으면 "신고당한 후기"가 그쪽에 드러난다(pharmacyReviewOwnerState.ts로 분리).
+  {
+    id: "review-company-thepharma-1",
+    companyId: "thepharma-pharmacy",
+    type: "company",
+    tags: ["근무 시간이 규칙적이에요", "원장님과 소통이 원활해요"],
+    content:
+      "출퇴근 시간이 일정하고, 근무 중 생기는 질문을 그때그때 물어볼 수 있는 분위기였습니다.",
+    jobRole: "근무약사",
+    authorStatus: "현직자",
+    writtenAt: "2026.06",
+    helpfulCount: 12,
+    overallRating: 4,
+    pharmacyAnswers: {
+      workType: "full_time",
+      workPeriod: "1y_to_3y",
+      workYear: 2024,
+      workIntensity: "moderate",
+      assistantStaff: "no",
+      breakTime: "varied",
+      leaveOnTime: "mostly_kept",
+      annualLeave: "easy",
+      salary: "satisfied",
+      atmosphere: "good",
+      rehireIntent: "yes",
+    },
+    goodPoints:
+      "출퇴근 시간이 일정하고, 근무 중 생기는 질문을 그때그때 물어볼 수 있는 분위기였습니다.",
+    badPoints:
+      "인원이 적어 점심시간이 밀리는 날이 있습니다.",
+  },
+  {
+    id: "review-company-thepharma-2",
+    companyId: "thepharma-pharmacy",
+    type: "company",
+    tags: ["복약지도에 집중할 수 있어요", "고객 응대가 많은 편이에요"],
+    content:
+      "처방 건수가 과하지 않아 복약지도에 시간을 들일 수 있습니다.",
+    jobRole: "근무약사",
+    authorStatus: "전직자",
+    writtenAt: "2026.04",
+    helpfulCount: 7,
+    overallRating: 3,
+    pharmacyAnswers: {
+      workType: "part_time",
+      workPeriod: "3m_to_1y",
+      workYear: 2025,
+      workIntensity: "moderate",
+      assistantStaff: "no",
+      breakTime: "varied",
+      leaveOnTime: "mostly_kept",
+      annualLeave: "some_pressure",
+      salary: "average",
+      atmosphere: "fine",
+      rehireIntent: "depends",
+    },
+    goodPoints:
+      "처방 건수가 과하지 않아 복약지도에 시간을 들일 수 있습니다.",
+    badPoints:
+      "일반약 문의가 많은 시간대에는 조제와 응대를 번갈아 하게 됩니다.",
+  },
+  {
+    id: "review-company-thepharma-3",
+    companyId: "thepharma-pharmacy",
+    type: "company",
+    tags: ["처방량이 많은 편이에요", "고객 응대가 많은 편이에요"],
+    content:
+      "짧은 근무였지만 일반약 상담 응대를 폭넓게 경험할 수 있었습니다.",
+    jobRole: "근무약사",
+    authorStatus: "전직자",
+    writtenAt: "2026.05",
+    helpfulCount: 4,
+    overallRating: 2,
+    pharmacyAnswers: {
+      workType: "short_term",
+      workPeriod: "under_3m",
+      workYear: 2026,
+      workIntensity: "busy",
+      assistantStaff: "no",
+      breakTime: "rarely",
+      leaveOnTime: "often_late",
+      annualLeave: "difficult",
+      salary: "disappointed",
+      atmosphere: "fine",
+      rehireIntent: "no",
+    },
+    goodPoints:
+      "짧은 근무였지만 일반약 상담 응대를 폭넓게 경험할 수 있었습니다.",
+    badPoints:
+      "보조 인력이 없어 휴게시간을 챙기기 어려웠고, 마감 정리가 퇴근 시간 뒤로 밀리는 날이 있었습니다.",
+  },
+  {
+    // 본문·구조화 답변을 두지 않는다 — 비공개 처리된 후기라 화면에 나갈 내용이 애초에 없다.
+    // content가 빈 문자열인 것은 타입이 요구하기 때문이고, 카드는 hiddenReason을 먼저 본다.
+    id: "review-company-thepharma-4",
+    companyId: "thepharma-pharmacy",
+    type: "company",
+    tags: [],
+    content: "",
+    jobRole: "근무약사",
+    authorStatus: "전직자",
+    writtenAt: "2026.03",
+    helpfulCount: 0,
+    hiddenReason: "agreement",
   },
   {
     id: "review-company-firehospital-1",

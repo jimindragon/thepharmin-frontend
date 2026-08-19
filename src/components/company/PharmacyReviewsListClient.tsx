@@ -52,7 +52,9 @@ export function PharmacyReviewsListClient({ companyId, items, isLoggedIn, framed
       >
         <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
         {items.map((item) => {
-          const { accessLabel, interviewAccess } = getAccess(item);
+          /* 비공개·삭제된 후기는 게이팅에서 뺀다 — 내려갈 내용이 없어 열람권을 쓸 대상이 아니고,
+             그 카드에 잠금 CTA가 붙으면 1장을 쓰고 나서야 빈 것을 알게 된다. */
+          const { accessLabel, interviewAccess } = item.hiddenNotice ? { accessLabel: undefined, interviewAccess: undefined } : getAccess(item);
           return <CompanyReviewCard key={item.id} review={item} accessLabel={accessLabel} interviewAccess={interviewAccess} />;
         })}
       </div>

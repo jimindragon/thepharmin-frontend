@@ -26,6 +26,7 @@ import { STAT_ROW_CELL, STAT_ROW_ICON, STAT_ROW_LABEL, STAT_ROW_LIST, STAT_ROW_V
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { SectionExpandGroup } from "@/components/company/SectionExpandGroup";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
+import { REVIEW_HIDDEN_NOTICE } from "@/config/reviewModeration";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { CompanyInterviewsListClient } from "@/components/company/CompanyInterviewsListClient";
@@ -381,6 +382,7 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
     // 약국 재직 후기의 별점·근무 메타는 접힘 카드에도 싣는다 — 본문이 없는 자리에서 이 두 줄이
     // 그 후기를 견줄 수 있게 하는 전부다(본문은 펼쳐야 나온다).
     pharmacy: toPharmacyReviewDisplay(review),
+    hiddenNotice: review.hiddenReason ? REVIEW_HIDDEN_NOTICE[review.hiddenReason] : undefined,
   };
 }
 
