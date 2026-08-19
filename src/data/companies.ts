@@ -1812,7 +1812,7 @@ export const companyReviews: CompanyReview[] = [
     id: "review-company-yeongdong-365-2",
     companyId: "yeongdong-365-pharmacy",
     type: "company",
-    tags: ["원장님과 소통이 원활해요", "휴게시간이 보장되는 편이에요"],
+    tags: ["약국장과 소통이 원활해요", "휴게시간이 보장되는 편이에요"],
     content:
       "근무 조건을 조정해야 할 때 바로 상의할 수 있는 분위기였습니다.",
     jobRole: "근무약사",
@@ -2027,7 +2027,7 @@ export const companyReviews: CompanyReview[] = [
     id: "review-company-thepharma-1",
     companyId: "thepharma-pharmacy",
     type: "company",
-    tags: ["근무 시간이 규칙적이에요", "원장님과 소통이 원활해요"],
+    tags: ["근무 시간이 규칙적이에요", "약국장과 소통이 원활해요"],
     content:
       "출퇴근 시간이 일정하고, 근무 중 생기는 질문을 그때그때 물어볼 수 있는 분위기였습니다.",
     jobRole: "근무약사",

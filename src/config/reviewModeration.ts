@@ -9,6 +9,6 @@
  * 읽는 쪽이 후기의 신뢰도를 판단할 때 서로 다른 정보다.
  */
 export const REVIEW_HIDDEN_NOTICE: Record<"agreement" | "violation", string> = {
-  agreement: "약국의 이의제기 후 작성자와의 협의를 통해 비공개 처리된 후기입니다.",
+  agreement: "약국의 요청과 작성자 확인을 거쳐 비공개 처리된 후기입니다.",
   violation: "운영정책 위반으로 삭제된 후기입니다.",
 };

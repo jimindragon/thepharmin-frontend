@@ -130,16 +130,16 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
       </div>
 
       {isPharmacyReview ? (
+        /* 보조문구(basicInfoGuide·tagSelectGuide)는 넘기지 않는다 — 약국 폼은 섹션 제목만으로 서고,
+           그 둘은 제목이 이미 말한 것을 한 번 더 말하고 있었다. 나머지 세 트랙은 종전 그대로다. */
         <PharmacyReviewFormSections
           jobRole={jobRole}
           onJobRoleChange={setJobRole}
           jobRolePlaceholder={JOB_ROLE_PLACEHOLDERS[track]}
           authorStatus={authorStatus}
           onAuthorStatusChange={setAuthorStatus}
-          basicInfoGuide={basicInfoGuide}
           selectedTags={selectedTags}
           onToggleTag={handleToggleTag}
-          tagSelectGuide={tagSelectGuide}
         />
       ) : (
         <>

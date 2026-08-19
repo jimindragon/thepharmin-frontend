@@ -19,24 +19,33 @@ export const SELECT_CLASS =
 /** 후기 작성 폼 전용 섹션 래퍼. 좌측 열(번호+제목+안내)과 우측 열(입력 영역) 2컬럼 배치.
  * BusinessFormControls의 SectionCard와 시각 톤(흰 배경·얇은 보더·radius 0)만 맞추고, 기업 폼 11곳이 공유하는 그 컴포넌트는 건드리지 않기 위해 후기 폼 안에서만 쓰는 컴포넌트다.
  *
- * description은 없어도 된다 — 제목만으로 충분한 문항 섹션(약국 폼의 종합 평가·근무 환경 등)이
+ * description은 없어도 된다 — 제목만으로 충분한 문항 섹션(약국 폼은 일곱 섹션이 전부 그렇다)이
  * 빈 안내 칸의 여백을 얹지 않도록, 값이 있을 때만 그 자리를 만든다. */
 export function FormSection({
   number,
   title,
   description,
+  emphasizeHeading = false,
   children,
 }: {
   number: string;
   title: string;
   description?: ReactNode;
+  /**
+   * 섹션 번호를 한 단계 키운다(12px → 13px). 안내 문구 없이 제목만으로 서는 폼에서 쓴다 —
+   * 약국 재직 후기 폼이 그렇다. 그쪽은 좌측 열이 번호·제목 두 줄로 끝나 기본값이면 머리가
+   * 오른쪽 입력 열에 눌린다. 제목은 이미 섹션 제목 스케일(17px)이라 그대로 둔다.
+   *
+   * 기본값이 false이므로 이 값을 넘기지 않는 기존 세 트랙 폼의 렌더는 그대로다.
+   */
+  emphasizeHeading?: boolean;
   children: ReactNode;
 }) {
   return (
     <section className="border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
       <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
         <div>
-          <p className="text-[12px] font-normal tracking-[0.02em] text-[#a0a9b7]">{number}</p>
+          <p className={`${emphasizeHeading ? "text-[13px]" : "text-[12px]"} font-normal tracking-[0.02em] text-[#a0a9b7]`}>{number}</p>
           <h2 className="mt-1.5 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
           {description ? (
             <div className="mt-2 grid gap-1 text-[13px] font-normal leading-[1.65] text-[#7b8491]">{description}</div>

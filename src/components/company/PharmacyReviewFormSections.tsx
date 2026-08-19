@@ -29,10 +29,8 @@ interface PharmacyReviewFormSectionsProps {
   jobRolePlaceholder: string;
   authorStatus: "현직자" | "전직자";
   onAuthorStatusChange: (value: "현직자" | "전직자") => void;
-  basicInfoGuide: string;
   selectedTags: string[];
   onToggleTag: (tag: string) => void;
-  tagSelectGuide: string;
 }
 
 /** 문항 사이 세로 간격 — 기존 폼이 필드 사이에 쓰던 gap-y-[18px]과 같은 값이다. */
@@ -108,10 +106,14 @@ function StarRating({ value, onChange }: { value: number; onChange: (value: numb
  * 약국을 고를 때 실제로 비교하는 값인데, 문장 안에 섞여 있으면 후기 열 건을 읽어도 비교가 되지 않는다.
  * 자유서술은 없애지 않고 좋았던 점·아쉬웠던 점 두 칸으로 남긴다(문항이 담지 못하는 것이 거기 있다).
  *
- * 직무·작성자 상태·태그는 4트랙 공통이라 상위(ReviewWriteClient)의 state를 그대로 받아 쓴다.
+ * 직무·재직 상태·태그는 4트랙 공통이라 상위(ReviewWriteClient)의 state를 그대로 받아 쓴다.
  * 약국 전용 문항의 값만 이 컴포넌트가 들고 있다 — 다른 트랙에서는 존재조차 하지 않는 값이라
  * 상위에 올려 두면 쓰지 않는 state가 세 트랙에 함께 실린다. 제출은 상위가 하고, 이 단계에서는
  * 실제 저장이 없어 값을 위로 올릴 곳도 아직 없다.
+ *
+ * 일곱 섹션 모두 안내 문구(FormSection의 description)가 없다. 섹션 제목이 무엇을 묻는지 이미
+ * 말하고 문항 자체가 물음 형태라, 그 사이에 낀 한 줄은 같은 말을 세 번째로 하는 자리였다.
+ * 나머지 세 트랙의 폼은 자유서술 한 칸이라 안내가 실제로 일을 하므로 종전 그대로 둔다.
  */
 export function PharmacyReviewFormSections({
   jobRole,
@@ -119,10 +121,8 @@ export function PharmacyReviewFormSections({
   jobRolePlaceholder,
   authorStatus,
   onAuthorStatusChange,
-  basicInfoGuide,
   selectedTags,
   onToggleTag,
-  tagSelectGuide,
 }: PharmacyReviewFormSectionsProps) {
   const [choices, setChoices] = useState(emptyPharmacyReviewChoices);
   const [workYear, setWorkYear] = useState<number | "">("");
@@ -138,7 +138,7 @@ export function PharmacyReviewFormSections({
 
   return (
     <>
-      <FormSection number="01" title="기본 정보" description={<p>{basicInfoGuide}</p>}>
+      <FormSection number="01" title="근무 정보" emphasizeHeading>
         {/* 직무·작성자 상태는 다른 트랙의 기업 리뷰와 같은 2열 배치를 그대로 쓴다 */}
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
           <div>
@@ -148,7 +148,7 @@ export function PharmacyReviewFormSections({
             </div>
           </div>
           <div>
-            <FieldLabel>작성자 상태</FieldLabel>
+            <FieldLabel>재직 상태</FieldLabel>
             <div className="mt-1.5">
               <Segmented
                 value={authorStatus}
@@ -189,7 +189,7 @@ export function PharmacyReviewFormSections({
         </div>
       </FormSection>
 
-      <FormSection number="02" title="종합 평가">
+      <FormSection number="02" title="전체 만족도" emphasizeHeading>
         <FieldLabel>{PHARMACY_REVIEW_RATING_LABEL}</FieldLabel>
         {/* 별 버튼이 잉크보다 큰 정사각이라 왼쪽 여백이 라벨과 어긋난다 — 그만큼(9px) 당겨 세로선을 맞춘다 */}
         <div className="mt-1.5 -ml-[9px]">
@@ -197,7 +197,7 @@ export function PharmacyReviewFormSections({
         </div>
       </FormSection>
 
-      <FormSection number="03" title="근무 환경">
+      <FormSection number="03" title="근무 조건" emphasizeHeading>
         <div className={QUESTION_LIST_CLASS}>
           {pharmacyReviewEnvironmentQuestions.map((question) => (
             <ChoiceQuestion key={question.id} question={question} value={choices[question.id]} onChange={handleChoiceChange} />
@@ -205,7 +205,7 @@ export function PharmacyReviewFormSections({
         </div>
       </FormSection>
 
-      <FormSection number="04" title="근무 분위기">
+      <FormSection number="04" title="근무 분위기" emphasizeHeading>
         <ChoiceQuestion
           question={pharmacyReviewAtmosphereQuestion}
           value={choices[pharmacyReviewAtmosphereQuestion.id]}
@@ -213,7 +213,7 @@ export function PharmacyReviewFormSections({
         />
       </FormSection>
 
-      <FormSection number="05" title="종합">
+      <FormSection number="05" title="재근무 의향" emphasizeHeading>
         <ChoiceQuestion
           question={pharmacyReviewRehireQuestion}
           value={choices[pharmacyReviewRehireQuestion.id]}
@@ -221,11 +221,11 @@ export function PharmacyReviewFormSections({
         />
       </FormSection>
 
-      <FormSection number="06" title="태그 선택" description={<p>{tagSelectGuide}</p>}>
+      <FormSection number="06" title="근무 특징" emphasizeHeading>
         <ReviewTagSelector track="pharmacy" reviewType="company" selected={selectedTags} onToggle={onToggleTag} />
       </FormSection>
 
-      <FormSection number="07" title="상세 내용">
+      <FormSection number="07" title="상세 후기" emphasizeHeading>
         <div className="grid gap-5">
           {pharmacyReviewNarrativeFields.map((field) => (
             <div key={field.id}>

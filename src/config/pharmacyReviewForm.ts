@@ -81,7 +81,7 @@ export const pharmacyReviewWorkYearOptions: number[] = Array.from(
 );
 
 /** 02 종합 평가 — 별점 */
-export const PHARMACY_REVIEW_RATING_LABEL = "이 약국에서의 근무를 종합적으로 평가해 주세요";
+export const PHARMACY_REVIEW_RATING_LABEL = "이 약국에서의 근무 경험을 전반적으로 평가해 주세요.";
 export const PHARMACY_REVIEW_RATING_MAX = 5;
 
 /** 03 근무 환경 — 6문항. 강도 → 인력 → 휴게 → 퇴근 → 연차 → 급여 순으로, 하루 안에서 겪는 순서를 따른다. */
@@ -182,16 +182,20 @@ export const pharmacyReviewNarrativeFields: PharmacyReviewNarrativeField[] = [
   {
     id: "badPoints",
     label: "아쉬웠던 점을 알려주세요",
-    placeholder: "예: 성수기에는 휴게시간이 짧아지는 편이었어요",
+    placeholder: "예: 바쁜 시간대에는 휴게시간이 짧아지는 편이었어요.",
   },
 ];
 
 /**
  * 서술 섹션 하단 안내. 약국은 근무 인원이 적어 특정 사건 하나로 작성자가 드러나는데,
  * 그 위험은 쓰기 직전이 아니라 쓰는 자리에서 알려야 읽힌다.
+ *
+ * 앞에 있던 위험 설명("특정 인물이나 구체적인 사건을 언급하면 작성자가 드러날 수 있어요")은 뺐다 —
+ * 두 문장이 같은 말을 경고와 요청으로 두 번 하고 있었고, 쓰는 자리에서 필요한 것은 무엇을
+ * 쓰라는 쪽이다.
  */
 export const PHARMACY_REVIEW_PRIVACY_NOTICE =
-  "특정 인물이나 구체적인 사건을 언급하면 작성자가 드러날 수 있어요. 개인을 특정할 수 있는 내용보다 근무 환경을 중심으로 작성해 주세요.";
+  "개인을 특정할 수 있는 내용보다 근무 환경을 중심으로 작성해 주세요.";
 
 /** 단일 선택 문항 10개의 폼 state. 미선택은 빈 문자열이다(Segmented의 토글 해제와 같은 값). */
 export type PharmacyReviewChoiceState = Record<PharmacyReviewChoiceFieldId, string>;
