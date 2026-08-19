@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { FieldLabel, Segmented, TextInput } from "@/components/business/BusinessFormControls";
 import { InlineInfoHint } from "@/components/shared/InlineInfoHint";
 import { Button } from "@/components/ui/Button";
+import { PharmacyReviewFormSections } from "@/components/company/PharmacyReviewFormSections";
+import { FormSection, TEXTAREA_CLASS } from "@/components/company/ReviewFormSection";
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
@@ -33,41 +35,19 @@ const JOB_ROLE_PLACEHOLDERS: Record<JobTrack, string> = {
 /** 기업 상세 모바일 통합 브레이크포인트 — CompanyDetailTabs(모바일 탭 행 숨김)·CompanyMobileOverviewRedirect와 동일 기준 */
 const MOBILE_QUERY = "(max-width: 760px)";
 
-const TEXTAREA_CLASS =
-  "h-auto w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-2.5 text-[15px] font-normal leading-relaxed text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]";
-
-/** 이 폼 전용 섹션 래퍼. 좌측 열(번호+제목+안내)과 우측 열(입력 영역) 2컬럼 배치.
- * BusinessFormControls의 SectionCard와 시각 톤(흰 배경·얇은 보더·radius 0)만 맞추고, 기업 폼 11곳이 공유하는 그 컴포넌트는 건드리지 않기 위해 이 파일 안에서만 쓰는 로컬 컴포넌트다. */
-function FormSection({
-  number,
-  title,
-  description,
-  children,
-}: {
-  number: string;
-  title: string;
-  description: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <section className="border border-border bg-white p-6 shadow-[var(--shadow)] max-[760px]:p-4">
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
-        <div>
-          <p className="text-[12px] font-normal tracking-[0.02em] text-[#a0a9b7]">{number}</p>
-          <h2 className="mt-1.5 text-[17px] font-bold tracking-[-0.02em] text-[#1f2733]">{title}</h2>
-          <div className="mt-2 grid gap-1 text-[13px] font-normal leading-[1.65] text-[#7b8491]">{description}</div>
-        </div>
-        <div>{children}</div>
-      </div>
-    </section>
-  );
-}
-
 /** 리뷰/면접 후기 작성 목업 폼. reviewType에 따라 필드 구성만 다르고, 제출은 실제 저장 없이 토스트 + 이동만 한다.
  * 떠날 곳은 폭이 가른다(getLeaveHref) — 761px 이상은 목록, ≤760px는 개요의 해당 섹션 앵커다. */
 export function ReviewWriteClient({ companyId, companyName, track, reviewType }: ReviewWriteClientProps) {
   const router = useRouter();
   const isInterview = reviewType === "interview";
+  /**
+   * 약국 재직 후기만 구조화 문항 폼으로 간다.
+   *
+   * 조건이 트랙 하나가 아니라 트랙 × 리뷰 타입인 것은 면접 후기가 같은 약국에서도 옛 폼을 그대로
+   * 쓰기 때문이다 — 근무 형태·휴게·연차는 다녀 본 사람만 답할 수 있는 값이라 면접 경험에는 물을 수 없다.
+   * 나머지 세 트랙의 기업 리뷰도 종전 경로 그대로다(이번 단계의 범위가 약국이다).
+   */
+  const isPharmacyReview = track === "pharmacy" && reviewType === "company";
 
   const [jobRole, setJobRole] = useState("");
   const [authorStatus, setAuthorStatus] = useState<"현직자" | "전직자">("현직자");
@@ -141,145 +121,161 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
         <p className="mt-2 text-[13px] font-normal text-[#8791a0]">{pageIntro}</p>
       </div>
 
-      <FormSection number="01" title="기본 정보" description={<p>{basicInfoGuide}</p>}>
-        <div
-          className={
-            isInterview
-              ? "grid gap-y-[18px]"
-              : "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1"
-          }
-        >
-          <div>
-            <FieldLabel>직무</FieldLabel>
-            <div className="mt-1.5">
-              <TextInput value={jobRole} onChange={setJobRole} placeholder={JOB_ROLE_PLACEHOLDERS[track]} />
-            </div>
-          </div>
-          {isInterview ? null : (
-            <div>
-              <FieldLabel>작성자 상태</FieldLabel>
-              <div className="mt-1.5">
-                <Segmented
-                  value={authorStatus}
-                  options={[
-                    { id: "현직자", label: "현직자" },
-                    { id: "전직자", label: "전직자" },
-                  ]}
-                  onChange={setAuthorStatus}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        {isInterview ? (
-          <div className="mt-5">
-            <FieldLabel>면접 시기</FieldLabel>
-            <div className="mt-1.5 flex flex-wrap items-center gap-3">
-              <div className="relative w-[160px] max-[640px]:w-full">
-                <select
-                  value={applyYear}
-                  onChange={(event) => setApplyYear(event.target.value ? Number(event.target.value) : "")}
-                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
-                >
-                  <option value="">선택 안 함</option>
-                  {applyYearOptions.map((year) => (
-                    <option key={year} value={year}>
-                      {year}년
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
-              </div>
-              <Segmented<"상반기" | "하반기" | "">
-                value={applyHalf}
-                options={[
-                  { id: "상반기", label: "상반기" },
-                  { id: "하반기", label: "하반기" },
-                ]}
-                onChange={(value) => setApplyHalf((prev) => (prev === value ? "" : value))}
-              />
-            </div>
-          </div>
-        ) : null}
-      </FormSection>
-
-      <FormSection number="02" title="태그 선택" description={<p>{tagSelectGuide}</p>}>
-        <ReviewTagSelector track={track} reviewType={reviewType} selected={selectedTags} onToggle={handleToggleTag} />
-      </FormSection>
-
-      <FormSection
-        number="03"
-        title="상세 내용"
-        description={
-          <>
-            <p>{contentGuide}</p>
-            <p>{contentDetailGuide}</p>
-          </>
-        }
-      >
-        <textarea
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-          rows={isInterview ? 8 : 5}
-          className={TEXTAREA_CLASS}
-          placeholder={
-            isInterview
-              ? "면접에서 어떤 질문을 받았는지, 분위기는 어땠는지 알려주세요."
-              : "직무 경험, 근무 환경 등을 자유롭게 작성해주세요."
-          }
+      {isPharmacyReview ? (
+        <PharmacyReviewFormSections
+          jobRole={jobRole}
+          onJobRoleChange={setJobRole}
+          jobRolePlaceholder={JOB_ROLE_PLACEHOLDERS[track]}
+          authorStatus={authorStatus}
+          onAuthorStatusChange={setAuthorStatus}
+          basicInfoGuide={basicInfoGuide}
+          selectedTags={selectedTags}
+          onToggleTag={handleToggleTag}
+          tagSelectGuide={tagSelectGuide}
         />
-        <p className="mt-1.5 text-right text-[12px] font-normal text-[#a0a9b7]">
-          {content.length}/{CONTENT_RECOMMENDED_MAX}
-        </p>
-      </FormSection>
+      ) : (
+        <>
+          <FormSection number="01" title="기본 정보" description={<p>{basicInfoGuide}</p>}>
+            <div
+              className={
+                isInterview
+                  ? "grid gap-y-[18px]"
+                  : "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1"
+              }
+            >
+              <div>
+                <FieldLabel>직무</FieldLabel>
+                <div className="mt-1.5">
+                  <TextInput value={jobRole} onChange={setJobRole} placeholder={JOB_ROLE_PLACEHOLDERS[track]} />
+                </div>
+              </div>
+              {isInterview ? null : (
+                <div>
+                  <FieldLabel>작성자 상태</FieldLabel>
+                  <div className="mt-1.5">
+                    <Segmented
+                      value={authorStatus}
+                      options={[
+                        { id: "현직자", label: "현직자" },
+                        { id: "전직자", label: "전직자" },
+                      ]}
+                      onChange={setAuthorStatus}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            {isInterview ? (
+              <div className="mt-5">
+                <FieldLabel>면접 시기</FieldLabel>
+                <div className="mt-1.5 flex flex-wrap items-center gap-3">
+                  <div className="relative w-[160px] max-[640px]:w-full">
+                    <select
+                      value={applyYear}
+                      onChange={(event) => setApplyYear(event.target.value ? Number(event.target.value) : "")}
+                      className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
+                    >
+                      <option value="">선택 안 함</option>
+                      {applyYearOptions.map((year) => (
+                        <option key={year} value={year}>
+                          {year}년
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
+                  </div>
+                  <Segmented<"상반기" | "하반기" | "">
+                    value={applyHalf}
+                    options={[
+                      { id: "상반기", label: "상반기" },
+                      { id: "하반기", label: "하반기" },
+                    ]}
+                    onChange={(value) => setApplyHalf((prev) => (prev === value ? "" : value))}
+                  />
+                </div>
+              </div>
+            ) : null}
+          </FormSection>
 
-      {isInterview ? (
-        <FormSection number="04" title="면접 정보" description={<p>선택 입력 항목입니다.</p>}>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
-            <div>
-              <FieldLabel>합격 여부</FieldLabel>
-              <div className="mt-1.5">
-                <Segmented<"합격" | "불합격" | "">
-                  value={outcome}
-                  options={[
-                    { id: "합격", label: "합격" },
-                    { id: "불합격", label: "불합격" },
-                  ]}
-                  onChange={(value) => setOutcome((prev) => (prev === value ? "" : value))}
-                />
+          <FormSection number="02" title="태그 선택" description={<p>{tagSelectGuide}</p>}>
+            <ReviewTagSelector track={track} reviewType={reviewType} selected={selectedTags} onToggle={handleToggleTag} />
+          </FormSection>
+
+          <FormSection
+            number="03"
+            title="상세 내용"
+            description={
+              <>
+                <p>{contentGuide}</p>
+                <p>{contentDetailGuide}</p>
+              </>
+            }
+          >
+            <textarea
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              rows={isInterview ? 8 : 5}
+              className={TEXTAREA_CLASS}
+              placeholder={
+                isInterview
+                  ? "면접에서 어떤 질문을 받았는지, 분위기는 어땠는지 알려주세요."
+                  : "직무 경험, 근무 환경 등을 자유롭게 작성해주세요."
+              }
+            />
+            <p className="mt-1.5 text-right text-[12px] font-normal text-[#a0a9b7]">
+              {content.length}/{CONTENT_RECOMMENDED_MAX}
+            </p>
+          </FormSection>
+
+          {isInterview ? (
+            <FormSection number="04" title="면접 정보" description={<p>선택 입력 항목입니다.</p>}>
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-[44px] gap-y-[18px] max-[640px]:grid-cols-1">
+                <div>
+                  <FieldLabel>합격 여부</FieldLabel>
+                  <div className="mt-1.5">
+                    <Segmented<"합격" | "불합격" | "">
+                      value={outcome}
+                      options={[
+                        { id: "합격", label: "합격" },
+                        { id: "불합격", label: "불합격" },
+                      ]}
+                      onChange={(value) => setOutcome((prev) => (prev === value ? "" : value))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <FieldLabel>면접 난이도</FieldLabel>
+                  <div className="mt-1.5">
+                    <Segmented<InterviewDifficulty | "">
+                      value={interviewDifficulty}
+                      options={interviewDifficultyOptions.map((option) => ({ id: option, label: option }))}
+                      onChange={setInterviewDifficulty}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <FieldLabel>면접 유형</FieldLabel>
+                  <div className="relative mt-1.5">
+                    <select
+                      value={interviewFormat}
+                      onChange={(event) => setInterviewFormat(event.target.value as InterviewFormat | "")}
+                      className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
+                    >
+                      <option value="">선택 안 함</option>
+                      {interviewFormatOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div>
-              <FieldLabel>면접 난이도</FieldLabel>
-              <div className="mt-1.5">
-                <Segmented<InterviewDifficulty | "">
-                  value={interviewDifficulty}
-                  options={interviewDifficultyOptions.map((option) => ({ id: option, label: option }))}
-                  onChange={setInterviewDifficulty}
-                />
-              </div>
-            </div>
-            <div>
-              <FieldLabel>면접 유형</FieldLabel>
-              <div className="relative mt-1.5">
-                <select
-                  value={interviewFormat}
-                  onChange={(event) => setInterviewFormat(event.target.value as InterviewFormat | "")}
-                  className="h-11 w-full appearance-none border border-[#d8e0e8] bg-white px-3.5 pr-9 text-[13px] font-normal text-[#303946] outline-none transition hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
-                >
-                  <option value="">선택 안 함</option>
-                  {interviewFormatOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a95a5]" size={16} />
-              </div>
-            </div>
-          </div>
-        </FormSection>
-      ) : null}
+            </FormSection>
+          ) : null}
+        </>
+      )}
 
       {/* 안내는 버튼 위 한 줄로 쌓는다 — 같은 행에 두면 390px에서 문구가 버튼에 밀려 3줄로 쪼개진다. */}
       <div className="grid gap-3">
