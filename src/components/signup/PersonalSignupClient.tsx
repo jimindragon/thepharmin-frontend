@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { BadgeCheck, Check, GraduationCap, Mail } from "lucide-react";
+import { BadgeCheck, Check, GraduationCap, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { Button, LinkButton } from "@/components/ui/Button";
@@ -136,8 +136,8 @@ function SignupDoneStep({
 
       {/* 각 안내가 세로형이라 폭 제한이 필요 없다. 덩어리 구분은 구분선 없이 여백으로만. */}
       <div className="mt-10 space-y-10">
-        <DoneNotice icon={<Mail size={28} aria-hidden />} title="이메일 인증">
-          입력하신 이메일로 인증 링크를 보내드렸습니다. 인증 후 모든 기능을 이용하실 수 있습니다.
+        <DoneNotice icon={<Sparkles size={28} aria-hidden />} title="관심 조건 설정">
+          관심 분야와 직무를 설정하면 맞춤 공고를 추천해 드립니다. 채용 공고 화면에서 바로 설정해 보세요.
         </DoneNotice>
         {hasPharmacistLicense ? (
           <DoneNotice icon={<BadgeCheck size={28} aria-hidden />} title="약사 인증">
