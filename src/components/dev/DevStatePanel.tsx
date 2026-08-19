@@ -24,7 +24,7 @@ import { clearBusinessMember, markBusinessMember, useBusinessMember } from "@/ho
 import { useMemberMigration } from "@/hooks/useMemberMigration";
 import { setOrgVerificationStatus, useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
-import { clearAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
+import { clearAllStoredJobPreferences, getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 
 /**
@@ -166,6 +166,63 @@ function Row({
 }
 
 /**
+ * 관심조건 온보딩 행.
+ *
+ * 이 행만 따로 부품이 된 이유는 값을 "펼칠 때마다" 다시 읽기 위해서다. 패널 본체는 앱이 떠 있는
+ * 동안 계속 마운트돼 있어 훅이 처음 읽은 값을 그대로 들고 있고, 온보딩을 방금 끝낸 같은 탭에서는
+ * 그 값이 낡는다 — 저장소에는 "봤음 + 조건 저장됨"이 적혔는데 패널은 "안 봤음"을 보여준다.
+ * useInterestPromptSeen에 같은 탭 변경을 알리는 이벤트가 없는 것은 그 파일의 의도된 설계라
+ * 여기서 이벤트를 새로 만들지 않는다. 대신 이 부품은 패널이 펼쳐졌을 때만 렌더되므로
+ * (접기 = 언마운트), 접었다 펴는 것이 그대로 재판정이 된다.
+ */
+function InterestPromptRow() {
+  const { hasSeen, resetSeen } = useInterestPromptSeen();
+
+  /**
+   * 저장된 관심조건이 있는지. 세는 방법은 온보딩 게이트(InterestPromptGate)와 같은 식이다 —
+   * 창을 띄울지 가르는 판정과 버튼을 열지 가르는 판정이 다른 규칙을 쓰면 곧 어긋난다.
+   *
+   * 기본값은 "없음"이고 마운트 후에 교정한다(localStorage는 서버에서 읽을 수 없다). 이 기본값이
+   * 하는 일은 첫 프레임의 라벨뿐이다 — hasSeen 기본값이 "봤음"이라 버튼은 그동안에도 활성이고,
+   * 잘못 눌러도 데모 저장값 초기화라 잃을 것이 없다.
+   */
+  const [hasPreference, setHasPreference] = useState(false);
+
+  useEffect(() => {
+    setHasPreference(Object.keys(getAllStoredJobPreferences()).length > 0);
+  }, []);
+
+  /**
+   * 온보딩 창의 노출 조건은 "로그인 && 안내 안 봄 && 저장된 관심조건 없음"(InterestPromptGate)이라
+   * 안내 기록만 지우면 조건을 저장해 둔 상태에서는 눌러도 창이 뜨지 않는다. 둘을 함께 지운다.
+   * 지운 사실을 이 행에도 바로 반영한다 — 되돌릴 것이 없어져 버튼이 비활성으로 닫힌다.
+   */
+  const reset = () => {
+    resetSeen();
+    clearAllStoredJobPreferences();
+    setHasPreference(false);
+  };
+
+  return (
+    /* 다시 보기는 안내 노출 기록과 저장된 관심조건을 모두 초기화한다 — 온보딩을 처음 상태부터
+       재현하기 위해. 데모 저장값이라 삭제 부담 없음.
+       초기화만 하고 리로드하지 않는다 — 안내 창(InterestPromptGate)도, 관심조건을 읽는 화면들도
+       모두 마운트 때 읽으므로 지금 보고 있는 화면을 날릴 이유가 없다.
+
+       비활성은 되돌릴 것이 하나도 없을 때뿐이다. "안 봤음"만으로 잠그면 창을 건너뛴 적은 없지만
+       조건은 저장해 둔 상태 — 창이 뜨지 않는 바로 그 상태 — 에서 버튼이 닫혀 버린다.
+       라벨도 같은 순서로 읽는다: 저장값이 있으면 그것이 지금 창을 막고 있는 이유이므로 먼저 말한다. */
+    <Row
+      label="관심조건 안내"
+      on={hasSeen || hasPreference}
+      valueLabel={hasPreference ? "설정됨" : hasSeen ? "봤음" : "안 봤음"}
+    >
+      <RowButton label="다시 보기" onClick={reset} disabled={!hasSeen && !hasPreference} />
+    </Row>
+  );
+}
+
+/**
  * 약사 QNA 접근 데모의 세 상태. 값과 쿼리의 대응은 qnaAccess.ts의 판정을 그대로 따른다 —
  * 판정을 여기서 다시 쓰지 않고, 그 판정이 읽는 주소를 만들기만 한다.
  */
@@ -197,7 +254,6 @@ export function DevStatePanel() {
   const businessOn = useBusinessMember();
   const { isMigrated, markMigrated, resetMigration } = useMemberMigration();
   const orgStatus = useOrgVerificationStatus();
-  const { hasSeen: interestPromptSeen, resetSeen: resetInterestPrompt } = useInterestPromptSeen();
   const { demoState: reviewAccessDemo, setDemoState: setReviewAccessDemo } = useReviewAccessDemo();
 
   /**
@@ -205,15 +261,6 @@ export function DevStatePanel() {
    * 패널이 보여주는 "지금 고른 값"과 실제 화면이 어긋나지 않게 한다.
    */
   const reviewAccessState = reviewAccessDemo ?? (personalOn ? "hasCredits" : "loggedOut");
-
-  /**
-   * 온보딩 창의 노출 조건은 "로그인 && 안내 안 봄 && 저장된 관심조건 없음"(InterestPromptGate)이라,
-   * 안내 기록만 지우면 조건을 이미 저장해 둔 상태에서는 눌러도 창이 뜨지 않는다. 둘을 함께 지운다.
-   */
-  const resetInterestOnboarding = () => {
-    resetInterestPrompt();
-    clearAllStoredJobPreferences();
-  };
 
   /**
    * 인증 상태를 읽는 화면(사이드바 잠금·헤더 드롭다운·대시보드 안내)은 모두 마운트 때 한 번만
@@ -298,13 +345,7 @@ export function DevStatePanel() {
           <RowButton label="승인" onClick={() => applyOrgStatus("approved")} disabled={orgStatus === "approved"} />
         </Row>
 
-        {/* 다시 보기는 안내 노출 기록과 저장된 관심조건을 모두 초기화한다 — 온보딩을 처음 상태부터
-            재현하기 위해. 데모 저장값이라 삭제 부담 없음.
-            초기화만 하고 리로드하지 않는다 — 안내 창(InterestPromptGate)도, 관심조건을 읽는 화면들도
-            모두 마운트 때 읽으므로 지금 보고 있는 화면을 날릴 이유가 없다. */}
-        <Row label="관심조건 안내" on={interestPromptSeen} valueLabel={interestPromptSeen ? "봤음" : "안 봤음"}>
-          <RowButton label="다시 보기" onClick={resetInterestOnboarding} disabled={!interestPromptSeen} />
-        </Row>
+        <InterestPromptRow />
 
         {/* 리로드하지 않는다 — 훅이 발행하는 이벤트로 후기 목록이 같은 탭에서 즉시 따라온다. */}
         <Row label="면접후기 열람" on={reviewAccessState === "hasCredits"}>
