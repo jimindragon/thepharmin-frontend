@@ -1,10 +1,10 @@
 "use client";
 
 import clsx from "clsx";
+import { Building2, FlaskConical, Pill, Stethoscope, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ModalShell } from "@/components/ui/ModalShell";
-import { SignupStepIndicator } from "@/components/shared/SignupStepIndicator";
 import { jobTracks } from "@/config/jobTracks";
 import {
   experienceOptions,
@@ -39,10 +39,17 @@ const CATEGORY_OPTIONS_BY_TRACK: Record<JobTrack, Array<{ id: string; label: str
   pharmacy: pharmacyJobCategoryOptions,
 };
 
-/** 스텝 인디케이터 라벨. 가입 화면(SignupStepShell)과 같은 부품을 쓰되 페이지 래퍼 없이 인디케이터만 쓴다. */
-const STEP_LABELS = ["관심 분야", "관심 직무", "경력·지역"] as const;
-
-const LAST_STEP = STEP_LABELS.length;
+/**
+ * 분야 카드의 아이콘. 산업의 Building2는 코드베이스가 이미 "기관"에 쓰는 아이콘이고
+ * (EntityLogo 로고 대체·마이페이지 스크랩 기업 탭·헤드헌팅 랜딩), 나머지 셋은 선례가 없어
+ * 뜻이 가장 곧은 것으로 새로 정한다. 색은 카드가 정한다 — 아이콘은 currentColor로만 그린다.
+ */
+const TRACK_ICONS: Record<JobTrack, LucideIcon> = {
+  industry: Building2,
+  research: FlaskConical,
+  hospital: Stethoscope,
+  pharmacy: Pill,
+};
 
 /** 스텝별 헤더 문구. 겉틀은 headerVariant="emphasis" 하나로 고정하고 내용만 바뀐다. */
 const STEP_HEADINGS: Record<number, { title: string; description: string }> = {
@@ -50,6 +57,18 @@ const STEP_HEADINGS: Record<number, { title: string; description: string }> = {
   2: { title: "어떤 직무를 찾으시나요", description: "고르신 분야의 직무 중에서 선택해주세요." },
   3: { title: "경력과 지역을 알려주세요", description: "마지막입니다. 조건에 맞는 공고만 추려서 보여드립니다." },
 };
+
+const LAST_STEP = Object.keys(STEP_HEADINGS).length;
+
+/**
+ * 창을 닫고 나서도 남는 약속이라 마지막까지 보이는 자리(푸터)에 둔다 — 본문 끝에 두면
+ * 선택지가 긴 2·3스텝에서는 스크롤 밖으로 밀려 정작 망설이는 순간에 보이지 않는다.
+ */
+const UTILITY_NOTE = "선택하신 조건으로 맞춤 공고를 추천해 드려요. 언제든 마이페이지에서 수정할 수 있습니다.";
+
+/** 되돌리기·건너뛰기처럼 "고르지 않는 길"의 생김새. 종전 "이전" 링크가 쓰던 값 그대로다. */
+const SUBTLE_ACTION_CLASS =
+  "text-[13px] font-normal text-[#8a94a3] underline underline-offset-2 transition hover:text-[#4f5967]";
 
 /** 선택 버튼 — AffiliationConfirmClient·가입 폼의 OptionButtonGroup과 같은 스펙(h-9 px-3, 선택 시 검정). */
 function ChoiceButton({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
@@ -66,6 +85,42 @@ function ChoiceButton({ label, selected, onClick }: { label: string; selected: b
       )}
     >
       {label}
+    </button>
+  );
+}
+
+/**
+ * 1스텝 분야 카드. 다른 스텝의 칩과 다른 형태를 쓰는 이유는 층이 다르기 때문이다 —
+ * 분야는 이후 두 스텝의 선택지를 결정하는 상위 축이고, 넷뿐이라 카드로 벌려도 세로를 먹지 않는다.
+ *
+ * 선택 표시는 칩과 같은 검정 채움이다(색 상태를 새로 들이지 않는다). 아이콘·라벨은 색을 스스로
+ * 정하지 않고 카드에서 물려받는다 — 채워졌을 때 흰색으로 함께 뒤집히도록.
+ */
+function TrackCard({
+  icon: Icon,
+  label,
+  selected,
+  onClick,
+}: {
+  icon: LucideIcon;
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={clsx(
+        "flex flex-col items-center justify-center gap-2 border px-2 py-4 transition-colors",
+        selected
+          ? "border-[#111111] bg-[#111111] text-white"
+          : "border-border bg-white text-[#303946] hover:border-[#111111]",
+      )}
+    >
+      <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
+      <span className="text-[13px] font-medium">{label}</span>
     </button>
   );
 }
@@ -175,25 +230,43 @@ export function InterestPromptModal({
 
   return (
     <ModalShell
-      title={heading.title}
+      /*
+        가로 스텝퍼(관심 분야 — 관심 직무 — 경력·지역)를 걷어내고 그 자리를 제목 위 "1/3" 한 줄로
+        줄인다. 세 칸짜리 인디케이터는 이 창에서 제목만 한 덩어리를 더 얹어 놓고 정작 다음에
+        무엇이 오는지는 제목이 이미 말하고 있었다. 검정 채움 칩을 쓰지 않는 것은 이 창에서
+        검정 채움이 "고른 것"의 표시이기 때문이다 — 고르지 않은 진행 표시가 같은 옷을 입으면 안 된다.
+
+        title이 문자열이 아니게 되므로 ariaLabel을 직접 넘긴다(ModalShell은 문자열 제목일 때만
+        자동으로 대화상자 이름을 만든다).
+      */
+      title={
+        <>
+          <span className="block text-[13px] font-medium text-[#8a94a3]">
+            {step}/{LAST_STEP}
+          </span>
+          <span className="mt-1.5 block">{heading.title}</span>
+        </>
+      }
+      ariaLabel={heading.title}
       headerVariant="emphasis"
-      description={heading.description}
+      /* 제목이 먼저 읽히도록 부제를 한 단 낮춘다 — 겉틀의 14px/#68717e를 이 창에서만 덮는다 */
+      description={<span className="text-[13px] text-[#8a94a3]">{heading.description}</span>}
       onClose={onClose}
       maxWidth="max-w-[520px]"
       // 모바일에서는 하단에 붙는 86dvh 바텀시트가 된다 — 공고 필터 시트와 같은 경계다.
       sheetBreakpoint={760}
     >
-      <div className="overflow-y-auto px-6 py-6">
-        <SignupStepIndicator currentStep={step} labels={STEP_LABELS} />
-
-        <div className="mt-6 space-y-6">
+      <div className="overflow-y-auto px-6 py-7">
+        <div className="space-y-8">
           {step === 1 ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <FieldHead label="분야" note="여러 개 선택 가능" />
-              <div className="flex flex-wrap gap-2" role="group" aria-label="분야">
+              {/* 넷이 한 줄에 서고, 시트가 되는 폭에서는 2×2로 접힌다 — 카드가 좁아져 라벨이 접히는 것을 막는다 */}
+              <div className="grid grid-cols-4 gap-2 max-[420px]:grid-cols-2" role="group" aria-label="분야">
                 {jobTracks.map((track) => (
-                  <ChoiceButton
+                  <TrackCard
                     key={track.id}
+                    icon={TRACK_ICONS[track.id]}
                     label={track.label}
                     selected={tracks.includes(track.id)}
                     onClick={() => toggleTrack(track.id)}
@@ -205,13 +278,13 @@ export function InterestPromptModal({
 
           {/* 대분류까지만 묻는다 — 소분류는 목록에 들어가 필터로 좁히면 되고, 여기서 물으면 스텝이 길어진다. */}
           {step === 2 ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <FieldHead label="직무" note="여러 개 선택 가능" />
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {selectedTracks.map((track) => (
                   <div key={track.id}>
                     {showGroupHeadings ? (
-                      <p className="mb-1.5 text-[12px] font-medium text-[#8a94a3]">{track.label}</p>
+                      <p className="mb-2 text-[12px] font-medium text-[#8a94a3]">{track.label}</p>
                     ) : null}
                     <div className="flex flex-wrap gap-2" role="group" aria-label={`${track.label} 직무`}>
                       {CATEGORY_OPTIONS_BY_TRACK[track.id].map((option) => (
@@ -231,7 +304,7 @@ export function InterestPromptModal({
 
           {step === 3 ? (
             <>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <FieldHead label="경력" note="하나만 선택" />
                 <div className="flex flex-wrap gap-2" role="group" aria-label="경력">
                   {experienceOptions.map((option) => (
@@ -246,7 +319,7 @@ export function InterestPromptModal({
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <FieldHead label="지역" note="여러 개 선택 가능" />
                 <div className="flex flex-wrap gap-2" role="group" aria-label="지역">
                   {regionOptions.map((option) => (
@@ -264,34 +337,42 @@ export function InterestPromptModal({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border px-6 py-5">
-        {/* 되돌아갈 곳이 없는 1스텝에서도 자리는 비워 둔다 — 우측 버튼 묶음이 스텝마다 흔들리지 않게. */}
-        <div>
-          {step > 1 ? (
-            <button
-              type="button"
-              onClick={() => setStep(step - 1)}
-              className="text-[13px] font-normal text-[#8a94a3] underline underline-offset-2 transition hover:text-[#4f5967]"
-            >
-              이전
-            </button>
-          ) : null}
-        </div>
+      <div className="shrink-0 border-t border-border px-6 pb-5 pt-4">
+        {/* 박스도 아이콘도 두지 않는다 — 안내가 박스를 입으면 답해야 할 것이 하나 더 있는 것처럼 보인다.
+            버튼보다 한 단 작은 12px로, 누를 것과 읽을 것의 층을 글자 크기로만 가른다. */}
+        <p className="break-keep text-[12px] font-normal leading-[1.6] text-[#8a94a3]">{UTILITY_NOTE}</p>
 
-        <div className="flex items-center gap-2">
-          {/* 건너뛰기는 닫기와 같다 — 열람만 기록하고 아무것도 저장하지 않는다. */}
-          <Button type="button" variant="secondary" onClick={onClose}>
-            건너뛰기
-          </Button>
-          <Button
-            type="button"
-            // 마지막 스텝의 완료만 브랜드 CTA다 — 중간 "다음"까지 그라데이션이면 어디가 끝인지 흐려진다.
-            variant={step === LAST_STEP ? "gradient" : "primary"}
-            disabled={!canAdvance}
-            onClick={handleNext}
-          >
-            {step === LAST_STEP ? "완료" : "다음"}
-          </Button>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          {/* 되돌아갈 곳이 없는 1스텝에서도 자리는 비워 둔다 — 우측 버튼 묶음이 스텝마다 흔들리지 않게. */}
+          <div>
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={() => setStep(step - 1)}
+                className={SUBTLE_ACTION_CLASS}
+              >
+                이전
+              </button>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* 건너뛰기는 닫기와 같다 — 열람만 기록하고 아무것도 저장하지 않는다.
+                박스 버튼에서 텍스트로 내린다: 이 창에서 누를 것은 "다음"이고, 건너뛰기는 이전과 같은
+                되돌리기 층이다. 둘이 같은 생김새를 쓰면 좌우 어디에 있든 같은 무게로 읽힌다. */}
+            <button type="button" onClick={onClose} className={SUBTLE_ACTION_CLASS}>
+              건너뛰기
+            </button>
+            <Button
+              type="button"
+              // 마지막 스텝의 완료만 브랜드 CTA다 — 중간 "다음"까지 그라데이션이면 어디가 끝인지 흐려진다.
+              variant={step === LAST_STEP ? "gradient" : "primary"}
+              disabled={!canAdvance}
+              onClick={handleNext}
+            >
+              {step === LAST_STEP ? "완료" : "다음"}
+            </Button>
+          </div>
         </div>
       </div>
     </ModalShell>
