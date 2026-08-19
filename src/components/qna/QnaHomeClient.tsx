@@ -188,16 +188,93 @@ function QnaListEmptyState() {
  */
 const CHIPS_COLLAPSED_MAX_HEIGHT = 36 * 2 + 8;
 
+/**
+ * 약사 미인증 안내의 문구·링크·CTA 생김새는 사이드바 카드와 목록 상단 인라인 안내가 함께 쓴다 —
+ * 두 벌로 적으면 한쪽만 고쳐져 같은 안내가 서로 다른 말을 하게 된다. 다른 것은 배치뿐이다.
+ */
+const LICENSE_NOTICE_PRIMARY = "약사 Q&A는 약사 인증 회원만 이용할 수 있습니다.";
+const LICENSE_NOTICE_SECONDARY = "면허를 등록하시면 확인 후 이용 가능합니다.";
+const LICENSE_NOTICE_CTA = "면허 등록하러 가기";
+
+/** 회원정보 §4 "약사 인증" 섹션. SectionCard가 id를 그대로 내보내고 scroll-mt까지 들고 있어 앵커가 선다. */
+const LICENSE_REGISTER_HREF = "/mypage/account#license";
+
+/**
+ * 검정 아웃라인. 그라데이션을 쓰지 않는다 — 이 화면의 대표 CTA는 컴포저의 "질문하기"이고,
+ * 이 버튼은 안내에 딸린 보조 동선이다. 같은 무게로 서면 어느 쪽이 지금 할 일인지 흐려진다.
+ */
+const LICENSE_NOTICE_CTA_CLASS =
+  "inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white";
+
+/**
+ * 사이드바 안내 카드 — 미인증이면서 면허 등록 자격이 있는 회원에게만 선다.
+ * 껍데기(테두리·흰 배경·p-5)는 옆의 다른 사이드바 패널과 같고, 폭 제한 클래스는 두지 않는다
+ * (운영 원칙 패널과 같이 모든 폭에서 남는다 — 1열로 접혀도 이 안내는 사라지면 안 된다).
+ */
+function PharmacistLicenseNoticePanel() {
+  return (
+    <section className="border border-border bg-white p-5" aria-label="약사 인증 안내">
+      {/* 두 줄의 위계는 LockedContent의 message/secondaryMessage와 같다 — 무엇이 막혔는지가 본문,
+          어떻게 풀리는지가 보조. break-keep 필수(한국어는 기본값이면 단어 중간에서도 줄이 갈린다). */}
+      <p className="break-keep text-[13px] font-normal leading-[1.7] text-[#3d4653]">{LICENSE_NOTICE_PRIMARY}</p>
+      <p className="mt-1 break-keep text-[13px] font-normal leading-[1.7] text-[#8a94a3]">{LICENSE_NOTICE_SECONDARY}</p>
+      {/* 사이드바 폭(280px)에서는 버튼이 카드 안쪽 폭을 그대로 쓴다 — 내용 폭으로 두면 좌측에 붙어
+          두 글줄과 축이 갈린다. w-full이라 위 shrink-0/whitespace-nowrap은 여기서 하는 일이 없다. */}
+      <Link href={LICENSE_REGISTER_HREF} className={clsx(LICENSE_NOTICE_CTA_CLASS, "mt-4 w-full")}>
+        {LICENSE_NOTICE_CTA}
+      </Link>
+    </section>
+  );
+}
+
+/**
+ * 목록 상단 인라인 안내 — 약사 글 상세에서 되돌려보내진 직후에만 뜬다.
+ * 가로 한 줄 구성(본문 + 우측 버튼)은 컴포저의 비로그인 카드와 같은 문법이고, 바로 아래에 그
+ * 컴포저가 서므로 두 카드가 같은 리듬으로 읽힌다.
+ */
+function PharmacistOnlyRedirectNotice() {
+  return (
+    <div className="mt-6 border border-border bg-white px-4 py-3">
+      <div className="flex items-center gap-3">
+        {/* truncate를 쓰지 않는다 — 컴포저의 비로그인 카드는 한 문장이라 잘려도 뜻이 남지만,
+            여기는 두 문장이라 좁은 폭에서 뒤 문장이 통째로 사라진다. 자연스럽게 접히게 둔다. */}
+        <p className="min-w-0 flex-1 break-keep text-[13px] font-normal leading-[1.6] text-[#3d4653]">
+          {LICENSE_NOTICE_PRIMARY} <span className="text-[#8a94a3]">{LICENSE_NOTICE_SECONDARY}</span>
+        </p>
+        <Link href={LICENSE_REGISTER_HREF} className={LICENSE_NOTICE_CTA_CLASS}>
+          {LICENSE_NOTICE_CTA}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 interface QnaHomeClientProps {
   activeType: QnaType;
   canSwitchType: boolean;
+  /**
+   * 면허를 등록하면 약사 인증을 받을 수 있는 회원인지. 약사 자격과 무관한 회원에게
+   * "면허를 등록하세요"는 안내가 아니라 잘못된 권유라, 두 안내 모두 이 값으로 갈린다.
+   */
+  canRegisterLicense: boolean;
   isLoggedIn: boolean;
   entries: QnaListEntry[];
   popularEntries: QnaListEntry[];
   previewQuery: string;
+  /** 약사 QNA 상세에서 되돌려보내진 직후인지 — 목록 상단 인라인 안내의 노출 조건 */
+  cameFromPharmacistOnly?: boolean;
 }
 
-export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, popularEntries, previewQuery }: QnaHomeClientProps) {
+export function QnaHomeClient({
+  activeType,
+  canSwitchType,
+  canRegisterLicense,
+  isLoggedIn,
+  entries,
+  popularEntries,
+  previewQuery,
+  cameFromPharmacistOnly = false,
+}: QnaHomeClientProps) {
   const [categoryFilter, setCategoryFilter] = useState("전체");
   const [sortOption, setSortOption] = useState<QnaSortOption>("추천순");
   const [notice, setNotice] = useState("");
@@ -293,6 +370,10 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
         {isLoggedIn ? (
           <MyActivityPanel activeType={activeType} variant="compact" className="mt-6 max-[760px]:hidden min-[1041px]:hidden" />
         ) : null}
+
+        {/* 자격 무관 회원에게는 이유를 실어 보냈더라도 아무것도 띄우지 않는다 — 종전의 무음 그대로다.
+            canRegisterLicense는 미인증일 때만 참이라 인증 회원이 주소에 reason을 붙여도 뜨지 않는다. */}
+        {cameFromPharmacistOnly && canRegisterLicense ? <PharmacistOnlyRedirectNotice /> : null}
 
         <QnaComposer
           activeType={activeType}
@@ -393,6 +474,9 @@ export function QnaHomeClient({ activeType, canSwitchType, isLoggedIn, entries, 
               onTagClick={(tag) => setCategoryFilter(tag)}
               className="max-[1040px]:hidden"
             />
+            {/* 운영 원칙 패널이 "약사 QNA에는 인증된 약사가" 한 줄로 존재만 알리고 끝나던 자리 바로 위 —
+                그 문장을 읽고 "그럼 나는?"이 되는 회원에게 다음 걸음을 준다. */}
+            {!canSwitchType && canRegisterLicense ? <PharmacistLicenseNoticePanel /> : null}
             <QnaOperationPrinciplePanel />
           </aside>
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { QnaHomeClient } from "@/components/qna/QnaHomeClient";
-import { buildQnaPreviewQuery, resolveQnaViewerState } from "@/config/qnaAccess";
+import { buildQnaPreviewQuery, resolveQnaViewerState, QNA_REDIRECT_REASON_PHARMACIST_ONLY } from "@/config/qnaAccess";
 import { getPopularQnaEntries, getQnaListEntries } from "@/data/qna";
 import type { QnaType } from "@/types/qna";
 
@@ -11,12 +11,12 @@ export const metadata: Metadata = {
 };
 
 interface QnaPageProps {
-  searchParams: Promise<{ pharmacist?: string; type?: string }>;
+  searchParams: Promise<{ pharmacist?: string; licenseEligible?: string; type?: string; reason?: string }>;
 }
 
 export default async function QnaPage({ searchParams }: QnaPageProps) {
   const params = await searchParams;
-  const { isLoggedIn, isVerifiedPharmacist } = await resolveQnaViewerState(params);
+  const { isLoggedIn, isVerifiedPharmacist, canRegisterLicense } = await resolveQnaViewerState(params);
 
   const requestedType: QnaType | undefined =
     params.type === "industry" ? "industry" : params.type === "pharmacist" ? "pharmacist" : undefined;
@@ -26,6 +26,12 @@ export default async function QnaPage({ searchParams }: QnaPageProps) {
   const entries = getQnaListEntries(activeType);
   const popularEntries = getPopularQnaEntries(activeType);
   const previewQuery = buildQnaPreviewQuery(params);
+  /**
+   * 약사 QNA 상세에서 되돌아왔는지. 문자열 비교는 여기서 끝내고 아래로는 boolean만 내린다 —
+   * 상수가 있는 qnaAccess는 session.server(next/headers)를 import해서 클라이언트 컴포넌트가
+   * 직접 가져오면 서버 전용 모듈이 클라이언트 번들로 끌려온다.
+   */
+  const cameFromPharmacistOnly = params.reason === QNA_REDIRECT_REASON_PHARMACIST_ONLY;
 
   return (
     <>
@@ -33,10 +39,12 @@ export default async function QnaPage({ searchParams }: QnaPageProps) {
       <QnaHomeClient
         activeType={activeType}
         canSwitchType={isVerifiedPharmacist}
+        canRegisterLicense={canRegisterLicense}
         isLoggedIn={isLoggedIn}
         entries={entries}
         popularEntries={popularEntries}
         previewQuery={previewQuery}
+        cameFromPharmacistOnly={cameFromPharmacistOnly}
       />
     </>
   );
