@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 /** 기관정보 관리 폼의 텍스트형 필드(한 줄 소개·본문 소개·키워드 등) 공통 좌우 폭 기준.
@@ -142,6 +143,10 @@ export function TextInput({
   );
 }
 
+/** 보조 버튼의 생김새. 버튼과 링크 두 형태가 나눠 쓴다 — 한쪽만 고쳐져 같은 자리의 컨트롤이 갈라지지 않게. */
+const FORM_ACTION_CLASS =
+  "inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:text-[#b7bfc9]";
+
 /** 입력칸과 같은 행에 놓이는 보조 버튼(우편번호 찾기·키워드/제품 추가·비밀번호 변경 등) 전용 컴포넌트.
  * 높이는 CONTROL_HEIGHT로 고정해 TextInput과 항상 나란히 맞고, 위계는 가는 테두리·배경 없음·작은 폰트로만 낮춘다. */
 export function FormActionButton({
@@ -160,14 +165,23 @@ export function FormActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={clsx(
-        CONTROL_HEIGHT,
-        "inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap border border-[#d8e0e8] bg-white px-3.5 text-[13px] font-medium text-[#4f5967] transition hover:border-[#111111] hover:text-[#111111] disabled:cursor-not-allowed disabled:border-[#e2e8ef] disabled:text-[#b7bfc9]",
-        className,
-      )}
+      className={clsx(CONTROL_HEIGHT, FORM_ACTION_CLASS, className)}
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * FormActionButton의 링크 형태. 누르면 다른 화면으로 가는 보조 동선(고객센터 문의 등)이 쓴다 —
+ * 생김새가 같아야 할 뿐 하는 일은 이동이라 button이 아니라 a여야 한다.
+ * ui/Button이 Button·LinkButton 짝으로 나뉘어 있는 것과 같은 방식이다.
+ */
+export function FormActionLink({ href, children, className }: { href: string; children: ReactNode; className?: string }) {
+  return (
+    <Link href={href} className={clsx(CONTROL_HEIGHT, FORM_ACTION_CLASS, className)}>
+      {children}
+    </Link>
   );
 }
 

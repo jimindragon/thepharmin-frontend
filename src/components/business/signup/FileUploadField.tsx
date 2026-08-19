@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -9,11 +10,14 @@ export function FileUploadField({
   hint,
   accept,
   onFileSelected,
+  disabled,
 }: {
   label: string;
   hint?: string;
   accept?: string;
   onFileSelected?: (fileName: string | null) => void;
+  /** 더 이상 바꿀 수 없는 첨부(예: 인증이 끝난 면허증). 잠금 색은 TextInput의 disabled와 같은 값을 쓴다. */
+  disabled?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -34,7 +38,11 @@ export function FileUploadField({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="flex min-h-[64px] w-full items-center gap-3 border border-dashed border-[#d8e0e8] bg-[#fbfcfd] px-4 text-left transition hover:border-[#111111]"
+        disabled={disabled}
+        className={clsx(
+          "flex min-h-[64px] w-full items-center gap-3 border border-dashed border-[#d8e0e8] px-4 text-left transition",
+          disabled ? "cursor-not-allowed bg-[#f5f6f7] text-[#7d8796]" : "bg-[#fbfcfd] hover:border-[#111111]",
+        )}
       >
         <span className="grid h-9 w-9 shrink-0 place-items-center border border-border bg-white text-[#596373]">
           <Upload size={16} />

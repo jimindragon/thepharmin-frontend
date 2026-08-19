@@ -24,6 +24,7 @@ import { clearBusinessMember, markBusinessMember, useBusinessMember } from "@/ho
 import { useMemberMigration } from "@/hooks/useMemberMigration";
 import { setOrgVerificationStatus, useOrgVerificationStatus } from "@/hooks/useOrgVerificationStatus";
 import { useInterestPromptSeen } from "@/hooks/useInterestPromptSeen";
+import { useLicenseVerificationDemo } from "@/hooks/useLicenseVerificationDemo";
 import { clearAllStoredJobPreferences, getAllStoredJobPreferences } from "@/hooks/useJobPreferenceStorage";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
 
@@ -255,6 +256,7 @@ export function DevStatePanel() {
   const { isMigrated, markMigrated, resetMigration } = useMemberMigration();
   const orgStatus = useOrgVerificationStatus();
   const { demoState: reviewAccessDemo, setDemoState: setReviewAccessDemo } = useReviewAccessDemo();
+  const { demoState: licenseDemo, setDemoState: setLicenseDemo } = useLicenseVerificationDemo();
 
   /**
    * 후기 목록이 프리셋을 정하는 규칙(패널이 고른 값 없으면 로그인 여부)을 그대로 따라 계산한다 —
@@ -356,6 +358,16 @@ export function DevStatePanel() {
           />
           <RowButton label="0장" onClick={() => setReviewAccessDemo("noCredits")} disabled={reviewAccessState === "noCredits"} />
           <RowButton label="2장" onClick={() => setReviewAccessDemo("hasCredits")} disabled={reviewAccessState === "hasCredits"} />
+        </Row>
+
+        {/* 리로드하지 않는다 — 훅이 발행하는 이벤트로 회원정보 면허 섹션이 같은 탭에서 즉시 따라온다.
+            라벨을 두 글자로 줄인 이유는 폭이다 — 버튼이 넷이라 "미등록/검토중/승인/반려"로는 268px을 넘긴다.
+            고른 값은 그 버튼이 비활성으로 남아 드러나므로 현재값 글자(valueLabel)는 두지 않는다. */}
+        <Row label="면허 인증" on={licenseDemo === "approved"}>
+          <RowButton label="없음" onClick={() => setLicenseDemo("none")} disabled={licenseDemo === "none"} />
+          <RowButton label="검토" onClick={() => setLicenseDemo("pending")} disabled={licenseDemo === "pending"} />
+          <RowButton label="승인" onClick={() => setLicenseDemo("approved")} disabled={licenseDemo === "approved"} />
+          <RowButton label="반려" onClick={() => setLicenseDemo("rejected")} disabled={licenseDemo === "rejected"} />
         </Row>
 
         {/* QNA 접근 상태는 서버 판정(쿼리 기반)이라 저장소가 아닌 URL로 전환한다.

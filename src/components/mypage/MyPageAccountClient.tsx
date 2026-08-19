@@ -7,7 +7,7 @@ import { MyPageShell } from "@/components/mypage/MyPageShell";
 import { PhoneVerificationField } from "@/components/signup/PhoneVerificationField";
 import { Button } from "@/components/ui/Button";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
-import { FieldLabel, FormActionButton, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
+import { FieldLabel, FormActionButton, FormActionLink, SectionCard, TextInput } from "@/components/business/BusinessFormControls";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
 import { StatusPill } from "@/components/business/table/StatusPill";
 import { SEL } from "@/components/job-registration/fieldClasses";
@@ -24,7 +24,9 @@ import {
   type MemberOption,
   type StudentGrade,
 } from "@/config/memberAffiliation";
+import { sharedRoutes } from "@/config/routes";
 import { mockPersonalMember } from "@/data/personalMember";
+import { useLicenseVerificationDemo, type LicenseVerificationState } from "@/hooks/useLicenseVerificationDemo";
 
 /**
  * 짧은 입력칸 2개를 나란히 놓는 그리드. 기업 기관정보 관리(BusinessCompanyProfileClient)의
@@ -123,6 +125,34 @@ function OptionButtonGroup({
 }
 
 /**
+ * 면허 검토 상태별 pill. none은 아무것도 띄우지 않는다 — 아직 아무 일도 일어나지 않은 칸에
+ * 상태를 붙이면 무언가 진행 중인 것으로 읽힌다. 색은 statusTone의 3단 원칙 그대로다
+ * (진행 중 파랑 · 완료 초록 · 부정 결과 빨강).
+ */
+const LICENSE_STATUS_PILL: Record<LicenseVerificationState, { tone: "progress" | "success" | "danger"; label: string } | null> = {
+  none: null,
+  pending: { tone: "progress", label: "검토 중" },
+  approved: { tone: "success", label: "인증 완료" },
+  rejected: { tone: "danger", label: "반려" },
+};
+
+/**
+ * 반려 사유. 데모라 한 가지 문장으로 고정한다 — 실서버에서는 운영진이 남긴 사유를 회원 데이터로
+ * 함께 내려주고, 이 자리는 그 값을 그대로 그리는 자리가 된다.
+ */
+const LICENSE_REJECTED_REASON = "면허 정보를 확인할 수 없습니다. 면허번호를 다시 확인해 주세요.";
+
+/**
+ * 검토는 운영진이 이름과 면허번호를 보건복지부 기관조회로 대조하는 일이라, 무엇에 쓰이는지를
+ * 번호 칸 곁에서 밝힌다. 면허증 파일은 그 대조가 어려울 때 보는 보조 자료다.
+ */
+const LICENSE_CONSENT_NOTE = "입력하신 면허 정보는 약사 인증을 위해 보건복지부의 면허 등록 여부 확인에 사용됩니다.";
+
+/** 인증이 끝난 값은 회원이 직접 바꿀 수 없다 — 바뀐 번호로는 이미 끝난 대조가 무효가 되기 때문이다. */
+const LICENSE_APPROVED_LOCK_NOTE =
+  "인증이 완료된 면허 정보는 직접 수정할 수 없습니다. 변경이 필요한 경우 고객센터로 문의해 주세요.";
+
+/**
  * 개인 회원정보 화면 — 계정 정보·본인 확인·광고성 정보 수신(A회차)에
  * 소속 정보·약사 인증(B회차)까지.
  *
@@ -147,6 +177,20 @@ export function MyPageAccountClient() {
   const [licenseFileName, setLicenseFileName] = useState(mockPersonalMember.licenseFileName);
   const [preliminaryFileName, setPreliminaryFileName] = useState(mockPersonalMember.preliminaryPharmacistFileName);
 
+  /**
+   * 면허 검토 상태. 실제 회원 필드가 없어 DEV 패널이 고른 데모 값을 쓰고, 고른 적이 없으면(null)
+   * 종전 규칙 그대로 — 번호와 면허증이 모두 있으면 검토 중, 아니면 아무 상태도 아니다.
+   *
+   * QNA 접근 판정(qnaAccess.ts)은 여기에 잇지 않는다. 그쪽은 서버가 쿼리로 가르는 별개 축이라
+   * localStorage를 읽을 수 없어, 실제 회원 필드가 생길 때 두 축을 함께 옮겨야 한다.
+   */
+  const { demoState: licenseDemoState, setDemoState: setLicenseDemoState } = useLicenseVerificationDemo();
+  const licenseStatus: LicenseVerificationState =
+    licenseDemoState ?? (licenseNumber.trim() && licenseFileName ? "pending" : "none");
+  /** 승인된 값은 잠근다 — 번호가 바뀌면 이미 끝난 대조가 가리키는 사람이 달라진다. */
+  const licenseLocked = licenseStatus === "approved";
+  const licensePill = LICENSE_STATUS_PILL[licenseStatus];
+
   const config = affiliationId ? affiliationConfig[affiliationId] : null;
   const showLicenseField = config ? shouldShowLicenseField(config, secondaryId, hasPharmacistLicense) : false;
   /** 학년 선택지·안내는 전공 계열(2차 선택)에 따라 갈린다 — 약학 6년 / 의학·간호 예과·본과 / 나머지 4년. */
@@ -163,10 +207,15 @@ export function MyPageAccountClient() {
   const showLicenseSection =
     config?.licenseMode === "checkbox" || showLicenseField || showPreliminaryPharmacist;
 
-  /** 면허번호·면허증을 함께 비운다. 칸이 사라지는 모든 경로에서 부른다 — 화면에서 사라진 값이 저장되지 않게. */
+  /**
+   * 면허번호·면허증을 함께 비운다. 칸이 사라지는 모든 경로에서 부른다 — 화면에서 사라진 값이
+   * 저장되지 않게. 검토 상태도 같이 되돌린다: 값이 사라졌는데 "인증 완료"가 남아 있으면
+   * 무엇이 인증된 것인지 가리키는 대상이 없다.
+   */
   const clearLicense = () => {
     setLicenseNumber("");
     setLicenseFileName(null);
+    setLicenseDemoState("none");
   };
 
   /** 번호가 바뀌면 인증 상태를 초기화한다 — 가입 폼(PersonalSignupClient)의 updatePhone과 같은 규칙. */
@@ -393,15 +442,20 @@ export function MyPageAccountClient() {
                         value={licenseNumber}
                         onChange={(v) => setLicenseNumber(v.replace(/\D/g, ""))}
                         placeholder="숫자만 입력"
+                        disabled={licenseLocked}
                       />
-                      {licenseNumber.trim() ? (
+                      {/* 상태는 번호가 있든 없든 상태대로 말한다 — 종전처럼 파일명 유무로 지어내지 않는다.
+                          none은 pill 자체가 없어(LICENSE_STATUS_PILL) 아무것도 그리지 않는다. */}
+                      {licensePill ? (
                         <div className="pt-0.5">
-                          <StatusPill
-                            tone={licenseFileName ? "progress" : "idle"}
-                            label={licenseFileName ? "검토 대기" : "면허증 미등록"}
-                          />
+                          <StatusPill tone={licensePill.tone} label={licensePill.label} />
                         </div>
                       ) : null}
+                      {/* 사유는 pill 바로 아래다 — 무엇이 되었는지 다음 줄에 왜가 와야 한 문장으로 읽힌다. */}
+                      {licenseStatus === "rejected" ? (
+                        <p className="break-keep text-[13px] font-normal leading-[1.6] text-status-error">{LICENSE_REJECTED_REASON}</p>
+                      ) : null}
+                      <p className="break-keep text-[12px] font-normal leading-[1.55] text-[#8a94a3]">{LICENSE_CONSENT_NOTE}</p>
                     </Field>
                   </div>
 
@@ -409,11 +463,28 @@ export function MyPageAccountClient() {
                   <Field label={<>면허증 <span className="font-normal text-[#9aa3af]">(선택)</span></>}>
                     <FileUploadField
                       label="면허증 업로드"
-                      hint="등록하시면 약사 인증 검토가 시작됩니다."
+                      hint="면허 정보 확인이 어려운 경우를 위한 보조 자료입니다."
                       accept=".pdf,.jpg,.jpeg,.png"
                       onFileSelected={setLicenseFileName}
+                      disabled={licenseLocked}
                     />
                   </Field>
+
+                  {/* 상태가 요구하는 다음 걸음. 번호·파일 두 칸에 함께 걸리는 일이라 두 칸 아래에 둔다.
+                      자리를 상태별로 나누지 않는 이유는, 갈라 두면 같은 성격의 버튼이 화면에서 위아래로
+                      뛰어 어디를 봐야 할지가 상태마다 달라지기 때문이다. */}
+                  {licenseStatus === "approved" ? (
+                    <div className="space-y-2.5">
+                      <p className="break-keep text-[13px] font-normal leading-[1.6] text-[#68717e]">{LICENSE_APPROVED_LOCK_NOTE}</p>
+                      <FormActionLink href={sharedRoutes.support}>고객센터 문의</FormActionLink>
+                    </div>
+                  ) : null}
+
+                  {/* 다시 제출하기 = 같은 칸을 고쳐 다시 검토를 요청하는 일이라 검토 중으로 돌아간다.
+                      실서버에서는 이 자리가 재검토 요청 API가 된다(값 저장은 아래 "저장하기"와 한 묶음). */}
+                  {licenseStatus === "rejected" ? (
+                    <FormActionButton onClick={() => setLicenseDemoState("pending")}>다시 제출하기</FormActionButton>
+                  ) : null}
                 </>
               ) : null}
 
