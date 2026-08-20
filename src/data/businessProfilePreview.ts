@@ -69,6 +69,9 @@ export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmi
      * details(전체 목록)에서 이미 노출되므로 여기서는 중복해 넣지 않는다. */
     businessSummary: [],
     recruitSummary: profile.fullIntro,
+    /** CompanyOverview("기업 소개")가 읽는 자리는 recruitSummary가 아니라 이쪽이다 — 둘 다 채워야
+     * 폼의 본문 소개가 미리보기에 실린다. 비어 있으면 종전대로 섹션이 통째로 숨는다. */
+    fullIntro: profile.fullIntro,
     /** 라벨 문자열이 곧 조회 키다 — CompanyDetailOverview가 detailValue(profile, "기관 유형" | "직원 수" |
      * "설립 연도" | "사업 분야" | "본사 위치" | "홈페이지")로 꺼내 스탯 카드 4장과 정보 행을 세운다.
      * 종전 표기("기업 형태"·"설립일"·"사업·제품 분야")는 그 키와 어긋나 카드 4장이 항상 숨었고,
@@ -188,6 +191,9 @@ export function buildHospitalPreview(org: HospitalOrgProfile): { profile: Compan
     ],
     businessSummary: [],
     recruitSummary: org.shortIntro,
+    /** HospitalOverviewCard("병원 소개")가 읽는 자리 — 산업과 같은 이유로 별도 전달이 필요하다.
+     * HospitalOrgProfile.fullIntro는 선택 입력이라 빈 문자열을 undefined로 눕혀 넘긴다. */
+    fullIntro: org.fullIntro || undefined,
     details: [
       { label: "대표자", value: org.representativeName ? `병원장 ${org.representativeName}` : null },
       { label: "설립일", value: org.foundedYear || null },
