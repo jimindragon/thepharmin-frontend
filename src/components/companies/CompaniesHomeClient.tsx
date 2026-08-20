@@ -424,6 +424,13 @@ function FeedRow({ item, onRequestWriteInterviewReview }: { item: RecentFeedItem
   );
 }
 
+/**
+ * 허브 홈의 "최근 올라온 이야기" 피드.
+ *
+ * 크로스 피드(/companies/reviews · /companies/interviews)로 가는 진입 링크는 의도적으로 두지 않는다
+ * (후기 물량 확보 후 검토) — 후기는 특정 기업을 확인하는 흐름에서 소비되는 것이 서비스 방향이고,
+ * 전체를 훑는 피드는 쌓인 뒤에 연다. 두 라우트 자체는 존치하되 앱 안에서 가리키지 않는다.
+ */
 function RecentStoriesFeed({ companyItems, interviewItems }: { companyItems: RecentFeedCompanyItem[]; interviewItems: RecentFeedInterviewItem[] }) {
   const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
   const interviewReviewNotice = usePlaceholderNotice();
