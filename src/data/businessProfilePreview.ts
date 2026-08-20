@@ -69,13 +69,19 @@ export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmi
      * details(전체 목록)에서 이미 노출되므로 여기서는 중복해 넣지 않는다. */
     businessSummary: [],
     recruitSummary: profile.fullIntro,
+    /** 라벨 문자열이 곧 조회 키다 — CompanyDetailOverview가 detailValue(profile, "기관 유형" | "직원 수" |
+     * "설립 연도" | "사업 분야" | "본사 위치" | "홈페이지")로 꺼내 스탯 카드 4장과 정보 행을 세운다.
+     * 종전 표기("기업 형태"·"설립일"·"사업·제품 분야")는 그 키와 어긋나 카드 4장이 항상 숨었고,
+     * "직원 수"는 아예 없어 값이 있어도 설 자리가 없었다. companyProfiles.ts의 산업 항목이 쓰는
+     * 라벨과 같은 표기로 맞춘다 — 미리보기와 실제 상세가 같은 키를 봐야 한다. */
     details: [
       { label: "대표자", value: admin.representativeName || null },
-      { label: "설립일", value: profile.foundedYear ? `${profile.foundedYear}년` : null },
+      { label: "기관 유형", value: typeLabel },
+      { label: "직원 수", value: employeeCountLabel(profile.employeeCount) },
+      { label: "설립 연도", value: profile.foundedYear ? `${profile.foundedYear}년` : null },
+      { label: "사업 분야", value: businessFields.join(" · ") || null },
       { label: "본사 위치", value: address || null },
       { label: "홈페이지", value: profile.homepageUrl || null },
-      { label: "기업 형태", value: typeLabel },
-      { label: "사업·제품 분야", value: businessFields.join(" · ") || null },
     ],
     keywords: profile.keywords,
     news: [],
