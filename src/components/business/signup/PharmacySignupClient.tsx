@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { PharmacyRegistrySearch } from "@/components/business/PharmacyRegistrySearch";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
 import { SignupStepShell } from "@/components/shared/SignupStepShell";
@@ -13,10 +14,25 @@ import { SignupCompleteStep } from "@/components/business/signup/SignupCompleteS
 import { getPharmacyTypeLabel, pharmacyTypeLabels } from "@/config/companyTypes";
 import { writeSignupOrgTrack, writeSignupPharmacyFeatureId, writeSignupPharmacyType } from "@/config/businessSignup";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
+import type { PharmacyRegistryEntry } from "@/data/pharmacyRegistry";
 import type { PharmacyType } from "@/types/jobs";
+
+/**
+ * 약국을 지목하는 방법. 기본은 전국 등록부 검색이고, 등록부에서 찾지 못한 약국만 직접 입력으로 빠진다.
+ * 두 방법의 값은 동시에 남지 않는다 — 전환할 때마다 반대쪽을 비운다.
+ */
+type PharmacyEntryMode = "search" | "manual";
+
+/** 두 방법을 오가는 링크형 버튼. 필드가 아니라 빠져나가는 길이라 본문보다 한 단 낮은 회색 밑줄로 둔다. */
+const ENTRY_MODE_LINK =
+  "text-[13px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]";
 
 interface PharmacyVerificationInfo {
   businessNumber: string;
+  pharmacyEntryMode: PharmacyEntryMode;
+  /** 등록부에서 고른 약국. 직접 입력 모드에서는 항상 null이다. */
+  selectedPharmacy: PharmacyRegistryEntry | null;
+  /** 두 방법이 공유하는 정본 약국명 — 검색 모드에서는 고른 약국의 이름이 그대로 복사된다. */
   pharmacyName: string;
   representativePharmacistName: string;
   pharmacistLicenseNumber: string;
@@ -29,6 +45,8 @@ interface PharmacyVerificationInfo {
 
 const emptyPharmacyVerificationInfo: PharmacyVerificationInfo = {
   businessNumber: "",
+  pharmacyEntryMode: "search",
+  selectedPharmacy: null,
   pharmacyName: "",
   representativePharmacistName: "",
   pharmacistLicenseNumber: "",
@@ -47,18 +65,86 @@ function PharmacyVerificationStep({
   onChange: <K extends keyof PharmacyVerificationInfo>(key: K, next: PharmacyVerificationInfo[K]) => void;
   onNext: () => void;
 }) {
+  const isManual = value.pharmacyEntryMode === "manual";
+
+  /* 검색 모드는 "등록부에서 골랐는가"를, 직접 입력 모드는 "이름을 적었는가"를 본다.
+     검색 모드에서 이름만 보면 안 된다 — 골랐다가 다시 검색해 선택이 풀린 상태에도 이름이 남아 통과한다. */
+  const hasPharmacy = isManual ? Boolean(value.pharmacyName.trim()) : value.selectedPharmacy !== null;
+
   const canProceed = Boolean(
     value.businessNumber.trim() &&
-      value.pharmacyName.trim() &&
+      hasPharmacy &&
       value.representativePharmacistName.trim() &&
       value.pharmacistLicenseNumber.trim() &&
       value.institutionCode.trim() &&
       value.pharmacistLicenseFileName,
   );
 
+  /** 고른 약국의 이름을 정본 필드로 복사한다 — 이후 화면(가입 완료 안내 등)은 이 이름 하나만 본다. */
+  const selectPharmacy = (pharmacy: PharmacyRegistryEntry | null) => {
+    onChange("selectedPharmacy", pharmacy);
+    onChange("pharmacyName", pharmacy?.name ?? "");
+  };
+
+  /** 방법을 바꿀 때 반대쪽 값을 비운다 — 고른 약국과 직접 적은 이름이 동시에 남으면 어느 쪽이 정본인지 모른다. */
+  const switchEntryMode = (next: PharmacyEntryMode) => {
+    onChange("pharmacyEntryMode", next);
+    onChange("selectedPharmacy", null);
+    onChange("pharmacyName", "");
+  };
+
   return (
     <div>
       <div className="space-y-5">
+        {/* 약국을 먼저 지목하고 그 다음에 번호·사람을 확인한다 — 이 스텝이 답하는 질문이
+            "어느 약국인가"라서, 종전처럼 사업자등록번호가 첫 칸에 서면 순서가 뒤집힌다. */}
+        {isManual ? (
+          <div className="space-y-2">
+            <FieldLabel required>약국명</FieldLabel>
+            <TextInput value={value.pharmacyName} onChange={(v) => onChange("pharmacyName", v)} placeholder="예: 은행약국" />
+            <p className="text-[12px] font-normal leading-[1.55] text-[#8a94a3]">
+              직접 입력한 약국은 운영팀 검토 과정에서 확인 후 연결됩니다.
+            </p>
+            <div className="pt-0.5">
+              <button type="button" onClick={() => switchEntryMode("search")} className={ENTRY_MODE_LINK}>
+                약국 검색으로 돌아가기
+              </button>
+            </div>
+          </div>
+        ) : value.selectedPharmacy ? (
+          /* 고른 뒤에는 검색창을 접고 확인 행만 남긴다 — 목록을 열어 둔 채로는 "이 약국으로 정했다"가 읽히지 않는다 */
+          <div className="space-y-2">
+            <FieldLabel required>약국 찾기</FieldLabel>
+            <div className="flex items-start justify-between gap-3 border border-[#111111] bg-[#f7f8fa] px-4 py-3">
+              <p className="min-w-0 text-[14px] font-normal leading-[1.6] text-[#4f5967]">
+                <span className="font-semibold text-[#17202c]">선택됨: {value.selectedPharmacy.name}</span>
+                {" · "}
+                {value.selectedPharmacy.address}
+              </p>
+              <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={() => selectPharmacy(null)}>
+                다시 선택
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <PharmacyRegistrySearch
+              label="약국 찾기"
+              required
+              radioName="pharmacy-signup-target"
+              value={value.selectedPharmacy}
+              onChange={selectPharmacy}
+            />
+            {/* 결과가 없을 때만 내주면 늦다 — 등록부에 아직 없는 약국은 검색을 해봐야 없다는 것을 알고,
+                그 전에 빠져나갈 길이 보여야 한다. 그래서 결과 유무와 무관하게 상시 선다. */}
+            <div className="pt-0.5">
+              <button type="button" onClick={() => switchEntryMode("manual")} className={ENTRY_MODE_LINK}>
+                찾는 약국이 없나요? 직접 입력하기
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2">
           <FieldLabel required>사업자등록번호</FieldLabel>
           <DuplicateCheckField
@@ -69,15 +155,10 @@ function PharmacyVerificationStep({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 max-[520px]:grid-cols-1">
-          <div className="space-y-2">
-            <FieldLabel required>약국명</FieldLabel>
-            <TextInput value={value.pharmacyName} onChange={(v) => onChange("pharmacyName", v)} placeholder="예: 은행약국" />
-          </div>
-          <div className="space-y-2">
-            <FieldLabel required>대표 약사명</FieldLabel>
-            <TextInput value={value.representativePharmacistName} onChange={(v) => onChange("representativePharmacistName", v)} placeholder="대표 약사 이름" />
-          </div>
+        {/* 약국명이 위 블록으로 올라가면서 짝을 잃어 전폭으로 선다 — 반 칸만 채운 2열은 빈 자리가 고장으로 읽힌다 */}
+        <div className="space-y-2">
+          <FieldLabel required>대표 약사명</FieldLabel>
+          <TextInput value={value.representativePharmacistName} onChange={(v) => onChange("representativePharmacistName", v)} placeholder="대표 약사 이름" />
         </div>
 
         <div className="grid grid-cols-2 gap-4 max-[520px]:grid-cols-1">
@@ -89,6 +170,8 @@ function PharmacyVerificationStep({
               placeholder="숫자만 입력"
             />
           </div>
+          {/* 약국을 골라도 이 칸은 남는다 — 등록부가 주는 식별자는 **암호화** 요양기호(PharmacyRegistryEntry.id)라
+              사람이 적는 요양기관번호와 다른 값이고, 등록부 응답에 요양기관번호 자체는 들어 있지 않다. */}
           <div className="space-y-2">
             <FieldLabel required>요양기관번호</FieldLabel>
             <TextInput
