@@ -5,6 +5,11 @@ import clsx from "clsx";
 import { Bookmark, Quote, ThumbsUp } from "lucide-react";
 import { LockedContent } from "@/components/companies/LockedContent";
 import { ReviewRatingStars } from "@/components/company/ReviewRatingStars";
+import {
+  PHARMACIST_LICENSE_CTA,
+  PHARMACIST_LICENSE_REGISTER_HREF,
+  type PharmacyReviewWriteAccess,
+} from "@/config/pharmacistLicenseGate";
 import type { PharmacyReviewRating } from "@/config/pharmacyReviewForm";
 
 /**
@@ -73,6 +78,11 @@ export interface CompanyReviewInterviewAccess {
   credits: number;
   /** noCredits 상태의 CTA("후기 작성하고 열람권 받기")가 이동할 작성 페이지 링크 */
   writeHref: string;
+  /**
+   * 약국 재직 후기의 약사 인증 게이트. 값이 없으면 "allowed"와 같아 면접 후기 쪽 렌더는 종전 그대로다.
+   * noCredits의 CTA가 작성 폼을 가리키므로, 쓸 수 없는 회원에게는 그 CTA가 막힌 문 앞으로 데려간다.
+   */
+  writeAccess?: PharmacyReviewWriteAccess;
   /** canUnlock 상태의 CTA("1장 사용하고 보기") 클릭 시 상위(부모)가 확인 모달을 띄우도록 위임 */
   onUnlockRequest: () => void;
 }
@@ -107,17 +117,45 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
     case "loggedOut":
       return {
         message: "로그인 후 열람 가능",
-        secondaryMessage: "가입 시 열람권 2장 지급",
-        ctaLabel: "무료 열람권 받고 보기",
+        secondaryMessage: "가입 시 열람권 2장 지급" as string | undefined,
+        ctaLabel: "무료 열람권 받고 보기" as string | undefined,
         ctaHref: "#" as string | undefined,
         onCtaClick: undefined as (() => void) | undefined,
         ctaVariant: "outline" as const,
       };
     case "noCredits":
+      /**
+       * 작성으로 열람권을 얻는 갈래라 작성 자격이 그대로 걸린다.
+       *
+       * 미인증(면허 등록 가능)이면 CTA를 면허 등록으로 바꾼다 — 지급까지의 순서가 "인증 → 작성"이라
+       * 지금 할 일은 등록이고, 보조 문구도 그 순서를 말한다.
+       * 자격 무관이면 CTA도 "작성 시 2장 지급"도 없앤다. 지킬 수 없는 약속이고, 그 회원에게
+       * 면허 등록을 권하지도 않는다(약사 QNA의 무음 규칙과 같다).
+       */
+      if (access.writeAccess === "needsLicense") {
+        return {
+          message: "보유 열람권 0장",
+          secondaryMessage: "약사 인증 후 후기를 작성하면 2장 지급",
+          ctaLabel: PHARMACIST_LICENSE_CTA as string | undefined,
+          ctaHref: PHARMACIST_LICENSE_REGISTER_HREF as string | undefined,
+          onCtaClick: undefined as (() => void) | undefined,
+          ctaVariant: "outline" as const,
+        };
+      }
+      if (access.writeAccess === "notEligible") {
+        return {
+          message: "보유 열람권 0장",
+          secondaryMessage: undefined as string | undefined,
+          ctaLabel: undefined as string | undefined,
+          ctaHref: undefined as string | undefined,
+          onCtaClick: undefined as (() => void) | undefined,
+          ctaVariant: "outline" as const,
+        };
+      }
       return {
         message: "보유 열람권 0장",
-        secondaryMessage: "후기 작성 시 2장 지급",
-        ctaLabel: "후기 작성하고 열람권 받기",
+        secondaryMessage: "후기 작성 시 2장 지급" as string | undefined,
+        ctaLabel: "후기 작성하고 열람권 받기" as string | undefined,
         ctaHref: access.writeHref as string | undefined,
         onCtaClick: undefined as (() => void) | undefined,
         ctaVariant: "outline" as const,
@@ -125,8 +163,8 @@ function getInterviewAccessCopy(access: CompanyReviewInterviewAccess) {
     case "canUnlock":
       return {
         message: "열람권 1장으로 보기",
-        secondaryMessage: `보유 ${access.credits}장`,
-        ctaLabel: "1장 사용하고 보기",
+        secondaryMessage: `보유 ${access.credits}장` as string | undefined,
+        ctaLabel: "1장 사용하고 보기" as string | undefined,
         ctaHref: undefined as string | undefined,
         onCtaClick: access.onUnlockRequest as (() => void) | undefined,
         ctaVariant: "solid" as const,

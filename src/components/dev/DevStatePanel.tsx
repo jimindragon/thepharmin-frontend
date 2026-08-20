@@ -225,24 +225,36 @@ function InterestPromptRow() {
 }
 
 /**
- * 약사 QNA 접근 데모의 세 상태. 값과 쿼리의 대응은 qnaAccess.ts의 판정을 그대로 따른다 —
+ * 약사 인증 데모의 세 상태. 값과 쿼리의 대응은 qnaAccess.ts의 판정을 그대로 따른다 —
  * 판정을 여기서 다시 쓰지 않고, 그 판정이 읽는 주소를 만들기만 한다.
+ *
+ * 이 축은 약사 QNA 하나만의 것이 아니다. 약국 재직 후기 작성 자격도 같은 쿼리·같은 판정을
+ * 그대로 쓰므로(pharmacistLicenseGate) 행 하나가 두 화면을 함께 움직인다.
  */
 type QnaDemoState = "verified" | "unverified" | "ineligible";
 
-const QNA_DEMO_HREF: Record<QnaDemoState, string> = {
-  verified: "/qna",
-  unverified: "/qna?pharmacist=false",
-  ineligible: "/qna?pharmacist=false&licenseEligible=false",
+/** 상태를 나타내는 쿼리. 아래 두 갈래(제자리 적용 / QNA로 이동)가 같은 문자열을 쓴다. */
+const PHARMACIST_DEMO_QUERY: Record<QnaDemoState, string> = {
+  verified: "",
+  unverified: "?pharmacist=false",
+  ineligible: "?pharmacist=false&licenseEligible=false",
 };
 
-/** 쿼리를 소비하는 라우트(/qna, /qna/[id], /qna/activity) 위에 있을 때만 현재 상태를 읽을 수 있다. */
-function isQnaRoute(pathname: string) {
-  return pathname === "/qna" || pathname.startsWith("/qna/");
+/**
+ * 쿼리를 소비하는 라우트인지. QNA 세 화면(/qna, /qna/[id], /qna/activity)에 더해,
+ * 같은 쿼리로 작성 자격을 가르는 기업 상세·기업 리뷰 화면이 여기 든다
+ * (/companies/{id}, /companies/{id}/reviews, /companies/{id}/reviews/new).
+ *
+ * 이 라우트 위에서는 상태를 **제자리에서** 갈아 끼운다 — 약국 리뷰 화면에서 "미인증"을 눌렀는데
+ * QNA로 끌려가면 방금 보려던 게이트를 볼 수 없다.
+ */
+function consumesPharmacistQuery(pathname: string) {
+  if (pathname === "/qna" || pathname.startsWith("/qna/")) return true;
+  return /^\/companies\/[^/]+(\/reviews(\/new)?)?$/.test(pathname);
 }
 
 /** 판정 순서는 resolveQnaViewerState와 같다 — pharmacist가 먼저고 licenseEligible은 그 아래에 걸린다. */
-function readQnaDemoState(): QnaDemoState {
+function readPharmacistDemoState(): QnaDemoState {
   const params = new URLSearchParams(window.location.search);
   if (params.get("pharmacist") !== "false") return "verified";
   return params.get("licenseEligible") === "false" ? "ineligible" : "unverified";
@@ -286,16 +298,20 @@ export function DevStatePanel() {
   const [qnaState, setQnaState] = useState<QnaDemoState | null>(null);
 
   useEffect(() => {
-    setQnaState(isQnaRoute(pathname) ? readQnaDemoState() : null);
+    setQnaState(consumesPharmacistQuery(pathname) ? readPharmacistDemoState() : null);
   }, [pathname]);
 
   /**
    * 고른 값을 먼저 반영하고 이동한다 — /qna?pharmacist=false에서 "인증됨"을 누르면 경로가 그대로라
    * 위 이펙트가 다시 돌지 않는다. 주소만 바뀌고 버튼은 이전 상태로 남는 것을 막는다.
+   *
+   * 쿼리를 소비하는 화면 위라면 그 화면에 그대로 붙이고, 아니라면 종전처럼 QNA로 데려간다 —
+   * 쿼리가 아무 데서나 소비되지 않으므로 그 화면까지 가는 것이 전환의 일부다.
    */
   const applyQnaState = (next: QnaDemoState) => {
     setQnaState(next);
-    router.push(QNA_DEMO_HREF[next]);
+    const query = PHARMACIST_DEMO_QUERY[next];
+    router.push(consumesPharmacistQuery(pathname) ? `${pathname}${query}` : `/qna${query}`);
   };
 
   if (!DEV_PANEL_ENABLED) return null;
@@ -379,10 +395,12 @@ export function DevStatePanel() {
           <RowButton label="반려" onClick={() => setLicenseDemo("rejected")} disabled={licenseDemo === "rejected"} />
         </Row>
 
-        {/* QNA 접근 상태는 서버 판정(쿼리 기반)이라 저장소가 아닌 URL로 전환한다.
-            패널에서 유일하게 화면을 이동시키는 행 — 쿼리가 QNA 라우트에서만 소비되므로
-            QNA로 데려가는 것까지가 전환이다. 헤더로 QNA를 벗어나면 상태가 풀린다(의도된 데모 한계). */}
-        <Row label="약사 QNA" on={qnaState === "verified"}>
+        {/* 약사 인증 상태는 서버 판정(쿼리 기반)이라 저장소가 아닌 URL로 전환한다.
+            약사 QNA와 약국 재직 후기 작성 게이트가 같은 축을 보므로 행은 하나다.
+            쿼리를 소비하지 않는 화면에서는 QNA로 데려가는 것까지가 전환이고, 소비하는 화면
+            (QNA·기업 상세·기업 리뷰) 위에서는 제자리에서 바뀐다.
+            그 밖으로 나가면 상태가 풀린다(의도된 데모 한계). */}
+        <Row label="약사 인증" on={qnaState === "verified"}>
           <RowButton label="인증됨" onClick={() => applyQnaState("verified")} disabled={qnaState === "verified"} />
           <RowButton label="미인증" onClick={() => applyQnaState("unverified")} disabled={qnaState === "unverified"} />
           <RowButton label="자격없음" onClick={() => applyQnaState("ineligible")} disabled={qnaState === "ineligible"} />

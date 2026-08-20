@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Lock, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePharmacistNoticeSeen } from "@/hooks/usePharmacistNoticeSeen";
+import { PHARMACIST_LICENSE_CTA, PHARMACIST_LICENSE_REGISTER_HREF } from "@/config/pharmacistLicenseGate";
 
 /**
  * 약사 미인증 회원에게 면허 등록 동선을 알리는 안내 창.
@@ -21,10 +22,13 @@ import { usePharmacistNoticeSeen } from "@/hooks/usePharmacistNoticeSeen";
 
 const NOTICE_PRIMARY = "약사 Q&A는 인증 회원만 이용할 수 있습니다.";
 const NOTICE_SECONDARY = "면허를 등록하시면 확인 후 이용 가능합니다.";
-const NOTICE_CTA = "면허 등록하러 가기";
-
-/** 회원정보 §4 "약사 인증" 섹션. SectionCard가 id를 그대로 내보내고 scroll-mt까지 들고 있어 앵커가 선다. */
-const LICENSE_REGISTER_HREF = "/mypage/account#license";
+/**
+ * CTA 문구와 이동처는 약국 재직 후기 작성 게이트와 같은 값을 쓴다(pharmacistLicenseGate).
+ * 두 게이트가 같은 면허 등록 동선을 가리키므로 문구가 한쪽에서만 바뀌면 안 된다.
+ * 이동처는 회원정보 §4 "약사 인증" 섹션 — SectionCard가 id를 그대로 내보내 앵커가 선다.
+ */
+const NOTICE_CTA = PHARMACIST_LICENSE_CTA;
+const LICENSE_REGISTER_HREF = PHARMACIST_LICENSE_REGISTER_HREF;
 
 function PharmacistLicenseNoticeModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {

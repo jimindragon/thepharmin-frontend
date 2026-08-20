@@ -7,6 +7,8 @@ import { CompanyMobileOverviewRedirect } from "@/components/company/CompanyMobil
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { PharmacyReviewsListClient } from "@/components/company/PharmacyReviewsListClient";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
+import { getPharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
+import { resolveQnaViewerState, type QnaPreviewSearchParams } from "@/config/qnaAccess";
 import { companyReviews } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
@@ -15,6 +17,8 @@ import { readPersonalSession } from "@/lib/session.server";
 
 interface CompanyReviewsPageProps {
   params: Promise<{ companyId: string }>;
+  /** 약사 인증 미리보기 쿼리 — 작성 진입 CTA가 이 축을 그대로 본다(작성 폼 라우트와 같은 판정) */
+  searchParams: Promise<QnaPreviewSearchParams>;
 }
 
 export const metadata: Metadata = {
@@ -26,10 +30,13 @@ export const metadata: Metadata = {
  * 잠금은 서버가 content를 비워서가 아니라 클라이언트 상태기계가 걸므로 이 페이지는 어느 트랙이든 원문을 내려준다.
  * KeywordReview 기반 요약 섹션(긍정/개선 키워드 포함)은 제거됐다 — companyReviews 원문 목록 하나가 이 페이지의 전체 내용이다.
  * 작성 카드의 로그인 분기만 개인 세션 쿠키를 본다 — 본문 열람 게이팅과는 무관하다. */
-export default async function CompanyReviewsPage({ params }: CompanyReviewsPageProps) {
+export default async function CompanyReviewsPage({ params, searchParams }: CompanyReviewsPageProps) {
   const { companyId } = await params;
   const isLoggedIn = await readPersonalSession();
   const profile = getCompanyProfile(companyId);
+  const isPharmacy = getCompanyTrack(companyId) === "pharmacy";
+  /** 약국만 작성 자격을 가른다 — 나머지 세 트랙의 재직 후기 작성에는 이 게이트가 없다 */
+  const writeAccess = isPharmacy ? getPharmacyReviewWriteAccess(await resolveQnaViewerState(await searchParams)) : "allowed";
 
   /* 매핑은 개요의 인라인 펼침과 공유한다(companyReviewItems) — 같은 후기가 두 화면에서 다르게 보이지 않도록 */
   const items = companyReviews
@@ -42,8 +49,8 @@ export default async function CompanyReviewsPage({ params }: CompanyReviewsPageP
      border-y는 흰 블록의 시작·끝을 확정하는 자리다: 섹션 카드(FLUSH_SECTION_CLASS)와 달리 이 목록에는
      감싸는 셸이 없어, 위아래 1px이 없으면 회색 배경으로 그대로 번진다. */
   const body =
-    getCompanyTrack(companyId) === "pharmacy" ? (
-      <PharmacyReviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />
+    isPharmacy ? (
+      <PharmacyReviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} writeAccess={writeAccess} />
     ) : (
       <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS, "max-[760px]:border-y max-[760px]:border-border")}>
         <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />

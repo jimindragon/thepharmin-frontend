@@ -5,6 +5,7 @@ import { FLUSH_GRID_CLASS } from "@/components/flushListStyles";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import type { PharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
 import { useInterviewAccess } from "@/hooks/useInterviewAccess";
 
 interface PharmacyReviewsListClientProps {
@@ -13,6 +14,12 @@ interface PharmacyReviewsListClientProps {
   isLoggedIn: boolean;
   /** ≤760px 목록 위아래 1px 경계. 기준은 면접 후기 목록과 같다 — 섹션 카드 안에 들어갈 때만 끈다. */
   framed?: boolean;
+  /**
+   * 약사 인증 게이트. 서버가 약사 QNA와 같은 축으로 가른 값을 그대로 받는다.
+   * 기본값이 "allowed"인 것은 이 값을 넘기지 않는 미리보기 경로(기업센터 브랜드 페이지)를 위해서다 —
+   * 그쪽은 본문 전체가 inert라 어느 쪽이 서든 눌리지 않는다.
+   */
+  writeAccess?: PharmacyReviewWriteAccess;
 }
 
 /**
@@ -33,11 +40,22 @@ interface PharmacyReviewsListClientProps {
  * 첫 슬롯은 종전대로 작성 유도 카드다(면접 후기 쪽 열람권 상태 카드가 아니다) — 그 카드의 문구·CTA가
  * "면접 후기 작성하기"로 박혀 있어 이 자리에 세울 수 없고, 보유 장수는 잠긴 카드의 CTA가 말해 준다.
  */
-export function PharmacyReviewsListClient({ companyId, items, isLoggedIn, framed = true }: PharmacyReviewsListClientProps) {
+export function PharmacyReviewsListClient({
+  companyId,
+  items,
+  isLoggedIn,
+  framed = true,
+  writeAccess = "allowed",
+}: PharmacyReviewsListClientProps) {
   /** 지급 대상이 면접 후기만이 아니게 됐으므로, 잠금 CTA는 이 약국의 재직 후기 작성 폼으로 보낸다 */
   const writeHref = `/companies/${companyId}/reviews/new`;
 
-  const { credits, pendingUnlockId, getAccess, confirmUnlock, cancelUnlock } = useInterviewAccess({ isLoggedIn, writeHref });
+  /** 잠금 CTA가 작성 폼을 가리키므로 작성 자격을 함께 넘긴다 — 쓸 수 없는 회원을 그리로 보내지 않는다 */
+  const { credits, pendingUnlockId, getAccess, confirmUnlock, cancelUnlock } = useInterviewAccess({
+    isLoggedIn,
+    writeHref,
+    writeAccess,
+  });
 
   const pendingItem = items.find((item) => item.id === pendingUnlockId);
 
@@ -50,7 +68,14 @@ export function PharmacyReviewsListClient({ companyId, items, isLoggedIn, framed
           framed && "max-[760px]:border-y max-[760px]:border-border",
         )}
       >
-        <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems={items.length > 0} />
+        {/* 자격 무관 회원에게는 이 카드가 통째로 빠진다(카드 안에서 판정) — 격자 첫 칸이 사라지고 후기만 남는다 */}
+        <CompanyReviewWriteCard
+          companyId={companyId}
+          reviewType="company"
+          isLoggedIn={isLoggedIn}
+          hasItems={items.length > 0}
+          writeAccess={writeAccess}
+        />
         {items.map((item) => {
           /* 비공개·삭제된 후기는 게이팅에서 뺀다 — 내려갈 내용이 없어 열람권을 쓸 대상이 아니고,
              그 카드에 잠금 CTA가 붙으면 1장을 쓰고 나서야 빈 것을 알게 된다. */

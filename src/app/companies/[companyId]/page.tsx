@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { CompanyOverviewClient } from "@/components/company/CompanyOverviewClient";
+import type { QnaPreviewSearchParams } from "@/config/qnaAccess";
 import { getCompanyProfile } from "@/data/companyProfiles";
 
 interface CompanyPageProps {
   params: Promise<{ companyId: string }>;
+  /** 약사 인증 미리보기 쿼리 — ≤760px 기업 리뷰 펼침의 작성 유도 카드가 이 축으로 갈린다 */
+  searchParams: Promise<QnaPreviewSearchParams>;
 }
 
 /** 프로필이 없을 때의 처리 방식(문구/라우트)은 기존과 동일 — Header는 이제 layout.tsx가 그려주므로 여기서는 빼둔다 */
@@ -24,7 +27,7 @@ function MissingCompany() {
   );
 }
 
-export default async function CompanyPage({ params }: CompanyPageProps) {
+export default async function CompanyPage({ params, searchParams }: CompanyPageProps) {
   const { companyId } = await params;
   const profile = getCompanyProfile(companyId);
 
@@ -32,5 +35,5 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
     return <MissingCompany />;
   }
 
-  return <CompanyOverviewClient profile={profile} />;
+  return <CompanyOverviewClient profile={profile} searchParams={await searchParams} />;
 }

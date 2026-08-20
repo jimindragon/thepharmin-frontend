@@ -9,7 +9,11 @@ interface LockedContentProps {
   message: string;
   /** message 아래에 보조 설명 한 줄을 더 그린다(예: "보유 2장"). 미지정 시 기존과 동일하게 한 줄만 렌더한다. */
   secondaryMessage?: string;
-  ctaLabel: string;
+  /**
+   * 생략하면 CTA 자체를 그리지 않는다 — 잠긴 것은 맞지만 지금 이 회원이 할 수 있는 일이 없는
+   * 자리에서 쓴다(약국 재직 후기에서 약사 자격과 무관한 회원이 그렇다). 값이 있으면 종전과 같다.
+   */
+  ctaLabel?: string;
   /** 실제 라우트로 이동해야 할 때 사용(예: 로그인 상태 복구). */
   ctaHref?: string;
   /** 아직 연결할 실제 화면이 없을 때 사용하는 임시 핸들러. */
@@ -97,7 +101,7 @@ export function LockedContent({
         <SquareIcon icon={Lock} size={iconSize} />
         <p className="max-w-[260px] text-[15px] font-medium leading-[1.5] text-[#4f5967]">{message}</p>
         {secondaryMessage ? <p className="max-w-[260px] text-[12px] font-normal leading-[1.5] text-[#9aa3af]">{secondaryMessage}</p> : null}
-        {ctaHref ? (
+        {!ctaLabel ? null : ctaHref ? (
           <Link href={ctaHref} className={ctaClassName} style={ctaStyle}>
             {ctaLabel}
           </Link>

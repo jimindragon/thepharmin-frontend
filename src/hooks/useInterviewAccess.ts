@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import type { CompanyReviewCardItem, CompanyReviewInterviewAccess } from "@/components/company/CompanyReviewCard";
+import type { PharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
 import type { InterviewAccessUserState } from "@/components/company/InterviewAccessStatusCard";
 import { myUnlockedInterviewReviewsMock, reviewAccessMock } from "@/data/companies";
 import { useReviewAccessDemo } from "@/hooks/useReviewAccessDemo";
@@ -159,6 +160,11 @@ export interface InterviewAccessOptions {
   isLoggedIn: boolean;
   /** noCredits 상태의 CTA("후기 작성하고 열람권 받기")가 이동할 작성 페이지 링크 */
   writeHref: string;
+  /**
+   * 그 작성 페이지에 실제로 들어갈 수 있는지(약국 재직 후기의 약사 인증 게이트).
+   * 넘기지 않으면 "allowed"라 면접 후기 목록은 종전 그대로다 — 면접 후기 작성에는 이 게이트가 없다.
+   */
+  writeAccess?: PharmacyReviewWriteAccess;
 }
 
 export interface InterviewAccess {
@@ -173,7 +179,7 @@ export interface InterviewAccess {
   cancelUnlock: () => void;
 }
 
-export function useInterviewAccess({ isLoggedIn, writeHref }: InterviewAccessOptions): InterviewAccess {
+export function useInterviewAccess({ isLoggedIn, writeHref, writeAccess = "allowed" }: InterviewAccessOptions): InterviewAccess {
   const { demoState } = useReviewAccessDemo();
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -216,13 +222,14 @@ export function useInterviewAccess({ isLoggedIn, writeHref }: InterviewAccessOpt
           status: displayState === "loggedOut" ? "loggedOut" : displayState === "noCredits" ? "noCredits" : "canUnlock",
           credits,
           writeHref,
+          writeAccess,
           onUnlockRequest: () => requestUnlock(userState, item.id),
         };
       }
 
       return { accessLabel, interviewAccess };
     },
-    [credits, displayState, unlockedIds, userState, writeHref],
+    [credits, displayState, unlockedIds, userState, writeAccess, writeHref],
   );
 
   return { displayState, credits, pendingUnlockId, getAccess, confirmUnlock, cancelUnlock };

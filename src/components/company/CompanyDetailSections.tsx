@@ -26,6 +26,7 @@ import { STAT_ROW_CELL, STAT_ROW_ICON, STAT_ROW_LABEL, STAT_ROW_LIST, STAT_ROW_V
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { SectionExpandGroup } from "@/components/company/SectionExpandGroup";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
+import type { PharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
 import { REVIEW_HIDDEN_NOTICE } from "@/config/reviewModeration";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
@@ -410,9 +411,18 @@ export function CompanyReviewsPreviewSection({
   profile,
   type,
   isLoggedIn = false,
+  pharmacyWriteAccess = "allowed",
 }: {
   profile: CompanyProfile;
   type: CompanyReviewType;
+  /**
+   * 약국 재직 후기의 약사 인증 게이트. 펼침이 목록 페이지와 같은 작성 유도 카드·같은 목록
+   * 컴포넌트를 쓰므로 같은 값을 그대로 흘려보낸다.
+   *
+   * 기본값이 "allowed"인 것은 isLoggedIn과 같은 이유다 — 기업센터 브랜드 페이지 미리보기가
+   * 이 섹션을 클라이언트에서 재사용하는데, 그쪽은 쿼리도 세션도 읽을 수 없고 본문이 inert다.
+   */
+  pharmacyWriteAccess?: PharmacyReviewWriteAccess;
   /**
    * 펼침 첫 슬롯의 작성 유도 카드가 로그인/비로그인 문구를 가른다.
    *
@@ -480,7 +490,11 @@ export function CompanyReviewsPreviewSection({
             /* 목록(href)이 아니라 작성 폼으로 직행한다 — ≤760px에서 목록 라우트는
                CompanyMobileOverviewRedirect가 개요로 되돌려보내므로, 목록을 가리키면 방금 떠난 그 자리로
                돌아오는 죽은 CTA가 된다. 비로그인 갈래는 펼침 슬롯의 작성 유도 카드와 같은 규칙이다
-               (CompanyReviewWriteCard: 로그인 전에는 /companies). */
+               (CompanyReviewWriteCard: 로그인 전에는 /companies).
+
+               약사 인증 게이트는 이 갈래에 걸지 않는다 — 후기가 0건일 때만 서는 자리인데 약국은
+               모두 재직 후기를 최소 1건 들고 있어 실제로 밟히지 않는다. 밟히지 않는 갈래에
+               규칙을 하나 더 쌓지 않는다. */
             <Link
               href={isLoggedIn ? `${href}/new` : "/companies"}
               className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
@@ -518,6 +532,7 @@ export function CompanyReviewsPreviewSection({
                   items={all.map(toCompanyReviewCardItem)}
                   isLoggedIn={isLoggedIn}
                   framed={false}
+                  writeAccess={pharmacyWriteAccess}
                 />
               ) : (
                 <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS)}>
