@@ -360,13 +360,16 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
  * 말한 칸을 안내 바가 세지 않으면 "부족한 정보 N개"가 실제보다 적게 보고된다. §5(담당자 정보)는
  * ResearchOrgProfile이 아니라 OrgManager 소관이라 병원·약국과 마찬가지로 여기서 세지 않는다.
  * sectionId는 ResearchOrgProfileClient의 SectionCard id와 일치해야 한다 — 산업 트랙의 "basic"을
- * 복제하면 안 된다(연구 폼의 기본 정보 카드 id는 "basic-info"라 딥링크 해시가 죽는다). */
+ * 복제하면 안 된다(연구 폼의 기본 정보 카드 id는 "basic-info"라 딥링크 해시가 죽는다).
+ * 배열 순서는 폼의 카드 순서(기본 정보 → 연구 환경 → 공개 프로필)를 따른다 — 병원·약국 목록과 같은
+ * 관례다. "부족한 정보 채우기"가 첫 항목의 sectionId로 딥링크하므로, 순서가 곧 사용자가 폼을 채우기
+ * 시작하는 자리다. */
 export const requiredResearchOrgFields: Array<{ label: string; sectionId: string; missing: (profile: ResearchOrgProfile) => boolean }> = [
-  { label: "기관 유형", sectionId: "research-environment", missing: (p) => !p.institutionType },
   { label: "주소", sectionId: "basic-info", missing: (p) => !p.address.trim() },
   { label: "설립 연도", sectionId: "basic-info", missing: (p) => !p.foundedYear.trim() },
   { label: "대표 전화번호", sectionId: "basic-info", missing: (p) => !p.phone.trim() },
   { label: "이메일", sectionId: "basic-info", missing: (p) => !p.email.trim() },
+  { label: "기관 유형", sectionId: "research-environment", missing: (p) => !p.institutionType },
   { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
   { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
   { label: "본문 소개", sectionId: "profile", missing: (p) => !p.fullIntro.trim() },
