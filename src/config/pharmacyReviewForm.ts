@@ -102,6 +102,7 @@ export const pharmacyReviewEnvironmentQuestions = [
     choices: [
       { id: "yes", label: "있었어요" },
       { id: "no", label: "없었어요" },
+      { id: "unknown", label: "잘 모르겠어요" },
     ],
   },
   {
@@ -129,6 +130,7 @@ export const pharmacyReviewEnvironmentQuestions = [
       { id: "easy", label: "편하게 사용할 수 있었어요" },
       { id: "some_pressure", label: "눈치가 조금 보였어요" },
       { id: "difficult", label: "사용하기 어려웠어요" },
+      { id: "no_experience", label: "해당 경험이 없어요" },
     ],
   },
   {
@@ -153,16 +155,31 @@ export const pharmacyReviewAtmosphereQuestion = {
   ],
 } as const satisfies PharmacyReviewQuestion;
 
-/** 05 종합 — 1문항. 위 문항들의 결론에 해당해 별도 섹션으로 세운다. */
+/**
+ * 05 종합 — 1문항. 위 문항들의 결론에 해당해 별도 섹션으로 세운다.
+ *
+ * 여기 적힌 label은 전직자 기준 문구이고, 화면에서는 재직 상태에 따라 갈아 끼운다
+ * (PHARMACY_REVIEW_REHIRE_LABELS) — 아직 다니는 사람에게 "다시 근무할 의향"을 물으면
+ * 이미 그만둔 것을 전제한 물음이 된다.
+ *
+ * 선택지 문구에서 "다시"를 뺀 것도 같은 이유다. 두 상태가 선택지 한 벌을 나눠 쓰고,
+ * 어느 쪽을 묻는지는 문항 문구가 이미 말한다. id는 그대로라 저장값·목데이터는 무영향이다.
+ */
 export const pharmacyReviewRehireQuestion = {
   id: "rehireIntent",
   label: "이 약국에서 다시 근무할 의향이 있나요?",
   choices: [
-    { id: "yes", label: "다시 근무하고 싶어요" },
+    { id: "yes", label: "근무하고 싶어요" },
     { id: "depends", label: "조건에 따라 고려할 것 같아요" },
-    { id: "no", label: "다시 근무하고 싶지 않아요" },
+    { id: "no", label: "근무하고 싶지 않아요" },
   ],
 } as const satisfies PharmacyReviewQuestion;
+
+/** 재직 상태별 재근무 의향 문항 문구. 미선택 기본값은 전직자 쪽 문구다. */
+export const PHARMACY_REVIEW_REHIRE_LABELS: Record<"현직자" | "전직자", string> = {
+  현직자: "앞으로도 이 약국에서 계속 근무할 의향이 있나요?",
+  전직자: pharmacyReviewRehireQuestion.label,
+};
 
 export type PharmacyReviewNarrativeFieldId = "goodPoints" | "badPoints";
 
@@ -170,19 +187,28 @@ export interface PharmacyReviewNarrativeField {
   id: PharmacyReviewNarrativeFieldId;
   label: string;
   placeholder: string;
+  /** 필수 표시(*)와 검증이 함께 보는 값 */
+  required: boolean;
 }
 
-/** 07 상세 내용 — 한 칸짜리 자유서술을 좋았던 점·아쉬웠던 점 두 칸으로 가른다. */
+/**
+ * 07 상세 내용 — 한 칸짜리 자유서술을 좋았던 점·아쉬웠던 점 두 칸으로 가른다.
+ *
+ * 둘 중 좋았던 점만 필수다. 아쉬웠던 점까지 받아 내면 쓸 말이 없는 사람이 칸을 채우려고
+ * 없는 불만을 짓게 되고, 그 문장은 읽는 쪽에도 남는 것이 없다.
+ */
 export const pharmacyReviewNarrativeFields: PharmacyReviewNarrativeField[] = [
   {
     id: "goodPoints",
     label: "좋았던 점을 알려주세요",
     placeholder: "예: 조제 동선이 효율적이고, 궁금한 점을 편하게 물어볼 수 있는 분위기였어요",
+    required: true,
   },
   {
     id: "badPoints",
     label: "아쉬웠던 점을 알려주세요",
     placeholder: "예: 바쁜 시간대에는 휴게시간이 짧아지는 편이었어요.",
+    required: false,
   },
 ];
 
@@ -212,6 +238,90 @@ export const emptyPharmacyReviewChoices: PharmacyReviewChoiceState = {
   atmosphere: "",
   rehireIntent: "",
 };
+
+/** 좋았던 점의 최소 길이(공백 제외). 한 줄 감상만으로는 후기 하나가 서지 않아 하한을 둔다. */
+export const PHARMACY_REVIEW_GOOD_POINTS_MIN = 20;
+
+/**
+ * 폼이 들고 있는 약국 전용 값 한 벌.
+ *
+ * 이 값들은 원래 섹션 컴포넌트의 로컬 state였다 — 필수 문항 검증을 제출부(ReviewWriteClient)가
+ * 하게 되면서, 제출 시점에 값을 볼 수 있는 자리로 올렸다. 저장은 여전히 하지 않는다(목업).
+ */
+export interface PharmacyReviewFormValues {
+  choices: PharmacyReviewChoiceState;
+  /** 근무 시기. 미선택이 빈 문자열인 것은 select의 "선택 안 함"과 같은 값이라서다. */
+  workYear: number | "";
+  /** 종합 별점. 0이 미평가다(PharmacyReviewRating이 1~5인 것과 같은 규칙). */
+  rating: number;
+  narrative: Record<PharmacyReviewNarrativeFieldId, string>;
+}
+
+export const emptyPharmacyReviewFormValues: PharmacyReviewFormValues = {
+  choices: { ...emptyPharmacyReviewChoices },
+  workYear: "",
+  rating: 0,
+  narrative: { goodPoints: "", badPoints: "" },
+};
+
+/**
+ * 에러 맵과 스크롤용 ref 맵이 함께 쓰는 필드 키.
+ * 직무·재직 상태는 4트랙 공통 필드라 문항 id 바깥에 따로 있다.
+ */
+export type PharmacyReviewFieldKey =
+  | PharmacyReviewChoiceFieldId
+  | PharmacyReviewNarrativeFieldId
+  | "jobRole"
+  | "authorStatus"
+  | "workYear"
+  | "rating";
+
+export type PharmacyReviewErrors = Partial<Record<PharmacyReviewFieldKey, string>>;
+
+/** 미선택 문항에 공통으로 붙는 문구. 어느 문항인지는 에러가 놓인 자리가 말하므로 문항명을 되풀이하지 않는다. */
+const CHOICE_REQUIRED_MESSAGE = "하나를 선택해 주세요.";
+
+/**
+ * 필수 문항 검증. 선택 항목은 근무 특징 태그와 아쉬웠던 점 둘뿐이라 여기 나오지 않는다.
+ *
+ * 키를 **화면에 놓인 순서대로** 넣는다 — 제출부가 첫 키를 스크롤 대상으로 삼으므로
+ * 삽입 순서가 곧 "가장 위의 미입력 항목"이다. 문항 순서는 정의 배열을 그대로 돌아
+ * 문항이 늘거나 자리를 바꿔도 이 함수가 따로 어긋나지 않는다.
+ */
+export function validatePharmacyReviewForm({
+  jobRole,
+  authorStatus,
+  values,
+}: {
+  jobRole: string;
+  authorStatus: string;
+  values: PharmacyReviewFormValues;
+}): PharmacyReviewErrors {
+  const errors: PharmacyReviewErrors = {};
+
+  if (!jobRole.trim()) errors.jobRole = "직무를 입력해 주세요.";
+  if (!authorStatus) errors.authorStatus = "재직 상태를 선택해 주세요.";
+  for (const question of pharmacyReviewBasicQuestions) {
+    if (!values.choices[question.id]) errors[question.id] = CHOICE_REQUIRED_MESSAGE;
+  }
+  if (values.workYear === "") errors.workYear = `${PHARMACY_REVIEW_WORK_YEAR_LABEL}를 선택해 주세요.`;
+  if (values.rating === 0) errors.rating = "별점을 선택해 주세요.";
+  for (const question of pharmacyReviewEnvironmentQuestions) {
+    if (!values.choices[question.id]) errors[question.id] = CHOICE_REQUIRED_MESSAGE;
+  }
+  if (!values.choices[pharmacyReviewAtmosphereQuestion.id]) {
+    errors[pharmacyReviewAtmosphereQuestion.id] = CHOICE_REQUIRED_MESSAGE;
+  }
+  if (!values.choices[pharmacyReviewRehireQuestion.id]) {
+    errors[pharmacyReviewRehireQuestion.id] = CHOICE_REQUIRED_MESSAGE;
+  }
+  /** 공백을 빼고 세는 것은 줄바꿈·띄어쓰기로 길이만 채운 글을 통과시키지 않기 위해서다. */
+  if (values.narrative.goodPoints.replace(/\s/g, "").length < PHARMACY_REVIEW_GOOD_POINTS_MIN) {
+    errors.goodPoints = `공백 제외 ${PHARMACY_REVIEW_GOOD_POINTS_MIN}자 이상 작성해 주세요.`;
+  }
+
+  return errors;
+}
 
 /** 단일 선택 문항 10개를 정의 순서대로 한 줄에 세운 목록. 라벨 조회와 저장 타입 파생이 함께 쓴다. */
 export const pharmacyReviewQuestions = [

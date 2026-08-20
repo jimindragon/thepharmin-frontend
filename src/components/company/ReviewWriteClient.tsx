@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { FieldLabel, Segmented, TextInput } from "@/components/business/BusinessFormControls";
@@ -11,6 +11,11 @@ import { FormSection, TEXTAREA_CLASS } from "@/components/company/ReviewFormSect
 import { ReviewTagSelector } from "@/components/company/ReviewTagSelector";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
+import {
+  emptyPharmacyReviewFormValues,
+  validatePharmacyReviewForm,
+  type PharmacyReviewFieldKey,
+} from "@/config/pharmacyReviewForm";
 import { REVIEW_TAG_MAX, interviewDifficultyOptions, interviewFormatOptions } from "@/config/reviewTags";
 import type { CompanyReviewType, JobTrack } from "@/types/jobs";
 
@@ -59,6 +64,24 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   const [interviewDifficulty, setInterviewDifficulty] = useState<InterviewDifficulty | "">("");
   const [interviewFormat, setInterviewFormat] = useState<InterviewFormat | "">("");
   const [showToast, setShowToast] = useState(false);
+
+  /**
+   * 약국 재직 후기 전용 값과 필수 검증.
+   *
+   * 세 트랙의 폼에는 쓰이지 않는 state지만 훅은 조건부로 부를 수 없고, 무엇보다 검증하는 쪽이
+   * 값을 봐야 한다 — 값이 섹션 컴포넌트 안에 있으면 제출 버튼은 무엇이 비었는지 알 방법이 없다.
+   * 약국이 아닌 폼에서는 아래 pharmacyErrors가 항상 빈 객체라 제출 경로도 종전 그대로다.
+   */
+  const [pharmacyValues, setPharmacyValues] = useState(emptyPharmacyReviewFormValues);
+  /** 제출을 한 번 눌러 막힌 뒤에만 에러를 그린다 — 열자마자 빨간 줄이 깔린 폼은 아직 아무것도 하지 않은 사람을 나무란다. */
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const pharmacyFieldRefs = useRef<Partial<Record<PharmacyReviewFieldKey, HTMLDivElement | null>>>({});
+  const registerPharmacyField = (key: PharmacyReviewFieldKey) => (element: HTMLDivElement | null) => {
+    pharmacyFieldRefs.current[key] = element;
+  };
+  /** 값에서 매 렌더 다시 뽑는다 — 에러를 state로 두면 채운 문항의 빨간 줄이 다음 제출까지 남는다. */
+  const pharmacyErrors =
+    isPharmacyReview && submitAttempted ? validatePharmacyReviewForm({ jobRole, authorStatus, values: pharmacyValues }) : {};
 
   const titleLabel = isInterview ? "면접 후기 작성" : "기업 리뷰 작성";
   const contentGuide = isInterview ? "200~350자 권장" : "100~150자 권장";
@@ -113,6 +136,18 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
   };
 
   const handleSubmit = () => {
+    if (isPharmacyReview) {
+      const errors = validatePharmacyReviewForm({ jobRole, authorStatus, values: pharmacyValues });
+      /** 검증 함수가 키를 화면 순서대로 넣으므로 첫 키가 가장 위의 미입력 항목이다. */
+      const [firstMissingKey] = Object.keys(errors) as PharmacyReviewFieldKey[];
+      if (firstMissingKey) {
+        setSubmitAttempted(true);
+        const element = pharmacyFieldRefs.current[firstMissingKey];
+        element?.scrollIntoView({ behavior: "smooth", block: "center" });
+        element?.querySelector<HTMLElement>("input,select,textarea,button")?.focus();
+        return;
+      }
+    }
     setShowToast(true);
     window.setTimeout(() => {
       router.push(getLeaveHref());
@@ -140,6 +175,10 @@ export function ReviewWriteClient({ companyId, companyName, track, reviewType }:
           onAuthorStatusChange={setAuthorStatus}
           selectedTags={selectedTags}
           onToggleTag={handleToggleTag}
+          values={pharmacyValues}
+          onValuesChange={setPharmacyValues}
+          errors={pharmacyErrors}
+          registerField={registerPharmacyField}
         />
       ) : (
         <>
