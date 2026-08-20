@@ -15,6 +15,8 @@ import {
   HospitalSummarySection,
   PharmacyAsidePanel,
   PharmacySummarySection,
+  ResearchAsidePanel,
+  ResearchSummarySection,
 } from "@/components/company/CompanyDetailSections";
 import { readSignupOrgTrack, trackProfilePath } from "@/config/businessSignup";
 import {
@@ -27,21 +29,30 @@ import {
 import {
   getMissingRequiredHospitalFields,
   getMissingRequiredPharmacyFields,
+  getMissingRequiredResearchFields,
   initialHospitalOrgProfile,
   initialPharmacyOrgProfile,
+  initialResearchOrgProfile,
   readHospitalOrgProfileDraft,
   readPharmacyOrgProfileDraft,
+  readResearchOrgProfileDraft,
   type HospitalOrgProfile,
   type PharmacyOrgProfile,
+  type ResearchOrgProfile,
 } from "@/data/businessOrgProfile";
-import { buildHospitalPreview, buildIndustryPreview, buildPharmacyPreview } from "@/data/businessProfilePreview";
+import {
+  buildHospitalPreview,
+  buildIndustryPreview,
+  buildPharmacyPreview,
+  buildResearchPreview,
+} from "@/data/businessProfilePreview";
 
-/** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry.
+/** 데모용 트랙 오버라이드(개발 확인용): ?track=pharmacy | hospital | industry | research.
  * BusinessOrgProfilePageClient(기관정보 관리)와 동일한 규칙 — 가입 결과보다 쿼리가 우선한다. */
 function readTrackOverride(): OrgTrack | null {
   const params = new URLSearchParams(window.location.search);
   const track = params.get("track");
-  if (track === "pharmacy" || track === "hospital" || track === "industry") return track;
+  if (track === "pharmacy" || track === "hospital" || track === "industry" || track === "research") return track;
   return null;
 }
 
@@ -94,6 +105,8 @@ export function BusinessCompanyPreviewClient() {
   const [hospitalProfile, setHospitalProfile] = useState<HospitalOrgProfile>(initialHospitalOrgProfile);
   // 약국 트랙도 동일한 패턴 — SSR은 initialPharmacyOrgProfile로 시작하고 draft는 마운트 후 반영한다.
   const [pharmacyProfile, setPharmacyProfile] = useState<PharmacyOrgProfile>(initialPharmacyOrgProfile);
+  // 연구 트랙도 동일한 패턴 — SSR은 initialResearchOrgProfile로 시작하고 draft는 마운트 후 반영한다.
+  const [researchProfile, setResearchProfile] = useState<ResearchOrgProfile>(initialResearchOrgProfile);
 
   useEffect(() => {
     const fromSignup = readSignupOrgTrack();
@@ -110,9 +123,13 @@ export function BusinessCompanyPreviewClient() {
 
     const pharmacyDraft = readPharmacyOrgProfileDraft();
     if (pharmacyDraft) setPharmacyProfile(pharmacyDraft);
+
+    const researchDraft = readResearchOrgProfileDraft();
+    if (researchDraft) setResearchProfile(researchDraft);
   }, []);
 
-  const trackLabel = track === "hospital" ? "병원" : track === "pharmacy" ? "약국" : "기업";
+  /** 페이지 제목 아래 설명문이 쓰는 트랙 이름 — 산업(catch-all)만 "기업"이다 */
+  const trackLabel = track === "hospital" ? "병원" : track === "pharmacy" ? "약국" : track === "research" ? "연구기관" : "기업";
 
   let body: ReactNode;
   let missing: MissingInfoState;
@@ -151,8 +168,25 @@ export function BusinessCompanyPreviewClient() {
         </div>
       </>
     );
+  } else if (track === "research") {
+    // 병원·약국과 달리 company 목객체를 만들지 않는다 — ResearchSummarySection/ResearchAsidePanel이 받지 않는다.
+    const profile = buildResearchPreview(researchProfile);
+    const missingFields = getMissingRequiredResearchFields(researchProfile);
+    missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
+    body = (
+      <>
+        <CompanyHero profile={profile} />
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
+          <div className="grid gap-9">
+            <ResearchSummarySection profile={profile} />
+            <CompanyReviewsPreviewSection profile={profile} type="interview" />
+            <CompanyReviewsPreviewSection profile={profile} type="company" />
+          </div>
+          <ResearchAsidePanel profile={profile} />
+        </div>
+      </>
+    );
   } else {
-    // 연구 트랙은 아직 별도 orgTrack이 없어(가입 시 "industry"로 합류, STEP 7에서 분리 예정) 이 분기를 그대로 탄다.
     const profile = buildIndustryPreview(industryProfile, initialIndustryOrgAdmin);
     const missingFields = getMissingRequiredIndustryOrgFields(industryProfile, initialIndustryOrgAdmin);
     missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
