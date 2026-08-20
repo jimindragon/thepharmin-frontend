@@ -254,7 +254,12 @@ export function CompanyReviewCard({
     review.applyYear && review.applyHalf ? `${review.applyYear}년 ${review.applyHalf} ${review.isInterview ? "면접" : "지원"}` : null;
 
   return (
-    <article className={clsx(!frameless && "border border-border bg-white", !frameless && (compact ? "p-3" : "p-4"))}>
+    /* full 카드만 데스크톱에서 한 단(16 → 24px) 넓힌다. 좁은 화면은 종전 16px 그대로다 —
+       그 폭에서는 카드 여백이 곧 화면 여백이라 더 넣으면 본문이 그만큼 좁아진다.
+       분기를 max-[760px]:로 쓰는 것은 이 프로젝트의 모바일 경계가 760px이라서다(md:는 768px).
+       compact(개요 미리보기)는 밀도가 정체성이라 12px 그대로 두고, frameless(기업센터 후기 관리)는
+       카드가 껍질을 벗어 여백을 바깥 흰 블록이 쥐므로 이 줄이 애초에 닿지 않는다. */
+    <article className={clsx(!frameless && "border border-border bg-white", !frameless && (compact ? "p-3" : "p-6 max-[760px]:p-4"))}>
       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
         <span className={clsx("min-w-0 truncate font-medium text-[#3f4855]", compact ? "text-[12px]" : "text-[13px]")}>
           {review.jobRole} · {review.authorStatus}
