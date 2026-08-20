@@ -299,6 +299,10 @@ export interface ResearchOrgProfile {
   logoUrl: string | null;
   coverImageUrl: string | null;
   shortIntro: string;
+  /** 본문 소개(자유 서술) — 구직자 상세 "기관 소개" 카드(ResearchOverviewCard)의 본문 자리다.
+   * 산업 트랙(IndustryOrgProfile)의 fullIntro와 동일 목적이며, 병원처럼 선택 입력으로 두지 않는다
+   * — 이 값이 비면 미리보기에서 "기관 소개" 섹션이 통째로 사라진다. */
+  fullIntro: string;
   features: OrgFeatureItem[];
   keywords: string[];
   // 연구 환경
@@ -335,6 +339,7 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
   logoUrl: null,
   coverImageUrl: null,
   shortIntro: "",
+  fullIntro: "",
   features: [],
   keywords: [],
   institutionType: "",
@@ -348,6 +353,22 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
     exposeOnSearch: true,
   },
 };
+
+/** 브랜드 페이지 미리보기의 "부족한 정보 채우기"가 참조하는 연구 트랙 필수 항목.
+ * requiredHospitalProfileFields/requiredPharmacyProfileFields와 같은 목적의 연구 전용 버전이다.
+ * sectionId는 ResearchOrgProfileClient의 SectionCard id와 일치해야 한다 — 산업 트랙의 "basic"을
+ * 복제하면 안 된다(연구 폼의 기본 정보 카드 id는 "basic-info"라 딥링크 해시가 죽는다). */
+export const requiredResearchOrgFields: Array<{ label: string; sectionId: string; missing: (profile: ResearchOrgProfile) => boolean }> = [
+  { label: "기관 유형", sectionId: "research-environment", missing: (p) => !p.institutionType },
+  { label: "주소", sectionId: "basic-info", missing: (p) => !p.address.trim() },
+  { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
+  { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
+  { label: "본문 소개", sectionId: "profile", missing: (p) => !p.fullIntro.trim() },
+];
+
+export function getMissingRequiredResearchFields(profile: ResearchOrgProfile) {
+  return requiredResearchOrgFields.filter((field) => field.missing(profile));
+}
 
 /** 연구 §5(담당자 정보) 편집 state 초기값. initialHospitalOrgManager와 동일한 이유로 initialIndustryOrgManager
  * 값을 그대로 옮긴다 — 문구·이름은 임의로 바꾸지 않는다. */

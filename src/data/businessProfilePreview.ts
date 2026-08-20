@@ -1,5 +1,6 @@
 import { companyExampleImages } from "@/config/companyImages";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
+import { getResearchInstitutionTypeLabel } from "@/config/jobFilters/researchFilters";
 import {
   companyTypeOptions,
   employeeCountOptions,
@@ -7,7 +8,7 @@ import {
   type IndustryOrgProfile,
   type OrgAdmin,
 } from "@/data/businessCompanyProfile";
-import type { HospitalOrgProfile, OrgFeatureItem, PharmacyOrgProfile } from "@/data/businessOrgProfile";
+import type { HospitalOrgProfile, OrgFeatureItem, PharmacyOrgProfile, ResearchOrgProfile } from "@/data/businessOrgProfile";
 import { regionFromAddress } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company } from "@/types/jobs";
@@ -83,6 +84,58 @@ export function buildIndustryPreview(profile: IndustryOrgProfile, admin: OrgAdmi
       reviewKeywordCount: "-",
       products: profile.products,
       address,
+    },
+  };
+}
+
+/** 연구 트랙: 병원·약국과 같은 이유로 kist 등 실데이터를 조회하지 않고 항상 여기서 변환한다.
+ * 병원·약국과 달리 { profile, company } 쌍이 아니라 profile만 돌려준다 — 연구 트랙의 구직자 상세
+ * 컴포넌트(ResearchSummarySection/ResearchAsidePanel)는 Company를 인자로 받지 않는다. 기관 유형·연구
+ * 인력 규모 같은 트랙 전용 값이 Company가 아니라 CompanyProfile에 실려 있기 때문이라, 여기서 Company
+ * 목객체를 만들어 봐야 읽는 쪽이 없다. */
+export function buildResearchPreview(org: ResearchOrgProfile): CompanyProfile {
+  const id = "business-preview-research";
+  const typeLabel = org.institutionType ? getResearchInstitutionTypeLabel(org.institutionType) : "";
+  const fullAddress = [org.address, org.detailAddress].filter((part) => part.trim()).join(" ");
+  const region = regionFromAddress(org.address);
+
+  return {
+    id,
+    name: org.institutionName,
+    logoText: getCompanyInitial(org.institutionName),
+    logoImage: org.logoUrl ?? undefined,
+    tagline: org.shortIntro,
+    /** CompanyHero의 institutionHeroBadges는 companies.ts 조회에 실패하면 이 tags로 폴백한다.
+     * 실제 연구 기관 상세가 세우는 배지(기관 유형 + 지역)와 같은 두 칸을 여기서 만든다. */
+    tags: [typeLabel, region].filter((value) => Boolean(value)),
+    coverImage: org.coverImageUrl ?? companyExampleImages.research,
+    /** ResearchInfoCard는 metrics를 읽지 않는다(병원의 "병상 수"처럼 metricValue로 꺼내 쓰는 값이 없다) */
+    metrics: [],
+    businessSummary: [],
+    recruitSummary: org.shortIntro,
+    fullIntro: org.fullIntro,
+    /** 라벨 문자열이 곧 조회 키다 — ResearchInfoCard가 detailValue(profile, "설립 연도" | "본사 위치" | "홈페이지")로
+     * 꺼내므로 산업 변환기의 "설립일" 같은 표기를 복제하면 그 행이 통째로 사라진다. */
+    details: [
+      { label: "설립 연도", value: org.foundedYear ? `${org.foundedYear}년` : null },
+      { label: "본사 위치", value: fullAddress || null },
+      { label: "홈페이지", value: org.homepageUrl || null },
+    ],
+    keywords: org.keywords,
+    news: [],
+    features: toProfileFeatures(org.features),
+    phone: org.phone || undefined,
+    email: org.email || undefined,
+    institutionTypeId: org.institutionType || undefined,
+    staffScaleId: org.staffScale || undefined,
+    researchFields: org.researchFieldIds,
+    equipmentInfra: org.equipmentInfra || undefined,
+    achievements: org.achievements || undefined,
+    sidebar: {
+      interestedCount: "-",
+      reviewKeywordCount: "-",
+      products: [],
+      address: fullAddress,
     },
   };
 }
