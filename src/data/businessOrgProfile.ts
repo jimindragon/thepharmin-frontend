@@ -356,11 +356,17 @@ export const initialResearchOrgProfile: ResearchOrgProfile = {
 
 /** 브랜드 페이지 미리보기의 "부족한 정보 채우기"가 참조하는 연구 트랙 필수 항목.
  * requiredHospitalProfileFields/requiredPharmacyProfileFields와 같은 목적의 연구 전용 버전이다.
+ * 항목은 ResearchOrgProfileClient가 <FieldLabel required>로 표시한 것과 1:1로 맞춘다 — 폼이 필수라고
+ * 말한 칸을 안내 바가 세지 않으면 "부족한 정보 N개"가 실제보다 적게 보고된다. §5(담당자 정보)는
+ * ResearchOrgProfile이 아니라 OrgManager 소관이라 병원·약국과 마찬가지로 여기서 세지 않는다.
  * sectionId는 ResearchOrgProfileClient의 SectionCard id와 일치해야 한다 — 산업 트랙의 "basic"을
  * 복제하면 안 된다(연구 폼의 기본 정보 카드 id는 "basic-info"라 딥링크 해시가 죽는다). */
 export const requiredResearchOrgFields: Array<{ label: string; sectionId: string; missing: (profile: ResearchOrgProfile) => boolean }> = [
   { label: "기관 유형", sectionId: "research-environment", missing: (p) => !p.institutionType },
   { label: "주소", sectionId: "basic-info", missing: (p) => !p.address.trim() },
+  { label: "설립 연도", sectionId: "basic-info", missing: (p) => !p.foundedYear.trim() },
+  { label: "대표 전화번호", sectionId: "basic-info", missing: (p) => !p.phone.trim() },
+  { label: "이메일", sectionId: "basic-info", missing: (p) => !p.email.trim() },
   { label: "기관 로고", sectionId: "profile", missing: (p) => !p.logoUrl },
   { label: "한 줄 소개", sectionId: "profile", missing: (p) => !p.shortIntro.trim() },
   { label: "본문 소개", sectionId: "profile", missing: (p) => !p.fullIntro.trim() },
