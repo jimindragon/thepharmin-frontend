@@ -9,7 +9,7 @@ import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { researchInstitutionTypeOptions, researchStaffScaleOptions } from "@/config/jobFilters/researchFilters";
 import { researchFieldCategoryOptions } from "@/config/researchFields";
 import { type FileStatus, type OrgManager } from "@/data/businessCompanyProfile";
-import { initialResearchOrgManager, initialResearchOrgProfile, type OrgFeatureItem, type ResearchOrgProfile } from "@/data/businessOrgProfile";
+import { initialResearchOrgManager, initialResearchOrgProfile, saveResearchOrgProfileDraft, type OrgFeatureItem, type ResearchOrgProfile } from "@/data/businessOrgProfile";
 import type { LabInstitutionType, ResearchStaffScale } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
 
@@ -147,6 +147,12 @@ export function ResearchOrgProfileClient() {
     window.setTimeout(() => setSaved(false), 2400);
   };
 
+  // 미리보기는 별도 라우트(/business/company/preview)라 props를 직접 넘길 수 없다 — 이동 직전 sessionStorage에
+  // 편집 중인 state를 남겨 미리보기 화면이 읽어가게 한다(서버 저장 아님, 클라이언트 내에서만).
+  const goToPreview = () => {
+    saveResearchOrgProfileDraft(profile);
+  };
+
   return (
     <div>
       {saved ? (
@@ -162,10 +168,10 @@ export function ResearchOrgProfileClient() {
           <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">채용공고와 연구기관 상세 페이지에 표시되는 기관 정보를 관리합니다.</p>
         </div>
         <div className="flex shrink-0 gap-2 max-[760px]:w-full">
-          <span className="inline-flex h-11 items-center justify-center gap-2 border border-[#e2e8ef] bg-[#f7f8fa] px-4 text-[13px] font-medium text-[#a4adba] cursor-not-allowed max-[760px]:flex-1">
-            브랜드 페이지 미리보기 준비 중
+          <Link href="/business/company/preview?track=research" onClick={goToPreview} className="inline-flex h-11 items-center justify-center gap-2 border border-[#cfd8e3] bg-white px-4 text-[13px] font-medium text-[#303946] hover:border-[#111111] max-[760px]:flex-1">
+            브랜드 페이지 미리보기
             <ExternalLink size={15} />
-          </span>
+          </Link>
         </div>
       </div>
 
@@ -389,6 +395,20 @@ export function ResearchOrgProfileClient() {
             <TextInput value={profile.shortIntro} onChange={(value) => updateProfile("shortIntro", value.slice(0, 60))} placeholder="예: 신약 타깃 발굴부터 중개연구까지 수행하는 연구기관" />
           </div>
 
+          <div className="mt-6 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel required>본문 소개</FieldLabel>
+              <span className="shrink-0 text-[12px] font-normal text-[#8a94a3]">{profile.fullIntro.length} / 2000</span>
+            </div>
+            <textarea
+              value={profile.fullIntro}
+              onChange={(event) => updateProfile("fullIntro", event.target.value)}
+              maxLength={2000}
+              placeholder="연구 주제와 그룹 운영 방식, 공동 장비·연구 지원 체계, 연구원이 일하는 환경을 자유롭게 소개해 주세요."
+              className="min-h-[148px] w-full resize-y border border-[#d8e0e8] bg-white px-3.5 py-3 text-[13px] font-normal leading-[1.7] text-[#303946] outline-none transition placeholder:text-[#a4adba] hover:border-[#b0bac6] focus:border-[#111111] focus:ring-4 focus:ring-[#111111]/[0.08]"
+            />
+          </div>
+
           <div className="mt-6">
             <FieldLabel>기관 특징</FieldLabel>
             <div className="mt-3 space-y-2.5">
@@ -563,9 +583,9 @@ export function ResearchOrgProfileClient() {
           <div className="flex items-center justify-between gap-4 max-[640px]:flex-col">
             <p className="text-[13px] font-normal text-[#7b8491]">저장되지 않은 변경사항이 있습니다</p>
             <div className="flex gap-2 max-[640px]:w-full">
-              <span className="inline-flex h-11 items-center justify-center border border-[#e2e8ef] bg-[#f7f8fa] px-7 text-[13px] font-medium text-[#a4adba] cursor-not-allowed max-[640px]:flex-1">
-                미리보기 준비 중
-              </span>
+              <Link href="/business/company/preview?track=research" onClick={goToPreview} className="inline-flex h-11 items-center justify-center border border-[#cfd8e3] bg-white px-7 text-[13px] font-medium text-[#303946] transition hover:border-[#111111] max-[640px]:flex-1">
+                미리보기
+              </Link>
               <button type="button" onClick={saveProfile} className="inline-flex h-11 items-center justify-center px-9 text-[13px] font-bold text-white transition max-[640px]:flex-1" style={{ backgroundImage: "var(--gradient-cta)", textShadow: "0 1px 3px rgba(5,60,55,0.28)" }}>
                 저장하기
               </button>
