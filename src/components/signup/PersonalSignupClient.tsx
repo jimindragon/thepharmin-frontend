@@ -16,13 +16,15 @@ import { SEL } from "@/components/job-registration/fieldClasses";
 import { PhoneVerificationField } from "@/components/signup/PhoneVerificationField";
 import {
   affiliationConfig,
+  affiliationPrimaryGroupOptions,
+  getAffiliationOptionsByGroup,
   getStudentGradeField,
-  memberAffiliationOptions,
   memberPositionOptions,
   shouldShowLicenseField,
   shouldShowPreliminaryPharmacist,
   upcomingPharmacistExamExpiry,
   GRADE_BASE_YEAR,
+  type AffiliationPrimaryGroup,
   type MemberAffiliationId,
   type MemberOption,
   type PreliminaryPharmacistVerification,
@@ -63,6 +65,49 @@ function OptionButtonGroup({
           onClick={() => onChange(option.id)}
           className={clsx(
             "h-9 border px-3 text-[13px] font-medium transition-colors",
+            value === option.id
+              ? "border-[#111111] bg-[#111111] text-white"
+              : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:text-[#111111]",
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 소속 유형 위에 놓이는 대분류 버튼 2개.
+ *
+ * 하위 소속 칩(OptionButtonGroup의 h-9)보다 크게 잡는다 — 층이 다르기 때문이다. 대분류는 아래
+ * 목록의 내용을 정하는 상위 축이고, 둘뿐이라 키워도 세로를 먹지 않는다(InterestPromptModal의
+ * TrackCard가 같은 이유로 같은 선택을 했다).
+ *
+ * 선택 표시는 하위 칩과 같은 검정 채움이다 — 이 폼에서 검정 채움은 "고른 것"의 표시이고,
+ * 층이 다르다고 색 상태를 새로 들이지 않는다.
+ *
+ * 좁은 폭에서 1열로 내리는 것은 라벨 때문이다. "제약·바이오·헬스케어"는 14px에서 150px 남짓이라
+ * 390px 화면의 2열(한 칸 ~147px)에 한 줄로 들어가지 않고, 한국어는 기본값이면 "헬/스케어"처럼
+ * 어절 중간에서도 줄이 갈린다.
+ */
+function AffiliationPrimaryGroupButtons({
+  value,
+  onChange,
+}: {
+  value: AffiliationPrimaryGroup | "";
+  onChange: (group: AffiliationPrimaryGroup) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2 max-[440px]:grid-cols-1" role="group" aria-label="소속 대분류">
+      {affiliationPrimaryGroupOptions.map((option) => (
+        <button
+          key={option.id}
+          type="button"
+          aria-pressed={value === option.id}
+          onClick={() => onChange(option.id)}
+          className={clsx(
+            "flex h-14 items-center justify-center break-keep border px-3 text-center text-[14px] font-medium transition-colors",
             value === option.id
               ? "border-[#111111] bg-[#111111] text-white"
               : "border-[#dddddd] bg-[#f4f4f4] text-[#555555] hover:border-[#bdbdbd] hover:text-[#111111]",
@@ -268,12 +313,17 @@ function PharmacistLicenseField({
 /** STEP2 프로필 묶음 — 소속 유형(13종) → 2차 선택 → 면허/소속명/학번/직급 순으로 조건부 전개된다. */
 function ProfileGroup({
   value,
+  primaryGroup,
+  onChangePrimaryGroup,
   onChangeAffiliation,
   onChangeSecondary,
   onChangeGrade,
   onChange,
 }: {
   value: ProfileState;
+  /** 저장되지 않는 화면 상태. 아래 소속 목록을 좁히기만 한다(memberAffiliation.ts 참고). */
+  primaryGroup: AffiliationPrimaryGroup | "";
+  onChangePrimaryGroup: (group: AffiliationPrimaryGroup) => void;
   onChangeAffiliation: (id: MemberAffiliationId) => void;
   onChangeSecondary: (id: string) => void;
   onChangeGrade: (grade: number) => void;
@@ -292,14 +342,23 @@ function ProfileGroup({
     <div>
       <h2 className={GROUP_TITLE}>프로필 정보</h2>
       <div className="mt-5 space-y-5">
+        {/* 대분류(저장 안 함) → 하위 소속 유형(저장) 2단. 한 칸으로 묶어 둔 것은 둘이 한 질문이기
+            때문이다 — 대분류는 답이 아니라 답을 찾아가는 길이라 자기 라벨을 갖지 않는다. */}
         <div className="space-y-2">
           <FieldLabel required>소속 유형</FieldLabel>
-          <OptionButtonGroup
-            options={memberAffiliationOptions}
-            value={value.affiliationId}
-            onChange={(id) => onChangeAffiliation(id as MemberAffiliationId)}
-            ariaLabel="소속 유형"
-          />
+          <AffiliationPrimaryGroupButtons value={primaryGroup} onChange={onChangePrimaryGroup} />
+          {primaryGroup ? (
+            <div className="pt-1">
+              <OptionButtonGroup
+                options={getAffiliationOptionsByGroup(primaryGroup)}
+                value={value.affiliationId}
+                onChange={(id) => onChangeAffiliation(id as MemberAffiliationId)}
+                ariaLabel="소속 유형"
+              />
+            </div>
+          ) : (
+            <p className="text-[13px] text-[#888888]">먼저 위에서 분류를 선택해 주세요.</p>
+          )}
         </div>
 
         {config?.secondary ? (
@@ -422,6 +481,8 @@ function MemberInfoStep({
   phoneVerified,
   onPhoneVerified,
   profile,
+  primaryGroup,
+  onChangePrimaryGroup,
   onChangeAffiliation,
   onChangeSecondary,
   onChangeGrade,
@@ -433,6 +494,8 @@ function MemberInfoStep({
   phoneVerified: boolean;
   onPhoneVerified: () => void;
   profile: ProfileState;
+  primaryGroup: AffiliationPrimaryGroup | "";
+  onChangePrimaryGroup: (group: AffiliationPrimaryGroup) => void;
   onChangeAffiliation: (id: MemberAffiliationId) => void;
   onChangeSecondary: (id: string) => void;
   onChangeGrade: (grade: number) => void;
@@ -503,6 +566,8 @@ function MemberInfoStep({
 
       <ProfileGroup
         value={profile}
+        primaryGroup={primaryGroup}
+        onChangePrimaryGroup={onChangePrimaryGroup}
         onChangeAffiliation={onChangeAffiliation}
         onChangeSecondary={onChangeSecondary}
         onChangeGrade={onChangeGrade}
@@ -597,6 +662,14 @@ export function PersonalSignupClient() {
   const [memberInfo, setMemberInfo] = useState<MemberInfoState>(emptyMemberInfoState);
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [profile, setProfile] = useState<ProfileState>(emptyProfileState);
+  /**
+   * 소속 대분류 — 저장되지 않는 화면 상태라 ProfileState 바깥에 둔다.
+   *
+   * 안에 넣을 수 없는 이유가 있다: changeAffiliation이 setProfile({ ...emptyProfileState, ... })로
+   * ProfileState를 통째로 갈아치우므로, 대분류가 그 안에 있으면 하위 소속을 고르는 순간 함께
+   * 초기화된다. 별도 state로 두면 그 한 줄을 건드리지 않고도 값이 남는다.
+   */
+  const [primaryGroup, setPrimaryGroup] = useState<AffiliationPrimaryGroup | "">("");
 
   const updateAgreement = <K extends keyof AgreementState>(key: K, next: AgreementState[K]) => {
     setAgreements((current) => ({ ...current, [key]: next }));
@@ -617,6 +690,19 @@ export function PersonalSignupClient() {
   };
 
   const canProceedFromAgreement = agreements.age14 && agreements.service && agreements.privacy;
+
+  /**
+   * 대분류를 바꾸면 소속 유형 이하 전부를 초기화한다 — 화면에서 사라진 항목이 값에만 남으면
+   * 안 된다(InterestPromptModal의 toggleTrack과 같은 규칙).
+   *
+   * 같은 값을 다시 눌렀을 때는 아무것도 하지 않는다. 고른 것이 그대로인데 아래가 사라지면
+   * 오작동으로 읽힌다 — changeSecondary가 한 층 아래에서 쓰는 규칙과 같은 자리다.
+   */
+  const changePrimaryGroup = (group: AffiliationPrimaryGroup) => {
+    if (group === primaryGroup) return;
+    setPrimaryGroup(group);
+    setProfile(emptyProfileState);
+  };
 
   /** 소속 유형을 바꾸면 그 아래 항목(2차 선택·면허·소속명·학번·직급)을 전부 초기화한다. */
   const changeAffiliation = (id: MemberAffiliationId) => {
@@ -716,6 +802,8 @@ export function PersonalSignupClient() {
           phoneVerified={phoneVerified}
           onPhoneVerified={() => setPhoneVerified(true)}
           profile={profile}
+          primaryGroup={primaryGroup}
+          onChangePrimaryGroup={changePrimaryGroup}
           onChangeAffiliation={changeAffiliation}
           onChangeSecondary={changeSecondary}
           onChangeGrade={changeGrade}
