@@ -39,6 +39,58 @@ export const memberAffiliationOptions: Array<{ id: MemberAffiliationId; label: s
   { id: "etc", label: "기타" },
 ];
 
+/**
+ * 소속 유형 13종을 가입 화면에서 두 덩어리로 나누는 **대분류**.
+ *
+ * 이 축은 저장되지 않는다 — 13개를 한 줄에 늘어놓지 않으려고 가입 폼이 쓰는 입력 보조 장치이고,
+ * 회원 데이터(PersonalMember)에 남는 것은 고른 소속 유형(affiliationId)뿐이다. 그래서 여기에도
+ * 화면이 읽을 목록과 필터만 두고, 소속에서 대분류를 되짚는 함수는 두지 않는다.
+ *
+ * 리크루트의 JobTrack(산업/연구/병원/약국)과도 별개 축이다 — 그쪽은 공고를 가르는 4분류이고
+ * 이쪽은 회원에게 소속을 묻기 위한 2분류다. 이름이 겹쳐 보여도 값이 서로 대응하지 않는다.
+ */
+export type AffiliationPrimaryGroup = "industry" | "care";
+
+export const affiliationPrimaryGroupOptions = [
+  { id: "industry", label: "제약·바이오·헬스케어" },
+  { id: "care", label: "약국·병원" },
+] as const;
+
+/**
+ * 대분류에 드는 소속 유형 id.
+ *
+ * 정부·공공·협회 / 학생 / 구직 중 / 기타 4종은 **양쪽 모두**에 든다. 어느 대분류로 들어왔든
+ * 자기를 찾을 수 있어야 하고, 이 넷은 대분류로 갈리지 않는 소속이기 때문이다. 중복은 의도된
+ * 것이며, 어느 쪽에서 고르든 저장되는 affiliationId는 같은 값이다.
+ */
+const affiliationIdsByPrimaryGroup: Record<AffiliationPrimaryGroup, readonly MemberAffiliationId[]> = {
+  industry: [
+    "pharma_bio",
+    "cro_cdmo",
+    "medical_device",
+    "distribution",
+    "research",
+    "finance",
+    "media",
+    "government",
+    "student",
+    "job_seeking",
+    "etc",
+  ],
+  care: ["hospital", "pharmacy", "government", "student", "job_seeking", "etc"],
+};
+
+/**
+ * 대분류에 드는 소속 유형만 추린다.
+ *
+ * 순서는 위 id 배열이 아니라 memberAffiliationOptions의 **선언 순서**를 따른다 — 양쪽에 드는
+ * 4종이 대분류에 따라 다른 자리에 나타나면 같은 목록으로 읽히지 않는다.
+ */
+export function getAffiliationOptionsByGroup(group: AffiliationPrimaryGroup) {
+  const ids = new Set<MemberAffiliationId>(affiliationIdsByPrimaryGroup[group]);
+  return memberAffiliationOptions.filter((option) => ids.has(option.id));
+}
+
 /** 산업/연구 직무는 여기서 목록을 다시 적지 않고 공고 필터의 정본에서 **대분류만** 가져온다(소분류 미사용). */
 const industryJobGroups: MemberOption[] = industryJobCategoryOptions.map(({ id, label }) => ({ id, label }));
 const researchJobGroups: MemberOption[] = researchJobCategoryOptions.map(({ id, label }) => ({ id, label }));
