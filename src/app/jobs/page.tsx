@@ -23,6 +23,23 @@ import { compareJobsByDeadline, isJobExpired } from "@/utils/dday";
 
 const PAGE_SIZE = 8;
 
+/**
+ * URL 쿼리 파싱 전에 목록 자리를 대신 채우는 블록.
+ *
+ * 첫 렌더의 필터는 URL과 무관한 기본값이라 그대로 그리면 "전체 목록 → 필터 적용 목록"으로 한 번
+ * 갈아엎힌다. 결과 수·카드가 바뀌는 것을 보여주느니 아직 셈이 끝나지 않았다고 말하는 편이 정직하다.
+ * 높이(149px)와 간격(gap-1.5)은 JobCard 실측값이라 목록으로 바뀔 때 세로 이동이 없다.
+ */
+function JobListSkeleton() {
+  return (
+    <div className="flex flex-col gap-1.5" aria-hidden="true">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="h-[149px] bg-[#fafafa]" />
+      ))}
+    </div>
+  );
+}
+
 function sortJobs(items: Job[], sortOption: SortOption) {
   return [...items].sort((a, b) => {
     if (sortOption === "최신순") {
@@ -116,7 +133,12 @@ export default function JobsPage() {
 
           <PageTitle className="max-[760px]:mt-0">{siteConfig.pageTitle}</PageTitle>
 
-          <CategoryTabs activeTrack={activeTrack} onChange={filterState.setTrack} variant="page" />
+          {/* 쿼리를 읽기 전에는 활성 탭을 비운다 — ?track=research로 들어와도 산업이 먼저 켜지지 않게. */}
+          <CategoryTabs
+            activeTrack={filterState.queryReady ? activeTrack : null}
+            onChange={filterState.setTrack}
+            variant="page"
+          />
 
           <div className="jobs-layout mt-3.5">
             <div className="jobs-main">
@@ -141,21 +163,35 @@ export default function JobsPage() {
                 countJobs={countJobs}
               />
 
-              <RecommendedJobs
-                jobs={featuredJobs.jobs}
-                onPrev={featuredJobs.onPrev}
-                onNext={featuredJobs.onNext}
-                canGoPrev={featuredJobs.canGoPrev}
-                canGoNext={featuredJobs.canGoNext}
-              />
+              {/*
+                캐러셀도 트랙 파생이라 ?track=research로 들어오면 산업 추천 공고가 먼저 보인다.
+                다만 이 섹션은 높이가 폭에 따라 886~2426px로 크게 달라(반응형 3→2→1열 + 배너
+                aspect-[19/6]) 고정 높이 자리표시자로는 이동을 막을 수 없다. 그래서 실제 캐러셀을
+                그대로 그려 높이는 내용이 잡게 두고(visibility: hidden — 자식까지 안 보이고
+                접근성 트리에서도 빠진다) 그 자리를 회색으로 덮는다. 이동은 정의상 0px이다.
+                바깥/안쪽을 나눈 것은 invisible이 자기 배경까지 지우기 때문이다.
+              */}
+              <div className={filterState.queryReady ? undefined : "bg-[#fafafa]"}>
+                <div className={filterState.queryReady ? undefined : "invisible"}>
+                  <RecommendedJobs
+                    jobs={featuredJobs.jobs}
+                    onPrev={featuredJobs.onPrev}
+                    onNext={featuredJobs.onNext}
+                    canGoPrev={featuredJobs.canGoPrev}
+                    canGoNext={featuredJobs.canGoNext}
+                  />
+                </div>
+              </div>
 
               <JobListToolbar
-                totalCount={filteredJobs.length}
+                totalCount={filterState.queryReady ? filteredJobs.length : null}
                 sortOption={sortOption}
                 onSortChange={setSortOption}
               />
 
-              {visibleJobs.length ? (
+              {!filterState.queryReady ? (
+                <JobListSkeleton />
+              ) : visibleJobs.length ? (
                 <div className="flex flex-col gap-1.5">
                   {visibleJobs.map((job) => (
                     <JobCard
@@ -173,7 +209,9 @@ export default function JobsPage() {
                 </div>
               )}
 
-              <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              {filterState.queryReady ? (
+                <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              ) : null}
             </div>
 
             <SidebarQuickLinks

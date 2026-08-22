@@ -17,7 +17,8 @@ export interface PageTabBarItem<T extends string = string> {
 
 interface PageTabBarProps<T extends string> {
   items: PageTabBarItem<T>[];
-  activeId: T;
+  /** null이면 어느 항목도 활성이 아니다 — 활성값을 아직 모를 때(URL 파싱 전) 잘못된 탭이 켜지는 것을 막는다. */
+  activeId: T | null;
   /** 클라이언트 상태 전환용. hrefFor를 주는 경우에는 필요 없다. */
   onSelect?: (id: T) => void;
   /** 항목이 페이지 이동이어야 할 때(QNA 유형 전환)만 준다 — 주면 button 대신 Link로 그린다. */

@@ -71,7 +71,8 @@ export function SortButtons({ options = defaultSortOptions, sortOption, onChange
 }
 
 interface JobListToolbarProps {
-  totalCount: number;
+  /** null이면 개수 자리를 비운다 — 아직 셈이 끝나지 않았을 때(URL 파싱 전) 틀린 수를 보여주지 않기 위한 값. */
+  totalCount: number | null;
   sortOption: SortOption;
   sortOptions?: SortOption[];
   onSortChange: (sortOption: SortOption) => void;
@@ -86,8 +87,15 @@ export function JobListToolbar({
   return (
     <div className="mb-2.5 mt-5 flex items-center justify-between gap-3.5 max-[760px]:flex-col max-[760px]:items-stretch">
       <div className="flex flex-wrap items-center gap-3">
+        {/* 개수를 모를 때도 문구 줄은 남긴다 — 줄이 통째로 사라지면 목록이 세로로 밀린다. */}
         <p className="text-[17px] font-bold text-[#3c4655]">
-          총 <span className="text-brand">{totalCount}개</span> 공고
+          {totalCount === null ? (
+            <span className="invisible">총 0개 공고</span>
+          ) : (
+            <>
+              총 <span className="text-brand">{totalCount}개</span> 공고
+            </>
+          )}
         </p>
       </div>
       <SortButtons options={sortOptions} sortOption={sortOption} onChange={onSortChange} />

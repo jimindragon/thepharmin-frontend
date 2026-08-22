@@ -39,7 +39,7 @@ import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
 import { getResearchInstitutionTypeLabel, researchStaffScaleOptions } from "@/config/jobFilters/researchFilters";
 import { getResearchFieldShortLabel } from "@/config/researchFields";
 import { companyReviews } from "@/data/companies";
-import { getActiveJobCount, getActiveJobs } from "@/data/companyDirectory";
+import { getActiveJobCount, getActiveJobs, getCompanyTrack } from "@/data/companyDirectory";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company, CompanyReview, CompanyReviewType } from "@/types/jobs";
 
@@ -551,6 +551,18 @@ export function CompanyReviewsPreviewSection({
   );
 }
 
+/**
+ * 공고 목록의 "더보기" 링크. 목록 필터가 아는 파라미터로만 만든다 —
+ * `?company=`는 `useJobFilters`가 읽지 않아 전체 목록으로 떨어졌다.
+ *
+ * 기업명은 keyword로 넘긴다(`filterJobsByFilters`의 haystack에 `job.company`가 있다).
+ * track도 같이 넘겨야 한다 — 목록은 `matchTrack` 기본값이 true라 track이 없으면
+ * 산업으로 폴백해 병원·약국·연구 기업의 공고가 한 건도 걸리지 않는다.
+ */
+function companyJobsHref(profile: CompanyProfile) {
+  return `/jobs?track=${getCompanyTrack(profile.id)}&keyword=${encodeURIComponent(profile.name)}`;
+}
+
 export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
   const activeJobs = getActiveJobs(profile.id);
 
@@ -559,7 +571,7 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
       title="채용공고"
       description="이 기업이 채용 중인 포지션을 살펴보세요."
       action={
-        <Link href={`/jobs?company=${profile.id}`} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
+        <Link href={companyJobsHref(profile)} className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111]">
           더보기
           <ChevronRight size={15} />
         </Link>

@@ -728,6 +728,12 @@ export function useJobFilters(initialPreferenceApplied = false, options: UseJobF
     jobLimitMessage,
     appliedChips,
     preferenceApplied,
+    /**
+     * URL 쿼리 파싱이 끝났는지. 첫 렌더(SSR 포함)의 `filters`는 URL과 무관한 `emptyJobFilters`라
+     * 그대로 그리면 무필터 목록이 한 번 보였다가 바뀐다 — 결과에 기대는 화면은 이 값이 true가 될
+     * 때까지 렌더를 미룬다.
+     */
+    queryReady,
     hasActiveFilters: hasActiveFilters(filters),
     setKeywordInput,
     setTrack,

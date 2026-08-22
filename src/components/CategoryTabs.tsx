@@ -6,7 +6,11 @@ import { jobTracks } from "@/config/jobTracks";
 import type { JobTrack } from "@/types/jobs";
 
 interface CategoryTabsProps {
-  activeTrack: JobTrack;
+  /**
+   * null이면 어느 탭도 활성으로 그리지 않는다 — 트랙을 URL에서 읽기 전(첫 렌더)에 기본값인
+   * 산업이 잠깐 켜졌다 바뀌는 것을 막기 위한 자리다. 탭 자체는 그대로 그려 레이아웃이 흔들리지 않는다.
+   */
+  activeTrack: JobTrack | null;
   onChange: (track: JobTrack) => void;
   /**
    * page: /jobs처럼 이 탭이 h1 바로 아래 "그 페이지의 첫 컨트롤"인 자리.
