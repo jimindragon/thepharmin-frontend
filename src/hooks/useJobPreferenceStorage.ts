@@ -1,17 +1,102 @@
+import { trackFilterConfigs } from "@/config/jobFilters";
 import type { JobTrack, TrackPreferences, UserJobPreference } from "@/types/jobs";
 
 const STORAGE_KEY = "thepharmin:job-preferences";
+
+/**
+ * 트랙별 유효 직무 id 집합. 필터 정본(trackFilterConfigs → 각 트랙 config의 `kind: "job"` 필터)에서
+ * 뽑되 한 번 만든 집합은 재사용한다 — 정본은 모듈 상수라 런타임에 바뀌지 않는다.
+ */
+const validJobIdsByTrack = new Map<JobTrack, { categoryIds: Set<string>; subcategoryIds: Set<string> }>();
+
+function validJobIds(track: JobTrack) {
+  const cached = validJobIdsByTrack.get(track);
+  if (cached) return cached;
+
+  const categories = trackFilterConfigs[track].filters.find((definition) => definition.kind === "job")?.categories ?? [];
+  const ids = {
+    categoryIds: new Set(categories.map((category) => category.id)),
+    subcategoryIds: new Set(categories.flatMap((category) => category.subcategories.map((subcategory) => subcategory.id))),
+  };
+  validJobIdsByTrack.set(track, ids);
+  return ids;
+}
+
+/** `in`은 toString 같은 프로토타입 키까지 참으로 만든다 — 저장소 키는 남이 넣을 수 있으니 자기 키만 본다. */
+function isJobTrack(key: string): key is JobTrack {
+  return Object.prototype.hasOwnProperty.call(trackFilterConfigs, key);
+}
+
+function sanitizeIds(stored: unknown, valid: Set<string>): { ids: string[]; changed: boolean } {
+  if (!Array.isArray(stored)) return { ids: [], changed: true };
+
+  const ids = stored.filter((id): id is string => typeof id === "string" && valid.has(id));
+  return { ids, changed: ids.length !== stored.length };
+}
+
+/**
+ * 저장된 값에서 정본에 없는 직무 id를 걸러낸다.
+ *
+ * 분류 체계가 바뀌면(대분류 분리·소분류 삭제 등) 예전 id가 저장소에 그대로 남는데, 읽는 쪽은
+ * 라벨을 못 찾으면 id 원문을 그대로 칩에 그린다(`useJobFilters`의 `?? id` 폴백). 화면에
+ * 정본에 없는 칩이 뜨고 해제할 UI도 없어 스스로 지울 수 없는 유령 값이 된다.
+ *
+ * 직무 외 필드(지역·경력 등)는 손대지 않는다 — 이 함수가 아는 정본은 직무 분류뿐이라
+ * 나머지까지 판정하면 근거 없이 사용자 설정을 지우게 된다.
+ */
+function sanitizeAll(parsed: unknown): { preferences: TrackPreferences; changed: boolean } {
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    return { preferences: {}, changed: true };
+  }
+
+  const stored = parsed as Record<string, unknown>;
+  const preferences: TrackPreferences = {};
+  let changed = false;
+
+  for (const key of Object.keys(stored)) {
+    const preference = stored[key];
+
+    // 트랙 키가 아니거나 관심조건 모양이 아니면 어느 트랙 것인지조차 알 수 없어 되살릴 수 없다.
+    if (!isJobTrack(key) || typeof preference !== "object" || preference === null || Array.isArray(preference)) {
+      changed = true;
+      continue;
+    }
+
+    const valid = validJobIds(key);
+    const typed = preference as UserJobPreference;
+    const categories = sanitizeIds(typed.jobCategoryIds, valid.categoryIds);
+    const subcategories = sanitizeIds(typed.jobSubcategoryIds, valid.subcategoryIds);
+
+    if (!categories.changed && !subcategories.changed) {
+      preferences[key] = typed;
+      continue;
+    }
+
+    changed = true;
+    preferences[key] = { ...typed, jobCategoryIds: categories.ids, jobSubcategoryIds: subcategories.ids };
+  }
+
+  return { preferences, changed };
+}
 
 function readAll(): TrackPreferences {
   if (typeof window === "undefined") return {};
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return {};
 
+  let parsed: unknown;
   try {
-    return JSON.parse(raw) as TrackPreferences;
+    parsed = JSON.parse(raw);
   } catch {
+    // 깨진 문자열은 덮어쓰지 않고 그대로 둔다 — 되살릴 수 있는 값인지 여기서는 알 수 없다.
     return {};
   }
+
+  const { preferences, changed } = sanitizeAll(parsed);
+  // 걸러낸 김에 저장소도 정제본으로 덮어 다음 로드부터는 대조할 유령 값이 남지 않게 한다.
+  // 걸러낼 것이 없었으면 쓰지 않는다 — 읽기만 해도 매번 쓰는 저장소가 되면 안 된다.
+  if (changed) writeAll(preferences);
+  return preferences;
 }
 
 function writeAll(preferences: TrackPreferences) {
