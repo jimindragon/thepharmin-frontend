@@ -128,4 +128,6 @@ export const JOB_SUBCATEGORY = {
   MSL: "msl",
   NEW_DRUG: "new-drug",
   PRECLINICAL: "preclinical",
+  PMS: "pms",
+  PUBLIC_AFFAIRS: "public-affairs",
 } as const;

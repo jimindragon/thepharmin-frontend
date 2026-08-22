@@ -12,14 +12,16 @@ import { researchFieldCategoryOptions } from "@/config/researchFields";
 const INDUSTRY_KW_BY_CATEGORY: Record<string, string[]> = {
   rd: ["신약개발", "전임상 연구", "후보물질 발굴", "스크리닝", "약리평가", "독성평가", "약동학/약력학", "제형연구", "분석법 개발", "CMC", "바이오의약품", "세포주 개발", "의료기기 R&D", "특허/IP"],
   "sales-marketing": ["제약영업", "MR", "의료기기 영업", "병원영업", "KOL 관리", "Product Marketing", "브랜드 전략", "디지털 마케팅", "시장분석", "영업기획", "Key Account", "해외영업"],
-  clinical: ["CRA", "CRC", "임상 PM", "Clinical Operations", "Medical Writing", "임상 QA", "ICH-GCP", "프로토콜", "Site Management", "모니터링", "SAE", "Data Management", "Biostatistics", "eTMF"],
+  clinical: ["CRA", "CRC", "임상 PM", "Clinical Operations", "Medical Writing", "임상 QA", "ICH-GCP", "프로토콜", "Site Management", "모니터링", "SAE", "Data Management", "Biostatistics", "eTMF", "PMS", "시판후조사", "재심사"],
   regulatory: ["RA", "인허가", "CTD", "eCTD", "IND/NDA", "MFDS", "FDA", "EMA", "허가전략", "변경허가", "CMC RA", "의료기기 RA", "글로벌 인허가", "규제기관 대응"],
-  "medical-market": ["Medical Affairs", "MSL", "Medical Science", "KOL Engagement", "Scientific Communication", "Medical Education", "HEOR", "RWE", "근거생성", "Market Access", "보험등재", "약가전략", "약물경제성", "논문·학술자료"],
+  // "근거생성"·"RWE"는 메디컬의 학술 근거 생성과 MA의 약가 근거 양쪽에서 쓰여 두 대분류에 모두 둔다.
+  medical: ["Medical Affairs", "MSL", "Medical Science", "KOL Engagement", "Scientific Communication", "Medical Education", "논문·학술자료", "근거생성", "RWE"],
+  "market-access": ["Market Access", "보험등재", "약가전략", "약물경제성", "HEOR", "급여전략", "근거생성", "RWE"],
   "production-quality": ["GMP", "QA", "QC", "품질보증", "품질관리", "QMS", "Validation", "CSV", "SOP", "CAPA", "Deviation", "Audit", "공정관리", "제조관리", "LIMS"],
   "pharmacy-safety": ["PV", "Drug Safety", "Pharmacovigilance", "이상사례", "ICSR", "Safety Database", "Signal Detection", "Literature Review", "DSUR", "PSUR/PBRER", "RMP", "안전성 보고", "SOP", "규제기관 보고"],
   "strategy-investment": ["BD", "사업개발", "Licensing", "License-in", "License-out", "기술이전", "파트너링", "Alliance Management", "M&A", "IR", "사업전략", "시장성 평가", "기술가치평가", "계약협상"],
   "data-ai": ["AI 신약개발", "Bioinformatics", "Data Science", "의료데이터", "RWE 데이터", "머신러닝", "빅데이터 분석", "데이터 파이프라인", "Python", "SQL", "CDISC", "SAS", "헬스케어 소프트웨어", "SaMD"],
-  management: ["HR", "채용", "조직문화", "재무", "회계", "법무", "컴플라이언스", "구매", "SCM", "물류", "홍보", "PR", "IR 지원", "총무"],
+  management: ["HR", "채용", "조직문화", "재무", "회계", "법무", "컴플라이언스", "구매", "SCM", "물류", "홍보", "PR", "IR 지원", "총무", "대관", "Public Affairs", "정책 대응"],
 };
 
 const RESEARCH_KW_BY_FIELD: Record<string, string[]> = {

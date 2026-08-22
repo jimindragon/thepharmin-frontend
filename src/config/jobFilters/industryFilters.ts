@@ -45,6 +45,7 @@ export const industryJobCategoryOptions: JobCategoryOption[] = [
       { id: "clinical-qa", label: "임상 QA", categoryId: "clinical" },
       { id: "clinical-pm", label: "임상 PM", categoryId: "clinical" },
       { id: "clinical-dm-statistics", label: "임상 DM·통계", categoryId: "clinical" },
+      { id: "pms", label: "PMS·시판후조사", categoryId: "clinical" },
     ],
   },
   {
@@ -58,13 +59,19 @@ export const industryJobCategoryOptions: JobCategoryOption[] = [
     ],
   },
   {
-    id: "medical-market",
-    label: "Medical·Market Access",
+    id: "medical",
+    label: "메디컬",
     subcategories: [
-      { id: "medical-affairs", label: "Medical Affairs", categoryId: "medical-market" },
-      { id: "msl", label: "MSL", categoryId: "medical-market" },
-      { id: "heor-rwe", label: "HEOR·RWE", categoryId: "medical-market" },
-      { id: "pricing-reimbursement", label: "약가·보험", categoryId: "medical-market" },
+      { id: "medical-affairs", label: "Medical Affairs", categoryId: "medical" },
+      { id: "msl", label: "MSL", categoryId: "medical" },
+    ],
+  },
+  {
+    id: "market-access",
+    label: "Market Access",
+    subcategories: [
+      { id: "heor-rwe", label: "HEOR·RWE", categoryId: "market-access" },
+      { id: "pricing-reimbursement", label: "약가·보험", categoryId: "market-access" },
     ],
   },
   {
@@ -120,6 +127,7 @@ export const industryJobCategoryOptions: JobCategoryOption[] = [
       { id: "legal-compliance", label: "법무·컴플라이언스", categoryId: "management" },
       { id: "purchasing-admin", label: "구매·총무", categoryId: "management" },
       { id: "pr", label: "홍보·PR", categoryId: "management" },
+      { id: "public-affairs", label: "대외협력·대관", categoryId: "management" },
     ],
   },
 ];

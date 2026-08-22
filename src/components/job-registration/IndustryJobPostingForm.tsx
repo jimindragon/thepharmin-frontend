@@ -30,7 +30,7 @@ import type { JobSubcategoryOption } from "@/types/jobs";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type JobCat = "rnd" | "sales" | "clinical" | "ra" | "ma" | "qc" | "pv" | "strategy" | "data" | "biz";
+type JobCat = "rnd" | "sales" | "clinical" | "ra" | "medical" | "market" | "qc" | "pv" | "strategy" | "data" | "biz";
 
 // ── Static data ────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,8 @@ const JOB_CAT_TO_CATEGORY_ID: Record<JobCat, string> = {
   sales: "sales-marketing",
   clinical: "clinical",
   ra: "regulatory",
-  ma: "medical-market",
+  medical: "medical",
+  market: "market-access",
   qc: "production-quality",
   pv: "pharmacy-safety",
   strategy: "strategy-investment",
