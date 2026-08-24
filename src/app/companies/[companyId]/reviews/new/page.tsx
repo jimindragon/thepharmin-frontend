@@ -7,6 +7,7 @@ import { resolveQnaViewerState, type QnaPreviewSearchParams } from "@/config/qna
 import { companies } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import { getCompanyProfile } from "@/data/companyProfiles";
+import { resolvePharmacyDetail } from "@/data/pharmacyDetail";
 
 interface CompanyReviewWritePageProps {
   params: Promise<{ companyId: string }>;
@@ -30,6 +31,7 @@ export default async function CompanyReviewWritePage({ params, searchParams }: C
   const { companyId } = await params;
   const profile = getCompanyProfile(companyId);
   const company = companies.find((item) => item.id === companyId);
+  const pharmacy = resolvePharmacyDetail(companyId);
   const track = getCompanyTrack(companyId);
 
   const writeAccess =
@@ -37,14 +39,14 @@ export default async function CompanyReviewWritePage({ params, searchParams }: C
 
   const body =
     writeAccess === "allowed" ? (
-      <ReviewWriteClient companyId={companyId} companyName={company?.name ?? "기업"} track={track} reviewType="company" />
+      <ReviewWriteClient companyId={companyId} companyName={company?.name ?? pharmacy?.name ?? "기업"} track={track} reviewType="company" />
     ) : (
       <div className="py-8">
         <PharmacyReviewWriteGate access={writeAccess} />
       </div>
     );
 
-  if (!profile) {
+  if (!profile && !pharmacy) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 

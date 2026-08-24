@@ -4,6 +4,7 @@ import { ReviewWriteClient } from "@/components/company/ReviewWriteClient";
 import { companies } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import { getCompanyProfile } from "@/data/companyProfiles";
+import { resolvePharmacyDetail } from "@/data/pharmacyDetail";
 
 interface CompanyInterviewWritePageProps {
   params: Promise<{ companyId: string }>;
@@ -18,11 +19,14 @@ export default async function CompanyInterviewWritePage({ params }: CompanyInter
   const { companyId } = await params;
   const profile = getCompanyProfile(companyId);
   const company = companies.find((item) => item.id === companyId);
+  const pharmacy = resolvePharmacyDetail(companyId);
   const track = getCompanyTrack(companyId);
 
-  const body = <ReviewWriteClient companyId={companyId} companyName={company?.name ?? "기업"} track={track} reviewType="interview" />;
+  const body = (
+    <ReviewWriteClient companyId={companyId} companyName={company?.name ?? pharmacy?.name ?? "기업"} track={track} reviewType="interview" />
+  );
 
-  if (!profile) {
+  if (!profile && !pharmacy) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 

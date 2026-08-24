@@ -13,6 +13,7 @@ import { companyReviews } from "@/data/companies";
 import { getCompanyTrack } from "@/data/companyDirectory";
 import { toCompanyReviewCardItem } from "@/data/companyReviewItems";
 import { getCompanyProfile } from "@/data/companyProfiles";
+import { resolvePharmacyDetail } from "@/data/pharmacyDetail";
 import { readPersonalSession } from "@/lib/session.server";
 
 interface CompanyReviewsPageProps {
@@ -60,9 +61,10 @@ export default async function CompanyReviewsPage({ params, searchParams }: Compa
       </div>
     );
 
-  /* 프로필이 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다.
-     companyDirectory.detailHref가 그런 기업을 이 페이지로 폴백시키므로 실제로 자주 밟는 갈래다. */
-  if (!profile) {
+  /* 프로필도 등록부 항목도 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다.
+     companyDirectory.detailHref가 그런 기업을 이 페이지로 폴백시키므로 실제로 자주 밟는 갈래다.
+     등록부에만 있는 약국은 개요가 서 있으므로 프로필 있는 기업과 같은 껍데기·같은 가드를 탄다. */
+  if (!profile && !resolvePharmacyDetail(companyId)) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 

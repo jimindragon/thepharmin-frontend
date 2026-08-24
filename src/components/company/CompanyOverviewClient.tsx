@@ -5,7 +5,9 @@ import { getPharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
 import { resolveQnaViewerState, type QnaPreviewSearchParams } from "@/config/qnaAccess";
 import { companies } from "@/data/companies";
 import { getCompanyDetailCounts, getCompanyTrack } from "@/data/companyDirectory";
+import { resolvePharmacyDetail, type PharmacyDetailModel } from "@/data/pharmacyDetail";
 import type { CompanyProfile } from "@/data/companyProfiles";
+import { NoticeRow } from "@/components/ui/NoticeRow";
 import {
   CompanyActiveJobsPreviewSection,
   CompanyAsidePanel,
@@ -22,7 +24,10 @@ import {
 } from "@/components/company/CompanyDetailSections";
 
 interface CompanyOverviewClientProps {
-  profile: CompanyProfile;
+  /** 프로필이 있는 기업·기관. 약국은 프로필 없이 pharmacy만 올 수 있다 */
+  profile?: CompanyProfile;
+  /** 등록부에서 조립한 약국 모델. page.tsx가 프로필 없는 약국에 이 값만 넘긴다 */
+  pharmacy?: PharmacyDetailModel;
   /**
    * 약사 인증 미리보기 쿼리. ≤760px 기업 리뷰 펼침이 목록 페이지와 같은 작성 유도 카드를 세우므로
    * 같은 게이트를 지나야 한다 — 한쪽에서만 CTA가 남으면 좁은 화면에서 게이트가 뚫린다.
@@ -36,16 +41,25 @@ interface CompanyOverviewClientProps {
  * 개인 세션은 여기서 읽는다 — ≤760px 기업 리뷰 펼침의 첫 슬롯(CompanyReviewWriteCard)이 로그인 여부로 문구·링크를
  * 가르기 때문이다. 목록 페이지(/companies/{id}/reviews)가 같은 카드를 쓰며 같은 것을 읽는 것과 같은 자리이고,
  * 쿠키 읽기가 페이지가 아니라 이 본문에 있는 것은 쓰는 쪽이 여기라서다(page.tsx는 프로필 유무만 가른다). */
-export async function CompanyOverviewClient({ profile, searchParams = {} }: CompanyOverviewClientProps) {
-  const track = getCompanyTrack(profile.id);
+export async function CompanyOverviewClient({ profile, pharmacy, searchParams = {} }: CompanyOverviewClientProps) {
+  /**
+   * 약국 갈래의 단일 재료. 프로필로 들어온 약국도 같은 모델로 맞춰, 등록부 약국과 두 벌의
+   * 렌더 경로가 생기지 않게 한다. resolver가 null이면(등록부에 없는 약국 프로필 —
+   * 기업센터 미리보기가 만드는 가짜 id가 그렇다) 약국 갈래를 타지 않고 아래 기본 분기로 떨어진다.
+   */
+  const pharmacyModel = pharmacy ?? (profile && getCompanyTrack(profile.id) === "pharmacy" ? resolvePharmacyDetail(profile.id) : null);
+  if (!pharmacyModel && !profile) return null;
+
+  const entityId = profile?.id ?? pharmacyModel!.id;
+  const track = getCompanyTrack(entityId);
   const isLoggedIn = await readPersonalSession();
   /** 약국 트랙에서만 의미가 있는 값이라 그 갈래에서만 아래로 내린다 */
   const pharmacyWriteAccess = getPharmacyReviewWriteAccess(await resolveQnaViewerState(searchParams));
-  const company = companies.find((item) => item.id === profile.id);
+  const company = profile ? companies.find((item) => item.id === profile.id) : undefined;
   /** ≤760px에서 라우트 탭 행이 숨으므로 그 건수를 앵커가 이어받는다(같은 출처를 쓴다) */
-  const counts = getCompanyDetailCounts(profile.id);
+  const counts = getCompanyDetailCounts(entityId);
 
-  if (track === "hospital" && company) {
+  if (profile && track === "hospital" && company) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
         {/* [&>nav]:-mb-9 — 앵커 바로 아래 36px(gap-9)만 지운다. 여기 간격은 마진이 아니라 그리드
@@ -55,16 +69,16 @@ export async function CompanyOverviewClient({ profile, searchParams = {} }: Comp
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
           <SectionAnchorNav sections={getCompanyDetailAnchors("hospital", counts)} ariaLabel="기업 정보 섹션 바로가기" />
           <HospitalSummarySection profile={profile} company={company} />
-          <CompanyActiveJobsPreviewSection profile={profile} />
-          <CompanyReviewsPreviewSection profile={profile} type="interview" isLoggedIn={isLoggedIn} />
-          <CompanyReviewsPreviewSection profile={profile} type="company" isLoggedIn={isLoggedIn} />
+          <CompanyActiveJobsPreviewSection companyId={profile.id} />
+          <CompanyReviewsPreviewSection companyId={profile.id} type="interview" isLoggedIn={isLoggedIn} />
+          <CompanyReviewsPreviewSection companyId={profile.id} type="company" isLoggedIn={isLoggedIn} />
         </div>
         <HospitalAsidePanel profile={profile} />
       </div>
     );
   }
 
-  if (track === "pharmacy" && company) {
+  if (pharmacyModel) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
         {/* [&>nav]:-mb-9 — 앵커 바로 아래 36px(gap-9)만 지운다. 여기 간격은 마진이 아니라 그리드
@@ -73,22 +87,32 @@ export async function CompanyOverviewClient({ profile, searchParams = {} }: Comp
         <div className="grid grid-cols-1 gap-9 [&>nav]:-mb-9">
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
           <SectionAnchorNav sections={getCompanyDetailAnchors("pharmacy", counts)} ariaLabel="기업 정보 섹션 바로가기" />
-          <PharmacySummarySection profile={profile} company={company} />
-          <CompanyActiveJobsPreviewSection profile={profile} />
-          <CompanyReviewsPreviewSection profile={profile} type="interview" isLoggedIn={isLoggedIn} />
+          <PharmacySummarySection pharmacy={pharmacyModel} />
+          {/* 약국만 0건에도 섹션이 선다 — 등록부 약국은 공고 0건이 기본이라, 섹션째 사라지면
+              그 화면이 채용을 다루는 페이지인지가 읽히지 않는다 */}
+          <CompanyActiveJobsPreviewSection companyId={pharmacyModel.id} emptyMessage="현재 진행 중인 채용공고가 없습니다." />
+          <CompanyReviewsPreviewSection companyId={pharmacyModel.id} type="interview" isLoggedIn={isLoggedIn} />
           <CompanyReviewsPreviewSection
-            profile={profile}
+            companyId={pharmacyModel.id}
             type="company"
             isLoggedIn={isLoggedIn}
             pharmacyWriteAccess={pharmacyWriteAccess}
           />
+          {/* 아직 주인이 없는 약국에만 선다 — 인증하면 이 자리에서 사라진다 */}
+          {pharmacyModel.claimStatus === "unclaimed" ? (
+            <NoticeRow
+              text="이 약국의 약국장이신가요?"
+              actionLabel="약국 인증하기"
+              actionHref={`/business/signup/pharmacy?pharmacyId=${pharmacyModel.registry.id}`}
+            />
+          ) : null}
         </div>
-        <PharmacyAsidePanel profile={profile} />
+        <PharmacyAsidePanel pharmacy={pharmacyModel} />
       </div>
     );
   }
 
-  if (track === "research" && company) {
+  if (profile && track === "research" && company) {
     return (
       <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
         {/* [&>nav]:-mb-9 — 앵커 바로 아래 36px(gap-9)만 지운다. 여기 간격은 마진이 아니라 그리드
@@ -98,14 +122,18 @@ export async function CompanyOverviewClient({ profile, searchParams = {} }: Comp
           {/* ≤760px 섹션 앵커 — 히어로·탭 아래, 본문 시작 직전. 옵셔널 섹션 필터링은 컴포넌트가 한다 */}
           <SectionAnchorNav sections={getCompanyDetailAnchors("research", counts)} ariaLabel="기업 정보 섹션 바로가기" />
           <ResearchSummarySection profile={profile} />
-          <CompanyActiveJobsPreviewSection profile={profile} />
-          <CompanyReviewsPreviewSection profile={profile} type="interview" isLoggedIn={isLoggedIn} />
-          <CompanyReviewsPreviewSection profile={profile} type="company" isLoggedIn={isLoggedIn} />
+          <CompanyActiveJobsPreviewSection companyId={profile.id} />
+          <CompanyReviewsPreviewSection companyId={profile.id} type="interview" isLoggedIn={isLoggedIn} />
+          <CompanyReviewsPreviewSection companyId={profile.id} type="company" isLoggedIn={isLoggedIn} />
         </div>
         <ResearchAsidePanel profile={profile} />
       </div>
     );
   }
+
+  /* 위 세 갈래를 모두 지나왔다면 남은 것은 프로필 기반 산업·CRO다 — pharmacyModel만 있고
+     프로필이 없는 경우는 위에서 이미 반환됐다(초입 가드와 약국 갈래가 함께 보장한다). */
+  if (!profile) return null;
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
@@ -115,9 +143,9 @@ export async function CompanyOverviewClient({ profile, searchParams = {} }: Comp
         <SectionAnchorNav sections={getCompanyDetailAnchors("industry", counts)} ariaLabel="기업 정보 섹션 바로가기" />
         <CompanyOverview profile={profile} />
         <CompanyDetailOverview profile={profile} />
-        <CompanyActiveJobsPreviewSection profile={profile} />
-        <CompanyReviewsPreviewSection profile={profile} type="interview" isLoggedIn={isLoggedIn} />
-        <CompanyReviewsPreviewSection profile={profile} type="company" isLoggedIn={isLoggedIn} />
+        <CompanyActiveJobsPreviewSection companyId={profile.id} />
+        <CompanyReviewsPreviewSection companyId={profile.id} type="interview" isLoggedIn={isLoggedIn} />
+        <CompanyReviewsPreviewSection companyId={profile.id} type="company" isLoggedIn={isLoggedIn} />
         <CompanyNewsPreviewSection profile={profile} />
       </div>
       <CompanyAsidePanel profile={profile} />

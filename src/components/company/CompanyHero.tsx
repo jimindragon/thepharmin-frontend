@@ -8,9 +8,17 @@ import type { CompanyProfile } from "@/data/companyProfiles";
 import { getHospitalCombinedTypeLabel, getPharmacyTypeLabel } from "@/config/companyTypes";
 import { getCompanyInitial } from "@/utils/companyInitial";
 
+/**
+ * 히어로가 실제로 읽는 최소 모양. 식별에 반드시 필요한 id·name만 필수고 나머지는 없을 수 있다 —
+ * 등록부에만 있는 약국(프로필 미보유)이 이름 하나로 이 히어로를 타기 때문이다.
+ * CompanyProfile은 이 타입에 그대로 대입되므로 기존 호출부는 손대지 않는다.
+ */
+export type CompanyHeroData = Pick<CompanyProfile, "id" | "name"> &
+  Partial<Pick<CompanyProfile, "logoImage" | "logoText" | "tagline" | "coverImage" | "tags">>;
+
 /** 병원·약국 트랙 hero 뱃지: 기관 유형 콤보 라벨 + 지역, 최대 2개(STEP 3a-2 — 직원 수는 본문 B 카드와 중복돼 제거).
  * 값이 없는 뱃지는 만들지 않는다. "-"는 이 코드베이스에서 미입력을 뜻하는 기존 관례라 빈 값과 동일하게 취급한다 */
-function institutionHeroBadges(profile: CompanyProfile): string[] | null {
+function institutionHeroBadges(profile: CompanyHeroData): string[] | null {
   const company = companies.find((item) => item.id === profile.id);
   if (!company) return null;
 
@@ -64,7 +72,7 @@ function HeroBadges({ badges, className }: { badges: string[]; className: string
  * 히어로 계열 색을 유지한다. 헤더의 border-b(#151515)가 둘 사이를 이미 갈라 준다.
  * 높이 64px도 헤더와 같은 값이라, 스크롤을 올렸을 때 검정 띠 둘이 같은 리듬으로 겹쳐 선다.
  */
-function CompanyHeroCompactBar({ profile }: { profile: CompanyProfile }) {
+function CompanyHeroCompactBar({ profile }: { profile: CompanyHeroData }) {
   return (
     /* 풀 히어로와 같은 풀블리드 계산(-shell-gutter/2 되밀기 + px-6) — 좌우로 회색이 새면 바가 아니라
        카드처럼 읽힌다. 이 바는 ≤760px 전용이라 --shell-gutter는 항상 48px이고 변형이 필요 없다. */
@@ -97,10 +105,10 @@ function CompanyHeroCompactBar({ profile }: { profile: CompanyProfile }) {
  * 폭 분기를 CSS로 두는 이유는 호출부(CompanyDetailHero)가 경로만 알고 뷰포트는 모르기 때문이다 —
  * 배지 줄(HeroBadges)이 두 자리에 렌더되는 것과 같은 방식으로, 둘 중 하나는 항상 display:none이다.
  */
-export function CompanyHero({ profile, variant = "full" }: { profile: CompanyProfile; variant?: "full" | "compact" }) {
+export function CompanyHero({ profile, variant = "full" }: { profile: CompanyHeroData; variant?: "full" | "compact" }) {
   const [interested, setInterested] = useState(false);
   const [shared, setShared] = useState(false);
-  const badges = institutionHeroBadges(profile) ?? profile.tags;
+  const badges = institutionHeroBadges(profile) ?? profile.tags ?? [];
 
   const shareCompany = async () => {
     const url = window.location.href;
@@ -125,7 +133,11 @@ export function CompanyHero({ profile, variant = "full" }: { profile: CompanyPro
        좌우와 마찬가지로 화면 끝까지 닿은 히어로에는 위쪽 경계선이 필요 없다: 위는 헤더가 이미 갈라 준다.
        아래 선은 남긴다 — 어두운 히어로와 그 밑 흰 탭 행(라우트 탭·섹션 앵커)의 경계를 확정하는 자리다. */
     <section className="relative overflow-hidden border border-[#d6dde6] bg-[#081015] text-white shadow-[var(--shadow)] max-[760px]:-mx-[calc(var(--shell-gutter)/2)] max-[760px]:border-x-0 max-[760px]:border-t-0">
-      <img src={profile.coverImage} alt={`${profile.name} 기업 이미지`} className="absolute inset-0 h-full w-full object-cover opacity-42" />
+      {/* 커버가 없으면 이 층만 빠진다 — 아래 그라디언트와 section의 bg-[#081015]가 그대로 남아
+          배경은 어두운 단색이 된다(새 색을 만들지 않는다). 등록부에만 있는 약국이 이 갈래다. */}
+      {profile.coverImage ? (
+        <img src={profile.coverImage} alt={`${profile.name} 기업 이미지`} className="absolute inset-0 h-full w-full object-cover opacity-42" />
+      ) : null}
       {/* 전폭이 되며 우측(밝은 쪽) 이미지가 더 보이므로, ≤760px에서는 그라디언트 끝값을 0.38 → 0.62로 올려
           텍스트가 얹히는 폭 전체에서 어두운 바탕을 유지한다. 761px 이상은 종전 값 그대로다. */}
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,14,0.92)_0%,rgba(3,10,14,0.75)_48%,rgba(3,10,14,0.38)_100%)] max-[760px]:bg-[linear-gradient(90deg,rgba(3,10,14,0.92)_0%,rgba(3,10,14,0.8)_48%,rgba(3,10,14,0.62)_100%)]" />
@@ -135,7 +147,12 @@ export function CompanyHero({ profile, variant = "full" }: { profile: CompanyPro
         <div className="flex items-end justify-between gap-6 max-[820px]:items-start max-[820px]:flex-col">
           <div className="flex min-w-0 items-center gap-6 max-[640px]:items-start max-[640px]:gap-4">
             <div className="grid h-[118px] w-[118px] shrink-0 place-items-center bg-white text-center text-[16px] font-medium leading-tight text-[#17212c] shadow-[0_18px_42px_rgba(0,0,0,0.22)] max-[640px]:h-[92px] max-[640px]:w-[92px] max-[640px]:text-[13px]">
-              {profile.logoImage ? <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" /> : profile.logoText}
+              {/* logoText가 없으면(프로필 미보유) 작은 로고 칸과 같은 관례대로 이니셜 2글자로 내려간다 */}
+              {profile.logoImage ? (
+                <img src={profile.logoImage} alt={`${profile.name} 로고`} className="h-full w-full object-contain p-4" />
+              ) : (
+                profile.logoText ?? getCompanyInitial(profile.name)
+              )}
             </div>
             <div className="min-w-0">
               {/* leading-[1.33]·font-semibold·아래 mt-2/mt-3·배지 h-7은 한 세트다 — 이 텍스트 열의 높이를
@@ -143,7 +160,10 @@ export function CompanyHero({ profile, variant = "full" }: { profile: CompanyPro
                   열 높이가 로고와 같아지는 순간 중앙 정렬이 곧 하단 정렬이 되어, 로고 하단·배지 하단·
                   오른쪽 액션 버튼 하단(부모 행의 items-end)이 한 줄에 선다. 한 값만 되돌리면 이 선이 깨진다. */}
               <h1 className="text-[34px] font-semibold leading-[1.33] tracking-[-0.02em] text-white max-[640px]:text-[24px]">{profile.name}</h1>
-              <p className="mt-2 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
+              {/* 한줄소개가 없으면 빈 <p>가 mt-2만큼 자리를 먹으므로 줄째 뺀다 */}
+              {profile.tagline ? (
+                <p className="mt-2 text-[15px] font-normal text-white/85 max-[640px]:text-[13px]">{profile.tagline}</p>
+              ) : null}
               <HeroBadges badges={badges} className="mt-3 max-[760px]:hidden" />
             </div>
           </div>

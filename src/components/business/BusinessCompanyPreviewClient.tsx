@@ -43,7 +43,7 @@ import {
 import {
   buildHospitalPreview,
   buildIndustryPreview,
-  buildPharmacyPreview,
+  buildPharmacyDetailPreview,
   buildResearchPreview,
 } from "@/data/businessProfilePreview";
 
@@ -144,15 +144,18 @@ export function BusinessCompanyPreviewClient() {
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
           <div className="grid gap-9">
             <HospitalSummarySection profile={profile} company={company} />
-            <CompanyReviewsPreviewSection profile={profile} type="interview" />
-            <CompanyReviewsPreviewSection profile={profile} type="company" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="interview" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="company" />
           </div>
           <HospitalAsidePanel profile={profile} />
         </div>
       </>
     );
   } else if (track === "pharmacy") {
-    const { profile, company } = buildPharmacyPreview(pharmacyProfile);
+    /* 약국 섹션은 등록부 조립 모델 하나만 받는다 — 미리보기의 약국은 등록부에 없으므로 변환기가
+       같은 모양을 맞춰 준다(buildPharmacyDetailPreview). 그 안에 종전 profile/company가 그대로 들어 있다. */
+    const pharmacy = buildPharmacyDetailPreview(pharmacyProfile);
+    const profile = pharmacy.profile;
     const missingFields = getMissingRequiredPharmacyFields(pharmacyProfile);
     missing = { count: missingFields.length, firstSectionId: missingFields[0]?.sectionId ?? null };
     body = (
@@ -160,11 +163,11 @@ export function BusinessCompanyPreviewClient() {
         <CompanyHero profile={profile} />
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
           <div className="grid gap-9">
-            <PharmacySummarySection profile={profile} company={company} />
-            <CompanyReviewsPreviewSection profile={profile} type="interview" />
-            <CompanyReviewsPreviewSection profile={profile} type="company" />
+            <PharmacySummarySection pharmacy={pharmacy} />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="interview" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="company" />
           </div>
-          <PharmacyAsidePanel profile={profile} />
+          <PharmacyAsidePanel pharmacy={pharmacy} />
         </div>
       </>
     );
@@ -179,8 +182,8 @@ export function BusinessCompanyPreviewClient() {
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)_318px] items-start gap-6 max-[1120px]:grid-cols-1">
           <div className="grid gap-9">
             <ResearchSummarySection profile={profile} />
-            <CompanyReviewsPreviewSection profile={profile} type="interview" />
-            <CompanyReviewsPreviewSection profile={profile} type="company" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="interview" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="company" />
           </div>
           <ResearchAsidePanel profile={profile} />
         </div>
@@ -197,8 +200,8 @@ export function BusinessCompanyPreviewClient() {
           <div className="grid gap-9">
             <CompanyOverview profile={profile} />
             <CompanyDetailOverview profile={profile} />
-            <CompanyReviewsPreviewSection profile={profile} type="interview" />
-            <CompanyReviewsPreviewSection profile={profile} type="company" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="interview" />
+            <CompanyReviewsPreviewSection companyId={profile.id} type="company" />
           </div>
           <CompanyAsidePanel profile={profile} />
         </div>

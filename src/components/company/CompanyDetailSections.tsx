@@ -26,7 +26,11 @@ import { STAT_ROW_CELL, STAT_ROW_ICON, STAT_ROW_LABEL, STAT_ROW_LIST, STAT_ROW_V
 import { CompanyJobsGrid } from "@/components/company/CompanyJobsGrid";
 import { SectionExpandGroup } from "@/components/company/SectionExpandGroup";
 import { companyAnchorIds } from "@/config/companyDetailAnchors";
-import type { PharmacyReviewWriteAccess } from "@/config/pharmacistLicenseGate";
+import {
+  PHARMACIST_LICENSE_REGISTER_HREF,
+  PHARMACY_REVIEW_WRITE_GATE_LOGIN_HREF,
+  type PharmacyReviewWriteAccess,
+} from "@/config/pharmacistLicenseGate";
 import { REVIEW_HIDDEN_NOTICE } from "@/config/reviewModeration";
 import { CompanyReviewCard, type CompanyReviewCardItem } from "@/components/company/CompanyReviewCard";
 import { CompanyReviewWriteCard } from "@/components/company/CompanyReviewWriteCard";
@@ -40,6 +44,7 @@ import { getResearchInstitutionTypeLabel, researchStaffScaleOptions } from "@/co
 import { getResearchFieldShortLabel } from "@/config/researchFields";
 import { companyReviews } from "@/data/companies";
 import { getActiveJobCount, getActiveJobs, getCompanyTrack } from "@/data/companyDirectory";
+import type { PharmacyDetailModel } from "@/data/pharmacyDetail";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company, CompanyReview, CompanyReviewType } from "@/types/jobs";
 
@@ -408,12 +413,13 @@ function toReviewCardItem(review: CompanyReview): CompanyReviewCardItem {
  * 게이팅 규칙이 갈리고, 보유 장수는 useInterviewAccess가 화면 밖에 두므로 개요에서 쓴 1장이 목록에서도
  * 그대로 빠져 있다. 첫 슬롯이 작성 유도 카드가 아니라 열람권 상태 카드인 것도 목록과 같다. */
 export function CompanyReviewsPreviewSection({
-  profile,
+  companyId,
   type,
   isLoggedIn = false,
   pharmacyWriteAccess = "allowed",
 }: {
-  profile: CompanyProfile;
+  /** 프로필에서 읽던 것이 id 하나뿐이라 id만 받는다 — 프로필 없는 약국도 같은 섹션을 탄다 */
+  companyId: string;
   type: CompanyReviewType;
   /**
    * 약국 재직 후기의 약사 인증 게이트. 펼침이 목록 페이지와 같은 작성 유도 카드·같은 목록
@@ -434,15 +440,30 @@ export function CompanyReviewsPreviewSection({
 }) {
   const isInterview = type === "interview";
   const title = isInterview ? "면접 후기" : "기업 리뷰";
-  const href = `/companies/${profile.id}/${isInterview ? "interviews" : "reviews"}`;
+  const href = `/companies/${companyId}/${isInterview ? "interviews" : "reviews"}`;
   /** 섹션 DOM id이자 해시 진입 시 펼침 판정의 기준. 두 자리(SectionShell·SectionExpandGroup)가 같은 값을 봐야 한다 */
   const anchorId = isInterview ? companyAnchorIds.interviews : companyAnchorIds.reviews;
 
   const all = companyReviews
-    .filter((review) => review.companyId === profile.id && review.type === type)
+    .filter((review) => review.companyId === companyId && review.type === type)
     .sort((a, b) => b.writtenAt.localeCompare(a.writtenAt));
   /** 약국 재직 후기 펼침은 정적 격자가 아니라 열람권 목록이다(면접 후기와 같은 지갑을 쓴다) */
   const isGatedPharmacyReviews = !isInterview && all.some(isPharmacyWorkReview);
+  /** 후기가 0건이면 위 판정이 성립하지 않으므로(볼 후기가 없다) 트랙 자체를 본다 — 빈 상태 CTA 전용 */
+  const isPharmacyWriteGated = !isInterview && getCompanyTrack(companyId) === "pharmacy" && pharmacyWriteAccess !== "allowed";
+  /**
+   * 빈 상태 CTA의 목적지. 게이트가 걸리면 PharmacyReviewWriteGate와 같은 곳으로 보내고,
+   * 자격 무관 회원에게는 null(버튼 없음)이다. 게이트 밖에서는 종전 규칙 그대로다.
+   */
+  const pharmacyWriteCtaHref = isPharmacyWriteGated
+    ? pharmacyWriteAccess === "needsLogin"
+      ? PHARMACY_REVIEW_WRITE_GATE_LOGIN_HREF
+      : pharmacyWriteAccess === "needsLicense"
+        ? PHARMACIST_LICENSE_REGISTER_HREF
+        : null
+    : isLoggedIn
+      ? `${href}/new`
+      : "/companies";
   const preview = all.slice(0, 2).map(toReviewCardItem);
   const topKeywords = all.length >= 3 ? topTagsByFrequency(all.map((review) => review.tags)) : [];
 
@@ -492,15 +513,19 @@ export function CompanyReviewsPreviewSection({
                돌아오는 죽은 CTA가 된다. 비로그인 갈래는 펼침 슬롯의 작성 유도 카드와 같은 규칙이다
                (CompanyReviewWriteCard: 로그인 전에는 /companies).
 
-               약사 인증 게이트는 이 갈래에 걸지 않는다 — 후기가 0건일 때만 서는 자리인데 약국은
-               모두 재직 후기를 최소 1건 들고 있어 실제로 밟히지 않는다. 밟히지 않는 갈래에
-               규칙을 하나 더 쌓지 않는다. */
-            <Link
-              href={isLoggedIn ? `${href}/new` : "/companies"}
-              className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
-            >
-              첫 후기 작성하기
-            </Link>
+               약사 인증 게이트를 여기서도 건다 — 종전에는 "약국은 모두 재직 후기를 최소 1건 들고 있어
+               밟히지 않는 갈래"라 규칙을 쌓지 않았지만, 등록부 약국 적재 이후 후기 0건 약국이 기본이 되어
+               이 갈래가 실제 경로가 됐다. 목적지는 작성 폼이 세우는 PharmacyReviewWriteGate와 같은 곳으로
+               맞춘다 — 눌러서 도착한 화면이 "여기서는 못 쓴다"만 다시 말하면 CTA가 한 번 헛돈다.
+               자격 무관 회원(notEligible)에게는 그 게이트처럼 버튼 자체를 달지 않는다. */
+            pharmacyWriteCtaHref ? (
+              <Link
+                href={pharmacyWriteCtaHref}
+                className="inline-flex h-10 items-center border border-[#111111] px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#111111] hover:text-white"
+              >
+                첫 후기 작성하기
+              </Link>
+            ) : undefined
           }
         />
       ) : (
@@ -518,7 +543,7 @@ export function CompanyReviewsPreviewSection({
             <>
               {isInterview ? (
                 <CompanyInterviewsListClient
-                  companyId={profile.id}
+                  companyId={companyId}
                   items={all.map(toInterviewCardItem)}
                   isLoggedIn={isLoggedIn}
                   framed={false}
@@ -528,7 +553,7 @@ export function CompanyReviewsPreviewSection({
                    여기서 다시 조립하면 개요와 탭의 게이팅 규칙이 갈리고, 열람권은 화면 밖 store에 있어
                    개요에서 쓴 1장이 탭에서도 빠져 있어야 한다. */
                 <PharmacyReviewsListClient
-                  companyId={profile.id}
+                  companyId={companyId}
                   items={all.map(toCompanyReviewCardItem)}
                   isLoggedIn={isLoggedIn}
                   framed={false}
@@ -536,7 +561,7 @@ export function CompanyReviewsPreviewSection({
                 />
               ) : (
                 <div className={clsx("grid grid-cols-3 gap-3 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1", FLUSH_GRID_CLASS)}>
-                  <CompanyReviewWriteCard companyId={profile.id} reviewType="company" isLoggedIn={isLoggedIn} hasItems />
+                  <CompanyReviewWriteCard companyId={companyId} reviewType="company" isLoggedIn={isLoggedIn} hasItems />
                   {all.map((review) => (
                     <CompanyReviewCard key={review.id} review={toCompanyReviewCardItem(review)} />
                   ))}
@@ -598,10 +623,14 @@ export function CompanyJobsPreview({ profile }: { profile: CompanyProfile }) {
  * 별개 컴포넌트다.
  *
  * ≤760px에서는 미리보기 아래 "모두 보기"로 전량을 이 자리에서 펼친다(SectionExpandGroup). 3건 이상일 때만
- * 버튼이 선다 — 2건뿐이면 펼쳐도 같은 목록이라, 누를 것이 없는 버튼은 "더 있다"는 거짓 신호가 된다. */
-export function CompanyActiveJobsPreviewSection({ profile }: { profile: CompanyProfile }) {
-  const activeJobs = getActiveJobs(profile.id);
-  if (!activeJobs.length) return null;
+ * 버튼이 선다 — 2건뿐이면 펼쳐도 같은 목록이라, 누를 것이 없는 버튼은 "더 있다"는 거짓 신호가 된다.
+ *
+ * emptyMessage를 받으면 0건에도 섹션이 서고 그 문구를 빈 상태로 보인다 — 약국 트랙 전용이다.
+ * 등록부에서 올라온 약국은 공고가 대부분 0건이라, 섹션째 사라지면 그 화면이 "채용 정보를 다루는
+ * 페이지"인지 자체가 읽히지 않는다. 넘기지 않는 트랙은 종전대로 0건이면 섹션이 사라진다. */
+export function CompanyActiveJobsPreviewSection({ companyId, emptyMessage }: { companyId: string; emptyMessage?: string }) {
+  const activeJobs = getActiveJobs(companyId);
+  if (!activeJobs.length && !emptyMessage) return null;
   const preview = activeJobs.slice(0, 2);
 
   return (
@@ -611,7 +640,7 @@ export function CompanyActiveJobsPreviewSection({ profile }: { profile: CompanyP
       action={
         /* ≤760px는 아래 "모두 보기"가 같은 목록을 이 자리에서 펼친다(기업 리뷰 섹션과 같은 이유로 숨긴다) */
         <Link
-          href={`/companies/${profile.id}/jobs`}
+          href={`/companies/${companyId}/jobs`}
           className="inline-flex items-center gap-1 text-[13px] font-medium text-[#596373] hover:text-[#111111] max-[760px]:hidden"
         >
           전체 보기
@@ -619,7 +648,10 @@ export function CompanyActiveJobsPreviewSection({ profile }: { profile: CompanyP
         </Link>
       }
     >
-      {activeJobs.length > preview.length ? (
+      {!activeJobs.length && emptyMessage ? (
+        /* CTA 없이 문구만 — 공고는 사용자가 채울 수 있는 자리가 아니다(후기 빈 상태와 다른 점) */
+        <EmptyState message={emptyMessage} />
+      ) : activeJobs.length > preview.length ? (
         <SectionExpandGroup
           anchorId={companyAnchorIds.jobs}
           count={activeJobs.length}
@@ -744,7 +776,7 @@ export function CompanyNewsPreviewSection({ profile }: { profile: CompanyProfile
 export function CompanyAsidePanel({ profile }: { profile: CompanyProfile }) {
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
-      <CompanyCoreInfoCard profile={profile} />
+      <CompanyCoreInfoCard companyId={profile.id} interestedCount={profile.sidebar.interestedCount} />
     </aside>
   );
 }
@@ -906,7 +938,11 @@ export function HospitalSummarySection({ profile, company }: { profile: CompanyP
 
 /** [companyId] 개요 탭 — 약국 트랙 "약국 소개" 첫 섹션(본문 소개+키워드+기관 특징만, STEP 3a-2).
  * 약국명·한줄소개는 Hero가 이미 보여줘 반복하지 않는다. 셋 다 없으면 섹션 자체를 숨긴다. */
-function PharmacyOverviewCard({ profile }: { profile: CompanyProfile }) {
+function PharmacyOverviewCard({ pharmacy }: { pharmacy: PharmacyDetailModel }) {
+  /* 이 카드가 읽는 것은 전부 프로필 값이다 — 등록부만 있는 약국에는 소개할 거리가 없어 카드째 빠진다 */
+  const profile = pharmacy.profile;
+  if (!profile) return null;
+
   /* tagline과 같은 문장인 fullIntro가 다수 있어(예: cellbion) 그대로 두면 히어로와 개요에 같은 줄이 두 번 노출된다 */
   const hasIntro = Boolean(profile.fullIntro) && profile.fullIntro?.trim() !== profile.tagline?.trim();
   const hasKeywords = profile.keywords.length > 0;
@@ -934,29 +970,34 @@ function PharmacyOverviewCard({ profile }: { profile: CompanyProfile }) {
 
 /** [companyId] 개요 탭 — 약국 트랙 "약국 정보" 카드(B: 약국유형·약국특성·직원구성, C: 주소·대표전화·대표이메일·영업시간,
  * D: 조제 환경) */
-function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; company: Company }) {
-  const pharmacyType = company.pharmacyType ? getPharmacyTypeLabel(company.pharmacyType) : undefined;
-  const pharmacyFeatureLabel = profile.pharmacyFeatures
+function PharmacyInfoCard({ pharmacy }: { pharmacy: PharmacyDetailModel }) {
+  /* B·D 블록과 C의 뒤 두 행은 전부 프로필에서만 나온다 — 프로필이 없으면 계산 자체를 하지 않고
+     undefined로 두어, 아래 기존 삼항이 행을 하나씩 숨기게 한다(새 분기를 만들지 않는다). */
+  const profile = pharmacy.profile;
+
+  const pharmacyType = pharmacy.company?.pharmacyType ? getPharmacyTypeLabel(pharmacy.company.pharmacyType) : undefined;
+  const pharmacyFeatureLabel = profile?.pharmacyFeatures
     ? pharmacyFeatureOptions.find((option) => option.id === profile.pharmacyFeatures)?.label
     : undefined;
-  const pharmacistCount = businessSummaryValue(profile, "근무 약사");
-  const supportCount = businessSummaryValue(profile, "직원");
+  const pharmacistCount = profile ? businessSummaryValue(profile, "근무 약사") : undefined;
+  const supportCount = profile ? businessSummaryValue(profile, "직원") : undefined;
   const staffParts = [pharmacistCount ? `약사 ${pharmacistCount}` : null, supportCount ? `지원 ${supportCount}` : null].filter(
     (part): part is string => Boolean(part),
   );
   const staffComposition = staffParts.length ? staffParts.join(" · ") : undefined;
   const hasCards = Boolean(pharmacyType || pharmacyFeatureLabel || staffComposition);
 
-  const address = detailValue(profile, "본사 위치");
-  const hasInfoRows = Boolean(address || profile.phone || profile.email || profile.businessHours);
+  /* 주소·전화는 모델이 이미 "프로필 우선, 없으면 등록부" 순서로 정해 둔 값이다 */
+  const address = pharmacy.address;
+  const hasInfoRows = Boolean(address || pharmacy.phone || profile?.email || profile?.businessHours || pharmacy.openedOn);
 
-  const avgPrescriptions = metricValue(profile, "일평균 처방");
-  const mainDepartments = metricValue(profile, "주요 처방과");
-  const mainHospitals = businessSummaryValue(profile, "주요 처방 병원");
-  const dispensingEquipment = (profile.dispensingEquipment ?? []).join(" · ") || undefined;
-  const parkingTransit = businessSummaryValue(profile, "주차·교통");
+  const avgPrescriptions = profile ? metricValue(profile, "일평균 처방") : undefined;
+  const mainDepartments = profile ? metricValue(profile, "주요 처방과") : undefined;
+  const mainHospitals = profile ? businessSummaryValue(profile, "주요 처방 병원") : undefined;
+  const dispensingEquipment = (profile?.dispensingEquipment ?? []).join(" · ") || undefined;
+  const parkingTransit = profile ? businessSummaryValue(profile, "주차·교통") : undefined;
   const hasWorkEnvRows = Boolean(
-    avgPrescriptions || mainDepartments || mainHospitals || profile.pharmacySoftware || dispensingEquipment || parkingTransit,
+    avgPrescriptions || mainDepartments || mainHospitals || profile?.pharmacySoftware || dispensingEquipment || parkingTransit,
   );
 
   return (
@@ -977,13 +1018,15 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
       {hasInfoRows ? (
         <div className="mt-6 divide-y divide-[#f0f2f5]">
           {address ? <IndustryInfoRow label="주소" value={address} /> : null}
-          {profile.phone ? <IndustryInfoRow label="대표 전화" value={profile.phone} /> : null}
-          {profile.email ? <IndustryInfoRow label="대표 이메일" value={profile.email} /> : null}
-          {profile.businessHours ? <IndustryInfoRow label="영업시간" value={profile.businessHours} /> : null}
+          {pharmacy.phone ? <IndustryInfoRow label="대표 전화" value={pharmacy.phone} /> : null}
+          {profile?.email ? <IndustryInfoRow label="대표 이메일" value={profile.email} /> : null}
+          {profile?.businessHours ? <IndustryInfoRow label="영업시간" value={profile.businessHours} /> : null}
+          {/* 개설일자는 등록부(심평원 응답)가 늘 들고 있는 값이라 프로필 유무와 무관하게 선다 */}
+          {pharmacy.openedOn ? <IndustryInfoRow label="개설일" value={pharmacy.openedOn} /> : null}
         </div>
       ) : null}
 
-      <LocationSection address={address} orgName={profile.name} />
+      <LocationSection address={address} orgName={pharmacy.name} />
 
       {hasWorkEnvRows ? (
         <div className="mt-6 border-t border-[#edf1f5] pt-5">
@@ -992,7 +1035,7 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
             {avgPrescriptions ? <IndustryInfoRow label="일 평균 처방" value={avgPrescriptions} /> : null}
             {mainDepartments ? <IndustryInfoRow label="주요 처방과" value={mainDepartments} /> : null}
             {mainHospitals ? <IndustryInfoRow label="주요 처방 병원" value={mainHospitals} /> : null}
-            {profile.pharmacySoftware ? <IndustryInfoRow label="전산 프로그램" value={profile.pharmacySoftware} /> : null}
+            {profile?.pharmacySoftware ? <IndustryInfoRow label="전산 프로그램" value={profile.pharmacySoftware} /> : null}
             {dispensingEquipment ? <IndustryInfoRow label="조제 장비" value={dispensingEquipment} /> : null}
             {parkingTransit ? <IndustryInfoRow label="주차·교통" value={parkingTransit} /> : null}
           </div>
@@ -1003,11 +1046,11 @@ function PharmacyInfoCard({ profile, company }: { profile: CompanyProfile; compa
 }
 
 /** [companyId] 개요 탭 — 약국 트랙. "약국 요약"(A+키워드+기관 특징) + "약국 정보"(B+C+D) 두 카드를 순서대로 렌더한다. */
-export function PharmacySummarySection({ profile, company }: { profile: CompanyProfile; company: Company }) {
+export function PharmacySummarySection({ pharmacy }: { pharmacy: PharmacyDetailModel }) {
   return (
     <>
-      <PharmacyOverviewCard profile={profile} />
-      <PharmacyInfoCard profile={profile} company={company} />
+      <PharmacyOverviewCard pharmacy={pharmacy} />
+      <PharmacyInfoCard pharmacy={pharmacy} />
     </>
   );
 }
@@ -1020,14 +1063,18 @@ function reviewSummaryLabel(companyId: string) {
 
 /** [companyId] 개요 탭 사이드바 — 4트랙 공통 단일 카드(STEP 6: 기존 "기관 핵심 정보"+"채용·후기" 2카드를 통합).
  * 정보 3행(관심 등록 수/채용중 공고/후기) 아래 버튼 2개(채용공고 보기/후기 보기)만 남기고, 두 카드에 중복 표시되던
- * "채용중인 공고 N건" 문구는 제거했다 — 위 정보 행에 이미 동일한 값이 있다. */
-function CompanyCoreInfoCard({ profile }: { profile: CompanyProfile }) {
+ * "채용중인 공고 N건" 문구는 제거했다 — 위 정보 행에 이미 동일한 값이 있다.
+ *
+ * 네 트랙이 함께 쓰는 카드라 약국 모델이 아니라 id + 관심 수만 받는다 — 프로필이 없는 약국은
+ * 관심 수를 넘기지 않고, 그때 그 행은 서지 않는다(0으로 지어내지 않는다). 나머지 세 트랙은
+ * 종전과 같은 값을 그대로 넘기므로 렌더가 바뀌지 않는다. */
+function CompanyCoreInfoCard({ companyId, interestedCount }: { companyId: string; interestedCount?: string }) {
   const infoItems = [
     // interestedCount는 "내가 저장했는지"가 아니라 이 기관을 관심 등록한 사람 수(집계값)다 — /companies 목록의 "관심순" 정렬도 같은 값을 쓴다.
-    { label: "관심 등록 수", value: profile.sidebar.interestedCount, icon: Bookmark },
-    { label: "채용중 공고", value: `${getActiveJobCount(profile.id)}건`, icon: BriefcaseBusiness },
-    { label: "후기", value: reviewSummaryLabel(profile.id), icon: MessageSquareText },
-  ];
+    interestedCount ? { label: "관심 등록 수", value: interestedCount, icon: Bookmark } : null,
+    { label: "채용중 공고", value: `${getActiveJobCount(companyId)}건`, icon: BriefcaseBusiness },
+    { label: "후기", value: reviewSummaryLabel(companyId), icon: MessageSquareText },
+  ].filter((item): item is { label: string; value: string; icon: LucideIcon } => Boolean(item));
   return (
     <section className="border border-border bg-white p-5 shadow-[var(--shadow)]">
       <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#202733]">기관 핵심 정보</h2>
@@ -1048,14 +1095,14 @@ function CompanyCoreInfoCard({ profile }: { profile: CompanyProfile }) {
 
       <div className="mt-5 grid gap-2">
         <Link
-          href={`/companies/${profile.id}/jobs`}
+          href={`/companies/${companyId}/jobs`}
           className="inline-flex h-11 w-full items-center justify-center gap-2 bg-[#111111] text-[14px] font-medium text-white hover:bg-[#2a2a2a]"
         >
           채용공고 보기
           <ChevronRight size={16} />
         </Link>
         <Link
-          href={`/companies/${profile.id}/reviews`}
+          href={`/companies/${companyId}/reviews`}
           className="inline-flex h-11 w-full items-center justify-center border border-border text-[14px] font-medium text-[#4f5a66] hover:border-[#111111] hover:text-[#111111]"
         >
           후기 보기
@@ -1070,17 +1117,18 @@ function CompanyCoreInfoCard({ profile }: { profile: CompanyProfile }) {
 export function HospitalAsidePanel({ profile }: { profile: CompanyProfile }) {
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
-      <CompanyCoreInfoCard profile={profile} />
+      <CompanyCoreInfoCard companyId={profile.id} interestedCount={profile.sidebar.interestedCount} />
     </aside>
   );
 }
 
 /** [companyId] 개요 탭 사이드바 — 약국 트랙. 단일 카드 원칙(STEP 6): 기관 핵심 정보 카드만 남긴다.
  * 조제환경·장비/조제특성 칩, 추천 카드, 위치 카드는 본문(D/위치)과 중복이거나 추천 기준이 없어 렌더에서 제외했다. */
-export function PharmacyAsidePanel({ profile }: { profile: CompanyProfile }) {
+export function PharmacyAsidePanel({ pharmacy }: { pharmacy: PharmacyDetailModel }) {
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
-      <CompanyCoreInfoCard profile={profile} />
+      {/* 관심 등록 수는 프로필에만 있는 값이라, 없으면 행째 서지 않는다 */}
+      <CompanyCoreInfoCard companyId={pharmacy.id} interestedCount={pharmacy.profile?.sidebar.interestedCount} />
     </aside>
   );
 }
@@ -1205,7 +1253,7 @@ export function ResearchSummarySection({ profile }: { profile: CompanyProfile })
 export function ResearchAsidePanel({ profile }: { profile: CompanyProfile }) {
   return (
     <aside className="sticky top-[88px] grid h-fit gap-4 self-start max-[1120px]:static">
-      <CompanyCoreInfoCard profile={profile} />
+      <CompanyCoreInfoCard companyId={profile.id} interestedCount={profile.sidebar.interestedCount} />
     </aside>
   );
 }

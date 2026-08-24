@@ -6,6 +6,7 @@ import { companyAnchorIds } from "@/config/companyDetailAnchors";
 import { companyReviews } from "@/data/companies";
 import { toInterviewCardItem } from "@/data/companyReviewItems";
 import { getCompanyProfile } from "@/data/companyProfiles";
+import { resolvePharmacyDetail } from "@/data/pharmacyDetail";
 import { readPersonalSession } from "@/lib/session.server";
 
 interface CompanyInterviewsPageProps {
@@ -33,8 +34,9 @@ export default async function CompanyInterviewsPage({ params }: CompanyInterview
 
   const body = <CompanyInterviewsListClient companyId={companyId} items={items} isLoggedIn={isLoggedIn} />;
 
-  /* 프로필이 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다 */
-  if (!profile) {
+  /* 프로필도 등록부 항목도 없는 기업은 개요가 MissingCompany라 돌려보낼 곳이 없다 — 가드를 씌우지 않는다.
+     등록부에만 있는 약국은 개요가 서 있으므로 프로필 있는 기업과 같은 껍데기·같은 가드를 탄다. */
+  if (!profile && !resolvePharmacyDetail(companyId)) {
     return <CompanyFallbackShell>{body}</CompanyFallbackShell>;
   }
 

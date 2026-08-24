@@ -10,6 +10,7 @@ import {
 } from "@/data/businessCompanyProfile";
 import type { HospitalOrgProfile, OrgFeatureItem, PharmacyOrgProfile, ResearchOrgProfile } from "@/data/businessOrgProfile";
 import { regionFromAddress } from "@/data/companyDirectory";
+import type { PharmacyDetailModel } from "@/data/pharmacyDetail";
 import type { CompanyProfile, CompanyProfileFeature } from "@/data/companyProfiles";
 import type { Company } from "@/types/jobs";
 import { getCompanyInitial } from "@/utils/companyInitial";
@@ -284,3 +285,42 @@ export function buildPharmacyPreview(org: PharmacyOrgProfile): { profile: Compan
 
   return { profile, company };
 }
+
+/**
+ * 약국 상세 섹션(PharmacySummarySection·PharmacyAsidePanel)이 받는 조립 모델의 미리보기판.
+ *
+ * 그 컴포넌트들은 이제 등록부에서 조립한 PharmacyDetailModel 하나만 받는데, 미리보기의 약국은
+ * 아직 어느 등록부에도 없다(id부터 실데이터와 겹치지 않게 지어낸 값이다). 그래서 여기서 같은
+ * 모양을 맞춰 준다 — **새 값을 만들지 않고 buildPharmacyPreview가 이미 낸 것만 옮긴다.**
+ *
+ * 전화는 빈 문자열로 둔다. 미리보기 프로필은 종전에도 phone을 채우지 않아 "대표 전화" 행이 서지
+ * 않았고, 여기서 폼의 번호를 흘려 넣으면 이 화면에만 없던 행이 하나 생긴다 — 이번 변경의 범위가
+ * 아니다(폼 값을 프로필로 잇는 일은 그 자체로 따로 정할 문제다).
+ *
+ * claimStatus는 항상 "claimed"다. 이 화면은 자기 약국의 페이지를 미리 보는 자리이므로 "이 약국의
+ * 약국장이신가요?" 안내가 설 이유가 없다.
+ */
+/** 반환 타입이 profile을 좁혀 든다 — 미리보기는 언제나 프로필이 있고, 호출부가 non-null 단언을 쓰지 않게 한다 */
+export function buildPharmacyDetailPreview(org: PharmacyOrgProfile): PharmacyDetailModel & { profile: CompanyProfile } {
+  const { profile, company } = buildPharmacyPreview(org);
+
+  return {
+    id: profile.id,
+    name: profile.name,
+    address: company.address,
+    phone: undefined,
+    openedOn: company.foundedYear || undefined,
+    claimStatus: "claimed",
+    registry: {
+      id: profile.id,
+      name: profile.name,
+      address: company.address,
+      phone: "",
+      openedOn: company.foundedYear,
+      companyId: company.id,
+    },
+    company,
+    profile,
+  };
+}
+

@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { CompanyOverviewClient } from "@/components/company/CompanyOverviewClient";
 import type { QnaPreviewSearchParams } from "@/config/qnaAccess";
 import { getCompanyProfile } from "@/data/companyProfiles";
+import { resolvePharmacyDetail } from "@/data/pharmacyDetail";
 
 interface CompanyPageProps {
   params: Promise<{ companyId: string }>;
@@ -31,9 +33,22 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
   const { companyId } = await params;
   const profile = getCompanyProfile(companyId);
 
-  if (!profile) {
+  if (profile) {
+    return <CompanyOverviewClient profile={profile} searchParams={await searchParams} />;
+  }
+
+  /* 프로필이 없어도 등록부에 있으면 약국이다 — 같은 상세 화면을 타고, 없는 값만 빠진다 */
+  const pharmacy = resolvePharmacyDetail(companyId);
+
+  if (!pharmacy) {
     return <MissingCompany />;
   }
 
-  return <CompanyOverviewClient profile={profile} searchParams={await searchParams} />;
+  /* 인증된 약국은 기업 id가 정본 URL이다 — 등록부 id(암호화 요양기호)로 들어오면 그쪽으로 옮긴다.
+     한 약국이 두 주소로 열려 있으면 공유된 링크와 사이트 안의 링크가 갈린다. */
+  if (pharmacy.id !== companyId) {
+    redirect(`/companies/${pharmacy.id}`);
+  }
+
+  return <CompanyOverviewClient pharmacy={pharmacy} searchParams={await searchParams} />;
 }

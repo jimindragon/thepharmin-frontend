@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { CompanyHero } from "@/components/company/CompanyHero";
-import type { CompanyProfile } from "@/data/companyProfiles";
+import { CompanyHero, type CompanyHeroData } from "@/components/company/CompanyHero";
 
 /**
  * [companyId]/layout.tsx의 히어로 자리. 개요 탭은 풀 히어로, 하위 탭(공고·면접 후기·기업 리뷰·뉴스와
@@ -16,7 +15,7 @@ import type { CompanyProfile } from "@/data/companyProfiles";
  * 활성 판정은 CompanyDetailTabs와 같은 규칙이다 — 루트 href **정확 일치**만 개요로 본다.
  * 하위 경로 매칭을 쓰면 모든 탭이 개요로 잡힌다.
  */
-export function CompanyDetailHero({ profile, companyId }: { profile: CompanyProfile; companyId: string }) {
+export function CompanyDetailHero({ profile, companyId }: { profile: CompanyHeroData; companyId: string }) {
   const pathname = usePathname();
   const isOverview = pathname === `/companies/${companyId}`;
 
