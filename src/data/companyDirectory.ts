@@ -3,6 +3,7 @@ import { companyProfiles } from "@/data/companyProfiles";
 import { jobs } from "@/data/jobs";
 import { companyLogos } from "@/config/companyImages";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
+import { getPharmacyRegistryEntry } from "@/data/pharmacyRegistry";
 import type { Job, JobTrack } from "@/types/jobs";
 
 export type IndustryGroup = "pharma_bio" | "cro_cdmo";
@@ -35,6 +36,7 @@ export interface CompanyDirectoryEntry {
 /**
  * companies.ts 각 기업이 속한 트랙은 Company 타입에 없는 정보라 여기서만 한 번 매핑한다.
  * 새 기업이 companies.ts에 추가되면 이 매핑도 함께 추가해야 한다.
+ * 등록부에만 있는 약국은 매핑 없이 pharmacy로 파생된다(getCompanyTrack 참고).
  */
 const trackById: Record<string, JobTrack> = {
   "thepharmin-pharma": "industry",
@@ -122,9 +124,11 @@ export function provinceFromAddress(address: string) {
   return address.split(" ")[0];
 }
 
-/** companies.ts 각 기업이 속한 트랙 조회. companyDirectory 배열을 만들 필요 없이 단건 조회할 때 사용 */
+/** companies.ts 각 기업이 속한 트랙 조회. companyDirectory 배열을 만들 필요 없이 단건 조회할 때 사용.
+ * companies.ts에 없는 id는 등록부(pharmacyRegistry)에 있으면 약국으로 파생한다 — 전국 약국은
+ * 수동 매핑에 담을 수 없고, 등록부에 있다는 사실 자체가 약국이라는 뜻이다. */
 export function getCompanyTrack(companyId: string): JobTrack {
-  return trackById[companyId] ?? "industry";
+  return trackById[companyId] ?? (getPharmacyRegistryEntry(companyId) ? "pharmacy" : "industry");
 }
 
 /** "(주)"·"주식회사"·공백을 제거해 표기가 다른 동일 기업명을 비교할 수 있게 정규화한다. 실제 이름 문자열은 건드리지 않고 비교 시점에만 적용한다 */

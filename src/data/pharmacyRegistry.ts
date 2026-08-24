@@ -1,5 +1,4 @@
 import { companies } from "@/data/companies";
-import { getCompanyTrack } from "@/data/companyDirectory";
 
 /**
  * 전국 약국 등록부 목데이터 — 약국 인증(claim) 신청의 검색 대상.
@@ -19,7 +18,11 @@ export interface PharmacyRegistryEntry {
   /**
    * 실서비스에서는 심평원이 내려주는 **암호화 요양기호**가 이 자리에 온다(encryptedCode).
    * 사람이 읽을 수 없는 불투명 문자열이라는 성질이 중요해서, 목데이터도 순번이 드러나지 않는
-   * 형태로 둔다 — 화면 어디에도 찍히지 않고 선택 값의 식별자로만 쓰인다.
+   * 형태로 둔다.
+   *
+   * 선택 값의 식별자이자, 프로필이 없는 약국 상세의 URL 키(`/companies/{id}`)로도 쓰인다 —
+   * 등록부에만 있는 약국은 이 값 말고 가리킬 이름이 없다. 다만 **화면 텍스트로는 찍지 않는다**:
+   * 불투명 문자열이라 사람이 읽어서 얻을 것이 없다.
    */
   id: string;
   name: string;
@@ -40,6 +43,9 @@ export interface PharmacyRegistryEntry {
  * 전화번호는 창작하지 않는 대신 걸리지 않는 번호(국번 0000)로 둔다 — companyProfiles가
  * 같은 이유로 쓰는 방식이다. 지역번호는 그 약국이 실제로 선 지역의 것을 쓴다.
  * companies.ts에 약국이 새로 늘면 여기에도 한 줄이 필요하다(없으면 등록부에서 빠진다).
+ *
+ * 이 표에는 약국 트랙 기업 id만 넣는다. companyDirectory가 이 파일을 import하므로(트랙 파생)
+ * 역방향 import는 순환이 되어 금지 — 트랙 필터를 여기서 걸 수 없고, 이 표가 곧 그 필터다.
  */
 const SITE_PHARMACY_REGISTRY: Record<string, { id: string; phone: string }> = {
   "eunhaeng-pharmacy": { id: "enc-8f21c4a09b", phone: "031-0000-2141" },
@@ -80,7 +86,6 @@ const FICTIONAL_PHARMACIES: PharmacyRegistryEntry[] = [
 
 /** 사이트에 등록된 약국을 등록부 레코드로 옮긴다. 이름·주소·개설일자는 companies.ts가 정본이다. */
 const SITE_PHARMACIES: PharmacyRegistryEntry[] = companies
-  .filter((company) => getCompanyTrack(company.id) === "pharmacy")
   .flatMap((company) => {
     const extra = SITE_PHARMACY_REGISTRY[company.id];
     if (!extra) return [];
@@ -122,4 +127,14 @@ export function searchPharmacyRegistry(keyword: string): PharmacyRegistryEntry[]
   const needle = normalize(keyword);
   if (!needle) return [];
   return pharmacyRegistry.filter((entry) => normalize(entry.name).includes(needle) || normalize(entry.address).includes(needle));
+}
+
+/** 암호화 요양기호 단건 조회. 프로필 없는 약국 상세가 URL 세그먼트를 이 키로 받는다 */
+export function getPharmacyRegistryEntry(id: string): PharmacyRegistryEntry | undefined {
+  return pharmacyRegistry.find((entry) => entry.id === id);
+}
+
+/** 사이트 등록 약국의 기업 id로 역조회. companies.ts 쪽에서 등록부 값(전화·개설일자)을 집어올 때 쓴다 */
+export function getPharmacyRegistryEntryByCompanyId(companyId: string): PharmacyRegistryEntry | undefined {
+  return pharmacyRegistry.find((entry) => entry.companyId === companyId);
 }
