@@ -33,6 +33,7 @@ export const trackProfilePath: Record<OrgTrack, string> = {
 const ORG_TRACK_KEY = "thepharmin_signup_org_track";
 const PHARMACY_TYPE_KEY = "thepharmin_signup_pharmacy_type";
 const PHARMACY_FEATURE_KEY = "thepharmin_signup_pharmacy_feature";
+const PHARMACY_ID_KEY = "thepharmin_signup_pharmacy_id";
 
 const validOrgTracks: OrgTrack[] = ["industry", "hospital", "pharmacy", "research"];
 const validPharmacyTypes: PharmacyType[] = ["local", "clinic-front", "large", "beauty"];
@@ -79,4 +80,27 @@ export function writeSignupPharmacyFeatureId(id: string | undefined) {
     return;
   }
   window.localStorage.setItem(PHARMACY_FEATURE_KEY, id);
+}
+
+/**
+ * 약국 가입 STEP1에서 고른 약국의 등록부 id(암호화 요양기호).
+ *
+ * 가입을 마친 계정이 어느 약국을 지목했는지 아는 유일한 자리다 — 인증 게이트(PharmacyClaimGate)가
+ * 이 값을 읽어 그 약국을 미리 세운다. 다른 세 키와 달리 검증 목록이 없다: 등록부 id는 열거할 수 있는
+ * 값이 아니라, 읽는 쪽이 등록부에서 찾아 보고 없으면 버린다.
+ *
+ * 직접 입력으로 가입한 약국은 등록부 id가 없어 이 키가 비어 있다(그쪽은 운영팀 검토로 이어진다).
+ */
+export function readSignupPharmacyId(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(PHARMACY_ID_KEY);
+}
+
+export function writeSignupPharmacyId(id: string | undefined) {
+  if (typeof window === "undefined") return;
+  if (!id) {
+    window.localStorage.removeItem(PHARMACY_ID_KEY);
+    return;
+  }
+  window.localStorage.setItem(PHARMACY_ID_KEY, id);
 }
