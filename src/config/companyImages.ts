@@ -37,7 +37,7 @@ export const heroImages = {
 
 export const companyLogos: Record<string, string> = {
   /* 원본 파일명은 "더파마제약(주).png"지만 괄호가 들어간 URL은 인코딩을 타므로 ASCII 사본을 참조한다
-     (원본도 폴더에 그대로 남겨 둔다). 한글 파일명 키가 이미 여럿 있는 것과 달리 이 키만 사본을 쓰는 이유다. */
+     (원본은 쓰이는 곳이 없어 저장소에서 제거했다). 한글 파일명 키가 이미 여럿 있는 것과 달리 이 키만 사본을 쓰는 이유다. */
   "더파마제약(주)": "/images/companies/thepharma-pharm.png",
   유한양행: "/images/companies/yuhan.png",
   삼성바이오로직스: "/images/companies/samsung-biologics.png",
