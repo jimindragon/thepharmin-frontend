@@ -3,8 +3,10 @@ import { companyProfiles } from "@/data/companyProfiles";
 import { jobs } from "@/data/jobs";
 import { companyLogos } from "@/config/companyImages";
 import { MOCK_TODAY_DATE } from "@/config/mockToday";
-import { getPharmacyRegistryEntry } from "@/data/pharmacyRegistry";
+import { getPharmacyRegistryEntry, pharmacyRegistry } from "@/data/pharmacyRegistry";
+import type { PharmacyClaimStatus } from "@/data/pharmacyDetail";
 import type { Job, JobTrack } from "@/types/jobs";
+import { getCompanyInitial } from "@/utils/companyInitial";
 
 export type IndustryGroup = "pharma_bio" | "cro_cdmo";
 
@@ -31,6 +33,10 @@ export interface CompanyDirectoryEntry {
   activeJobCount: number;
   /** companyProfiles.ts에 프로필이 있으면 기본 상세 페이지(/companies/{id}), 없으면 항상 렌더되는 리뷰 페이지(/companies/{id}/reviews)로 폴백한다 */
   detailHref: string;
+  /** 약국 트랙에만 있다. 등록부에만 있는(주인 없는) 약국을 목록에서 갈라 내는 축 — 다른 트랙은 undefined다 */
+  claimStatus?: PharmacyClaimStatus;
+  /** 약국 트랙에만 채운다. 목록 검색이 이름 외에 주소도 훑어야 하는 것은 동명 약국이 흔해서다(다른 트랙은 undefined) */
+  address?: string;
 }
 
 /**
@@ -116,6 +122,23 @@ export const FEATURED_COMPANY_IDS = ["celltrion", "hanmi-pharm"];
 
 export function regionFromAddress(address: string) {
   return address.split(" ").slice(0, 2).join(" ");
+}
+
+/**
+ * 약국 트랙 전용 지역 표기 — 시도·시군구에 한 토큰(읍면동)을 더 붙인다.
+ *
+ * 약국은 동명이 흔해서("중앙약국"이 시군구 안에 여럿 있다) 두 토큰만으로는 목록에서 어느 약국인지
+ * 갈라지지 않는다. 세 번째 토큰이 숫자로 시작하면(도로명 번지·"1620-3" 같은 지번) 지역이 아니라
+ * 주소의 나머지라 두 토큰으로 되돌린다.
+ *
+ * 다른 세 트랙은 regionFromAddress를 그대로 쓴다 — 그쪽은 기관 수가 적어 시군구로 충분하고,
+ * 지금 렌더를 바꿀 이유가 없다.
+ */
+export function pharmacyRegionFromAddress(address: string) {
+  const tokens = address.split(" ");
+  const third = tokens[2];
+  if (!third || /^[0-9]/.test(third)) return tokens.slice(0, 2).join(" ");
+  return tokens.slice(0, 3).join(" ");
 }
 
 /** 시·도 단위(주소 첫 토큰)만 비교할 때 쓴다. "같은 지역" 매칭(예: 약국 상세의 같은 지역 채용중 약국)은
@@ -208,8 +231,48 @@ function parseCount(value?: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-/** 기업정보 홈의 "기업·기관 탐색" 목록. companies.ts/companyProfiles.ts에 실제로 등록된 기업·기관만 포함한다 — 예시를 위해 새 기관을 추가하지 않는다. */
-export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company) => {
+/**
+ * 등록부에만 있는(주인 없는) 약국을 목록 항목으로 옮긴다.
+ *
+ * 여기서 새로 만드는 값은 없다 — 이름·주소는 등록부가 정본이고, 후기·공고 수는 등록된 기업과 **같은
+ * 함수**로 센다(지금은 전부 0이지만, 공고가 그 id로 붙는 날 자동으로 따라 올라간다).
+ * logoText/logoColor는 이 목록의 행이 읽지 않는 값이다(로고 칸은 logoUrl 아니면 getCompanyInitial로
+ * 떨어진다) — 타입이 필수로 들고 있어 이름 기반 이니셜과 기존 약국의 색을 그대로 채운다.
+ */
+function buildRegistryPharmacyEntries(): CompanyDirectoryEntry[] {
+  return pharmacyRegistry
+    .filter((entry) => !entry.companyId)
+    .map((entry) => {
+      const reviewsForPharmacy = companyReviews.filter((review) => review.companyId === entry.id);
+
+      return {
+        id: entry.id,
+        name: entry.name,
+        track: "pharmacy" as const,
+        /** 등록부는 약국 유형을 내려주지 않는다 — companies.ts 약국이 가장 많이 쓰는 값을 그대로 쓴다 */
+        type: "일반약국",
+        region: pharmacyRegionFromAddress(entry.address),
+        logoText: getCompanyInitial(entry.name),
+        logoColor: "#111111",
+        /** 인증 절차를 지나지 않았다 — 행의 인증 배지가 서지 않는다 */
+        verified: false,
+        reviewCount: reviewsForPharmacy.length,
+        companyReviewCount: reviewsForPharmacy.filter((review) => review.type === "company").length,
+        interviewReviewCount: reviewsForPharmacy.filter((review) => review.type === "interview").length,
+        /** 관심 등록 수는 프로필에만 있는 값이라 지어내지 않는다 */
+        interestedCount: null,
+        activeJobCount: getActiveJobCount(entry.id),
+        detailHref: `/companies/${entry.id}`,
+        claimStatus: "unclaimed" as const,
+        address: entry.address,
+      };
+    });
+}
+
+/** 기업정보 홈의 "기업·기관 탐색" 목록. companies.ts/companyProfiles.ts에 실제로 등록된 기업·기관과,
+ * 등록부에만 있는 약국을 이어붙인다 — 예시를 위해 새 기관을 추가하지 않는다.
+ * 정렬·그룹 분할은 소비처(CompaniesHomeClient)가 하므로 여기서는 순서를 만들지 않는다. */
+const registeredDirectory: CompanyDirectoryEntry[] = companies.map((company) => {
   const profile = companyProfiles.find((item) => item.id === company.id);
   const track = trackById[company.id] ?? "industry";
   const reviewsForCompany = companyReviews.filter((review) => review.companyId === company.id);
@@ -220,7 +283,8 @@ export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company)
     track,
     industryGroup: track === "industry" ? industryGroupById[company.id] ?? "pharma_bio" : undefined,
     type: company.industry,
-    region: regionFromAddress(company.address),
+    /** 약국만 읍면동까지 — 동명 약국이 흔해 시군구로는 갈라지지 않는다(다른 트랙은 종전 두 토큰 그대로) */
+    region: track === "pharmacy" ? pharmacyRegionFromAddress(company.address) : regionFromAddress(company.address),
     logoText: company.logoText,
     // 다른 화면(JobCard·홈·공고 상세)과 같은 "직접 필드 ?? 이름으로 조회" 순서. companies.ts에 logoUrl을
     // 채우는 대신 여기서 폴백해야 companyLogos가 로고 자산의 단일 출처로 남는다
@@ -234,5 +298,10 @@ export const companyDirectory: CompanyDirectoryEntry[] = companies.map((company)
     interestedCount: parseCount(profile?.sidebar.interestedCount),
     activeJobCount: getActiveJobCount(company.id),
     detailHref: profile ? `/companies/${company.id}` : `/companies/${company.id}/reviews`,
+    /** 사이트에 등록돼 있다는 것이 곧 주인이 있다는 뜻이다(다른 트랙은 이 축 자체가 없어 undefined) */
+    claimStatus: track === "pharmacy" ? ("claimed" as const) : undefined,
+    address: track === "pharmacy" ? company.address : undefined,
   };
 });
+
+export const companyDirectory: CompanyDirectoryEntry[] = [...registeredDirectory, ...buildRegistryPharmacyEntries()];

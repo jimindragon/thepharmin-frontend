@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ChevronRight, Search, ShieldCheck } from "lucide-react";
-import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { FLUSH_SECTION_CLASS } from "@/components/flushListStyles";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
@@ -109,6 +109,21 @@ function matchesTrackFilter(track: JobTrack, industryGroup: IndustryGroup | unde
   if (filter === "cro_cdmo") return track === "industry" && industryGroup === "cro_cdmo";
   return track === filter;
 }
+
+/**
+ * 이 기관에 대해 사이트가 보여 줄 것이 하나라도 있는가. 후기 한 건이든 공고 한 건이든 있으면
+ * 눌러 볼 이유가 있고, 둘 다 없으면 상세가 이름·주소만 남은 껍데기다.
+ *
+ * 등록부에서 올라온 약국은 대부분 후자라, 이 판정이 목록에서 두 무리를 가르는 축이 된다 —
+ * "전체" 탭에서는 아예 빼고, "약국" 탭에서는 뒤로 모은다.
+ */
+const hasActivity = (entry: CompanyDirectoryEntry) => entry.reviewCount > 0 || entry.activeJobCount > 0;
+
+/** 아직 아무 활동도 없는, 주인 없는 약국. 전체 탭이 걸러 내고 약국 탭이 뒤로 미루는 대상이다 */
+const isDormantRegistryPharmacy = (entry: CompanyDirectoryEntry) => entry.claimStatus === "unclaimed" && !hasActivity(entry);
+
+/** 약국 탭의 그룹 라벨 — 박스가 아니라 목록 사이에 끼는 한 줄이다 */
+const DORMANT_PHARMACY_GROUP_LABEL = "아직 활동 정보가 없는 약국";
 
 /**
  * 세 정렬 모두 1차 기준의 동점 구간이 넓다 — 채용중 공고는 50곳 중 40곳이 1건으로 같고,
@@ -624,8 +639,10 @@ function DirectoryEmptyState() {
 }
 
 export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeedItems }: CompaniesHomeClientProps) {
-  /** 입력값이 곧 필터다 — 제출 버튼이 없어 커밋 단계를 따로 두지 않는다. 목록이 정적 배열 50건이라
-   *  디바운스 없이 매 입력마다 걸러도 무리가 없다(/support 검색창과 같은 방식). */
+  /** 입력값이 곧 필터다 — 제출 버튼이 없어 커밋 단계를 따로 두지 않는다. 목록이 정적 배열 60여 건이라
+   *  디바운스 없이 매 입력마다 걸러도 무리가 없다(/support 검색창과 같은 방식).
+   *  전국 약국이 실제로 들어오면 이 전제가 깨진다 — 그때 목록은 클라이언트 slice가 아니라 서버 페이징으로
+   *  가고 검색도 서버 질의가 된다(API 교체 시 개발자 담당). 여기에 디바운스를 얹어 버티지 않는다. */
   const [keyword, setKeyword] = useState("");
   const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("후기순");
@@ -641,6 +658,10 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
 
     for (const entry of directory) {
       if (!entry.logoUrl) continue;
+      /* 스트립은 "이 사이트에 어떤 기업이 있는지" 보여 주는 얼굴 줄이다 — 아직 주인이 없는 약국은
+         그 자리에 설 수 없다. 지금은 등록부 약국에 logoUrl이 없어 위 줄에서 이미 걸리지만,
+         로고가 붙는 날 조용히 새어 들어오지 않도록 조건을 남긴다. */
+      if (entry.claimStatus === "unclaimed") continue;
       if (featuredIds.has(entry.id)) featured.push(entry);
       else if (entry.detailHref === `/companies/${entry.id}`) withProfile.push(entry);
       else rest.push(entry);
@@ -662,12 +683,25 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     const normalizedKeyword = keyword.trim().toLowerCase();
     return directory.filter((entry) => {
       const matchesTrack = matchesTrackFilter(entry.track, entry.industryGroup, trackFilter);
-      const matchesKeyword = !normalizedKeyword || entry.name.toLowerCase().includes(normalizedKeyword);
+      /* "전체"는 사이트가 내세우는 목록이라 아직 볼 것이 없는 약국을 올리지 않는다 — 그 약국들은
+         약국 탭에서 두 번째 무리로 서 있다. 약국 탭과 다른 탭의 판정은 종전 그대로다. */
+      if (trackFilter === "all" && isDormantRegistryPharmacy(entry)) return false;
+      /* 약국만 주소도 훑는다 — 동명 약국이 흔해 이름만으로는 "관악구 그 약국"에 닿을 수 없다.
+         주소가 없는 다른 트랙은 undefined라 이 항이 그냥 false가 되고, 종전처럼 이름만 본다. */
+      const haystack = entry.address ? `${entry.name} ${entry.address}` : entry.name;
+      const matchesKeyword = !normalizedKeyword || haystack.toLowerCase().includes(normalizedKeyword);
       return matchesTrack && matchesKeyword;
     });
   }, [directory, trackFilter, keyword]);
 
-  const sortedDirectory = useMemo(() => sortDirectory(filteredDirectory, sortOption), [filteredDirectory, sortOption]);
+  const sortedDirectory = useMemo(() => {
+    const sorted = sortDirectory(filteredDirectory, sortOption);
+    if (trackFilter !== "pharmacy") return sorted;
+    /* 약국 탭만 두 무리로 나눈다: 볼 것이 있는 약국이 먼저, 그 뒤가 나머지. 정렬 옵션은 무리
+       **안에서만** 듣는다 — 후기순으로 본다고 빈 약국이 위로 올라오면 목록 첫 화면이 껍데기로 찬다.
+       filter를 두 번 도는 것은 안정 분할이라 각 무리 내부 순서가 위 정렬 그대로 남기 때문이다. */
+    return [...sorted.filter(hasActivity), ...sorted.filter((entry) => !hasActivity(entry))];
+  }, [filteredDirectory, sortOption, trackFilter]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -681,6 +715,19 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
     () => sortedDirectory.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
     [sortedDirectory, safePage],
   );
+
+  /**
+   * 현재 페이지에서 그룹 라벨이 설 자리(없으면 -1).
+   *
+   * 두 무리가 **목록 전체에** 다 있을 때만 세운다 — 한쪽만 있는 목록에서는 가를 것이 없고,
+   * 라벨 혼자 남으면 없는 무리를 있다고 말하는 셈이 된다. 그 판정은 페이지가 아니라 전체를 보므로,
+   * 비활동 무리로 시작하는 뒤쪽 페이지에서도 첫 항목 위에 라벨이 선다.
+   */
+  const dormantGroupStartIndex = useMemo(() => {
+    if (trackFilter !== "pharmacy") return -1;
+    if (!sortedDirectory.some(hasActivity) || sortedDirectory.every(hasActivity)) return -1;
+    return visibleDirectory.findIndex((entry) => !hasActivity(entry));
+  }, [trackFilter, sortedDirectory, visibleDirectory]);
 
   const handleRequestWriteCompanyReview = () => {
     companyReviewNotice.show("기업 리뷰 작성 화면은 준비 중입니다.");
@@ -759,8 +806,16 @@ export function CompaniesHomeClient({ directory, companyFeedItems, interviewFeed
 
           {visibleDirectory.length ? (
             <div className="divide-y divide-[#e5e9ef]">
-              {visibleDirectory.map((entry) => (
-                <CompanyListItem key={`${entry.id}-${currentPage}`} entry={entry} />
+              {visibleDirectory.map((entry, index) => (
+                <Fragment key={`${entry.id}-${currentPage}`}>
+                  {/* 두 무리의 경계에 서는 라벨. 페이지마다 다시 세우는 것은 뒤쪽 페이지가 통째로
+                      비활동 무리일 때도 그 화면만 보고 있는 사람에게 여기가 어디인지 알려야 해서다.
+                      divide-y 자식이라 이 줄에도 구분선이 걸리는데, 무리의 시작을 긋는 선이라 그대로 둔다. */}
+                  {index === dormantGroupStartIndex ? (
+                    <p className="pb-2 pt-6 text-[13px] font-normal text-[#777777]">{DORMANT_PHARMACY_GROUP_LABEL}</p>
+                  ) : null}
+                  <CompanyListItem entry={entry} />
+                </Fragment>
               ))}
             </div>
           ) : (
