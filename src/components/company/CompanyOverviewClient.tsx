@@ -7,7 +7,7 @@ import { companies } from "@/data/companies";
 import { getCompanyDetailCounts, getCompanyTrack } from "@/data/companyDirectory";
 import { resolvePharmacyDetail, type PharmacyDetailModel } from "@/data/pharmacyDetail";
 import type { CompanyProfile } from "@/data/companyProfiles";
-import { NoticeRow } from "@/components/ui/NoticeRow";
+import { PharmacyClaimNotice } from "@/components/company/PharmacyClaimNotice";
 import {
   CompanyActiveJobsPreviewSection,
   CompanyAsidePanel,
@@ -98,14 +98,9 @@ export async function CompanyOverviewClient({ profile, pharmacy, searchParams = 
             isLoggedIn={isLoggedIn}
             pharmacyWriteAccess={pharmacyWriteAccess}
           />
-          {/* 아직 주인이 없는 약국에만 선다 — 인증하면 이 자리에서 사라진다 */}
-          {pharmacyModel.claimStatus === "unclaimed" ? (
-            <NoticeRow
-              text="이 약국의 약국장이신가요?"
-              actionLabel="약국 인증하기"
-              actionHref={`/business/signup/pharmacy?pharmacyId=${pharmacyModel.registry.id}`}
-            />
-          ) : null}
+          {/* 아직 주인이 없는 약국에만 선다. 신청이 이미 들어와 있는지는 브라우저 저장소에 있어
+              서버가 알 수 없으므로, 그 판정과 렌더를 클라이언트 컴포넌트에 맡긴다 */}
+          <PharmacyClaimNotice registryId={pharmacyModel.registry.id} claimStatus={pharmacyModel.claimStatus} />
         </div>
         <PharmacyAsidePanel pharmacy={pharmacyModel} />
       </div>

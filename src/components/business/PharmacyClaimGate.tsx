@@ -1,12 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { CheckCircle2, Lock } from "lucide-react";
 import { FieldLabel, TextInput } from "@/components/business/BusinessFormControls";
+import { PharmacyConfirmCard } from "@/components/business/PharmacyConfirmCard";
 import { PharmacyRegistrySearch } from "@/components/business/PharmacyRegistrySearch";
 import { Button } from "@/components/ui/Button";
-import type { PharmacyRegistryEntry } from "@/data/pharmacyRegistry";
+import { getPharmacyRegistryEntry, type PharmacyRegistryEntry } from "@/data/pharmacyRegistry";
+import { readSignupPharmacyId } from "@/config/businessSignup";
+import { setClaimRequestPending } from "@/hooks/usePharmacyClaimRequests";
 
 /**
  * 약국 인증(claim) 게이트. 계정이 아직 어느 약국의 주인인지 잇지 않았을 때 후기 관리 자리에 대신 선다.
@@ -34,11 +37,25 @@ type ClaimStep = "intro" | "form" | "done";
 const GATE_TITLE = "약국 인증이 필요합니다";
 const GATE_DESCRIPTION =
   "우리 약국을 인증하면 재직 후기 확인, 공식 답변 작성, 채용공고 등록 기능을 무료로 이용할 수 있습니다.";
-const DONE_NOTICE = "인증 신청이 접수되었습니다. 영업일 기준 1~2일 내 검토 결과를 알려드립니다.";
+const DONE_NOTICE = "약국 인증 신청이 접수되었습니다. 검토가 완료되면 알려드릴게요.";
 /** 가입 흐름에 통합될 예정이라, 이 화면에 잘못 들어온 사람을 여기서 돌려세운다 */
 const GATE_SIGNUP_NOTE = "가입 시 약국 인증을 완료했다면 이 절차는 필요하지 않습니다.";
 
 export function PharmacyClaimGate() {
+  /**
+   * 가입 때 지목한 약국을 그대로 세운다.
+   *
+   * 이 화면은 가입의 예외 경로라(위 주석) 대부분 가입을 이미 지나온 사람이 온다 — 그때 고른 약국을
+   * 여기서 다시 찾게 하면 같은 검색을 두 번 시키는 셈이다. 등록부에 없거나 그새 주인이 생긴 값이면
+   * 무시하고 종전 검색으로 간다.
+   *
+   * useState 초기화 함수 안에서 읽는 것은 localStorage라 서버에서는 값이 없고, 그때는 null이 된다 —
+   * 이 컴포넌트가 서버 렌더를 거치는 자리(BusinessReviewsClient)에서도 하이드레이션이 어긋나지 않게
+   * 마운트 후 한 번 더 맞춘다.
+   */
+  const [linkedEntry, setLinkedEntry] = useState<PharmacyRegistryEntry | null>(null);
+  const [entryConfirmed, setEntryConfirmed] = useState(false);
+
   const [step, setStep] = useState<ClaimStep>("intro");
   const [selected, setSelected] = useState<PharmacyRegistryEntry | null>(null);
   const [businessNumber, setBusinessNumber] = useState("");
@@ -47,7 +64,32 @@ export function PharmacyClaimGate() {
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const savedId = readSignupPharmacyId();
+    const entry = savedId ? getPharmacyRegistryEntry(savedId) : undefined;
+    /** 이미 주인이 있는 약국이면 이 게이트에서 할 일이 없다 — 프리셀렉트하지 않고 검색으로 둔다 */
+    if (!entry || entry.companyId) return;
+    setLinkedEntry(entry);
+    setSelected(entry);
+  }, []);
+
   const canSubmit = Boolean(selected && businessNumber.trim() && applicantName.trim() && applicantPhone.trim());
+
+  /** 확인 카드를 지나기 전까지는 검색창 대신 그 카드가 선다 */
+  const pendingConfirmEntry = linkedEntry && !entryConfirmed ? linkedEntry : null;
+
+  /** 지목을 놓고 검색으로 되돌린다 — 확인 카드의 "다른 약국 선택"과 확인 뒤의 같은 버튼이 함께 쓴다 */
+  const releaseLinkedEntry = () => {
+    setEntryConfirmed(true);
+    setLinkedEntry(null);
+    setSelected(null);
+  };
+
+  const submitClaim = () => {
+    /** 서비스 상태는 등록부가 아니라 여기 남는다 — 약국 상세의 안내 행이 이 값을 보고 "검토 중"으로 바뀐다 */
+    if (selected) setClaimRequestPending(selected.id);
+    setStep("done");
+  };
 
   if (step === "done") {
     return (
@@ -82,7 +124,29 @@ export function PharmacyClaimGate() {
       <p className="mt-2 text-[15px] font-normal leading-[1.7] text-[#68717e]">{GATE_DESCRIPTION}</p>
 
       <div className="mt-7 grid gap-5 border border-border bg-white p-6 max-[760px]:p-4">
-        <PharmacyRegistrySearch value={selected} onChange={setSelected} />
+        {pendingConfirmEntry ? (
+          /* 가입 때 지목한 약국 — 검색을 다시 시키지 않고 맞는지만 묻는다 */
+          <PharmacyConfirmCard
+            entry={pendingConfirmEntry}
+            onConfirm={() => setEntryConfirmed(true)}
+            onChange={releaseLinkedEntry}
+          />
+        ) : linkedEntry && selected ? (
+          /* 확인을 받은 뒤. 빈 검색창으로 되돌리면 어느 약국을 신청하는 중인지가 화면에서 사라진다 —
+             가입 STEP1이 선택 뒤에 남기는 확인 행과 같은 문법으로, 아래 증빙 항목 위에 그대로 세워 둔다. */
+          <div className="flex items-start justify-between gap-3 border border-[#111111] bg-[#f7f8fa] px-4 py-3">
+            <p className="min-w-0 text-[14px] font-normal leading-[1.6] text-[#4f5967]">
+              <span className="font-semibold text-[#17202c]">{selected.name}</span>
+              {" · "}
+              {selected.address}
+            </p>
+            <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={releaseLinkedEntry}>
+              다른 약국 선택
+            </Button>
+          </div>
+        ) : (
+          <PharmacyRegistrySearch value={selected} onChange={setSelected} />
+        )}
 
         <div>
           <FieldLabel>사업자등록번호</FieldLabel>
@@ -133,7 +197,7 @@ export function PharmacyClaimGate() {
         <Button type="button" variant="secondary" onClick={() => setStep("intro")}>
           취소
         </Button>
-        <Button type="button" variant="primary" disabled={!canSubmit} onClick={() => setStep("done")}>
+        <Button type="button" variant="primary" disabled={!canSubmit} onClick={submitClaim}>
           인증 신청하기
         </Button>
       </div>

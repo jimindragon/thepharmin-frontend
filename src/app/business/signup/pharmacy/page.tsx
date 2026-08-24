@@ -7,11 +7,18 @@ export const metadata: Metadata = {
   description: "약국을 운영하며 약사 인력을 채용하려는 약국장·관리약사를 위한 가입입니다.",
 };
 
-export default function BusinessSignupPharmacyPage() {
+interface BusinessSignupPharmacyPageProps {
+  /** 약국 상세의 "약국 인증하기"가 붙여 오는 등록부 id — 그 약국을 STEP1에 미리 세운다 */
+  searchParams: Promise<{ pharmacyId?: string }>;
+}
+
+export default async function BusinessSignupPharmacyPage({ searchParams }: BusinessSignupPharmacyPageProps) {
+  const { pharmacyId } = await searchParams;
+
   return (
     <>
       <AuthHeader />
-      <PharmacySignupClient />
+      <PharmacySignupClient initialPharmacyId={pharmacyId} />
     </>
   );
 }

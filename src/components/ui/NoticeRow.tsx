@@ -20,23 +20,32 @@ export function NoticeRow({
   icon: Icon,
 }: {
   text: string;
-  actionLabel: string;
-  actionHref: string;
+  /**
+   * 버튼. 둘 다 넘기지 않으면 문구만 있는 행이 된다 — 알리기만 하고 할 일이 없는 상태
+   * (예: 접수된 신청을 기다리는 중)가 그렇다. 기존 두 사용처는 항상 함께 넘긴다.
+   */
+  actionLabel?: string;
+  actionHref?: string;
   /** ≤760px에서만 뜨는 우측 장식 — 정보를 얹지 않는다. 넘기지 않으면 렌더하지 않는다. */
   icon?: LucideIcon;
 }) {
   return (
     <div className="flex items-center justify-between gap-6 border border-border bg-[#fafafa] px-6 py-5">
       {/* 문구+버튼을 한 겹 더 싸서, 데스크톱은 이 겹이 폭을 다 먹고 좌우로 벌리고
-          ≤760px는 세로로 쌓여 좌측 정렬 덩어리가 된다. 장식 아이콘은 이 겹 밖이라 항상 행 끝에 선다. */}
-      <div className="flex min-w-0 flex-1 items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
+          ≤760px는 세로로 쌓여 좌측 정렬 덩어리가 된다. 장식 아이콘은 이 겹 밖이라 항상 행 끝에 선다.
+
+          min-h는 버튼 높이(41px)다 — 버튼 없는 행이 그만큼 낮아지면, 같은 자리에서 상태만 바뀌는
+          화면(약국 인증 안내)에서 행 높이가 출렁인다. 버튼이 있는 기존 두 사용처에는 영향이 없다. */}
+      <div className="flex min-h-[41px] min-w-0 flex-1 items-center justify-between gap-6 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-4">
         <p className="min-w-0 text-[15px] font-medium text-[#333333]">{text}</p>
-        <Link
-          href={actionHref}
-          className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white"
-        >
-          {actionLabel}
-        </Link>
+        {actionLabel && actionHref ? (
+          <Link
+            href={actionHref}
+            className="inline-flex shrink-0 items-center gap-1.5 border border-[#111111] px-4 py-2 text-[13px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white"
+          >
+            {actionLabel}
+          </Link>
+        ) : null}
       </div>
       {Icon ? <Icon className="hidden h-9 w-9 shrink-0 text-[#d1d6dd] max-[760px]:block" strokeWidth={1.5} aria-hidden /> : null}
     </div>

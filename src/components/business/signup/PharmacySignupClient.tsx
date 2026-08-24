@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { InfoNoticeBox } from "@/components/shared/InfoNoticeBox";
 import { FieldLabel, Segmented, TextInput, ToggleChip } from "@/components/business/BusinessFormControls";
+import { PharmacyConfirmCard } from "@/components/business/PharmacyConfirmCard";
 import { PharmacyRegistrySearch } from "@/components/business/PharmacyRegistrySearch";
 import { DuplicateCheckField } from "@/components/business/signup/DuplicateCheckField";
 import { FileUploadField } from "@/components/business/signup/FileUploadField";
@@ -12,9 +13,9 @@ import { ManagerInfoStep, emptyManagerInfo, type ManagerInfo } from "@/component
 import { AccountCreationStep, emptyAccountCreationInfo, type AccountCreationInfo } from "@/components/business/signup/AccountCreationStep";
 import { SignupCompleteStep } from "@/components/business/signup/SignupCompleteStep";
 import { getPharmacyTypeLabel, pharmacyTypeLabels } from "@/config/companyTypes";
-import { writeSignupOrgTrack, writeSignupPharmacyFeatureId, writeSignupPharmacyType } from "@/config/businessSignup";
+import { writeSignupOrgTrack, writeSignupPharmacyFeatureId, writeSignupPharmacyId, writeSignupPharmacyType } from "@/config/businessSignup";
 import { pharmacyFeatureOptions } from "@/config/jobFilters/pharmacyFilters";
-import type { PharmacyRegistryEntry } from "@/data/pharmacyRegistry";
+import { getPharmacyRegistryEntry, type PharmacyRegistryEntry } from "@/data/pharmacyRegistry";
 import type { PharmacyType } from "@/types/jobs";
 
 /**
@@ -26,6 +27,10 @@ type PharmacyEntryMode = "search" | "manual";
 /** 두 방법을 오가는 링크형 버튼. 필드가 아니라 빠져나가는 길이라 본문보다 한 단 낮은 회색 밑줄로 둔다. */
 const ENTRY_MODE_LINK =
   "text-[13px] font-medium text-[#6f7783] underline underline-offset-2 transition hover:text-[#111111]";
+
+/** 링크가 이미 주인이 있는 약국을 가리켰을 때. 여기서 해결할 수 없는 일이라 갈 곳을 함께 적는다 */
+const ALREADY_CLAIMED_NOTICE = "이미 인증된 약국입니다. 관리자 변경이나 권한 요청은 고객센터로 문의해 주세요.";
+const ALREADY_CLAIMED_HINT = "다른 약국을 인증하려면 검색하세요.";
 
 interface PharmacyVerificationInfo {
   businessNumber: string;
@@ -60,10 +65,20 @@ function PharmacyVerificationStep({
   value,
   onChange,
   onNext,
+  pendingConfirmEntry,
+  onConfirmEntry,
+  onRejectEntry,
+  alreadyClaimedEntry,
 }: {
   value: PharmacyVerificationInfo;
   onChange: <K extends keyof PharmacyVerificationInfo>(key: K, next: PharmacyVerificationInfo[K]) => void;
   onNext: () => void;
+  /** 링크로 지목돼 아직 확인받지 못한 약국. 있으면 검색창 대신 확인 카드가 선다 */
+  pendingConfirmEntry: PharmacyRegistryEntry | null;
+  onConfirmEntry: () => void;
+  onRejectEntry: () => void;
+  /** 링크가 가리킨 약국이 이미 인증된 경우 — 검색은 그대로 열어 두고 위에 사정을 적는다 */
+  alreadyClaimedEntry: PharmacyRegistryEntry | null;
 }) {
   const isManual = value.pharmacyEntryMode === "manual";
 
@@ -98,7 +113,10 @@ function PharmacyVerificationStep({
       <div className="space-y-5">
         {/* 약국을 먼저 지목하고 그 다음에 번호·사람을 확인한다 — 이 스텝이 답하는 질문이
             "어느 약국인가"라서, 종전처럼 사업자등록번호가 첫 칸에 서면 순서가 뒤집힌다. */}
-        {isManual ? (
+        {pendingConfirmEntry ? (
+          /* 상세에서 지목해 온 약국 — 검색을 다시 시키지 않고 맞는지만 묻는다 */
+          <PharmacyConfirmCard entry={pendingConfirmEntry} onConfirm={onConfirmEntry} onChange={onRejectEntry} />
+        ) : isManual ? (
           <div className="space-y-2">
             <FieldLabel required>약국명</FieldLabel>
             <TextInput value={value.pharmacyName} onChange={(v) => onChange("pharmacyName", v)} placeholder="예: 은행약국" />
@@ -128,6 +146,14 @@ function PharmacyVerificationStep({
           </div>
         ) : (
           <div className="space-y-2">
+            {/* 링크가 가리킨 약국에 이미 주인이 있을 때 — 여기서 할 수 있는 일이 없다는 것을 먼저 말하고,
+                그래도 다른 약국을 인증할 수는 있으므로 검색은 그대로 아래에 남긴다. */}
+            {alreadyClaimedEntry ? (
+              <div className="space-y-1.5 pb-1">
+                <p className="text-[15px] font-normal leading-[1.6] text-[#333333]">{ALREADY_CLAIMED_NOTICE}</p>
+                <p className="text-[13px] font-normal leading-[1.6] text-[#8a94a3]">{ALREADY_CLAIMED_HINT}</p>
+              </div>
+            ) : null}
             <PharmacyRegistrySearch
               label="약국 찾기"
               required
@@ -231,9 +257,28 @@ function PharmacyVerificationStep({
 const STEP_LABELS = ["약국 인증", "담당자 정보", "계정 생성"] as const;
 
 /** 약국 가입 폼 — STEP1(약국 인증)만 전용, STEP2·3은 통합 폼과 완전히 같은 공유 컴포넌트를 쓴다. */
-export function PharmacySignupClient() {
+export function PharmacySignupClient({ initialPharmacyId }: { initialPharmacyId?: string }) {
+  /**
+   * 링크로 지목된 약국을 STEP1의 첫 상태로 접는다.
+   *
+   * useState 초기화 함수로 한 번만 계산한다 — 등록부는 정적 모듈이라 서버·클라이언트가 같은 값을
+   * 내고, 이펙트로 미루면 첫 프레임에 빈 검색창이 한 번 스친다.
+   *
+   * 세 갈래다: 등록부에 없는(또는 파라미터 없는) 값이면 아무 일도 없고, 이미 주인이 있는 약국이면
+   * 고르지 않은 채 사정만 알리고, 주인 없는 약국이면 확인 카드로 세운다.
+   */
+  const linkedEntry = useState(() => (initialPharmacyId ? getPharmacyRegistryEntry(initialPharmacyId) ?? null : null))[0];
+  const alreadyClaimedEntry = linkedEntry?.companyId ? linkedEntry : null;
+  const claimableEntry = linkedEntry && !linkedEntry.companyId ? linkedEntry : null;
+
   const [step, setStep] = useState<1 | 2 | 3 | "complete">(1);
-  const [pharmacyInfo, setPharmacyInfo] = useState<PharmacyVerificationInfo>(emptyPharmacyVerificationInfo);
+  /** 확인 카드를 지났는가. 확인 전까지는 검색창 대신 그 카드가 선다 */
+  const [entryConfirmed, setEntryConfirmed] = useState(false);
+  const [pharmacyInfo, setPharmacyInfo] = useState<PharmacyVerificationInfo>(() =>
+    claimableEntry
+      ? { ...emptyPharmacyVerificationInfo, selectedPharmacy: claimableEntry, pharmacyName: claimableEntry.name, pharmacyEntryMode: "search" }
+      : emptyPharmacyVerificationInfo,
+  );
   const [managerInfo, setManagerInfo] = useState<ManagerInfo>(emptyManagerInfo);
   const [accountInfo, setAccountInfo] = useState<AccountCreationInfo>(emptyAccountCreationInfo);
 
@@ -251,6 +296,8 @@ export function PharmacySignupClient() {
     writeSignupOrgTrack("pharmacy");
     writeSignupPharmacyType(pharmacyInfo.pharmacyType);
     writeSignupPharmacyFeatureId(pharmacyInfo.pharmacyFeatureIds);
+    /** 인증 게이트가 이 값을 읽어 같은 약국을 다시 세운다 — 직접 입력으로 왔으면 등록부 id가 없어 비운다 */
+    writeSignupPharmacyId(pharmacyInfo.selectedPharmacy?.id);
     setStep("complete");
   };
 
@@ -272,7 +319,23 @@ export function PharmacySignupClient() {
             : "이 계정으로 공고 등록과 지원자 관리를 이용할 수 있습니다."
       }
     >
-      {step === 1 ? <PharmacyVerificationStep value={pharmacyInfo} onChange={updatePharmacyInfo} onNext={() => setStep(2)} /> : null}
+      {step === 1 ? (
+        <PharmacyVerificationStep
+          value={pharmacyInfo}
+          onChange={updatePharmacyInfo}
+          onNext={() => setStep(2)}
+          /* 확인을 받고 나면 카드가 물러나고 종전의 "선택됨: …" 행이 그 자리에 선다 */
+          pendingConfirmEntry={claimableEntry && !entryConfirmed ? claimableEntry : null}
+          onConfirmEntry={() => setEntryConfirmed(true)}
+          /* 다른 약국을 고르겠다면 지목을 놓고 검색창으로 되돌린다 */
+          onRejectEntry={() => {
+            setEntryConfirmed(true);
+            updatePharmacyInfo("selectedPharmacy", null);
+            updatePharmacyInfo("pharmacyName", "");
+          }}
+          alreadyClaimedEntry={alreadyClaimedEntry}
+        />
+      ) : null}
       {step === 2 ? (
         <ManagerInfoStep
           value={managerInfo}
