@@ -1,4 +1,5 @@
 import { trackFilterConfigs } from "@/config/jobFilters";
+import { emptyUserPreference } from "@/data/mockUserPreferences";
 import type { JobTrack, TrackPreferences, UserJobPreference } from "@/types/jobs";
 
 const STORAGE_KEY = "thepharmin:job-preferences";
@@ -35,14 +36,48 @@ function sanitizeIds(stored: unknown, valid: Set<string>): { ids: string[]; chan
 }
 
 /**
- * 저장된 값에서 정본에 없는 직무 id를 걸러낸다.
+ * 기본값의 모양이 곧 그 필드의 정본이다 — 다중 선택 자리에는 배열, 알림 on/off 자리에는 boolean,
+ * 단일 선택 자리에는 문자열이나 null만 온다. 필드가 아예 없으면 `undefined`라 어느 검사도 통과하지
+ * 못하고, 그대로 "채워야 할 자리"로 잡힌다.
+ */
+function matchesDefaultShape(value: unknown, fallback: unknown) {
+  if (Array.isArray(fallback)) return Array.isArray(value);
+  if (typeof fallback === "boolean") return typeof value === "boolean";
+  return value === null || typeof value === "string";
+}
+
+/**
+ * 누락되거나 모양이 어긋난 필드를 `emptyUserPreference`의 기본값으로 되돌린다.
+ * 되돌릴 것이 없으면 원본을 그대로 돌려준다 — 멀쩡한 값을 새 객체로 갈아끼우지 않는다.
+ */
+function fillDefaults(typed: UserJobPreference): { preference: UserJobPreference; changed: boolean } {
+  const stored = typed as unknown as Record<string, unknown>;
+  const restored: Record<string, unknown> = {};
+
+  for (const [field, fallback] of Object.entries(emptyUserPreference)) {
+    if (!matchesDefaultShape(stored[field], fallback)) restored[field] = fallback;
+  }
+
+  if (Object.keys(restored).length === 0) return { preference: typed, changed: false };
+
+  // 기본값을 바닥에 깔아 필드 순서를 정본과 맞추고, 그 위에 저장된 값과 되돌린 값을 얹는다.
+  return { preference: { ...emptyUserPreference, ...typed, ...restored } as UserJobPreference, changed: true };
+}
+
+/**
+ * 저장된 값을 읽는 쪽이 기대하는 모양으로 되돌린다. 하는 일은 두 가지다.
  *
- * 분류 체계가 바뀌면(대분류 분리·소분류 삭제 등) 예전 id가 저장소에 그대로 남는데, 읽는 쪽은
- * 라벨을 못 찾으면 id 원문을 그대로 칩에 그린다(`useJobFilters`의 `?? id` 폴백). 화면에
- * 정본에 없는 칩이 뜨고 해제할 UI도 없어 스스로 지울 수 없는 유령 값이 된다.
+ * 1. 정본에 없는 직무 id를 걸러낸다. 분류 체계가 바뀌면(대분류 분리·소분류 삭제 등) 예전 id가
+ *    저장소에 그대로 남는데, 읽는 쪽은 라벨을 못 찾으면 id 원문을 그대로 칩에 그린다
+ *    (`useJobFilters`의 `?? id` 폴백). 화면에 정본에 없는 칩이 뜨고 해제할 UI도 없어 스스로
+ *    지울 수 없는 유령 값이 된다.
+ * 2. 누락되거나 모양이 어긋난 필드를 `emptyUserPreference`의 기본값으로 채운다. 읽는 쪽이 배열
+ *    필드를 곧장 훑기 때문에(`buildAppliedChips`·`buildPreferenceChips`·`toQuery`·
+ *    `clearPreferenceFilters`) 필드 하나만 없어도 화면이 통째로 죽는다. 스칼라 필드는 조용히
+ *    넘어가지만, 저장 화면이 그 값을 그대로 되쓰기 때문에 누락이 저장소에 눌러앉는다.
  *
- * 직무 외 필드(지역·경력 등)는 손대지 않는다 — 이 함수가 아는 정본은 직무 분류뿐이라
- * 나머지까지 판정하면 근거 없이 사용자 설정을 지우게 된다.
+ * 그 밖에 사용자가 넣은 유효한 값은 바꾸지 않는다 — 직무 분류 말고는 값의 옳고 그름을 판정할
+ * 정본이 없어, 더 손대면 근거 없이 사용자 설정을 지우게 된다.
  */
 function sanitizeAll(parsed: unknown): { preferences: TrackPreferences; changed: boolean } {
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -64,16 +99,18 @@ function sanitizeAll(parsed: unknown): { preferences: TrackPreferences; changed:
 
     const valid = validJobIds(key);
     const typed = preference as UserJobPreference;
-    const categories = sanitizeIds(typed.jobCategoryIds, valid.categoryIds);
-    const subcategories = sanitizeIds(typed.jobSubcategoryIds, valid.subcategoryIds);
+    const filled = fillDefaults(typed);
+    const categories = sanitizeIds(filled.preference.jobCategoryIds, valid.categoryIds);
+    const subcategories = sanitizeIds(filled.preference.jobSubcategoryIds, valid.subcategoryIds);
 
-    if (!categories.changed && !subcategories.changed) {
+    // 직무 id가 멀쩡해도 다른 필드가 비어 있으면 통과시키지 않는다 — 그 통과가 곧 크래시 통로였다.
+    if (!filled.changed && !categories.changed && !subcategories.changed) {
       preferences[key] = typed;
       continue;
     }
 
     changed = true;
-    preferences[key] = { ...typed, jobCategoryIds: categories.ids, jobSubcategoryIds: subcategories.ids };
+    preferences[key] = { ...filled.preference, jobCategoryIds: categories.ids, jobSubcategoryIds: subcategories.ids };
   }
 
   return { preferences, changed };
